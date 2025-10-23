@@ -166,6 +166,19 @@
 .sidebar .sb-submenu .sb-row.active .sb-txt{color:#2f5ea8;}
 .sidebar .sb-submenu .sb-row.active .ico{color:#32b27c;font-size:15px;}
 
+/* 置灰禁用项样式 */
+.sidebar .sb-submenu .sb-row.disabled {
+  color: #999 !important;
+  background: transparent !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+  pointer-events: none;  /* 禁止点击 */
+}
+
+.sidebar .sb-submenu .sb-row.disabled .sb-txt {
+  color: #999 !important;
+}
+
 
 </style>
 </head>
@@ -203,13 +216,17 @@
   
         <!-- 二级菜单：只有“银行流水分析”有绿色圆圈 -->
         <ul class="sb-submenu">
-          <li class="sb-row"><span class="sb-txt">数据上传</span></li>
+          <li class="sb-row active">
+            <i class="fa-regular fa-circle-check ico"></i>
+            <span class="sb-txt">s数据上传</span>
+          </li>
           <li class="sb-row active">
             <i class="fa-regular fa-circle-check ico"></i>
             <span class="sb-txt">银行流水分析</span>
           </li>
-          <li class="sb-row"><span class="sb-txt">财务数据分析</span></li>
-          <li class="sb-row"><span class="sb-txt">数据综合分析</span></li>
+          <li class="sb-row disabled"><span class="sb-txt">增值税数据分析</span></li>
+          <li class="sb-row disabled"><span class="sb-txt">财务数据分析</span></li>
+          <li class="sb-row disabled"><span class="sb-txt">数据综合分析</span></li>
         </ul>
       </li>
     </ul>
