@@ -13,169 +13,190 @@
 
   <!-- ====== 平台基础样式（按你提供的变量/色板裁剪保留） ====== -->
   <style>
-    html,body{width:100%;height:100%}
-    *,*:before,*:after{box-sizing:border-box}
-    html{font-family:sans-serif;line-height:1.15;-webkit-text-size-adjust:100%}
-    body{margin:0;color:#000000d9;font-size:14px;
-      font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";
-      line-height:1.5715;background:var(--body-background)}
-    :root{
-      --primary-color:#1e49e2; --primary-color-opacity:rgba(30,73,226,.4);
-      --deep-blue:#00338d; --base-space:16px;
-      --table-head-background:#F6F8FE; --table-border:1px solid #f0f0f0;
-      --warning-color:#faad14; --body-background:#f5f7fa;
-      /* 兼容内容页自用变量 */
-      --primary:#2563eb; --primary-600:#1e40af; --muted:#64748b; --text:#0f172a;
-      --bg:#f5f7fa; --card:#fff; --border:#e8e8ed; --shadow:0 6px 18px rgba(17,24,39,.08);
-    }
-
-    /* ====== 顶部 Header（占位，类名保持，用于无缝替换） ====== */
-    .layout-header {display:flex;align-items:center;height:48px;background:var(--primary-color);
-      padding:0 16px;color:#fff;position:sticky;top:0;z-index:9999}
-    .layout-header .layout-header-name{font-size:22px;font-weight:700}
-    .layout-header .layout-header-project{margin-left:12px;opacity:.9}
-    .layout-header .layout-header-nav{margin-left:auto;display:flex;gap:12px}
-
-    /* ====== 主布局 ====== */
-    .layout-main{display:flex;height:calc(100vh - 48px)}
-    .sidebar{width:200px;background:#fff;border-right:1px solid #eaecef;overflow-y:auto}
-    .sidebar-menu{list-style:none;margin:0;padding:8px}
-    .sidebar-menu li{padding:8px 10px;border-radius:6px;cursor:pointer}
-    .sidebar-menu li.active,.sidebar-menu li:hover{background:#f0f4ff}
-    .main-right{flex:1;display:flex;flex-direction:column;overflow:hidden}
-    .breadcrumb-bar{background:#fff;padding:6px 8px;color:#999;margin:0 var(--base-space)}
-    .content-scroll{flex:1;overflow:auto}
-    .content-wrap{margin:var(--base-space)}
-
-    /* ====== 内容页（沿用你“完整版本”的风格） ====== */
-    .container{max-width:1480px;margin:auto}
-    .header{display:flex;align-items:center;gap:12px}
-    .header .breadcrumb{font-size:13px;color:var(--muted)}
-    .toolbar{margin-left:auto;display:flex;gap:10px}
-    .btn{padding:6px 10px;border-radius:6px;border:1px solid var(--border);
-      background:linear-gradient(135deg,#fff,#f9fafb);cursor:pointer;font-size:13px;transition:all .25s ease}
-    .btn:hover{border-color:var(--primary);box-shadow:0 2px 6px rgba(37,99,235,.2)}
-    .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-600));color:#fff;border:none}
-
-    .tabbar{display:flex;gap:6px;border-bottom:2px solid var(--border);margin:10px 0 16px}
-    .tab{padding:10px 14px;border-radius:8px 8px 0 0;color:var(--muted);cursor:pointer}
-    .tab.active{background:#fff;border:1px solid var(--border);border-bottom:0;color:var(--primary)}
-    .card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
-    .card .head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);background:#f9fbff;position:relative}
-    .card .head::before{content:"";position:absolute;left:0;top:0;width:4px;height:100%;background:var(--primary)}
-    .card .title{font-weight:600;margin-left:8px}
-    .card .content{padding:14px 16px}
-    .filters{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
-    .filters label{font-size:12px;color:var(--text)}
-    .select{padding:4px 8px;font-size:12px;color:var(--text);background:#fff;border:1px solid var(--border);
-      border-radius:6px;min-width:100px;transition:all .25s ease;box-shadow:0 2px 5px rgba(0,0,0,.05);appearance:none}
-    .select:hover{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
-    .select:focus{outline:none;border-color:var(--primary-600);box-shadow:0 0 0 3px rgba(37,99,235,.25)}
-    .chart{height:300px}
-
-    .table{width:100%;border-collapse:collapse;font-size:13px}
-    .table th,.table td{border:1px solid var(--border);padding:8px;text-align:center;white-space:nowrap}
-    .table th{background:#f1f5ff;color:#1e293b;font-weight:600}
-    .table tr:hover td{background:#f9fbff}
-    .table-tabs{display:flex;gap:10px;margin:10px 0}
-    .table-tab{padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:#f8fafc;color:var(--muted);cursor:pointer}
-    .table-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-
-    .split{display:grid;grid-template-columns:300px 1fr;gap:16px}
-    .sidebar-pane{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px}
-    .menu{display:flex;flex-direction:column;gap:6px}
-    .menu .item{padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:#eef2ff;cursor:pointer;font-size:13px}
-    .menu .item.active{background:#fff;outline:2px solid var(--primary-600)}
-    .small{font-size:12px;color:var(--muted)}
-    .top-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
-    .top-item{background:#f9fafb;border:1px solid var(--border);border-radius:10px;padding:10px 12px}
-    .top-item .lbl{font-size:12px;color:var(--muted)}
-    .top-item .num{font-weight:700;margin-top:6px}
-    .rank-list{display:grid;gap:6px;margin-top:6px}
-    .rank-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;border-bottom:1px dashed var(--border);padding:4px 0}
-    .rank .bul{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px}
-    .grid-2{display:grid;grid-template-columns:2fr 1fr;gap:16px}
-    .pagination{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-    .pagination .btn{padding:6px 10px}
-    .hide{display:none}
-    #tblTop20 {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-    #tblTop20 th, #tblTop20 td {
-      border: 1px solid #e5e7eb;
-      padding: 6px 8px;
-      text-align: center;
-    }
-    #tblTop20 th {
-      background: #f9fafb;
-      font-weight: 600;
-    }
-    .color-dot {
-      display:inline-block;
-      width:10px;
-      height:10px;
-      border-radius:50%;
-      margin-right:4px;
-    }
-    body {
-    margin: 0;
-    font-family: "Microsoft YaHei", sans-serif;
+  html,body{width:100%;height:100%}
+  *,*:before,*:after{box-sizing:border-box}
+  html{font-family:sans-serif;line-height:1.15;-webkit-text-size-adjust:100%}
+  body{margin:0;color:#000000d9;font-size:14px;
+    font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";
+    line-height:1.5715;background:var(--body-background)}
+  :root{
+    --primary-color:#1e49e2; --primary-color-opacity:rgba(30,73,226,.4);
+    --deep-blue:#00338d; --base-space:16px;
+    --table-head-background:#F6F8FE; --table-border:1px solid #f0f0f0;
+    --warning-color:#faad14; --body-background:#f5f7fa;
+    /* 兼容内容页自用变量 */
+    --primary:#2563eb; --primary-600:#1e40af; --muted:#64748b; --text:#0f172a;
+    --bg:#f5f7fa; --card:#fff; --border:#e8e8ed; --shadow:0 6px 18px rgba(17,24,39,.08);
   }
 
-  .layout-main {
-    display: flex;
+  /* ====== 顶部 Header（占位，类名保持，用于无缝替换） ====== */
+  .layout-header {display:flex;align-items:center;height:48px;background:var(--primary-color);
+    padding:0 16px;color:#fff;position:sticky;top:0;z-index:9999}
+  .layout-header .layout-header-name{font-size:22px;font-weight:700}
+  .layout-header .layout-header-project{margin-left:12px;opacity:.9}
+  .layout-header .layout-header-nav{margin-left:auto;display:flex;gap:12px}
+
+  /* ====== 主布局 ====== */
+  .layout-main{display:flex;height:calc(100vh - 48px)}
+  .sidebar{width:200px;background:#fff;border-right:1px solid #eaecef;overflow-y:auto}
+  .sidebar-menu{list-style:none;margin:0;padding:8px}
+  .sidebar-menu li{padding:8px 10px;border-radius:6px;cursor:pointer}
+  .sidebar-menu li.active,.sidebar-menu li:hover{background:#f0f4ff}
+  .main-right{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .breadcrumb-bar{background:#fff;padding:6px 8px;color:#999;margin:0 var(--base-space)}
+  .content-scroll{flex:1;overflow:auto}
+  .content-wrap{margin:var(--base-space)}
+
+  /* ====== 内容页（沿用你“完整版本”的风格） ====== */
+  .container{max-width:1480px;margin:auto}
+  .header{display:flex;align-items:center;gap:12px}
+  .header .breadcrumb{font-size:13px;color:var(--muted)}
+  .toolbar{margin-left:auto;display:flex;gap:10px}
+  .btn{padding:6px 10px;border-radius:6px;border:1px solid var(--border);
+    background:linear-gradient(135deg,#fff,#f9fafb);cursor:pointer;font-size:13px;transition:all .25s ease}
+  .btn:hover{border-color:var(--primary);box-shadow:0 2px 6px rgba(37,99,235,.2)}
+  .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-600));color:#fff;border:none}
+
+  .tabbar{display:flex;gap:6px;border-bottom:2px solid var(--border);margin:10px 0 16px}
+  .tab{padding:10px 14px;border-radius:8px 8px 0 0;color:var(--muted);cursor:pointer}
+  .tab.active{background:#fff;border:1px solid var(--border);border-bottom:0;color:var(--primary)}
+  .card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+  .card .head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);background:#f9fbff;position:relative}
+  .card .head::before{content:"";position:absolute;left:0;top:0;width:4px;height:100%;background:var(--primary)}
+  .card .title{font-weight:600;margin-left:8px}
+  .card .content{padding:14px 16px}
+  .filters{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .filters label{font-size:12px;color:var(--text)}
+  .select{padding:4px 8px;font-size:12px;color:var(--text);background:#fff;border:1px solid var(--border);
+    border-radius:6px;min-width:100px;transition:all .25s ease;box-shadow:0 2px 5px rgba(0,0,0,.05);appearance:none}
+  .select:hover{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+  .select:focus{outline:none;border-color:var(--primary-600);box-shadow:0 0 0 3px rgba(37,99,235,.25)}
+  .chart{height:300px}
+
+  .table{width:100%;border-collapse:collapse;font-size:13px}
+  .table th,.table td{border:1px solid var(--border);padding:8px;text-align:center;white-space:nowrap}
+  .table th{background:#f1f5ff;color:#1e293b;font-weight:600}
+  .table tr:hover td{background:#f9fbff}
+  .table-tabs{display:flex;gap:10px;margin:10px 0}
+  .table-tab{padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:#f8fafc;color:var(--muted);cursor:pointer}
+  .table-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+  .split{display:grid;grid-template-columns:300px 1fr;gap:16px}
+  .sidebar-pane{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px}
+  .menu{display:flex;flex-direction:column;gap:6px}
+  .menu .item{padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:#eef2ff;cursor:pointer;font-size:13px}
+  .menu .item.active{background:#fff;outline:2px solid var(--primary-600)}
+  .small{font-size:12px;color:var(--muted)}
+  .top-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+  .top-item{background:#f9fafb;border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+  .top-item .lbl{font-size:12px;color:var(--muted)}
+  .top-item .num{font-weight:700;margin-top:6px}
+  .rank-list{display:grid;gap:6px;margin-top:6px}
+  .rank-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;border-bottom:1px dashed var(--border);padding:4px 0}
+  .rank .bul{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px}
+  .grid-2{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+  .pagination{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .pagination .btn{padding:6px 10px}
+  .hide{display:none}
+  #tblTop20 {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
   }
-  /* 左侧侧边栏（最小替换版） */
-.sidebar{
-  width:230px; background:#f8f8f8;
-  border-right:1px solid #ddd; height:100vh; padding:10px 16px;
-}
+  #tblTop20 th, #tblTop20 td {
+    border: 1px solid #e5e7eb;
+    padding: 6px 8px;
+    text-align: center;
+  }
+  #tblTop20 th {
+    background: #f9fafb;
+    font-weight: 600;
+  }
+  .color-dot {
+    display:inline-block;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    margin-right:4px;
+  }
 
-/* 行：三列网格 = 图标列 / 文字列 / 右侧箭头 */
-.sb-row{
-  display:grid;
-  grid-template-columns: 16px 1fr auto;   /* 统一图标宽度，保证起笔齐线 */
-  align-items:center;
-  column-gap:10px;
-  height:38px;
-  padding:0 6px;
-  border-radius:8px;
-  color:#003366;
-}
-.sb-row:hover{ background:#eef3f8; }
-.sb-row .ico{ font-size:16px; width:16px; text-align:center; }
-.sb-row .txt{ font-size:15px; letter-spacing:.2px; }
-.sb-row .caret{ font-size:12px; color:#8a8a8a; transition:transform .18s; }
+  /* ========== 左侧侧栏（已按你最新要求重排版） ========== */
+  body { margin:0; font-family:"Microsoft YaHei",sans-serif; }
+  .layout-main { display:flex; }
 
-/* 顶层标题：项目列表（不折叠） */
-.sb-title{ font-weight:600; color:#2f5ea8; }
+  .sidebar {
+    width:230px;
+    background:#f8f8f8;
+    border-right:1px solid #ddd;
+    height:100vh;
+    padding-top:10px;
+    padding-left:16px;   /* 让“项目列表/工作簿详情”与截图一致 */
+    padding-right:16px;
+  }
 
-/* 可折叠一级：工作簿详情 */
-.sb-toggle.open .caret{ transform:rotate(90deg); cursor:pointer; }
+  .sidebar-menu { list-style:none; padding:0; margin:0; }
 
-/* 二级菜单容器（整体缩进，但内部仍是三列） */
-.sb-submenu{
-  margin:4px 0 10px 16px;   /* 只缩进容器一次 */
-  padding-left:0; list-style:none; display:none;
-}
-.sb-submenu.show{ display:block; }
+  /* 顶层：项目列表（不折叠） & 工作簿详情（可折叠） */
+  .sidebar-menu > li{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 8px;
+    color:#003366;
+    font-size:15px;
+    border-radius:8px;
+    cursor:pointer;
+  }
+  .sidebar-menu > li:hover{ background:#eef3f8; }
 
-/* 二级项 */
-.sb-submenu .sb-row{
-  color:#333; height:34px;
-}
-.sb-submenu .sb-row .ico{ color:#b9b9b9; }      /* 默认灰色圆圈 */
-.sb-submenu .sb-row.active{
-  color:#2f5ea8; background:#e9f2ff; font-weight:600;
-}
-.sb-submenu .sb-row.active .ico{ color:#32b27c; } /* 选中为绿色对勾 */
+  /* 通用小图标（顶层使用） */
+  .icon{ margin-right:8px; font-size:14px; }
+  .icon-menu{ color:#003366; }
+  .icon-folder{ color:#003366; }
 
-/* 细分隔线（可留可去） */
-.sb-divider{ height:1px; background:#e7e7e7; margin:8px 0 6px 16px; }
- 
-  </style>
+  /* 二级菜单：只让“银行流水分析”有绿色圆圈，其它项无图标，但文本对齐 */
+  .submenu{
+    list-style:none;
+    margin:4px 0 10px 16px;   /* 二级整体缩进 */
+    padding:0;
+    display:none;             /* 默认收起，外层控制加 .show 展开 */
+  }
+  .submenu.show{ display:block; }
+
+  /* 使用 Grid 预留“图标列”，确保无图标项的文本与有图标项严格对齐 */
+  .submenu li{
+    display:grid;
+    grid-template-columns: 18px 1fr;  /* 图标列 / 文本列 */
+    align-items:center;
+    column-gap:8px;
+    padding:8px 6px;
+    color:#333;
+    font-size:14px;
+    border-radius:8px;
+    cursor:pointer;
+  }
+  .submenu li:hover{ color:#0056b3; background:#eef3f8; }
+
+  /* 给无图标的普通项插入“空占位”，实现与有图标项齐线 */
+  .submenu li::before{
+    content:""; width:18px; height:18px; /* 空占位，不显示图标 */
+  }
+
+  /* 选中项（银行流水分析）：绿色圆圈+文字加权，且不需要空占位 */
+  .submenu li.active{
+    color:#2f5ea8;
+    background:#e9f2ff;
+    font-weight:600;
+  }
+  .submenu li.active::before{ content:none; }
+
+  /* 绿色圆圈图标本身的颜色（若你在 HTML 中有 <i class="icon icon-check">） */
+  .icon-check{ color:#32b27c; font-size:15px; margin-right:0; }
+
+  /* 展开箭头（工作簿详情右侧） */
+  .arrow{ font-size:12px; transition:transform .2s; }
+  .open > .arrow{ transform:rotate(90deg); }
+</style>
 </head>
 
 <body>
@@ -193,48 +214,35 @@
   <!-- ====== 主体区域：左侧平台侧栏 + 右侧内容滚动容器 ====== -->
   <div class="layout-main">
   <aside class="sidebar">
-  <!-- 项目列表：不折叠 -->
-  <div class="sb-row sb-title">
-    <i class="fa-solid fa-bars ico"></i>
-    <div class="txt">项目列表</div>
-    <span></span>
-  </div>
-
-  <!-- 工作簿详情：可折叠 -->
-  <div class="sb-row sb-toggle" onclick="toggleSb(this)">
-    <i class="fa-solid fa-folder ico" style="color:#2d3640;"></i>
-    <div class="txt">工作簿详情</div>
-    <i class="fa-solid fa-angle-right caret"></i>
-  </div>
-
-  <!-- 二级菜单 -->
-  <ul class="sb-submenu show">
-    <li class="sb-row">
-      <i class="fa-regular fa-circle ico"></i>
-      <div class="txt">数据上传</div>
+  <ul class="sidebar-menu">
+    <!-- 顶层标题：项目列表 -->
+    <li class="sb-row sb-title">
+      <i class="fa-solid fa-bars ico"></i>
+      <span class="txt">项目列表</span>
       <span></span>
     </li>
 
-    <li class="sb-row active">
-      <i class="fa-regular fa-circle-check ico"></i>
-      <div class="txt">银行流水分析</div>
-      <span></span>
+    <!-- 工作簿详情（可折叠） -->
+    <li class="sb-row sb-toggle" onclick="toggleSb(this)">
+      <i class="fa-solid fa-folder ico" style="color:#2d3640;"></i>
+      <span class="txt">工作簿详情</span>
+      <i class="fa-solid fa-angle-right caret"></i>
     </li>
 
-    <li class="sb-row">
-      <i class="fa-regular fa-circle ico"></i>
-      <div class="txt">财务数据分析</div>
-      <span></span>
-    </li>
+    <!-- 二级菜单 -->
+    <ul class="sb-submenu show">
+      <li class="sb-row"><span class="txt">数据上传</span></li>
 
-    <li class="sb-row">
-      <i class="fa-regular fa-circle ico"></i>
-      <div class="txt">数据综合分析</div>
-      <span></span>
-    </li>
+      <!-- ✅ 唯一有绿色圆圈的项 -->
+      <li class="sb-row active">
+        <i class="fa-regular fa-circle-check ico" style="color:#32b27c;"></i>
+        <span class="txt">银行流水分析</span>
+      </li>
+
+      <li class="sb-row"><span class="txt">财务数据分析</span></li>
+      <li class="sb-row"><span class="txt">数据综合分析</span></li>
+    </ul>
   </ul>
-
-  <div class="sb-divider"></div>
 </aside>
 </div>
 
@@ -499,8 +507,12 @@
     }
     initFilters();
 
-    function toggleMenu(el) {el.classList.toggle("open");
-    const submenu = el.nextElementSibling;submenu.classList.toggle("show");}
+     function toggleSb(el){el.classList.toggle('open');
+       const sub = el.nextElementSibling;
+       if(sub && sub.classList.contains('sb-submenu')){
+      sub.classList.toggle('show');
+       }
+     }
 
     /* =============== 经营实质：图表 =============== */
     const months = Array.from({length:17},(_,i)=> i<12?`2023-${String(i+1).padStart(2,'0')}`:`2024-${String(i-11).padStart(2,'0')}`);
