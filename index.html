@@ -506,13 +506,8 @@
     }
     initFilters();
 
-     function toggleSb(el){el.classList.toggle('open');
-       const sub = el.nextElementSibling;
-       if(sub && sub.classList.contains('sb-submenu')){
-      sub.classList.toggle('show');
-       }
-     }
 
+      
     /* =============== 经营实质：图表 =============== */
     const months = Array.from({length:17},(_,i)=> i<12?`2023-${String(i+1).padStart(2,'0')}`:`2024-${String(i-11).padStart(2,'0')}`);
     ez('chart-balance',{tooltip:{trigger:'axis'},xAxis:{type:'category',data:months},yAxis:{type:'value'},series:[{type:'line',smooth:true,areaStyle:{},data:months.map(()=>Math.round(Math.random()*120)+50)}]});
@@ -536,7 +531,12 @@
       }
       document.getElementById(eleId).innerHTML=html;
     }
-
+    
+  function toggleSb(li){
+    li.classList.toggle('open');
+    const submenu = li.querySelector('.sb-submenu');
+    if (submenu) submenu.classList.toggle('show');
+  }
       /* =============== 经营实质：两张表 =============== */
   function fillBizTables(list=bizFilteredList){
     const totalSum = list.reduce((s,x)=>s+x.total,0)||1;
