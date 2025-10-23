@@ -196,6 +196,52 @@
   /* 展开箭头（工作簿详情右侧） */
   .arrow{ font-size:12px; transition:transform .2s; }
   .open > .arrow{ transform:rotate(90deg); }
+
+  /* 1) 彻底去掉所有层级的列表圆点与内边距 */
+.sidebar-menu, .sidebar-menu ul, .sb-submenu {
+  list-style: none !important;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+}
+
+/* 2) 顶层 li 不要强制 space-between，否则会挤坏网格 */
+.sidebar-menu > li {
+  justify-content: unset;   /* 覆盖你原来的 space-between */
+}
+
+/* 3) 强制 .sb-row 使用 Grid（避免被 .sidebar-menu > li 的 flex 覆盖） */
+.sb-row{
+  display: grid !important;
+  grid-template-columns: 18px 1fr auto;   /* 图标列 / 文本列 / 右侧箭头列 */
+  align-items: center;
+  column-gap: 8px;
+}
+
+/* 4) 二级项只有图标列 + 文本列 */
+.sb-submenu .sb-row{
+  grid-template-columns: 18px 1fr !important;
+}
+
+/* 5) 二级普通项无图标，但要留“空占位”保证与有图标项对齐 */
+.sb-submenu .sb-row:not(.active)::before{
+  content: "";
+  width: 18px; height: 18px;
+}
+
+/* 6) 文本不换行、不挤成竖排；过长用省略号 */
+.sb-row .txt{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 7) 绿色对勾颜色（仅银行流水分析） */
+.sb-submenu .sb-row.active .ico{
+  color: #32b27c !important;
+}
+
+/* 8) 侧栏宽度稍放大，避免中文被挤换行 */
+.sidebar{ width: 230px !important; }
 </style>
 </head>
 
