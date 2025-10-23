@@ -243,24 +243,45 @@
 /* 8) 侧栏宽度稍放大，避免中文被挤换行 */
 .sidebar{ width: 230px !important; }
 
-/* 只在侧栏里，强制还原文字可见性与大小 */
-.sidebar .txt {
-  color: #003366 !important;
-  font-size: 15px !important;
-  line-height: 1.2 !important;
-  opacity: 1 !important;
-  display: inline-block;
+    /* A. 用在 HTML 的 .sb-submenu，补上与 .submenu 等价的规则 */
+.sb-submenu{
+  list-style: none;
+  margin: 4px 0 10px 16px;   /* 二级整体缩进 */
+  padding: 0;
+  display: none;
+}
+.sb-submenu.show{ display:block; }
+
+/* B. 侧栏文字被覆盖时强制可见 */
+.sidebar .txt{
+  color:#003366 !important;   /* 顶层“项目列表/工作簿详情” */
+  font-size:15px !important;
+  line-height:1.2;
+  opacity:1;
+  display:inline-block;
+}
+.sidebar .sb-submenu .txt{
+  color:#333 !important;      /* 二级默认色 */
+}
+.sidebar .sb-submenu .sb-row.active .txt{
+  color:#2f5ea8 !important;   /* 二级选中（银行流水分析） */
+  font-weight:600;
 }
 
-.sidebar .sb-submenu .txt {
-  color: #333 !important; /* 二级菜单默认深灰 */
+/* C. 只有“银行流水分析”有绿色圆圈，其它项无图标但对齐 */
+.sb-submenu .sb-row{
+  display:grid !important;
+  grid-template-columns:18px 1fr !important;
+  align-items:center;
+  column-gap:8px;
+}
+.sb-submenu .sb-row:not(.active)::before{
+  content:""; width:18px; height:18px;   /* 给无图标项留空位 */
+}
+.sb-submenu .sb-row.active .ico{
+  color:#32b27c !important;   /* 绿色对勾 */
 }
 
-/* 如果你给“银行流水分析”加了 .active，让它颜色更明显 */
-.sidebar .sb-submenu .sb-row.active .txt {
-  color: #2f5ea8 !important;
-  font-weight: 600;
-}
 </style>
 </head>
 
