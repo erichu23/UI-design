@@ -549,21 +549,6 @@
     `);
       });
 
-      // 环形图
-      ez('chart-donut',{
-        tooltip:{trigger:'item'},
-        series:[{
-          type:'pie',
-          radius:['55%','75%'],
-          label:{show:true,formatter:'{d}%'},
-          data:top20.map((r,i)=>({
-            name:r.name,
-            value:r.total,
-            itemStyle:{color:colors[i%colors.length]}
-          }))
-        }]
-      });
-    }
 
     /* 正态拟合线（按Y=交易额） */
     function gaussianLine(values){
