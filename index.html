@@ -250,6 +250,58 @@
   color:#64748b;
   background:#fcfdff;
 }
+/* KPI 带问题提示：7 卡 + 右侧提示框 */
+.kpi-band{
+  display:grid;
+  grid-template-columns: repeat(7, minmax(0,1fr)) 1.6fr; /* 7 个KPI + 右侧提示稍宽 */
+  gap:12px;
+  margin:8px 0 16px;
+}
+.kpi{
+  background:#f8fafc;
+  border:1px solid #e6edf5;
+  border-radius:10px;
+  padding:10px 12px;
+  min-height:64px;
+}
+.kpi-label{ font-size:12px; color:#6b7280; margin-bottom:4px; }
+.kpi-value{ font-size:18px; font-weight:600; color:#0f172a; }
+.kpi-value.pos{ color:#0f7a43; }
+.kpi-value.neg{ color:#b2162a; }
+.link-num{ text-decoration:none; border-bottom:1px dotted currentColor; }
+.link-num:hover{ opacity:.85; }
+.link-num.danger{ color:#b2162a; }
+
+/* 右侧问题提示 */
+.kpi-issue{
+  background:#fffdf7;
+  border:1px solid #ffe6b3;
+  border-radius:10px;
+  padding:10px 12px;
+}
+.issue-head{
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;
+}
+.issue-title{ color:#8a5c00; font-weight:600; }
+.issue-link{
+  font-size:12px; color:#8a5c00; text-decoration:none; border:1px solid #f5cf85;
+  padding:2px 8px; border-radius:999px; background:#fff7e3;
+}
+.issue-link:hover{ filter:brightness(1.05); }
+.dot{ width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; }
+.dot-warn{ background:#f59e0b; box-shadow:0 0 0 3px rgba(245,158,11,.15); }
+
+.issue-body ul{ margin:0; padding-left:16px; color:#8a5c00; font-size:12px; line-height:1.6; }
+.issue-body b{ font-weight:700; }
+.issue-foot{ margin-top:6px; }
+.mini-link{ font-size:12px; color:#8a5c00; text-decoration:underline; }
+
+/* 响应式（窄屏改为两行） */
+@media (max-width:1280px){
+  .kpi-band{ grid-template-columns: repeat(4, 1fr); }
+  .kpi-issue{ grid-column: span 4; }
+}
+
 
 
 </style>
