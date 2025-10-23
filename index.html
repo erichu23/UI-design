@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="x-ua-compatible" content="ie=edge" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- ECharts -->
   <script src="https://unpkg.com/echarts@5/dist/echarts.min.js"></script>
 
@@ -118,6 +119,103 @@
       border-radius:50%;
       margin-right:4px;
     }
+    body {
+    margin: 0;
+    font-family: "Microsoft YaHei", sans-serif;
+  }
+
+  .layout-main {
+    display: flex;
+  }
+
+  /* 左侧侧边栏 */
+  .sidebar {
+    width: 230px;
+    background: #f8f8f8;
+    border-right: 1px solid #ddd;
+    height: 100vh;
+    padding-top: 10px;
+  }
+
+  .sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .sidebar-menu > li {
+    padding: 12px 20px;
+    color: #003366;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* 鼠标悬浮效果 */
+  .sidebar-menu > li:hover {
+    background: #eef3f8;
+  }
+
+  /* 图标通用 */
+  .icon {
+    margin-right: 8px;
+    font-size: 14px;
+  }
+
+  .icon-menu {
+    color: #003366;
+  }
+
+  .icon-folder {
+    color: #003366;
+  }
+
+  .icon-check {
+    color: #3cb371;
+    margin-right: 6px;
+  }
+
+  /* 二级菜单 */
+  .submenu {
+    list-style: none;
+    padding-left: 35px;
+    margin: 0;
+    display: none;
+  }
+
+  .submenu.show {
+    display: block;
+  }
+
+  .submenu li {
+    padding: 8px 0;
+    color: #333;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .submenu li:hover {
+    color: #0056b3;
+  }
+
+  .submenu li.active {
+    color: #0056b3;
+    font-weight: bold;
+  }
+
+  /* 展开箭头 */
+  .arrow {
+    font-size: 12px;
+    transition: transform 0.2s;
+  }
+
+  .open > .arrow {
+    transform: rotate(90deg);
+  }
   </style>
 </head>
 
@@ -135,17 +233,33 @@
 
   <!-- ====== 主体区域：左侧平台侧栏 + 右侧内容滚动容器 ====== -->
   <div class="layout-main">
-    <!-- 平台 Sidebar（占位，类名可与实际菜单替换） -->
-    <aside class="sidebar">
-      <ul class="sidebar-menu">
-        <li>工作簿详情</li>
+  <aside class="sidebar">
+    <ul class="sidebar-menu">
+      <!-- 项目列表：不折叠 -->
+      <li>
+        <i class="fa-solid fa-bars icon icon-menu"></i>
+        项目列表
+      </li>
+
+      <!-- 工作簿详情：可折叠 -->
+      <li class="toggle" onclick="toggleMenu(this)">
+        <div>
+          <i class="fa-solid fa-folder icon icon-folder"></i>
+          工作簿详情
+        </div>
+        <i class="fa-solid fa-angle-right arrow"></i>
+      </li>
+
+      <!-- 二级菜单 -->
+      <ul class="submenu">
         <li>数据上传</li>
-        <li class="active">银行流水分析</li>
-        <li>增值税数据分析</li>
+        <li class="active"><i class="fa-regular fa-circle-check icon icon-check"></i>银行流水分析</li>
         <li>财务数据分析</li>
         <li>数据综合分析</li>
       </ul>
-    </aside>
+    </ul>
+  </aside>
+</div>
 
     <!-- 右侧内容 -->
     <section class="main-right">
@@ -156,6 +270,8 @@
           <div class="container">
             <div class="header">
               <div class="breadcrumb">项目列表 / <b>银行流水分析</b></div>
+              <div class="toolbar">
+                <button class="btn btn-primary">生成报告及流水</button>
               </div>
             </div>
 
@@ -292,6 +408,11 @@
                             </table>
                           </div>
 
+                          <!-- 右边：缩小的环形图 -->
+                          <div style="flex:1;min-width:220px;max-width:260px;">
+                            <div id="chart-donut" class="chart" style="height:220px"></div>
+                          </div>
+
                         </div>
                       </div>
 
@@ -400,6 +521,9 @@
       fFunc.innerHTML = ['全部',...funcs].map(x=>`<option>${x}</option>`).join('');
     }
     initFilters();
+
+    function toggleMenu(el) {el.classList.toggle("open");
+    const submenu = el.nextElementSibling;submenu.classList.toggle("show");}
 
     /* =============== 经营实质：图表 =============== */
     const months = Array.from({length:17},(_,i)=> i<12?`2023-${String(i+1).padStart(2,'0')}`:`2024-${String(i-11).padStart(2,'0')}`);
@@ -549,6 +673,21 @@
     `);
       });
 
+      // 环形图
+      ez('chart-donut',{
+        tooltip:{trigger:'item'},
+        series:[{
+          type:'pie',
+          radius:['55%','75%'],
+          label:{show:true,formatter:'{d}%'},
+          data:top20.map((r,i)=>({
+            name:r.name,
+            value:r.total,
+            itemStyle:{color:colors[i%colors.length]}
+          }))
+        }]
+      });
+    }
 
     /* 正态拟合线（按Y=交易额） */
     function gaussianLine(values){
