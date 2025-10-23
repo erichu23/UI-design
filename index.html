@@ -282,6 +282,60 @@
   color:#32b27c !important;   /* 绿色对勾 */
 }
 
+/* 布局骨架 */
+  .layout-main{ display:flex; height:calc(100vh - 48px); }
+  .sidebar{ flex:0 0 230px; background:#f8f8f8; border-right:1px solid #ddd; padding:10px 16px; }
+  .main-right{ flex:1; min-width:0; display:flex; flex-direction:column; }
+
+  /* 清理列表默认样式（避免出现圆点/缩进） */
+  .sidebar .sidebar-menu, .sidebar .sidebar-menu ul, .sidebar .sb-submenu{
+    list-style:none; padding-left:0; margin:0;
+  }
+
+  /* 顶层两行：项目列表（不折叠）、工作簿详情（可折叠） */
+  .sidebar .sidebar-menu > li{
+    display:flex; align-items:center; gap:8px;
+    padding:12px 8px; border-radius:8px;
+    color:#003366; font-size:15px; cursor:pointer;
+  }
+  .sidebar .sidebar-menu > li:hover{ background:#eef3f8; }
+  .sidebar .ico{ width:16px; text-align:center; font-size:14px; color:#003366; }
+  .sidebar .caret{ margin-left:auto; font-size:12px; color:#8a8a8a; transition:transform .18s; }
+  .sidebar .sb-toggle.open .caret{ transform:rotate(90deg); }
+
+  /* 只在侧栏里使用，不与全站 .txt 冲突 */
+  .sidebar .sb-txt{ color:#003366; font-size:15px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  /* 二级菜单容器：嵌在“工作簿详情”的 li 里面 */
+  .sidebar .sb-submenu{ display:none; margin:4px 0 8px 16px; }
+  .sidebar .sb-submenu.show{ display:block; }
+
+  /* 二级每一行：Grid 两列（图标列/文本列） */
+  .sidebar .sb-submenu .sb-row{
+    display:grid !important;
+    grid-template-columns:18px 1fr !important;
+    align-items:center; column-gap:8px;
+    padding:8px 6px; border-radius:8px;
+    color:#333; font-size:14px; cursor:pointer;
+  }
+  .sidebar .sb-submenu .sb-row:hover{ background:#eef3f8; color:#2f5ea8; }
+  .sidebar .sb-submenu .sb-row .sb-txt{ color:#333; }
+
+  /* 普通二级项：无图标，但留空位保证与有图标项对齐 */
+  .sidebar .sb-submenu .sb-row:not(.active)::before{
+    content:""; width:18px; height:18px;
+  }
+
+  /* 选中项：银行流水分析（绿色圆圈 + 文本高亮） */
+  .sidebar .sb-submenu .sb-row.active{ background:#e9f2ff; font-weight:600; color:#2f5ea8; }
+  .sidebar .sb-submenu .sb-row.active .sb-txt{ color:#2f5ea8; }
+  .sidebar .sb-submenu .sb-row.active .ico{ color:#32b27c; font-size:15px; }
+
+  /* 右侧常规（保留你原有） */
+  .breadcrumb-bar{ background:#fff; padding:6px 8px; color:#999; margin:0 16px; }
+  .content-scroll{ flex:1; overflow:auto; }
+  .content-wrap{ margin:16px; }
+
 </style>
 </head>
 
@@ -302,36 +356,35 @@
   <!-- 左侧 -->
   <aside class="sidebar">
     <ul class="sidebar-menu">
-      <!-- 顶层标题：项目列表 -->
-      <li class="sb-row sb-title">
+      <!-- 顶层：项目列表（不折叠） -->
+      <li>
         <i class="fa-solid fa-bars ico"></i>
-        <span class="txt">项目列表</span>
-        <span></span>
+        <span class="sb-txt">项目列表</span>
       </li>
 
-      <!-- 工作簿详情（可折叠，注意：二级菜单嵌在同一个 li 内部） -->
-      <li class="sb-row sb-toggle" onclick="toggleSb(this)">
-        <i class="fa-solid fa-folder ico" style="color:#2d3640;"></i>
-        <span class="txt">工作簿详情</span>
+      <!-- 顶层：工作簿详情（可折叠；二级菜单嵌入此 li 内） -->
+      <li class="sb-toggle" onclick="toggleSb(this)">
+        <i class="fa-solid fa-folder ico"></i>
+        <span class="sb-txt">工作簿详情</span>
         <i class="fa-solid fa-angle-right caret"></i>
 
-        <!-- ✅ 二级菜单必须在这个 li 里面，不能放到外面做同级 -->
+        <!-- 二级菜单（只“银行流水分析”有绿色圆圈，其它无图标） -->
         <ul class="sb-submenu show">
-          <li class="sb-row"><span class="txt">数据上传</span></li>
+          <li class="sb-row"><span class="sb-txt">数据上传</span></li>
 
-          <!-- ✅ 唯一有绿色圆圈的项 -->
           <li class="sb-row active">
-            <i class="fa-regular fa-circle-check ico" style="color:#32b27c;"></i>
-            <span class="txt">银行流水分析</span>
+            <i class="fa-regular fa-circle-check ico"></i>
+            <span class="sb-txt">银行流水分析</span>
           </li>
 
-          <li class="sb-row"><span class="txt">财务数据分析</span></li>
-          <li class="sb-row"><span class="txt">数据综合分析</span></li>
+          <li class="sb-row"><span class="sb-txt">财务数据分析</span></li>
+          <li class="sb-row"><span class="sb-txt">数据综合分析</span></li>
         </ul>
       </li>
     </ul>
   </aside>
 
+  
   <!-- 右侧（必须与 aside 同级，且共同包在 layout-main 内） -->
   <section class="main-right">
     <div class="breadcrumb-bar">当前位置：项目 > 银行流水分析</div>
