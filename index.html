@@ -127,95 +127,54 @@
   .layout-main {
     display: flex;
   }
+  /* 左侧侧边栏（最小替换版） */
+.sidebar{
+  width:230px; background:#f8f8f8;
+  border-right:1px solid #ddd; height:100vh; padding:10px 16px;
+}
 
-  /* 左侧侧边栏 */
-  .sidebar {
-    width: 230px;
-    background: #f8f8f8;
-    border-right: 1px solid #ddd;
-    height: 100vh;
-    padding-top: 10px;
-  }
+/* 行：三列网格 = 图标列 / 文字列 / 右侧箭头 */
+.sb-row{
+  display:grid;
+  grid-template-columns: 16px 1fr auto;   /* 统一图标宽度，保证起笔齐线 */
+  align-items:center;
+  column-gap:10px;
+  height:38px;
+  padding:0 6px;
+  border-radius:8px;
+  color:#003366;
+}
+.sb-row:hover{ background:#eef3f8; }
+.sb-row .ico{ font-size:16px; width:16px; text-align:center; }
+.sb-row .txt{ font-size:15px; letter-spacing:.2px; }
+.sb-row .caret{ font-size:12px; color:#8a8a8a; transition:transform .18s; }
 
-  .sidebar-menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
+/* 顶层标题：项目列表（不折叠） */
+.sb-title{ font-weight:600; color:#2f5ea8; }
 
-  .sidebar-menu > li {
-    padding: 12px 20px;
-    color: #003366;
-    cursor: pointer;
-    font-size: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+/* 可折叠一级：工作簿详情 */
+.sb-toggle.open .caret{ transform:rotate(90deg); cursor:pointer; }
 
-  /* 鼠标悬浮效果 */
-  .sidebar-menu > li:hover {
-    background: #eef3f8;
-  }
+/* 二级菜单容器（整体缩进，但内部仍是三列） */
+.sb-submenu{
+  margin:4px 0 10px 16px;   /* 只缩进容器一次 */
+  padding-left:0; list-style:none; display:none;
+}
+.sb-submenu.show{ display:block; }
 
-  /* 图标通用 */
-  .icon {
-    margin-right: 8px;
-    font-size: 14px;
-  }
+/* 二级项 */
+.sb-submenu .sb-row{
+  color:#333; height:34px;
+}
+.sb-submenu .sb-row .ico{ color:#b9b9b9; }      /* 默认灰色圆圈 */
+.sb-submenu .sb-row.active{
+  color:#2f5ea8; background:#e9f2ff; font-weight:600;
+}
+.sb-submenu .sb-row.active .ico{ color:#32b27c; } /* 选中为绿色对勾 */
 
-  .icon-menu {
-    color: #003366;
-  }
-
-  .icon-folder {
-    color: #003366;
-  }
-
-  .icon-check {
-    color: #3cb371;
-    margin-right: 6px;
-  }
-
-  /* 二级菜单 */
-  .submenu {
-    list-style: none;
-    padding-left: 35px;
-    margin: 0;
-    display: none;
-  }
-
-  .submenu.show {
-    display: block;
-  }
-
-  .submenu li {
-    padding: 8px 0;
-    color: #333;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-  }
-
-  .submenu li:hover {
-    color: #0056b3;
-  }
-
-  .submenu li.active {
-    color: #0056b3;
-    font-weight: bold;
-  }
-
-  /* 展开箭头 */
-  .arrow {
-    font-size: 12px;
-    transition: transform 0.2s;
-  }
-
-  .open > .arrow {
-    transform: rotate(90deg);
-  }
+/* 细分隔线（可留可去） */
+.sb-divider{ height:1px; background:#e7e7e7; margin:8px 0 6px 16px; }
+ 
   </style>
 </head>
 
@@ -234,31 +193,49 @@
   <!-- ====== 主体区域：左侧平台侧栏 + 右侧内容滚动容器 ====== -->
   <div class="layout-main">
   <aside class="sidebar">
-    <ul class="sidebar-menu">
-      <!-- 项目列表：不折叠 -->
-      <li>
-        <i class="fa-solid fa-bars icon icon-menu"></i>
-        项目列表
-      </li>
+  <!-- 项目列表：不折叠 -->
+  <div class="sb-row sb-title">
+    <i class="fa-solid fa-bars ico"></i>
+    <div class="txt">项目列表</div>
+    <span></span>
+  </div>
 
-      <!-- 工作簿详情：可折叠 -->
-      <li class="toggle" onclick="toggleMenu(this)">
-        <div>
-          <i class="fa-solid fa-folder icon icon-folder"></i>
-          工作簿详情
-        </div>
-        <i class="fa-solid fa-angle-right arrow"></i>
-      </li>
+  <!-- 工作簿详情：可折叠 -->
+  <div class="sb-row sb-toggle" onclick="toggleSb(this)">
+    <i class="fa-solid fa-folder ico" style="color:#2d3640;"></i>
+    <div class="txt">工作簿详情</div>
+    <i class="fa-solid fa-angle-right caret"></i>
+  </div>
 
-      <!-- 二级菜单 -->
-      <ul class="submenu">
-        <li>数据上传</li>
-        <li class="active"><i class="fa-regular fa-circle-check icon icon-check"></i>银行流水分析</li>
-        <li>财务数据分析</li>
-        <li>数据综合分析</li>
-      </ul>
-    </ul>
-  </aside>
+  <!-- 二级菜单 -->
+  <ul class="sb-submenu show">
+    <li class="sb-row">
+      <i class="fa-regular fa-circle ico"></i>
+      <div class="txt">数据上传</div>
+      <span></span>
+    </li>
+
+    <li class="sb-row active">
+      <i class="fa-regular fa-circle-check ico"></i>
+      <div class="txt">银行流水分析</div>
+      <span></span>
+    </li>
+
+    <li class="sb-row">
+      <i class="fa-regular fa-circle ico"></i>
+      <div class="txt">财务数据分析</div>
+      <span></span>
+    </li>
+
+    <li class="sb-row">
+      <i class="fa-regular fa-circle ico"></i>
+      <div class="txt">数据综合分析</div>
+      <span></span>
+    </li>
+  </ul>
+
+  <div class="sb-divider"></div>
+</aside>
 </div>
 
     <!-- 右侧内容 -->
