@@ -119,246 +119,53 @@
     border-radius:50%;
     margin-right:4px;
   }
+  /* === Sidebar: final, deduped === */
+.layout-main{display:flex;height:calc(100vh - 48px);}
+.sidebar{flex:0 0 230px;background:#f8f8f8;border-right:1px solid #ddd;padding:10px 16px;}
+.main-right{flex:1;min-width:0;display:flex;flex-direction:column;}
 
-  /* ========== 左侧侧栏（已按你最新要求重排版） ========== */
-  body { margin:0; font-family:"Microsoft YaHei",sans-serif; }
-  .layout-main { display:flex; }
+.sidebar .sidebar-menu,
+.sidebar .sidebar-menu ul,
+.sidebar .sb-submenu{list-style:none;margin:0;padding-left:0}
 
-  .sidebar {
-    width:230px;
-    background:#f8f8f8;
-    border-right:1px solid #ddd;
-    height:100vh;
-    padding-top:10px;
-    padding-left:16px;   /* 让“项目列表/工作簿详情”与截图一致 */
-    padding-right:16px;
-  }
-
-  .sidebar-menu { list-style:none; padding:0; margin:0; }
-
-  /* 顶层：项目列表（不折叠） & 工作簿详情（可折叠） */
-  .sidebar-menu > li{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:12px 8px;
-    color:#003366;
-    font-size:15px;
-    border-radius:8px;
-    cursor:pointer;
-  }
-  .sidebar-menu > li:hover{ background:#eef3f8; }
-
-  /* 通用小图标（顶层使用） */
-  .icon{ margin-right:8px; font-size:14px; }
-  .icon-menu{ color:#003366; }
-  .icon-folder{ color:#003366; }
-
-  /* 二级菜单：只让“银行流水分析”有绿色圆圈，其它项无图标，但文本对齐 */
-  .submenu{
-    list-style:none;
-    margin:4px 0 10px 16px;   /* 二级整体缩进 */
-    padding:0;
-    display:none;             /* 默认收起，外层控制加 .show 展开 */
-  }
-  .submenu.show{ display:block; }
-
-  /* 使用 Grid 预留“图标列”，确保无图标项的文本与有图标项严格对齐 */
-  .submenu li{
-    display:grid;
-    grid-template-columns: 18px 1fr;  /* 图标列 / 文本列 */
-    align-items:center;
-    column-gap:8px;
-    padding:8px 6px;
-    color:#333;
-    font-size:14px;
-    border-radius:8px;
-    cursor:pointer;
-  }
-  .submenu li:hover{ color:#0056b3; background:#eef3f8; }
-
-  /* 给无图标的普通项插入“空占位”，实现与有图标项齐线 */
-  .submenu li::before{
-    content:""; width:18px; height:18px; /* 空占位，不显示图标 */
-  }
-
-  /* 选中项（银行流水分析）：绿色圆圈+文字加权，且不需要空占位 */
-  .submenu li.active{
-    color:#2f5ea8;
-    background:#e9f2ff;
-    font-weight:600;
-  }
-  .submenu li.active::before{ content:none; }
-
-  /* 绿色圆圈图标本身的颜色（若你在 HTML 中有 <i class="icon icon-check">） */
-  .icon-check{ color:#32b27c; font-size:15px; margin-right:0; }
-
-  /* 展开箭头（工作簿详情右侧） */
-  .arrow{ font-size:12px; transition:transform .2s; }
-  .open > .arrow{ transform:rotate(90deg); }
-
-  /* 1) 彻底去掉所有层级的列表圆点与内边距 */
-.sidebar-menu, .sidebar-menu ul, .sb-submenu {
-  list-style: none !important;
-  padding-left: 0 !important;
-  margin-left: 0 !important;
+/* 顶层项：项目列表（不折叠） */
+.sidebar .sidebar-menu > li:not(.sb-toggle){
+  display:flex;align-items:center;gap:8px;
+  padding:12px 8px;border-radius:8px;
+  color:#003366;font-size:15px;cursor:pointer;
 }
+.sidebar .sidebar-menu > li:not(.sb-toggle):hover{background:#eef3f8;}
+.sidebar .ico{width:16px;text-align:center;font-size:14px;color:#003366;}
+.sidebar .sb-txt{color:#003366;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sidebar .caret{margin-left:auto;font-size:12px;color:#8a8a8a;transition:transform .18s;}
 
-/* 2) 顶层 li 不要强制 space-between，否则会挤坏网格 */
-.sidebar-menu > li {
-  justify-content: unset;   /* 覆盖你原来的 space-between */
-}
-
-/* 3) 强制 .sb-row 使用 Grid（避免被 .sidebar-menu > li 的 flex 覆盖） */
-.sb-row{
-  display: grid !important;
-  grid-template-columns: 18px 1fr auto;   /* 图标列 / 文本列 / 右侧箭头列 */
-  align-items: center;
-  column-gap: 8px;
-}
-
-/* 4) 二级项只有图标列 + 文本列 */
-.sb-submenu .sb-row{
-  grid-template-columns: 18px 1fr !important;
-}
-
-/* 5) 二级普通项无图标，但要留“空占位”保证与有图标项对齐 */
-.sb-submenu .sb-row:not(.active)::before{
-  content: "";
-  width: 18px; height: 18px;
-}
-
-/* 6) 文本不换行、不挤成竖排；过长用省略号 */
-.sb-row .txt{
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* 7) 绿色对勾颜色（仅银行流水分析） */
-.sb-submenu .sb-row.active .ico{
-  color: #32b27c !important;
-}
-
-/* 8) 侧栏宽度稍放大，避免中文被挤换行 */
-.sidebar{ width: 230px !important; }
-
-    /* A. 用在 HTML 的 .sb-submenu，补上与 .submenu 等价的规则 */
-.sb-submenu{
-  list-style: none;
-  margin: 4px 0 10px 16px;   /* 二级整体缩进 */
-  padding: 0;
-  display: none;
-}
-.sb-submenu.show{ display:block; }
-
-/* B. 侧栏文字被覆盖时强制可见 */
-.sidebar .txt{
-  color:#003366 !important;   /* 顶层“项目列表/工作簿详情” */
-  font-size:15px !important;
-  line-height:1.2;
-  opacity:1;
-  display:inline-block;
-}
-.sidebar .sb-submenu .txt{
-  color:#333 !important;      /* 二级默认色 */
-}
-.sidebar .sb-submenu .sb-row.active .txt{
-  color:#2f5ea8 !important;   /* 二级选中（银行流水分析） */
-  font-weight:600;
-}
-
-/* C. 只有“银行流水分析”有绿色圆圈，其它项无图标但对齐 */
-.sb-submenu .sb-row{
-  display:grid !important;
-  grid-template-columns:18px 1fr !important;
-  align-items:center;
-  column-gap:8px;
-}
-.sb-submenu .sb-row:not(.active)::before{
-  content:""; width:18px; height:18px;   /* 给无图标项留空位 */
-}
-.sb-submenu .sb-row.active .ico{
-  color:#32b27c !important;   /* 绿色对勾 */
-}
-
-/* 布局骨架 */
-  .layout-main{ display:flex; height:calc(100vh - 48px); }
-  .sidebar{ flex:0 0 230px; background:#f8f8f8; border-right:1px solid #ddd; padding:10px 16px; }
-  .main-right{ flex:1; min-width:0; display:flex; flex-direction:column; }
-
-  /* 清理列表默认样式（避免出现圆点/缩进） */
-  .sidebar .sidebar-menu, .sidebar .sidebar-menu ul, .sidebar .sb-submenu{
-    list-style:none; padding-left:0; margin:0;
-  }
-
-  /* 顶层两行：项目列表（不折叠）、工作簿详情（可折叠） */
-  .sidebar .sidebar-menu > li{
-    display:flex; align-items:center; gap:8px;
-    padding:12px 8px; border-radius:8px;
-    color:#003366; font-size:15px; cursor:pointer;
-  }
-  .sidebar .sidebar-menu > li:hover{ background:#eef3f8; }
-  .sidebar .ico{ width:16px; text-align:center; font-size:14px; color:#003366; }
-  .sidebar .caret{ margin-left:auto; font-size:12px; color:#8a8a8a; transition:transform .18s; }
-  .sidebar .sb-toggle.open .caret{ transform:rotate(90deg); }
-
-  /* 只在侧栏里使用，不与全站 .txt 冲突 */
-  .sidebar .sb-txt{ color:#003366; font-size:15px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-  /* 二级菜单容器：嵌在“工作簿详情”的 li 里面 */
-  .sidebar .sb-submenu{ display:none; margin:4px 0 8px 16px; }
-  .sidebar .sb-submenu.show{ display:block; }
-
-  /* 二级每一行：Grid 两列（图标列/文本列） */
-  .sidebar .sb-submenu .sb-row{
-    display:grid !important;
-    grid-template-columns:18px 1fr !important;
-    align-items:center; column-gap:8px;
-    padding:8px 6px; border-radius:8px;
-    color:#333; font-size:14px; cursor:pointer;
-  }
-  .sidebar .sb-submenu .sb-row:hover{ background:#eef3f8; color:#2f5ea8; }
-  .sidebar .sb-submenu .sb-row .sb-txt{ color:#333; }
-
-  /* 普通二级项：无图标，但留空位保证与有图标项对齐 */
-  .sidebar .sb-submenu .sb-row:not(.active)::before{
-    content:""; width:18px; height:18px;
-  }
-
-  /* 选中项：银行流水分析（绿色圆圈 + 文本高亮） */
-  .sidebar .sb-submenu .sb-row.active{ background:#e9f2ff; font-weight:600; color:#2f5ea8; }
-  .sidebar .sb-submenu .sb-row.active .sb-txt{ color:#2f5ea8; }
-  .sidebar .sb-submenu .sb-row.active .ico{ color:#32b27c; font-size:15px; }
-
-  /* 右侧常规（保留你原有） */
-  .breadcrumb-bar{ background:#fff; padding:6px 8px; color:#999; margin:0 16px; }
-  .content-scroll{ flex:1; overflow:auto; }
-  .content-wrap{ margin:16px; }
-
-  /* 让“工作簿详情”这个 li 变成纵向容器，子元素上下排列 */
-.sidebar .sb-toggle{
-  display:block;            /* 覆盖 .sidebar-menu > li 的 flex */
-  padding:0;                /* 由 head 自己控制内边距 */
-}
-
-/* 头部那一行保持你原来的效果 */
+/* 可折叠项：工作簿详情（纵向容器） */
+.sidebar .sb-toggle{display:block;padding:0;}
 .sidebar .sb-toggle-head{
-  display:flex; align-items:center; gap:8px;
-  padding:12px 8px; border-radius:8px;
-  color:#003366; cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+  padding:12px 8px;border-radius:8px;color:#003366;cursor:pointer;
 }
-.sidebar .sb-toggle-head:hover{ background:#eef3f8; }
+.sidebar .sb-toggle-head:hover{background:#eef3f8;}
+.sidebar .sb-toggle.open .caret{transform:rotate(90deg);}
 
-/* 展开时箭头旋转 */
-.sidebar .sb-toggle.open .caret{ transform:rotate(90deg); }
+/* 二级菜单（嵌入 sb-toggle 内） */
+.sidebar .sb-submenu{display:none;margin:4px 0 8px 16px;}
+.sidebar .sb-toggle.open > .sb-submenu{display:block;}
 
-/* 下拉菜单（保持你已有的 .sb-submenu 样式即可，这里只是保证显示/隐藏） */
-.sidebar .sb-submenu{ display:none; margin:4px 0 8px 16px; }
-.sidebar .sb-submenu.show{ display:block; }
+/* 二级行：两列网格（图标/文本），无图标项占位以对齐 */
+.sidebar .sb-submenu .sb-row{
+  display:grid;grid-template-columns:18px 1fr;align-items:center;
+  column-gap:8px;padding:8px 6px;border-radius:8px;color:#333;font-size:14px;cursor:pointer;
+}
+.sidebar .sb-submenu .sb-row:hover{background:#eef3f8;color:#2f5ea8;}
+.sidebar .sb-submenu .sb-row .sb-txt{color:#333;}
+.sidebar .sb-submenu .sb-row:not(.active)::before{content:"";width:18px;height:18px;}
 
-/* 也可以用“父级是否 open”来控制显示（可选）： */
-/* .sidebar .sb-toggle.open > .sb-submenu{ display:block; } */
+/* 选中：只有“银行流水分析”有绿色圆圈与高亮 */
+.sidebar .sb-submenu .sb-row.active{background:#e9f2ff;font-weight:600;color:#2f5ea8;}
+.sidebar .sb-submenu .sb-row.active .sb-txt{color:#2f5ea8;}
+.sidebar .sb-submenu .sb-row.active .ico{color:#32b27c;font-size:15px;}
+
 
 </style>
 </head>
@@ -380,23 +187,22 @@
   <!-- 左侧 -->
   <aside class="sidebar">
     <ul class="sidebar-menu">
-      <!-- 顶层：项目列表（不折叠） -->
+      <!-- 顶层：项目列表 -->
       <li>
         <i class="fa-solid fa-bars ico"></i>
         <span class="sb-txt">项目列表</span>
       </li>
-
-      <!-- 顶层：工作簿详情（可折叠；二级菜单嵌入此 li 内） -->
+  
+      <!-- 顶层：工作簿详情（下拉） -->
       <li class="sb-toggle">
-        <!-- 可点击的头部 -->
         <div class="sb-toggle-head" onclick="toggleSb(this.parentElement)">
           <i class="fa-solid fa-folder ico"></i>
           <span class="sb-txt">工作簿详情</span>
           <i class="fa-solid fa-angle-right caret"></i>
         </div>
-      
-        <!-- 下拉菜单：默认展开就加 show；需要收起就去掉 show -->
-        <ul class="sb-submenu show">
+  
+        <!-- 二级菜单：只有“银行流水分析”有绿色圆圈 -->
+        <ul class="sb-submenu">
           <li class="sb-row"><span class="sb-txt">数据上传</span></li>
           <li class="sb-row active">
             <i class="fa-regular fa-circle-check ico"></i>
