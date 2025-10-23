@@ -336,6 +336,30 @@
   .content-scroll{ flex:1; overflow:auto; }
   .content-wrap{ margin:16px; }
 
+  /* 让“工作簿详情”这个 li 变成纵向容器，子元素上下排列 */
+.sidebar .sb-toggle{
+  display:block;            /* 覆盖 .sidebar-menu > li 的 flex */
+  padding:0;                /* 由 head 自己控制内边距 */
+}
+
+/* 头部那一行保持你原来的效果 */
+.sidebar .sb-toggle-head{
+  display:flex; align-items:center; gap:8px;
+  padding:12px 8px; border-radius:8px;
+  color:#003366; cursor:pointer;
+}
+.sidebar .sb-toggle-head:hover{ background:#eef3f8; }
+
+/* 展开时箭头旋转 */
+.sidebar .sb-toggle.open .caret{ transform:rotate(90deg); }
+
+/* 下拉菜单（保持你已有的 .sb-submenu 样式即可，这里只是保证显示/隐藏） */
+.sidebar .sb-submenu{ display:none; margin:4px 0 8px 16px; }
+.sidebar .sb-submenu.show{ display:block; }
+
+/* 也可以用“父级是否 open”来控制显示（可选）： */
+/* .sidebar .sb-toggle.open > .sb-submenu{ display:block; } */
+
 </style>
 </head>
 
@@ -363,20 +387,21 @@
       </li>
 
       <!-- 顶层：工作簿详情（可折叠；二级菜单嵌入此 li 内） -->
-      <li class="sb-toggle" onclick="toggleSb(this)">
-        <i class="fa-solid fa-folder ico"></i>
-        <span class="sb-txt">工作簿详情</span>
-        <i class="fa-solid fa-angle-right caret"></i>
-
-        <!-- 二级菜单（只“银行流水分析”有绿色圆圈，其它无图标） -->
+      <li class="sb-toggle">
+        <!-- 可点击的头部 -->
+        <div class="sb-toggle-head" onclick="toggleSb(this.parentElement)">
+          <i class="fa-solid fa-folder ico"></i>
+          <span class="sb-txt">工作簿详情</span>
+          <i class="fa-solid fa-angle-right caret"></i>
+        </div>
+      
+        <!-- 下拉菜单：默认展开就加 show；需要收起就去掉 show -->
         <ul class="sb-submenu show">
           <li class="sb-row"><span class="sb-txt">数据上传</span></li>
-
           <li class="sb-row active">
             <i class="fa-regular fa-circle-check ico"></i>
             <span class="sb-txt">银行流水分析</span>
           </li>
-
           <li class="sb-row"><span class="sb-txt">财务数据分析</span></li>
           <li class="sb-row"><span class="sb-txt">数据综合分析</span></li>
         </ul>
