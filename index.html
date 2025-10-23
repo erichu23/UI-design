@@ -242,6 +242,25 @@
 
 /* 8) 侧栏宽度稍放大，避免中文被挤换行 */
 .sidebar{ width: 230px !important; }
+
+/* 只在侧栏里，强制还原文字可见性与大小 */
+.sidebar .txt {
+  color: #003366 !important;
+  font-size: 15px !important;
+  line-height: 1.2 !important;
+  opacity: 1 !important;
+  display: inline-block;
+}
+
+.sidebar .sb-submenu .txt {
+  color: #333 !important; /* 二级菜单默认深灰 */
+}
+
+/* 如果你给“银行流水分析”加了 .active，让它颜色更明显 */
+.sidebar .sb-submenu .sb-row.active .txt {
+  color: #2f5ea8 !important;
+  font-weight: 600;
+}
 </style>
 </head>
 
