@@ -221,51 +221,78 @@
   padding:14px 20px 10px;
 }
 
-/* 左侧 KPI 布局：3列网格，第一列放前三个纵排，后四个做2×2 */
+/* 左侧 KPI 布局：两行，前3列纵向跨两行，右2列做2×2 */
 .kpi-grid{
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);     /* ← 5 列：k1 k2 k3 k4 k5 / k1 k2 k3 k6 k7 */
-  grid-template-rows: var(--kbar-row-h) var(--kbar-row-h);  /* ← 只两行 */
-  gap: 12px;
-  align-items: stretch;
+  display:grid;
+  grid-template-columns: repeat(5, 1fr); /* 5列布局：k1 k2 k3 k4 k5 / k1 k2 k3 k6 k7 */
+  grid-template-rows: 88px 88px;          /* 行高更短：原约118px */
+  gap:12px;
+  align-items:stretch;
   grid-template-areas:
     "k1 k2 k3 k4 k5"
     "k1 k2 k3 k6 k7";
 }
 
-/* 指定每块区域（全部小写） */
-.k1{ grid-area: k1; }
-.k2{ grid-area: k2; }
-.k3{ grid-area: k3; }
-.k4{ grid-area: k4; }
-.k5{ grid-area: k5; }
-.k6{ grid-area: k6; }
-.k7{ grid-area: k7; }
+/* 区域定义 */
+.k1{ grid-area:k1; } .k2{ grid-area:k2; } .k3{ grid-area:k3; }
+.k4{ grid-area:k4; } .k5{ grid-area:k5; } .k6{ grid-area:k6; } .k7{ grid-area:k7; }
 
 /* KPI 卡片通用 */
-.kpi{background:#f8fafc;border:1px solid #e6edf5;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;justify-content:center}
-.kpi-label{font-size:12px;color:#6b7280;margin-bottom:4px}
-.kpi-value{font-size:18px;font-weight:600;color:#0f172a}
+.kpi{
+  background:#f8fafc;
+  border:1px solid #e6edf5;
+  border-radius:10px;
+  padding:8px 10px;          /* 更紧凑 */
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.kpi-label{
+  font-size:11.5px;          /* 原12px */
+  color:#6b7280;
+  margin-bottom:3px;
+}
+.kpi-value{
+  font-size:16px;            /* 原18px */
+  font-weight:600;
+  color:#0f172a;
+}
 .kpi-value.pos{color:#0f7a43}
 .kpi-value.neg{color:#b2162a}
 .link-num{ text-decoration:none; border-bottom:1px dotted currentColor }
-.link-num:hover{ opacity:.85 } .link-num.danger{ color:#b2162a }
+.link-num:hover{ opacity:.85 }
+.link-num.danger{ color:#b2162a }
 
 /* 右侧问题分析卡 */
-.issue-card{background:#fffdf7;border:1px solid #ffe6b3;border-radius:10px;padding:10px 12px}
+.issue-card{
+  background:#fffdf7;
+  border:1px solid #ffe6b3;
+  border-radius:10px;
+  padding:8px 10px;          /* 收紧留白 */
+}
 .issue-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .issue-title{color:#8a5c00;font-weight:600}
 .issue-link{font-size:12px;color:#8a5c00;text-decoration:none;border:1px solid #f5cf85;padding:2px 8px;border-radius:999px;background:#fff7e3}
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
 .dot-warn{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.15)}
-.issue-body{color:#8a5c00;font-size:12px;line-height:1.6}
+.issue-body{color:#8a5c00;font-size:12px;line-height:1.5}
 .issue-body ul{margin:6px 0 0 18px;padding:0}
-.issue-foot{margin-top:8px}
+.issue-foot{margin-top:6px}
 .mini-link{font-size:12px;color:#8a5c00;text-decoration:underline}
 
 /* Tabs */
-.tabbar{display:flex;align-items:center;border-bottom:1px solid #e6edf5;margin:10px 20px 0}
-.tab{padding:10px 16px;cursor:pointer;color:#475569;border-bottom:2px solid transparent}
+.tabbar{
+  display:flex;
+  align-items:center;
+  border-bottom:1px solid #e6edf5;
+  margin:10px 20px 0;
+}
+.tab{
+  padding:10px 16px;
+  cursor:pointer;
+  color:#475569;
+  border-bottom:2px solid transparent;
+}
 .tab:hover{background:#f3f6fb}
 .tab.active{color:#003366;font-weight:600;border-bottom-color:#003366}
 .tab.disabled{color:#c0c7d0;pointer-events:none}
