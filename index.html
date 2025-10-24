@@ -223,26 +223,24 @@
 
 /* 左侧 KPI 布局：3列网格，第一列放前三个纵排，后四个做2×2 */
 .kpi-grid{
-  display:grid;
-  /* 三列：左1列给k1~k3，右2列摆2x2的k4~k7 */
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-auto-rows: minmax(72px, 1fr); /* 统一高度 */
-  gap:12px;
-  align-items:stretch;
-  /* 利用区域定位实现： 
-     Row1: k1 | k4 | k5
-     Row2: k2 | k6 | k7
-     Row3: k3 | (空) | (空)
-  */
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);     /* ← 5 列：k1 k2 k3 k4 k5 / k1 k2 k3 k6 k7 */
+  grid-template-rows: var(--kbar-row-h) var(--kbar-row-h);  /* ← 只两行 */
+  gap: 12px;
+  align-items: stretch;
   grid-template-areas:
-    "k1 K2 K3 k4 k5"
-    "k1 K2 K3 k6 k7";
+    "k1 k2 k3 k4 k5"
+    "k1 k2 k3 k6 k7";
 }
 
-/* 指定每个块的区域 */
-.k1{ grid-area:k1; } .k2{ grid-area:k2; } .k3{ grid-area:k3; }
-.k4{ grid-area:k4; } .k5{ grid-area:k5; }
-.k6{ grid-area:k6; } .k7{ grid-area:k7; }
+/* 指定每块区域（全部小写） */
+.k1{ grid-area: k1; }
+.k2{ grid-area: k2; }
+.k3{ grid-area: k3; }
+.k4{ grid-area: k4; }
+.k5{ grid-area: k5; }
+.k6{ grid-area: k6; }
+.k7{ grid-area: k7; }
 
 /* KPI 卡片通用 */
 .kpi{background:#f8fafc;border:1px solid #e6edf5;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;justify-content:center}
