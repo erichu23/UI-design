@@ -355,6 +355,24 @@
 .issue-modal-ok{ background:#003366; color:#fff; border:none; border-radius:6px; padding:6px 14px; cursor:pointer }
 .issue-modal-ok:hover{ background:#0a4a8f }
 
+/* 同一张黄色卡里的两行文案样式（无独立边框/底色） */
+.issue-body-simple{ font-size:12px; color:#8a5c00; line-height:1.65; }
+.issue-body-simple p{ margin:0 0 6px; }
+
+/* 第一行说明 */
+.issue-note b{ color:#8a5c00; }
+
+/* 第二行：红色警示 + 跳转链接（行内展示） */
+.issue-inline{ display:flex; align-items:center; gap:8px; margin:0; }
+.dot-danger{ width:8px; height:8px; border-radius:50%; background:#dc2626; box-shadow:0 0 0 3px rgba(220,38,38,.12); }
+.issue-inline span{ color:#b2162a; }
+.issue-inline-link{ color:#b2162a; font-weight:600; text-decoration:none; border-bottom:1px dotted currentColor; margin-left:auto; }
+.issue-inline-link:hover{ opacity:.85; }
+
+/* 右下角展开详情（保持在黄色卡片里） */
+.issue-card{ position:relative; }
+.issue-toggle{ position:absolute; right:12px; bottom:8px; font-size:12px; color:#475569; text-decoration:underline; }
+
 /* Tabs：更贴近 KPI */
 .tabbar{
   display:flex;align-items:center;border-bottom:1px solid #e6edf5;
@@ -496,22 +514,21 @@
           <a class="issue-link" href=" ">处理建议</a >
         </div>
       
-        <!-- 仅供预览分析 -->
-        <div class="issue-preview">
-          <b>仅供预览分析：</b>
-          当前数据存在未认领 / 银行账号主档不完整的问题，仅供项目组进行风险评估，实质性审计程序不可依赖。
+        <!-- 所有文字均在同一张黄色卡片里 -->
+        <div class="issue-body-simple">
+          <p class="issue-note">
+            <b>仅供预览分析：</b>
+            当前数据存在未认领 / 银行账号主档不完整的问题，仅供项目组进行风险评估，实质性审计程序不可依赖。
+          </p >
+      
+          <p class="issue-inline">
+            <span class="dot dot-danger"></span>
+            <span>存在未认领的原始流水文件，请及时认领。</span>
+            <a class="issue-inline-link" href="#claim">点击跳转 »</a >
+          </p >
         </div>
       
-        <!-- 红色警示 + 跳转 -->
-        <div class="issue-alert">
-          <span class="dot dot-danger"></span>
-          <div class="alert-text">
-            <strong>存在未认领的原始流水文件，请及时认领。</strong>
-            <a class="issue-link-strong" href="#claim">点击跳转 »</a >
-          </div>
-        </div>
-      
-        <!-- 右下角：弹窗触发 -->
+        <!-- 右下角：展开详情（弹窗） -->
         <a class="issue-toggle" href="javascript:;">展开详情</a >
       </aside>
       
@@ -797,19 +814,20 @@
     }
     initFilters();
 
-    (() => {
+    (()=> {
       const modal = document.querySelector('.issue-modal');
       const openBtn = document.querySelector('.issue-toggle');
       const closeBtn = document.querySelector('.issue-modal-close');
       const okBtn   = document.querySelector('.issue-modal-ok');
       if(!modal || !openBtn) return;
-      const open = () => modal.classList.add('show');
-      const close = () => modal.classList.remove('show');
+      const open = ()=> modal.classList.add('show');
+      const close = ()=> modal.classList.remove('show');
       openBtn.addEventListener('click', open);
       closeBtn.addEventListener('click', close);
       okBtn.addEventListener('click', close);
-      modal.addEventListener('click', e => { if (e.target === modal) close(); });
+      modal.addEventListener('click', e=>{ if(e.target===modal) close(); });
     })();
+
 
 
       
