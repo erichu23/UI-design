@@ -441,21 +441,44 @@
   box-shadow:0 1px 3px rgba(0,0,0,0.03);
 }
 
-/* 让经营实质整块内部滚动，不影响上面KPI区域 */
+/* 经营实质滚动容器：不要用 flex，当普通块级就好 */
 .scrollable-tab{
-  /* 视口高度 - (面包屑+KPI带+上方间距等)，按你的页面调这个数 */
-  max-height: calc(100vh - 260px);
+  display: block;                       /* ← 关键：去掉 flex */
+  max-height: calc(100vh - 260px);      /* 视口减去上方面包屑+KPI等，数值可微调 */
   overflow-y: auto;
   padding: 10px 12px 14px;
-  gap: 12px;
-  display: flex;
-  flex-direction: column;
+  -webkit-overflow-scrolling: touch;    /* 移动端顺滑 */
+  contain: paint;                       /* 减少重绘“鬼影” */
 }
 
-/* 更细的滚动条（可选） */
-.scrollable-tab::-webkit-scrollbar{ width: 6px; }
-.scrollable-tab::-webkit-scrollbar-thumb{ background: rgba(0,0,0,.15); border-radius: 4px; }
-.scrollable-tab::-webkit-scrollbar-track{ background: transparent; }
+/* 滚动容器里的卡片，正常块级流排列 */
+.scrollable-tab > .card{
+  margin: 10px 0;                       /* 用 margin 间隔，别靠 flex gap */
+}
+
+/* 防止任何遗留的“吸顶/粘性”影响标题叠层（有些全局样式会给 .head 设 sticky） */
+.scrollable-tab .card .head{
+  position: static !important;          /* ← 强制不是 sticky */
+  top: auto !important;
+  z-index: auto !important;
+  background: #fff;                     /* 让标题区始终有白底 */
+}
+
+/* 通用：chart 容器固定高度，避免被父级裁切 */
+.chart{ height: 300px; }
+
+/* 如果你的 .card 有 overflow:hidden（常见），可以让内容层自己裁切，避免“切片” */
+.scrollable-tab .card{
+  overflow: visible;                    /* 避免父卡片把 sticky/阴影裁掉 */
+}
+.scrollable-tab .card .content{
+  overflow: hidden;                     /* 需要裁切时在 content 层裁切 */
+}
+
+/* （可选）更细滚动条 */
+.scrollable-tab::-webkit-scrollbar{ width: 6px }
+.scrollable-tab::-webkit-scrollbar-thumb{ background: rgba(0,0,0,.15); border-radius: 4px }
+.scrollable-tab::-webkit-scrollbar-track{ background: transparent }
 
 /* 响应式：窄屏堆叠 */
 @media (max-width:1200px){
