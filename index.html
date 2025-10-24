@@ -555,24 +555,23 @@
   .issue-card{ order:2 }
 }
 
-/* ============ 筛选区域美化（居中 + 放大 + 胶囊分组，不改HTML结构） ============ */
+/* ============ 筛选区域（无整体框，仅控件带胶囊样式） ============ */
 
-/* 整体容器 */
+/* 容器布局 */
 .filter-area{
   display:flex;
   flex-wrap:wrap;
   align-items:center;
   justify-content:flex-start;         /* ← 想居中改成 center */
   gap:12px 16px;                      /* 行/列间距 */
-  padding:14px 20px 12px;
-  margin:0 0 12px 0;
-  background:#f9fbff;
-  border:1px solid #e5ecf6;
-  border-radius:10px;
-  box-shadow:0 1px 3px rgba(0,0,0,.04);
+  padding:10px 0 12px;
+  margin:0 0 10px 0;
+  background:transparent;             /* ❌ 去掉底色 */
+  border:none;                        /* ❌ 去掉外框 */
+  box-shadow:none;                    /* ❌ 去掉阴影 */
 }
 
-/* 标签：更醒目一点 */
+/* 标签：仍保留胶囊左半效果 */
 .filter-area label{
   font-size:14px;
   color:#334155;
@@ -617,7 +616,7 @@
   box-shadow:0 0 0 2px rgba(13,59,196,.14);
 }
 
-/* 非成对出现的控件也给到统一样式（防止散装） */
+/* 独立出现的输入框（无label配对时） */
 .filter-area select:not(label + select),
 .filter-area input[type="text"]:not(label + input[type="text"]),
 .filter-area input[type="date"]:not(label + input[type="date"]){
@@ -631,7 +630,7 @@
   border-radius:8px;
 }
 
-/* 日期范围里的“至”分隔（可选） */
+/* 日期范围“至”分隔符 */
 .filter-area .range-sep{
   margin:0 6px;
   color:#64748b;
@@ -660,6 +659,9 @@
 .filter-area button.reset:hover{
   background:#e6eefc; color:#1e293b;
 }
+
+/* 让整个筛选区轻微右缩（与图表标题竖线对齐） */
+.filter-area{ padding-left:16px; }
 
 /* 窄屏适配 */
 @media (max-width:1200px){
