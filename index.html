@@ -824,20 +824,19 @@
         <div class="tab-scroll">
     
           <!-- 1) 筛选区 -->
-          <div class="card">
-            <div class="content">
-              <div class="filter-area">
-                <label>被审计单位公司：</label><select class="select" id="fCompany"></select>
-                <label>银行账户：</label><select class="select" id="fBank"></select>
-                <label>公司职能：</label><select class="select" id="fFunc"></select>
-                <label>分析时间：</label><input type="date"> 至 <input type="date">
-                <label>对手方类型：</label><select class="select" id="fType">
-                  <option value="all">全部</option><option>客户</option><option>供应商</option><option>员工</option>
-                </select>
-                <button class="btn btn-primary" id="btnQueryBiz">查询</button>
-                <button class="btn" id="btnResetBiz">重置</button>
-              </div>
-            </div>
+          <div class="filter-area">
+            <label>被审计单位公司：</label><select class="select" id="fCompany"></select>
+            <label>银行账户：</label><select class="select" id="fBank"></select>
+            <label>公司职能：</label><select class="select" id="fFunc"></select>
+            <label>分析时间：</label>
+            <input type="date" id="beginDate" />
+            <span class="range-sep">至</span>
+            <input type="date" id="endDate" />
+            <label>对手方类型：</label><select class="select" id="fType">
+              <option value="all">全部</option><option>客户</option><option>供应商</option><option>员工</option>
+            </select>
+            <button class="query" id="btnQueryBiz">查询</button>
+            <button class="reset" id="btnResetBiz">重置</button>
           </div>
     
           <!-- 2) 资金流水金额 -->
