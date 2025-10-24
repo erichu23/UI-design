@@ -450,6 +450,15 @@
 /* 顶部 tabs 与 KPI 对齐 */
 .tabbar{ margin: 8px var(--page-gutter) 0; }
 
+/* ★ 保险补丁：即使 tabbar/tab-stage 被写进 .kpi-and-issue 的 grid，也强制跨整行 */
+.kpi-and-issue .tabbar,
+.kpi-and-issue .tab-stage{
+  grid-column: 1 / -1 !important;  /* 占满两列 */
+  width: 100% !important;
+  min-width: 0 !important;
+  float: none !important;
+}
+
 /* 统一“白板舞台”容器：固定高度，内部滚动，两个面板共用 */
 .tab-stage{
   /* 尺寸与位置 */
@@ -529,21 +538,18 @@
 .tab-scroll::-webkit-scrollbar-thumb{ background:rgba(15,23,42,.18); border-radius:4px }
 .tab-scroll::-webkit-scrollbar-track{ background:transparent }
 
-/* 保险：所有外层可伸展容器都取消最小宽度限制，避免被压瘦成右侧细缝 */
+/* 保险：外层可伸展容器取消最小宽度限制，避免被压瘦成右侧细缝 */
 .main-right, .content-scroll, .content-wrap, .tabbar{ min-width: 0; }
 
-/* Routine 右侧的双列布局间距（可保持你原有 .grid-2，也可用这条） */
+/* Routine 右侧的双列布局间距 */
 .grid-2{ display:grid; grid-template-columns: 2fr 1.2fr; gap: 16px; }
 
 /* 窄屏时把 offset 调小一些，避免白板过矮 */
 @media (max-width: 1366px){
-  :root{ --tabs-offset: 300px; } /* 你可以按实际页面头部高度微调 */
+  :root{ --tabs-offset: 300px; }
 }
 
-
- 
-
-/* 响应式：窄屏堆叠 */
+/* 响应式：窄屏堆叠（保留原逻辑） */
 @media (max-width:1200px){
   .kpi-and-issue{ grid-template-columns: 1fr; }
   .issue-card{ order:2 }
