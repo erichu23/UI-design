@@ -444,7 +444,7 @@
 /* ================== 经营实质滚动容器（功能 + 美化） ================== */
 :root{
   --page-gutter: 16px;     /* 与上方KPI左右留白一致 */
-  --tabs-offset: 270px;    /* 白板可视高度扣减（面包屑+KPI+问题卡+tabs），可按页面微调 */
+  --tabs-offset: 270px;    /* (视口高度 - 这个值) = 白板可视高度，可按页面微调 */
 }
 
 /* 顶部 tabs 与 KPI 对齐 */
@@ -452,29 +452,39 @@
 
 /* 统一“白板舞台”容器：固定高度，内部滚动，两个面板共用 */
 .tab-stage{
+  /* 尺寸与位置 */
   margin: 10px var(--page-gutter) 0;
+  width: 100%;
+  min-width: 0;                 /* ★ 关键：在 flex/grid 父容器里避免被横向压瘦 */
+  flex: 1 1 auto;               /* ★ 父级是 flex 时可正常伸展 */
+  position: relative;
+  height: calc(100vh - var(--tabs-offset)); /* 固定白板高度，内部滚动 */
+  overflow: hidden;
+
+  /* 视觉 */
   background:#fff;
   border:1px solid #e8edf5;
   border-radius:10px;
   box-shadow:0 2px 10px rgba(17,24,39,.04);
-  max-height: calc(100vh - var(--tabs-offset));
-  overflow:hidden;
-  position:relative;
+
+  /* 性能 */
+  contain: layout paint;         /* 降低重绘“鬼影”概率 */
 }
 
 /* 两个面板重叠铺满白板，只显示 active */
 .tab-pane{
   position:absolute; inset:0;
-  overflow:hidden; display:none;
+  display:none;
+  overflow:hidden;
 }
 .tab-pane.active{ display:block; }
 
 /* 真正滚动的区域：把筛选/图表/表格都放进来 */
 .tab-scroll{
-  height:100%;
+  position:absolute; inset:0;
   overflow-y:auto;
-  padding:12px 14px 16px;
   -webkit-overflow-scrolling:touch;
+  padding:12px 14px 16px;
 }
 
 /* 白板里卡片：统一风格 */
@@ -489,7 +499,7 @@
 
 /* 卡片标题：左侧细竖条强调；禁止 sticky 以免叠影 */
 .tab-scroll .card .head{
-  position:static !important;
+  position:static !important;    /* ★ 防止“吸顶”导致的叠影 */
   background:#fbfdff;
   border-bottom:1px solid #eef2f7;
   padding:10px 14px;
@@ -506,7 +516,7 @@
 /* 图表统一高度（可按需调） */
 .tab-scroll .chart{ height:260px; max-height:38vh; min-height:220px; }
 
-/* 表格细化（沿用你现有样式也可） */
+/* 表格细化 */
 .tab-scroll .table{ width:100%; border-collapse:collapse; font-size:13px; }
 .tab-scroll .table th,.tab-scroll .table td{
   border:1px solid #eef2f7; padding:8px 10px; text-align:center; white-space:nowrap;
@@ -518,6 +528,17 @@
 .tab-scroll::-webkit-scrollbar{ width:6px }
 .tab-scroll::-webkit-scrollbar-thumb{ background:rgba(15,23,42,.18); border-radius:4px }
 .tab-scroll::-webkit-scrollbar-track{ background:transparent }
+
+/* 保险：所有外层可伸展容器都取消最小宽度限制，避免被压瘦成右侧细缝 */
+.main-right, .content-scroll, .content-wrap, .tabbar{ min-width: 0; }
+
+/* Routine 右侧的双列布局间距（可保持你原有 .grid-2，也可用这条） */
+.grid-2{ display:grid; grid-template-columns: 2fr 1.2fr; gap: 16px; }
+
+/* 窄屏时把 offset 调小一些，避免白板过矮 */
+@media (max-width: 1366px){
+  :root{ --tabs-offset: 300px; } /* 你可以按实际页面头部高度微调 */
+}
 
 
  
