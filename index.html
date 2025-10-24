@@ -199,7 +199,6 @@
 .content-wrap { padding:16px 20px 32px; }
 
 /* 面包屑 */
-/* 面包屑 */
 .breadcrumb-bar{background:#fff;border-bottom:1px solid #e6edf5;padding:12px 20px;font-size:14px;color:#334155}
 .breadcrumb-bar .back-link{color:#003366;text-decoration:none;font-weight:600;margin-right:4px}
 .breadcrumb-bar .sep{margin:0 6px;color:#94a3b8}
@@ -307,6 +306,27 @@
 .tab:hover{background:#f3f6fb}
 .tab.active{color:#003366;font-weight:600;border-bottom-color:#003366}
 .tab.disabled{color:#c0c7d0;pointer-events:none}
+
+/* ✅ Tab 容器卡片风格 */
+.tab-container {
+  background:#fff;
+  border:1px solid #e6edf5;
+  border-radius:8px;
+  margin:10px 16px 0;
+  padding:12px 20px 18px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.04);
+}
+
+/* ✅ 图表区块也包裹在卡片中更融合 */
+.chart-card {
+  background:#fff;
+  border:1px solid #e6edf5;
+  border-radius:8px;
+  padding:16px;
+  margin:10px 16px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.03);
+}
+
 
 /* 响应式：窄屏堆叠 */
 @media (max-width:1200px){
@@ -433,10 +453,11 @@
     </div>
     
     <!-- 3) Tabs（紧贴在上面整块的下面） -->
-    <div class="tabbar" id="topTabs">
-      <div class="tab active" data-top="biz">经营实质</div>
-      <div class="tab" data-top="routine">特定交易查询</div>
-    </div>
+    <div class="tab-container">
+      <div class="tabbar" id="topTabs">
+        <div class="tab active" data-top="biz">经营实质</div>
+        <div class="tab" data-top="routine">特定交易查询</div>
+      </div>
     
             <!-- ===================== 经营实质 ===================== -->
             <section id="page-biz">
