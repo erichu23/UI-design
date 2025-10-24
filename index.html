@@ -329,80 +329,81 @@
 
   
   <!-- 右侧（必须与 aside 同级，且共同包在 layout-main 内） -->
-  <div class="breadcrumb-bar">
-    <a href=" " class="back-link">← 返回项目列表</a >
-    <span class="sep">/</span> <span>Test2</span>
-    <span class="sep">/</span> <span>20251022</span>
-    <span class="sep">/</span> <b>银行流水分析</b>
-  </div>
-  
-  <!-- 2) KPI + 数据问题分析（整块） -->
-  <div class="kbar-belt">
-    <!-- 左侧 KPI：左=三竖，右=2×2 田字格（第三行留白） -->
-    <div class="kbar-left">
-      <div class="kbar-left-col">
-        <div class="kbar-card kbar-kpi">
-          <div class="kbar-kpi-label">被审计单位</div>
-          <div class="kbar-kpi-value">1 家</div>
-        </div>
-        <div class="kbar-card kbar-kpi">
-          <div class="kbar-kpi-label">对手方</div>
-          <div class="kbar-kpi-value">29 家</div>
-        </div>
-        <div class="kbar-card kbar-kpi">
-          <div class="kbar-kpi-label">账号</div>
-          <div class="kbar-kpi-value">17 个</div>
-        </div>
-      </div>
-  
-      <div class="kbar-left-grid">
-        <div class="kbar-card kbar-kpi">
-          <div class="kbar-kpi-label">交易总额</div>
-          <div class="kbar-kpi-value">562.2 K</div>
-        </div>
-        <div class="kbar-card kbar-kpi">
-          <div class="kbar-kpi-label">流入总额</div>
-          <div class="kbar-kpi-value kbar-pos"><a class="kbar-link" href="javascript:;">270.2 K</a ></div>
-        </div>
-        <div class="kbar-card kbar-kpi">
-          <div class="kbar-kpi-label">流水总数</div>
-          <div class="kbar-kpi-value">145 笔</div>
-        </div>
-        <div class="kbar-card kbar-kpi">
-          <div class="kbar-kpi-label">流出金额</div>
-          <div class="kbar-kpi-value kbar-neg"><a class="kbar-link" href="javascript:;">292.0 K</a ></div>
-        </div>
-        <!-- 留白以与左侧第三块等高齐平 -->
-        <div class="kbar-ghost"></div>
-        <div class="kbar-ghost"></div>
-      </div>
+  <section class="main-right">
+    <div class="breadcrumb-bar">
+      <a href=" " class="back-link">← 返回项目列表</a >
+      <span class="sep">/</span> <span>Test2</span>
+      <span class="sep">/</span> <span>20251022</span>
+      <span class="sep">/</span> <b>银行流水分析</b>
     </div>
-  
-    <!-- 右侧：数据问题分析（贯穿三行） -->
-    <aside class="kbar-issue kbar-card">
-      <div class="kbar-issue-head">
-        <span class="kbar-dot"></span>
-        <span class="kbar-issue-title">数据问题分析</span>
-        <a class="kbar-issue-btn" href="#">处理建议</a >
+    
+    <!-- 2) KPI + 数据问题分析（整块） -->
+    <div class="kbar-belt">
+      <!-- 左侧 KPI：左=三竖，右=2×2 田字格（第三行留白） -->
+      <div class="kbar-left">
+        <div class="kbar-left-col">
+          <div class="kbar-card kbar-kpi">
+            <div class="kbar-kpi-label">被审计单位</div>
+            <div class="kbar-kpi-value">1 家</div>
+          </div>
+          <div class="kbar-card kbar-kpi">
+            <div class="kbar-kpi-label">对手方</div>
+            <div class="kbar-kpi-value">29 家</div>
+          </div>
+          <div class="kbar-card kbar-kpi">
+            <div class="kbar-kpi-label">账号</div>
+            <div class="kbar-kpi-value">17 个</div>
+          </div>
+        </div>
+    
+        <div class="kbar-left-grid">
+          <div class="kbar-card kbar-kpi">
+            <div class="kbar-kpi-label">交易总额</div>
+            <div class="kbar-kpi-value">562.2 K</div>
+          </div>
+          <div class="kbar-card kbar-kpi">
+            <div class="kbar-kpi-label">流入总额</div>
+            <div class="kbar-kpi-value kbar-pos"><a class="kbar-link" href="javascript:;">270.2 K</a ></div>
+          </div>
+          <div class="kbar-card kbar-kpi">
+            <div class="kbar-kpi-label">流水总数</div>
+            <div class="kbar-kpi-value">145 笔</div>
+          </div>
+          <div class="kbar-card kbar-kpi">
+            <div class="kbar-kpi-label">流出金额</div>
+            <div class="kbar-kpi-value kbar-neg"><a class="kbar-link" href="javascript:;">292.0 K</a ></div>
+          </div>
+          <!-- 留白以与左侧第三块等高齐平 -->
+          <div class="kbar-ghost"></div>
+          <div class="kbar-ghost"></div>
+        </div>
       </div>
-      <div class="kbar-issue-body">
-        <ul>
-          <li>入账明细存在重复流水 <b>3</b> 条。</li>
-          <li>个别文件格式不规范，请按模板重导。</li>
-          <li>部分支出缺少摘要说明，请补充。</li>
-        </ul>
-        <a class="kbar-issue-link" href="#">查看异常列表</a >
-      </div>
-    </aside>
-  </div>
-  
-  <!-- 3) Tabs（紧贴在上面整块的下面） -->
-  <div class="kbar-tabs" id="topTabs">
-    <div class="kbar-tab kbar-active" data-top="biz">经营实质</div>
-    <div class="kbar-tab" data-top="routine">特定交易查询</div>
-  </div>
+    
+      <!-- 右侧：数据问题分析（贯穿三行） -->
+      <aside class="kbar-issue kbar-card">
+        <div class="kbar-issue-head">
+          <span class="kbar-dot"></span>
+          <span class="kbar-issue-title">数据问题分析</span>
+          <a class="kbar-issue-btn" href="#">处理建议</a >
+        </div>
+        <div class="kbar-issue-body">
+          <ul>
+            <li>入账明细存在重复流水 <b>3</b> 条。</li>
+            <li>个别文件格式不规范，请按模板重导。</li>
+            <li>部分支出缺少摘要说明，请补充。</li>
+          </ul>
+          <a class="kbar-issue-link" href="#">查看异常列表</a >
+        </div>
+      </aside>
+    </div>
+    
+    <!-- 3) Tabs（紧贴在上面整块的下面） -->
+    <div class="kbar-tabs" id="topTabs">
+      <div class="kbar-tab kbar-active" data-top="biz">经营实质</div>
+      <div class="kbar-tab" data-top="routine">特定交易查询</div>
+    </div>
             <!-- ===================== 经营实质 ===================== -->
-            <section id="biz">
+            <section id="page-biz">
               <div class="card">
                 <div class="content">
                   <div class="filters">
@@ -465,7 +466,7 @@
             </section>
 
             <!-- ===================== 特定交易查询 ===================== -->
-            <section id="routine" class="hide">
+            <section id="page-routine" class="hide">
               <div class="split">
                 <!-- 左侧菜单栏 -->
                 <aside class="sidebar-pane">
