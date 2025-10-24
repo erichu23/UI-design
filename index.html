@@ -946,20 +946,17 @@
     }
     initFilters();
 
-    (()=> {
-      const modal = document.querySelector('.issue-modal');
-      const openBtn = document.querySelector('.issue-toggle');
-      const closeBtn = document.querySelector('.issue-modal-close');
-      const okBtn   = document.querySelector('.issue-modal-ok');
-      if(!modal || !openBtn) return;
-      const open = ()=> modal.classList.add('show');
-      const close = ()=> modal.classList.remove('show');
-      openBtn.addEventListener('click', open);
-      closeBtn.addEventListener('click', close);
-      okBtn.addEventListener('click', close);
-      modal.addEventListener('click', e=>{ if(e.target===modal) close(); });
-    })();
-
+    // 顶部 tab 切换：只换 active，不改高度/白板
+    document.querySelectorAll('#topTabs .tab').forEach(tab=>{
+      tab.addEventListener('click', ()=>{
+        document.querySelectorAll('#topTabs .tab').forEach(t=>t.classList.remove('active'));
+        tab.classList.add('active');
+  
+        const key = tab.dataset.top; // 'biz' or 'routine'
+        document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+        document.getElementById('pane-' + key).classList.add('active');
+      });
+    });
 
 
       
