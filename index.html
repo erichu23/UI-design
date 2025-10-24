@@ -441,19 +441,21 @@
   box-shadow:0 1px 3px rgba(0,0,0,0.03);
 }
 
-.scrollable-tab {
-  max-height: calc(100vh - 280px);   /* 减去顶部导航 + KPI 区高度 */
-  overflow-y: auto;                  /* 仅内部滚动 */
-  padding-right: 8px;
-  scrollbar-width: thin;             /* 火狐滚动条细化 */
+/* 让经营实质整块内部滚动，不影响上面KPI区域 */
+.scrollable-tab{
+  /* 视口高度 - (面包屑+KPI带+上方间距等)，按你的页面调这个数 */
+  max-height: calc(100vh - 260px);
+  overflow-y: auto;
+  padding: 10px 12px 14px;
+  gap: 12px;
+  display: flex;
+  flex-direction: column;
 }
-.scrollable-tab::-webkit-scrollbar {
-  width: 6px;
-}
-.scrollable-tab::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,.15);
-  border-radius: 4px;
-}    
+
+/* 更细的滚动条（可选） */
+.scrollable-tab::-webkit-scrollbar{ width: 6px; }
+.scrollable-tab::-webkit-scrollbar-thumb{ background: rgba(0,0,0,.15); border-radius: 4px; }
+.scrollable-tab::-webkit-scrollbar-track{ background: transparent; }
 
 /* 响应式：窄屏堆叠 */
 @media (max-width:1200px){
@@ -602,8 +604,13 @@
     
             <!-- ===================== 经营实质 ===================== -->
             <section id="page-biz">
+              <!-- 外层卡片做“框” -->
               <div class="card">
+            
+                <!-- 可滚动区域：把筛选 + 图表 + 表格都放进来 -->
                 <div class="tab-container scrollable-tab">
+            
+                  <!-- 1) 筛选区 -->
                   <div class="content">
                     <div class="filters">
                       <label>被审计单位公司：</label><select class="select" id="fCompany"></select>
@@ -619,49 +626,65 @@
                       <button class="btn" id="btnResetBiz">重置</button>
                     </div>
                   </div>
-                </div>
-
-              <div class="card"><div class="head"><div class="title">资金流水金额</div></div>
-                <div class="content"><div id="chart-balance" class="chart"></div></div>
-              </div>
-
-              <div class="card">
-                <div class="head"><div class="title">流入流出趋势</div></div>
-                <div class="content"><div id="chart-io" class="chart"></div></div>
-              </div>
-
-              <div class="card">
-                <div class="head"><div class="title">流入流出构成</div></div>
-                <div class="content">
-                  <div id="chart-compose" class="chart"></div>
-                  <div class="table-tabs" id="listTabs">
-                    <div class="table-tab active" data-view="deal">交易明细</div>
-                    <div class="table-tab" data-view="corp">工商信息</div>
+            
+                  <!-- 2) 资金流水金额 -->
+                  <div class="card">
+                    <div class="head"><div class="title">资金流水金额</div></div>
+                    <div class="content"><div id="chart-balance" class="chart"></div></div>
                   </div>
-                  <!-- 交易明细 -->
-                  <div id="tbl-deal-wrap">
-                    <table class="table" id="tblDeal">
-                      <thead><tr><th>对手方名称</th><th>对手方类型</th><th>关联关系</th><th>黑名单</th><th>流入总额</th><th>流出总额</th><th>交易总额</th><th>交易总额占比</th><th>交易笔数</th>
-                <th>销售类别</th><th>采购类别</th><th>职位</th>
-                <th>备注说明</th><th>操作</th></tr></thead>
-                      <tbody></tbody>
-                    </table>
-                    <div id="pagination-deal" class="pagination"></div>
+            
+                  <!-- 3) 流入流出趋势 -->
+                  <div class="card">
+                    <div class="head"><div class="title">流入流出趋势</div></div>
+                    <div class="content"><div id="chart-io" class="chart"></div></div>
                   </div>
-                  <!-- 工商信息 -->
-                  <div id="tbl-corp-wrap" class="hide">
-                    <table class="table" id="tblCorp">
-                      <thead><tr>
-  <th>对手方名称</th><th>交易总额</th><th>成立日期</th><th>经营开始时间</th>
-  <th>经营结束时间</th><th>营业期限</th><th>经营状态</th><th>注册资本</th>
-  <th>行业</th><th>经营范围</th><th>注册地址</th><th>企业联系方式</th><th>董监高</th>
-</tr></thead>
-                      <tbody></tbody>
-                    </table>
-                    <div id="pagination-corp" class="pagination"></div>
+            
+                  <!-- 4) 流入流出构成 + 表格 -->
+                  <div class="card">
+                    <div class="head"><div class="title">流入流出构成</div></div>
+                    <div class="content">
+                      <div id="chart-compose" class="chart"></div>
+            
+                      <div class="table-tabs" id="listTabs">
+                        <div class="table-tab active" data-view="deal">交易明细</div>
+                        <div class="table-tab" data-view="corp">工商信息</div>
+                      </div>
+            
+                      <!-- 交易明细 -->
+                      <div id="tbl-deal-wrap">
+                        <table class="table" id="tblDeal">
+                          <thead>
+                            <tr>
+                              <th>对手方名称</th><th>对手方类型</th><th>关联关系</th><th>黑名单</th>
+                              <th>流入总额</th><th>流出总额</th><th>交易总额</th><th>交易总额占比</th><th>交易笔数</th>
+                              <th>销售类别</th><th>采购类别</th><th>职位</th><th>备注说明</th><th>操作</th>
+                            </tr>
+                          </thead>
+                          <tbody></tbody>
+                        </table>
+                        <div id="pagination-deal" class="pagination"></div>
+                      </div>
+            
+                      <!-- 工商信息 -->
+                      <div id="tbl-corp-wrap" class="hide">
+                        <table class="table" id="tblCorp">
+                          <thead>
+                            <tr>
+                              <th>对手方名称</th><th>交易总额</th><th>成立日期</th><th>经营开始时间</th>
+                              <th>经营结束时间</th><th>营业期限</th><th>经营状态</th><th>注册资本</th>
+                              <th>行业</th><th>经营范围</th><th>注册地址</th><th>企业联系方式</th><th>董监高</th>
+                            </tr>
+                          </thead>
+                          <tbody></tbody>
+                        </table>
+                        <div id="pagination-corp" class="pagination"></div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+            
+                </div><!-- /.scrollable-tab -->
+            
+              </div><!-- /.card 框 -->
             </section>
 
             <!-- ===================== 特定交易查询 ===================== -->
