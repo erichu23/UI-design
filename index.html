@@ -349,6 +349,117 @@
   .kpi-and-issue{ grid-template-columns: 1fr; }
   .issue-card{ order:2 }
 }
+
+/* 数据处理问题弹窗 */
+/* 信息提示 */
+.issue-preview{
+  background:#f7fafc;
+  border:1px solid #e2e8f0;
+  color:#334155;
+  padding:8px 10px;
+  border-radius:6px;
+  line-height:1.5;
+  margin-bottom:8px;
+}
+
+/* 红色警示 */
+.issue-alert{
+  background:#fff1f0;
+  border:1px solid #ffccc7;
+  color:#a8071a;
+  padding:8px 10px;
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  line-height:1.5;
+  margin-bottom:8px;
+}
+.dot-danger{ background:#ef4444; box-shadow:0 0 0 3px rgba(239,68,68,.16); }
+.issue-link-strong{
+  margin-left:auto;
+  color:#c2410c;
+  font-weight:700;
+  text-decoration:none;
+  border-bottom:1px dotted currentColor;
+}
+.issue-link-strong:hover{ opacity:.85 }
+
+/* 弹窗按钮右下角 */
+.issue-toggle{
+  position:absolute;
+  right:12px; bottom:10px;
+  font-size:12px;
+  color:#475569;
+  text-decoration:underline;
+  cursor:pointer;
+}
+.issue-card{ position:relative; }
+
+/* ✅ 模态框样式 */
+.issue-modal{
+  display:none;
+  position:fixed;
+  z-index:1000;
+  left:0; top:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,.35);
+  justify-content:center;
+  align-items:center;
+}
+.issue-modal.show{ display:flex; }
+
+.issue-modal-content{
+  background:#fff;
+  border-radius:10px;
+  width:480px;
+  box-shadow:0 4px 20px rgba(0,0,0,.2);
+  overflow:hidden;
+  animation:fadeIn .25s ease;
+}
+@keyframes fadeIn{ from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
+
+.issue-modal-header{
+  background:#f8fafc;
+  padding:12px 16px;
+  font-weight:600;
+  color:#003366;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #e6edf5;
+}
+.issue-modal-close{
+  background:none;
+  border:none;
+  font-size:20px;
+  color:#64748b;
+  cursor:pointer;
+}
+.issue-modal-close:hover{ color:#0f172a; }
+
+.issue-modal-body{
+  padding:16px 20px;
+  color:#334155;
+  line-height:1.6;
+}
+.issue-modal-body ul{ margin:0; padding-left:20px; }
+
+.issue-modal-footer{
+  padding:10px 16px;
+  border-top:1px solid #e6edf5;
+  text-align:right;
+  background:#f9fafb;
+}
+.issue-modal-ok{
+  background:#003366;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  padding:6px 14px;
+  cursor:pointer;
+}
+.issue-modal-ok:hover{ background:#0a4a8f; }
     
 </style>
 </head>
@@ -450,23 +561,46 @@
       <!-- 右侧：数据问题分析 -->
       <aside class="issue-card">
         <div class="issue-head">
-          <span class="dot dot-warn"></span>
           <span class="issue-title">数据问题分析</span>
-          <a class="issue-link" href="#">处理建议</a >
+          <a class="issue-link" href=" ">处理建议</a >
         </div>
-        <div class="issue-body">
-          <p>检测到导入银行流水部分未补开户行信息。</p >
-          <ul>
-            <li>入账明细存在重复流水 <b>3</b> 条。</li>
-            <li>个别文件模板不规范，建议替换模板。</li>
-            <li>个别大额支出缺少摘要，请补充。</li>
-          </ul>
-          <div class="issue-foot">
-            <a href="#" class="mini-link">查看异常列表</a >
+      
+        <!-- 1) 仅供预览提示 -->
+        <div class="issue-preview">
+          <b>仅供预览分析：</b>当前数据存在未认领 / 银行账号主档不完整的问题，仅供项目组进行风险评估，实质性审计程序不可依赖。
+        </div>
+      
+        <!-- 2) 红色警示 + 跳转 -->
+        <div class="issue-alert">
+          <span class="dot dot-danger"></span>
+          存在未认领的原始流水文件，请及时认领。
+          <a class="issue-link-strong" href="#claim">点击跳转 &raquo;</a >
+        </div>
+      
+        <!-- 3) 弹窗按钮 -->
+        <a class="issue-toggle" href="javascript:;">展开详情</a >
+      </aside>
+      
+      <!-- ✅ 弹窗内容 -->
+      <div class="issue-modal">
+        <div class="issue-modal-content">
+          <div class="issue-modal-header">
+            <span>数据问题详情</span>
+            <button class="issue-modal-close">&times;</button>
+          </div>
+          <div class="issue-modal-body">
+            <ul>
+              <li>入账明细存在重复流水 3 条，请核对导入逻辑。</li>
+              <li>部分流水缺少摘要说明，建议在导出模板中补充字段。</li>
+              <li>个别文件格式不规范，文件名未匹配账套。</li>
+              <li>银行账号主档缺失法人字段，请补录。</li>
+            </ul>
+          </div>
+          <div class="issue-modal-footer">
+            <button class="issue-modal-ok">确认</button>
           </div>
         </div>
-      </aside>
-    </div>
+      </div>
     
     <!-- 3) Tabs（紧贴在上面整块的下面） -->
     <div class="tab-container">
@@ -729,7 +863,21 @@
     }
     initFilters();
 
-
+    (function(){
+      const modal = document.querySelector('.issue-modal');
+      const openBtn = document.querySelector('.issue-toggle');
+      const closeBtn = document.querySelector('.issue-modal-close');
+      const okBtn = document.querySelector('.issue-modal-ok');
+    
+      if(!modal || !openBtn) return;
+    
+      openBtn.addEventListener('click', ()=> modal.classList.add('show'));
+      closeBtn.addEventListener('click', ()=> modal.classList.remove('show'));
+      okBtn.addEventListener('click', ()=> modal.classList.remove('show'));
+      modal.addEventListener('click', e=>{
+        if(e.target === modal) modal.classList.remove('show');
+      });
+    })();
       
     /* =============== 经营实质：图表 =============== */
     const months = Array.from({length:17},(_,i)=> i<12?`2023-${String(i+1).padStart(2,'0')}`:`2024-${String(i-11).padStart(2,'0')}`);
