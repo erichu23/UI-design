@@ -556,11 +556,20 @@
 }
 
 /* ===== 筛选区：label 普通，筛选框才是胶囊 ===== */
+.filter-card {
+  background: #fff;
+  border: 1px solid #e6edf5;
+  border-radius: 10px;
+  padding: 18px 24px;
+  margin: 0 auto 16px;
+  max-width: 92%;               /* 宽度略窄，使内容更集中 */
+  box-shadow: 0 2px 8px rgba(17,24,39,0.05);
+}
 .filter-area {
   display:flex;
   flex-wrap:wrap;
   align-items:center;
-  justify-content:flex-center;  /* 想整体居中可改 center */
+  justify-content:center;  /* 想整体居中可改 center */
   gap:12px 16px;
   padding:10px 0 14px;
 }
@@ -798,58 +807,59 @@
         <div class="tab-scroll">
     
           <!-- 1) 筛选区 -->
-          <div class="filter-area">
-            <label>被审计单位公司：</label><select class="select" id="fCompany"></select>
-            <label>银行账户：</label><select class="select" id="fBank"></select>
-            <label>公司职能：</label><select class="select" id="fFunc"></select>
-            <label>分析时间：</label>
-            <input type="date" id="beginDate" />
-            <span class="range-sep">至</span>
-            <input type="date" id="endDate" />
-            <label>对手方类型：</label><select class="select" id="fType">
-              <option value="all">全部</option><option>客户</option><option>供应商</option><option>员工</option>
-            </select>
-            <button class="query" id="btnQueryBiz">查询</button>
-            <button class="reset" id="btnResetBiz">重置</button>
-          </div>
-    
-          <!-- 2) 资金流水金额 -->
-          <div class="card">
-            <div class="head"><div class="title">资金流水金额</div></div>
-            <div class="content"><div id="chart-balance" class="chart"></div></div>
-          </div>
-    
-          <!-- 3) 流入流出趋势 -->
-          <div class="card">
-            <div class="head"><div class="title">流入流出趋势</div></div>
-            <div class="content"><div id="chart-io" class="chart"></div></div>
-          </div>
-    
-          <!-- 4) 构成 + 表格 -->
-          <div class="card">
-            <div class="head"><div class="title">流入流出构成</div></div>
-            <div class="content">
-              <div id="chart-compose" class="chart"></div>
-    
-              <div class="table-tabs" id="listTabs">
-                <div class="table-tab active" data-view="deal">交易明细</div>
-                <div class="table-tab" data-view="corp">工商信息</div>
-              </div>
-    
-              <!-- 交易明细 -->
-              <div id="tbl-deal-wrap">
-                <table class="table" id="tblDeal">
-                  <thead>
-                    <tr>
-                      <th>对手方名称</th><th>对手方类型</th><th>关联关系</th><th>黑名单</th>
-                      <th>流入总额</th><th>流出总额</th><th>交易总额</th><th>交易总额占比</th><th>交易笔数</th>
-                      <th>销售类别</th><th>采购类别</th><th>职位</th><th>备注说明</th><th>操作</th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
-                <div id="pagination-deal" class="pagination"></div>
-              </div>
+          <div class="filter-card">
+            <div class="filter-area">
+              <label>被审计单位公司：</label><select class="select" id="fCompany"></select>
+              <label>银行账户：</label><select class="select" id="fBank"></select>
+              <label>公司职能：</label><select class="select" id="fFunc"></select>
+              <label>分析时间：</label>
+              <input type="date" id="beginDate" />
+              <span class="range-sep">至</span>
+              <input type="date" id="endDate" />
+              <label>对手方类型：</label><select class="select" id="fType">
+                <option value="all">全部</option><option>客户</option><option>供应商</option><option>员工</option>
+              </select>
+              <button class="query" id="btnQueryBiz">查询</button>
+              <button class="reset" id="btnResetBiz">重置</button>
+            </div>
+      
+            <!-- 2) 资金流水金额 -->
+            <div class="card">
+              <div class="head"><div class="title">资金流水金额</div></div>
+              <div class="content"><div id="chart-balance" class="chart"></div></div>
+            </div>
+      
+            <!-- 3) 流入流出趋势 -->
+            <div class="card">
+              <div class="head"><div class="title">流入流出趋势</div></div>
+              <div class="content"><div id="chart-io" class="chart"></div></div>
+            </div>
+      
+            <!-- 4) 构成 + 表格 -->
+            <div class="card">
+              <div class="head"><div class="title">流入流出构成</div></div>
+              <div class="content">
+                <div id="chart-compose" class="chart"></div>
+      
+                <div class="table-tabs" id="listTabs">
+                  <div class="table-tab active" data-view="deal">交易明细</div>
+                  <div class="table-tab" data-view="corp">工商信息</div>
+                </div>
+      
+                <!-- 交易明细 -->
+                <div id="tbl-deal-wrap">
+                  <table class="table" id="tblDeal">
+                    <thead>
+                      <tr>
+                        <th>对手方名称</th><th>对手方类型</th><th>关联关系</th><th>黑名单</th>
+                        <th>流入总额</th><th>流出总额</th><th>交易总额</th><th>交易总额占比</th><th>交易笔数</th>
+                        <th>销售类别</th><th>采购类别</th><th>职位</th><th>备注说明</th><th>操作</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                  <div id="pagination-deal" class="pagination"></div>
+                </div>
     
               <!-- 工商信息 -->
               <div id="tbl-corp-wrap" class="hide">
