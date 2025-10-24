@@ -280,20 +280,36 @@
   margin-left:auto; text-align:right;
 }
 
-/* 右侧问题分析卡：更宽 + 更紧凑 */
+/* ✅ 数据问题分析卡（与左侧KPI总高一致） */
 .issue-card{
   background:#fffdf7;
   border:1px solid #ffe6b3;
-  border-radius:10px;
-  padding:8px 10px;
+  border-radius:8px;
+  padding:10px 12px;
+  height:calc(60px * 2 + 10px);  /* 跟左侧两行总高一致（2*行高 + gap） */
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
 }
-.issue-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.issue-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:6px;
+}
 .issue-title{color:#8a5c00;font-weight:600}
-.issue-link{font-size:12px;color:#8a5c00;text-decoration:none;border:1px solid #f5cf85;padding:2px 8px;border-radius:999px;background:#fff7e3}
+.issue-link{
+  font-size:12px;
+  color:#8a5c00;
+  text-decoration:none;
+  border:1px solid #f5cf85;
+  padding:2px 8px;
+  border-radius:999px;
+  background:#fff7e3;
+}
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
 .dot-warn{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.15)}
-.issue-body{color:#8a5c00;font-size:12px;line-height:1.45}
-.issue-body ul{margin:6px 0 0 18px;padding:0}
+.issue-body{color:#8a5c00;font-size:12px;line-height:1.45;flex:1;overflow:auto}
 .issue-foot{margin-top:6px}
 .mini-link{font-size:12px;color:#8a5c00;text-decoration:underline}
 
@@ -456,7 +472,7 @@
     <div class="tab-container">
       <div class="tabbar" id="topTabs">
         <div class="tab active" data-top="biz">经营实质</div>
-        <div class="tab" data-top="routine">特定交易查询</div>
+        <div class="tab" data-top="routine">特定工商查询</div>
       </div>
     
             <!-- ===================== 经营实质 ===================== -->
