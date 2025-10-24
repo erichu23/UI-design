@@ -313,6 +313,48 @@
 .issue-foot{margin-top:6px}
 .mini-link{font-size:12px;color:#8a5c00;text-decoration:underline}
 
+/* ====== 数据问题卡：新增元素 ====== */
+/* 预览提示 */
+.issue-preview{
+  background:#f8fafc;
+  border:1px solid #e6edf5;
+  border-radius:8px;
+  padding:8px 10px;
+  line-height:1.5;
+  color:#334155;
+  margin-bottom:8px;
+}
+
+/* 红色警示 */
+.issue-alert{
+  display:flex; align-items:flex-start; gap:8px;
+  background:#fff5f5; border:1px solid #ffb3b3;
+  border-radius:8px; padding:8px 10px; line-height:1.5; margin-bottom:0;
+}
+.dot-danger{ width:10px;height:10px;border-radius:50%;background:#dc2626;margin-top:4px }
+.alert-text{ display:flex;flex-direction:column; gap:4px; color:#7f1d1d }
+.issue-link-strong{ color:#b2162a; font-weight:600; text-decoration:none; border-bottom:1px dotted currentColor; align-self:flex-start }
+.issue-link-strong:hover{ opacity:.85 }
+
+/* 右下角“展开详情”按钮 */
+.issue-toggle{
+  position:absolute; right:12px; bottom:8px;
+  font-size:12px; color:#475569; text-decoration:underline;
+}
+
+/* ====== 弹窗 ====== */
+.issue-modal{ display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.35);
+  justify-content:center; align-items:center; }
+.issue-modal.show{ display:flex; }
+.issue-modal-content{ width:480px; background:#fff; border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,.2); overflow:hidden; }
+.issue-modal-header{ background:#003366; color:#fff; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; font-weight:600 }
+.issue-modal-close{ background:none; border:none; font-size:22px; color:#fff; cursor:pointer; line-height:1 }
+.issue-modal-body{ padding:16px 20px; color:#334155; line-height:1.6 }
+.issue-modal-body ul{ margin:0; padding-left:20px }
+.issue-modal-footer{ padding:10px 16px; border-top:1px solid #e6edf5; background:#f9fafb; text-align:right }
+.issue-modal-ok{ background:#003366; color:#fff; border:none; border-radius:6px; padding:6px 14px; cursor:pointer }
+.issue-modal-ok:hover{ background:#0a4a8f }
+
 /* Tabs：更贴近 KPI */
 .tabbar{
   display:flex;align-items:center;border-bottom:1px solid #e6edf5;
@@ -349,117 +391,6 @@
   .kpi-and-issue{ grid-template-columns: 1fr; }
   .issue-card{ order:2 }
 }
-
-/* 数据处理问题弹窗 */
-/* 信息提示 */
-.issue-preview{
-  background:#f7fafc;
-  border:1px solid #e2e8f0;
-  color:#334155;
-  padding:8px 10px;
-  border-radius:6px;
-  line-height:1.5;
-  margin-bottom:8px;
-}
-
-/* 红色警示 */
-.issue-alert{
-  background:#fff1f0;
-  border:1px solid #ffccc7;
-  color:#a8071a;
-  padding:8px 10px;
-  border-radius:6px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  line-height:1.5;
-  margin-bottom:8px;
-}
-.dot-danger{ background:#ef4444; box-shadow:0 0 0 3px rgba(239,68,68,.16); }
-.issue-link-strong{
-  margin-left:auto;
-  color:#c2410c;
-  font-weight:700;
-  text-decoration:none;
-  border-bottom:1px dotted currentColor;
-}
-.issue-link-strong:hover{ opacity:.85 }
-
-/* 弹窗按钮右下角 */
-.issue-toggle{
-  position:absolute;
-  right:12px; bottom:10px;
-  font-size:12px;
-  color:#475569;
-  text-decoration:underline;
-  cursor:pointer;
-}
-.issue-card{ position:relative; }
-
-/* ✅ 模态框样式 */
-.issue-modal{
-  display:none;
-  position:fixed;
-  z-index:1000;
-  left:0; top:0;
-  width:100%; height:100%;
-  background:rgba(0,0,0,.35);
-  justify-content:center;
-  align-items:center;
-}
-.issue-modal.show{ display:flex; }
-
-.issue-modal-content{
-  background:#fff;
-  border-radius:10px;
-  width:480px;
-  box-shadow:0 4px 20px rgba(0,0,0,.2);
-  overflow:hidden;
-  animation:fadeIn .25s ease;
-}
-@keyframes fadeIn{ from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
-
-.issue-modal-header{
-  background:#f8fafc;
-  padding:12px 16px;
-  font-weight:600;
-  color:#003366;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:1px solid #e6edf5;
-}
-.issue-modal-close{
-  background:none;
-  border:none;
-  font-size:20px;
-  color:#64748b;
-  cursor:pointer;
-}
-.issue-modal-close:hover{ color:#0f172a; }
-
-.issue-modal-body{
-  padding:16px 20px;
-  color:#334155;
-  line-height:1.6;
-}
-.issue-modal-body ul{ margin:0; padding-left:20px; }
-
-.issue-modal-footer{
-  padding:10px 16px;
-  border-top:1px solid #e6edf5;
-  text-align:right;
-  background:#f9fafb;
-}
-.issue-modal-ok{
-  background:#003366;
-  color:#fff;
-  border:none;
-  border-radius:6px;
-  padding:6px 14px;
-  cursor:pointer;
-}
-.issue-modal-ok:hover{ background:#0a4a8f; }
     
 </style>
 </head>
@@ -565,39 +496,42 @@
           <a class="issue-link" href=" ">处理建议</a >
         </div>
       
-        <!-- 1) 仅供预览提示 -->
+        <!-- 仅供预览分析 -->
         <div class="issue-preview">
-          <b>仅供预览分析：</b>当前数据存在未认领 / 银行账号主档不完整的问题，仅供项目组进行风险评估，实质性审计程序不可依赖。
+          <b>仅供预览分析：</b>
+          当前数据存在未认领 / 银行账号主档不完整的问题，仅供项目组进行风险评估，实质性审计程序不可依赖。
         </div>
       
-        <!-- 2) 红色警示 + 跳转 -->
+        <!-- 红色警示 + 跳转 -->
         <div class="issue-alert">
           <span class="dot dot-danger"></span>
-          存在未认领的原始流水文件，请及时认领。
-          <a class="issue-link-strong" href="#claim">点击跳转 &raquo;</a >
+          <div class="alert-text">
+            <strong>存在未认领的原始流水文件，请及时认领。</strong>
+            <a class="issue-link-strong" href="#claim">点击跳转 »</a >
+          </div>
         </div>
       
-        <!-- 3) 弹窗按钮 -->
+        <!-- 右下角：弹窗触发 -->
         <a class="issue-toggle" href="javascript:;">展开详情</a >
       </aside>
       
-      <!-- ✅ 弹窗内容 -->
+      <!-- 弹窗 -->
       <div class="issue-modal">
         <div class="issue-modal-content">
           <div class="issue-modal-header">
             <span>数据问题详情</span>
-            <button class="issue-modal-close">&times;</button>
+            <button class="issue-modal-close" aria-label="关闭">&times;</button>
           </div>
           <div class="issue-modal-body">
             <ul>
-              <li>入账明细存在重复流水 3 条，请核对导入逻辑。</li>
-              <li>部分流水缺少摘要说明，建议在导出模板中补充字段。</li>
-              <li>个别文件格式不规范，文件名未匹配账套。</li>
+              <li>入账明细存在重复流水 3 条。</li>
+              <li>个别文件格式不规范（文件名与账套不匹配）。</li>
               <li>银行账号主档缺失法人字段，请补录。</li>
+              <li>部分流水缺少摘要说明，建议补全。</li>
             </ul>
           </div>
           <div class="issue-modal-footer">
-            <button class="issue-modal-ok">确认</button>
+            <button class="issue-modal-ok">关闭</button>
           </div>
         </div>
       </div>
@@ -863,21 +797,21 @@
     }
     initFilters();
 
-    (function(){
+    (() => {
       const modal = document.querySelector('.issue-modal');
       const openBtn = document.querySelector('.issue-toggle');
       const closeBtn = document.querySelector('.issue-modal-close');
-      const okBtn = document.querySelector('.issue-modal-ok');
-    
+      const okBtn   = document.querySelector('.issue-modal-ok');
       if(!modal || !openBtn) return;
-    
-      openBtn.addEventListener('click', ()=> modal.classList.add('show'));
-      closeBtn.addEventListener('click', ()=> modal.classList.remove('show'));
-      okBtn.addEventListener('click', ()=> modal.classList.remove('show'));
-      modal.addEventListener('click', e=>{
-        if(e.target === modal) modal.classList.remove('show');
-      });
+      const open = () => modal.classList.add('show');
+      const close = () => modal.classList.remove('show');
+      openBtn.addEventListener('click', open);
+      closeBtn.addEventListener('click', close);
+      okBtn.addEventListener('click', close);
+      modal.addEventListener('click', e => { if (e.target === modal) close(); });
     })();
+
+
       
     /* =============== 经营实质：图表 =============== */
     const months = Array.from({length:17},(_,i)=> i<12?`2023-${String(i+1).padStart(2,'0')}`:`2024-${String(i-11).padStart(2,'0')}`);
