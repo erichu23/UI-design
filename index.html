@@ -205,79 +205,83 @@
 .breadcrumb-bar b{color:#003366}
 
 /* ===== 2) KPI + 问题分析 整块 ===== */
+/* 基础：仅这块使用的变量 */
 :root{
-  --col-left: 260px;      /* 左列宽（3竖排那列） */
-  --col-mid:  520px;      /* 中间田字格总宽（= 2×260） */
-  --col-right:360px;      /* 右侧问题分析宽 */
-  --row-h:    118px;      /* 每行高度：调这个就能整体匹配截图 */
-  --gap:      12px;       /* 卡片间距 */
+  --kbar-col-left: 260px;   /* 左三竖列宽 */
+  --kbar-col-mid:  520px;   /* 田字格总宽 = 2*260 */
+  --kbar-col-right:360px;   /* 右侧问题分析宽 */
+  --kbar-row-h:    118px;   /* 每行高度（调这个就整体对齐） */
+  --kbar-gap:      12px;
 }
 
-.belt{
+/* 容器：左大区 + 右问题分析 */
+.kbar-belt{
   display:grid;
-  grid-template-columns: calc(var(--col-left)+var(--col-mid)) var(--col-right);
-  align-items:stretch;
-  gap: var(--gap);
+  grid-template-columns: calc(var(--kbar-col-left) + var(--kbar-col-mid)) var(--kbar-col-right);
+  gap: var(--kbar-gap);
   padding: 12px 20px 10px;
 }
 
-/* 左侧区域= 两部分并排：左3竖 + 右2×2 */
-.kpi-left{
+/* 左大区：由“左列三竖 + 右侧2×2”并排组成 */
+.kbar-left{
   display:grid;
-  grid-template-columns: var(--col-left) var(--col-mid);
-  gap: var(--gap);
+  grid-template-columns: var(--kbar-col-left) var(--kbar-col-mid);
+  gap: var(--kbar-gap);
 }
 
-/* 左边“3竖排” */
-.kpi-col{
+/* 左列三竖 */
+.kbar-left-col{
   display:grid;
-  grid-template-rows: var(--row-h) var(--row-h) var(--row-h);
-  gap: var(--gap);
+  grid-template-rows: var(--kbar-row-h) var(--kbar-row-h) var(--kbar-row-h);
+  gap: var(--kbar-gap);
 }
 
-/* 右边“2×2 田字格” + 第三行留白 */
-.kpi-grid{
+/* 右侧2×2（第三行留白与左边三竖齐平） */
+.kbar-left-grid{
   display:grid;
-  grid-template-columns: 1fr 1fr;                 /* 两列等宽 */
-  grid-template-rows: var(--row-h) var(--row-h) var(--row-h); /* 三行，与左侧对齐 */
-  gap: var(--gap);
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: var(--kbar-row-h) var(--kbar-row-h) var(--kbar-row-h);
+  gap: var(--kbar-gap);
 }
-.kpi-grid .ghost{ background:transparent; border:1px dashed transparent; border-radius:12px; } /* 空位占位，用于齐平 */
+.kbar-ghost{ background:transparent; border:1px dashed transparent; border-radius:12px; }
 
-/* 卡片与KPI视觉 */
-.card{ background:#f8fafc; border:1px solid #e6edf5; border-radius:12px; }
-.kpi{ padding:10px 12px; display:flex; flex-direction:column; justify-content:center; }
-.kpi-label{ font-size:12px; color:#64748b; margin-bottom:4px; }
-.kpi-value{ font-size:18px; font-weight:600; color:#0f172a; }
-.kpi-value.pos{ color:#0f7a43; }
-.kpi-value.neg{ color:#b2162a; }
-.link-num{ text-decoration:none; border-bottom:1px dotted currentColor; }
-.link-num:hover{ opacity:.85 }
+/* 右侧问题分析（贯穿三行高度） */
+.kbar-issue{ grid-row: 1 / span 3; }
 
-/* 右侧问题分析：贯穿左侧三行的总高度 */
-.issue-card{ padding:10px 12px; background:#fffdf7; border-color:#ffe6b3; }
-.issue-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
-.issue-title{ color:#8a5c00; font-weight:600; }
-.issue-link{ font-size:12px; color:#8a5c00; text-decoration:none; border:1px solid #f5cf85; background:#fff7e3; padding:2px 8px; border-radius:999px; }
-.issue-body{ color:#8a5c00; font-size:12px; line-height:1.6; }
-.issue-body ul{ margin:0 0 6px 18px; padding:0; }
-.mini-link{ font-size:12px; color:#8a5c00; text-decoration:underline; }
-.dot{ width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; }
-.dot-warn{ background:#f59e0b; box-shadow:0 0 0 3px rgba(245,158,11,.15); }
-
-/* 3) Tabs */
-.tabbar{ display:flex; border-bottom:1px solid #e6edf5; margin:10px 20px 0; }
-.tab{ padding:10px 16px; cursor:pointer; color:#475569; border-bottom:2px solid transparent; }
-.tab:hover{ background:#f3f6fb; }
-.tab.active{ color:#003366; font-weight:600; border-bottom-color:#003366; }
-.tab.disabled{ color:#c0c7d0; pointer-events:none; }
-
-/* 窄屏兜底（可选） */
-@media (max-width:1200px){
-  :root{ --col-left: 220px; --col-mid: 440px; --col-right: 100%; }
-  .belt{ grid-template-columns: 1fr; }
-  .issue-card{ order:2 }
+/* 统一卡片样式（不影响你现有的 .card） */
+.kbar-card{
+  background:#f8fafc;
+  border:1px solid #e6edf5;
+  border-radius:12px;
+  box-sizing:border-box;
 }
+
+/* KPI 视觉 */
+.kbar-kpi{ padding:10px 12px; display:flex; flex-direction:column; justify-content:center; }
+.kbar-kpi-label{ font-size:12px; color:#64748b; margin-bottom:4px; }
+.kbar-kpi-value{ font-size:18px; font-weight:600; color:#0f172a; }
+.kbar-pos{ color:#0f7a43; }
+.kbar-neg{ color:#b2162a; }
+.kbar-link{ text-decoration:none; border-bottom:1px dotted currentColor; }
+
+/* 问题分析 */
+.kbar-issue{ padding:10px 12px; background:#fffdf7; border-color:#ffe6b3; }
+.kbar-issue-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.kbar-issue-title{ color:#8a5c00; font-weight:600; }
+.kbar-issue-btn{ font-size:12px; color:#8a5c00; border:1px solid #f5cf85; padding:2px 8px; border-radius:999px; background:#fff7e3; text-decoration:none; }
+.kbar-issue-body{ color:#8a5c00; font-size:12px; line-height:1.6; }
+.kbar-issue-body ul{ margin:0 0 6px 18px; padding:0; }
+.kbar-issue-link{ font-size:12px; color:#8a5c00; text-decoration:underline; }
+.kbar-dot{ width:8px; height:8px; border-radius:50%; background:#f59e0b; display:inline-block; margin-right:6px; box-shadow:0 0 0 3px rgba(245,158,11,.15); }
+
+/* Tabs（只作用于这块） */
+.kbar-tabs{ display:flex; border-bottom:1px solid #e6edf5; margin:10px 20px 0; }
+.kbar-tab{ padding:10px 16px; cursor:pointer; color:#475569; border-bottom:2px solid transparent; }
+.kbar-tab:hover{ background:#f3f6fb; }
+.kbar-active{ color:#003366; font-weight:600; border-bottom-color:#003366; }
+
+/* 兜底：防止外层 flex/float 影响高度计算 */
+.kbar-belt, .kbar-left, .kbar-left-col, .kbar-left-grid{ min-width:0; }
 
 </style>
 </head>
@@ -340,73 +344,70 @@
     <span class="sep">/</span> <b>银行流水分析</b>
   </div>
   
-  <!-- 2) “KPI + 数据问题分析”整块 -->
-  <div class="belt">
-  
-    <!-- 左侧 KPI 区（左=3竖排；右=2×2 田字格） -->
-    <div class="kpi-left">
-      <!-- 左侧：3个竖着 -->
-      <div class="kpi-col">
-        <div class="card kpi">
-          <div class="kpi-label">被审计单位</div>
-          <div class="kpi-value">1 家</div>
+  <!-- 2) KPI + 数据问题分析（整块） -->
+  <div class="kbar-belt">
+    <!-- 左侧 KPI：左=三竖，右=2×2 田字格（第三行留白） -->
+    <div class="kbar-left">
+      <div class="kbar-left-col">
+        <div class="kbar-card kbar-kpi">
+          <div class="kbar-kpi-label">被审计单位</div>
+          <div class="kbar-kpi-value">1 家</div>
         </div>
-        <div class="card kpi">
-          <div class="kpi-label">对手方</div>
-          <div class="kpi-value">29 家</div>
+        <div class="kbar-card kbar-kpi">
+          <div class="kbar-kpi-label">对手方</div>
+          <div class="kbar-kpi-value">29 家</div>
         </div>
-        <div class="card kpi">
-          <div class="kpi-label">账号</div>
-          <div class="kpi-value">17 个</div>
+        <div class="kbar-card kbar-kpi">
+          <div class="kbar-kpi-label">账号</div>
+          <div class="kbar-kpi-value">17 个</div>
         </div>
       </div>
   
-      <!-- 右侧：2×2 田字格（与左侧三块“齐平”，只占前两行，第三行留白） -->
-      <div class="kpi-grid">
-        <div class="card kpi">
-          <div class="kpi-label">交易总额</div>
-          <div class="kpi-value">562.2 K</div>
+      <div class="kbar-left-grid">
+        <div class="kbar-card kbar-kpi">
+          <div class="kbar-kpi-label">交易总额</div>
+          <div class="kbar-kpi-value">562.2 K</div>
         </div>
-        <div class="card kpi">
-          <div class="kpi-label">流入总额</div>
-          <div class="kpi-value pos"><a class="link-num" href="javascript:;">270.2 K</a ></div>
+        <div class="kbar-card kbar-kpi">
+          <div class="kbar-kpi-label">流入总额</div>
+          <div class="kbar-kpi-value kbar-pos"><a class="kbar-link" href="javascript:;">270.2 K</a ></div>
         </div>
-        <div class="card kpi">
-          <div class="kpi-label">流水总数</div>
-          <div class="kpi-value">145 笔</div>
+        <div class="kbar-card kbar-kpi">
+          <div class="kbar-kpi-label">流水总数</div>
+          <div class="kbar-kpi-value">145 笔</div>
         </div>
-        <div class="card kpi">
-          <div class="kpi-label">流出金额</div>
-          <div class="kpi-value neg"><a class="link-num danger" href="javascript:;">292.0 K</a ></div>
+        <div class="kbar-card kbar-kpi">
+          <div class="kbar-kpi-label">流出金额</div>
+          <div class="kbar-kpi-value kbar-neg"><a class="kbar-link" href="javascript:;">292.0 K</a ></div>
         </div>
-        <!-- 第三行留白以与左侧第三块“齐平”（不要内容，保证几何对齐） -->
-        <div class="ghost"></div>
-        <div class="ghost"></div>
+        <!-- 留白以与左侧第三块等高齐平 -->
+        <div class="kbar-ghost"></div>
+        <div class="kbar-ghost"></div>
       </div>
     </div>
   
-    <!-- 右侧：数据问题分析（贯穿左侧三行高度） -->
-    <aside class="issue-card card">
-      <div class="issue-head">
-        <span class="dot dot-warn"></span>
-        <span class="issue-title">数据问题分析</span>
-        <a class="issue-link" href="#">处理建议</a >
+    <!-- 右侧：数据问题分析（贯穿三行） -->
+    <aside class="kbar-issue kbar-card">
+      <div class="kbar-issue-head">
+        <span class="kbar-dot"></span>
+        <span class="kbar-issue-title">数据问题分析</span>
+        <a class="kbar-issue-btn" href="#">处理建议</a >
       </div>
-      <div class="issue-body">
+      <div class="kbar-issue-body">
         <ul>
           <li>入账明细存在重复流水 <b>3</b> 条。</li>
           <li>个别文件格式不规范，请按模板重导。</li>
           <li>部分支出缺少摘要说明，请补充。</li>
         </ul>
-        <a class="mini-link" href="#">查看异常列表</a >
+        <a class="kbar-issue-link" href="#">查看异常列表</a >
       </div>
     </aside>
   </div>
   
-  <!-- 3) Tabs（紧接在“belt”下面） -->
-  <div class="tabbar" id="topTabs">
-    <div class="tab active" data-top="biz">经营实质</div>
-    <div class="tab" data-top="routine">特定交易查询</div>
+  <!-- 3) Tabs（紧贴在上面整块的下面） -->
+  <div class="kbar-tabs" id="topTabs">
+    <div class="kbar-tab kbar-active" data-top="biz">经营实质</div>
+    <div class="kbar-tab" data-top="routine">特定交易查询</div>
   </div>
             <!-- ===================== 经营实质 ===================== -->
             <section id="page-biz">
