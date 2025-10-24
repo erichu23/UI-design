@@ -313,57 +313,53 @@
 .issue-foot{margin-top:6px}
 .mini-link{font-size:12px;color:#8a5c00;text-decoration:underline}
 
-/* ====== 数据问题卡：新增元素 ====== */
-/* 预览提示 */
-.issue-preview{
-  background:#f8fafc;
-  border:1px solid #e6edf5;
+/* ====== 数据问题卡核心样式 ====== */
+.issue-card{
+  position: relative;
+  background:#fffdf7;
+  border:1px solid #ffe6b3;
   border-radius:8px;
-  padding:8px 10px;
-  line-height:1.5;
-  color:#334155;
-  margin-bottom:8px;
+  padding:10px 12px 30px;         /* 预留底部空间给固定按钮 */
+  height:calc(60px * 2 + 10px);   /* 保持与左侧两行KPI等高 */
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  overflow:hidden;                /* 防止外溢 */
 }
 
-/* 红色警示 */
-.issue-alert{
-  display:flex; align-items:flex-start; gap:8px;
-  background:#fff5f5; border:1px solid #ffb3b3;
-  border-radius:8px; padding:8px 10px; line-height:1.5; margin-bottom:0;
+/* 顶部标题栏 */
+.issue-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:6px;
 }
-.dot-danger{ width:10px;height:10px;border-radius:50%;background:#dc2626;margin-top:4px }
-.alert-text{ display:flex;flex-direction:column; gap:4px; color:#7f1d1d }
-.issue-link-strong{ color:#b2162a; font-weight:600; text-decoration:none; border-bottom:1px dotted currentColor; align-self:flex-start }
-.issue-link-strong:hover{ opacity:.85 }
-
-/* 右下角“展开详情”按钮 */
-.issue-toggle{
-  position:absolute; right:12px; bottom:8px;
-  font-size:12px; color:#475569; text-decoration:underline;
+.issue-title{color:#8a5c00;font-weight:600;font-size:14px;}
+.issue-link{
+  font-size:12px;
+  color:#8a5c00;
+  text-decoration:none;
+  border:1px solid #f5cf85;
+  padding:2px 8px;
+  border-radius:999px;
+  background:#fff7e3;
 }
+.issue-link:hover{background:#ffeab5;}
 
-/* ====== 弹窗 ====== */
-.issue-modal{ display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.35);
-  justify-content:center; align-items:center; }
-.issue-modal.show{ display:flex; }
-.issue-modal-content{ width:480px; background:#fff; border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,.2); overflow:hidden; }
-.issue-modal-header{ background:#003366; color:#fff; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; font-weight:600 }
-.issue-modal-close{ background:none; border:none; font-size:22px; color:#fff; cursor:pointer; line-height:1 }
-.issue-modal-body{ padding:16px 20px; color:#334155; line-height:1.6 }
-.issue-modal-body ul{ margin:0; padding-left:20px }
-.issue-modal-footer{ padding:10px 16px; border-top:1px solid #e6edf5; background:#f9fafb; text-align:right }
-.issue-modal-ok{ background:#003366; color:#fff; border:none; border-radius:6px; padding:6px 14px; cursor:pointer }
-.issue-modal-ok:hover{ background:#0a4a8f }
-
-/* 同一张黄色卡里的两行文案样式（无独立边框/底色） */
-.issue-body-simple{ font-size:12px; color:#8a5c00; line-height:1.65; }
-.issue-body-simple p{ margin:0 0 6px; }
+/* 内容区可滚动 */
+.issue-body-simple{
+  font-size:12px;
+  color:#8a5c00;
+  line-height:1.65;
+  overflow-y:auto;
+  padding-right:8px;
+  flex:1;
+}
 
 /* 第一行说明 */
 .issue-note b{ color:#8a5c00; }
 
-/* 第二行：红色警示 + 跳转链接（行内展示） */
-/* 红色警示行（在一行显示，点击跳转紧跟后面） */
+/* 第二行：红色警示 + 跳转链接 */
 .issue-inline{
   display:flex;
   align-items:center;
@@ -371,7 +367,6 @@
   margin:0;
   flex-wrap:wrap;
 }
-
 .dot-danger{
   width:8px;
   height:8px;
@@ -379,23 +374,42 @@
   background:#dc2626;
   box-shadow:0 0 0 3px rgba(220,38,38,.12);
 }
-
 .issue-inline span{
   color:#b2162a;
   font-weight:500;
 }
-
 .issue-inline-link{
   color:#b2162a;
   font-weight:600;
   text-decoration:none;
   border-bottom:1px dotted currentColor;
-  margin-left:4px;        /* ← 稍微间隔 */
+  margin-left:4px;
 }
+.issue-inline-link:hover{ opacity:.85; }
 
-.issue-inline-link:hover{
-  opacity:.85;
+/* 固定右下角按钮 */
+.issue-toggle{
+  position:absolute;
+  right:12px;
+  bottom:8px;
+  font-size:12px;
+  color:#475569;
+  text-decoration:underline;
+  background:#fffdf7;
+  padding:2px 6px;
+  border-radius:4px;
+  cursor:pointer;
+  z-index:2;
 }
+.issue-toggle:hover{ color:#003366 }
+
+/* 可选：细滚动条（美化） */
+.issue-body-simple::-webkit-scrollbar{ width:6px; }
+.issue-body-simple::-webkit-scrollbar-thumb{
+  background:rgba(0,0,0,.15);
+  border-radius:4px;
+}
+.issue-body-simple::-webkit-scrollbar-track{ background:transparent; }
 
 /* Tabs：更贴近 KPI */
 .tabbar{
@@ -532,50 +546,39 @@
       </div>
     
       <!-- 右侧：数据问题分析 -->
+      <!-- 数据问题分析卡 -->
       <aside class="issue-card">
         <div class="issue-head">
           <span class="issue-title">数据问题分析</span>
           <a class="issue-link" href=" ">处理建议</a >
         </div>
       
-        <!-- 所有文字均在同一张黄色卡片里 -->
+        <!-- 滚动内容区 -->
         <div class="issue-body-simple">
           <p class="issue-note">
             <b>仅供预览分析：</b>
             当前数据存在未认领 / 银行账号主档不完整的问题，仅供项目组进行风险评估，实质性审计程序不可依赖。
           </p >
-        
+      
           <p class="issue-inline">
-            <span class="dot dot-danger"></span>
+            <span class="dot-danger"></span>
             <span>存在未认领的原始流水文件，请及时认领。</span>
-            <a class="issue-inline-link" href=" ">点击跳转 »</a >
+            <a class="issue-inline-link" href="#认领页面">点击跳转 »</a >
           </p >
+      
+          <!-- 可追加更多问题 -->
+          <!--
+          <p class="issue-inline">
+            <span class="dot-danger"></span>
+            <span>存在重复的银行账号主档，请检查。</span>
+            <a class="issue-inline-link" href="#详情">点击跳转 »</a >
+          </p >
+          -->
         </div>
       
-        <!-- 右下角：展开详情（弹窗） -->
-        <a class="issue-toggle" href="javascript:;">展开详情</a >
+        <!-- 固定底栏：展开详情 -->
+        <a class="issue-toggle" href="javascript:void(0)">展开详情</a >
       </aside>
-      
-      <!-- 弹窗 -->
-      <div class="issue-modal">
-        <div class="issue-modal-content">
-          <div class="issue-modal-header">
-            <span>数据问题详情</span>
-            <button class="issue-modal-close" aria-label="关闭">&times;</button>
-          </div>
-          <div class="issue-modal-body">
-            <ul>
-              <li>入账明细存在重复流水 3 条。</li>
-              <li>个别文件格式不规范（文件名与账套不匹配）。</li>
-              <li>银行账号主档缺失法人字段，请补录。</li>
-              <li>部分流水缺少摘要说明，建议补全。</li>
-            </ul>
-          </div>
-          <div class="issue-modal-footer">
-            <button class="issue-modal-ok">关闭</button>
-          </div>
-        </div>
-      </div>
     
     <!-- 3) Tabs（紧贴在上面整块的下面） -->
     <div class="tab-container">
