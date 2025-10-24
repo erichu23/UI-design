@@ -555,83 +555,58 @@
   .issue-card{ order:2 }
 }
 
-/* ============ 筛选区域（无整体框，仅控件带胶囊样式） ============ */
-
-/* 容器布局 */
-.filter-area{
+/* ===== 筛选区：label 普通，筛选框才是胶囊 ===== */
+.filter-area {
   display:flex;
   flex-wrap:wrap;
   align-items:center;
-  justify-content:flex-start;         /* ← 想居中改成 center */
-  gap:12px 16px;                      /* 行/列间距 */
-  padding:10px 0 12px;
-  margin:0 0 10px 0;
-  background:transparent;             /* ❌ 去掉底色 */
-  border:none;                        /* ❌ 去掉外框 */
-  box-shadow:none;                    /* ❌ 去掉阴影 */
+  justify-content:flex-start;  /* 想整体居中可改 center */
+  gap:12px 16px;
+  padding:10px 0 14px;
 }
 
-/* 标签：仍保留胶囊左半效果 */
-.filter-area label{
+/* label 保持文字说明样式 */
+.filter-area label {
   font-size:14px;
   color:#334155;
   font-weight:600;
-  line-height:36px;                   /* 与控件等高 */
-  padding:0 10px;
-  background:#fff;
-  border:1px solid #cfd9e5;
-  border-right:none;
-  border-radius:8px 0 0 8px;          /* 胶囊左半 */
-  display:inline-block;
+  line-height:36px;
+  margin-right:6px;
 }
 
-/* 紧跟在 label 后面的控件自动拼成“右半” */
-.filter-area label + select,
-.filter-area label + input[type="text"],
-.filter-area label + input[type="date"]{
+/* 所有输入/下拉框统一胶囊化 */
+.filter-area select,
+.filter-area input[type="text"],
+.filter-area input[type="date"] {
   font-size:14px;
   height:36px;
   line-height:36px;
-  padding:0 12px;
+  padding:0 14px;
   min-width:160px;
-  background:#fff;
   border:1px solid #cfd9e5;
-  border-left:none;                   /* 与 label 无缝拼接 */
-  border-radius:0 8px 8px 0;          /* 胶囊右半 */
+  border-radius:50px;  /* ← 关键：圆角“胶囊”效果 */
+  background:#fff;
+  box-shadow:0 1px 2px rgba(0,0,0,0.04);
   transition:all .2s ease;
 }
 
-/* hover / focus 效果 */
-.filter-area label + select:hover,
-.filter-area label + input[type="text"]:hover,
-.filter-area label + input[type="date"]:hover{
+/* hover / focus 状态 */
+.filter-area select:hover,
+.filter-area input[type="text"]:hover,
+.filter-area input[type="date"]:hover {
   border-color:#1e49e2;
-  box-shadow:0 0 0 2px rgba(30,73,226,.08);
+  box-shadow:0 0 0 3px rgba(30,73,226,0.08);
 }
-.filter-area label + select:focus,
-.filter-area label + input[type="text"]:focus,
-.filter-area label + input[type="date"]:focus{
+.filter-area select:focus,
+.filter-area input[type="text"]:focus,
+.filter-area input[type="date"]:focus {
   outline:none;
   border-color:#0d3bc4;
-  box-shadow:0 0 0 2px rgba(13,59,196,.14);
+  box-shadow:0 0 0 3px rgba(13,59,196,0.12);
 }
 
-/* 独立出现的输入框（无label配对时） */
-.filter-area select:not(label + select),
-.filter-area input[type="text"]:not(label + input[type="text"]),
-.filter-area input[type="date"]:not(label + input[type="date"]){
-  font-size:14px;
-  height:36px;
-  line-height:36px;
-  padding:0 12px;
-  min-width:160px;
-  background:#fff;
-  border:1px solid #cfd9e5;
-  border-radius:8px;
-}
-
-/* 日期范围“至”分隔符 */
-.filter-area .range-sep{
+/* 日期范围中“至”的分隔符 */
+.filter-area .range-sep {
   margin:0 6px;
   color:#64748b;
   font-size:13px;
@@ -639,43 +614,40 @@
   user-select:none;
 }
 
-/* 查询、重置按钮 */
-.filter-area button{
+/* 查询 / 重置按钮 */
+.filter-area button {
   height:36px;
   font-size:14px;
-  padding:0 16px;
-  border-radius:8px;
-  border:1px solid transparent;
+  padding:0 18px;
+  border-radius:50px;    /* 与筛选框保持统一圆角风格 */
+  border:none;
   cursor:pointer;
-  transition:.18s ease;
+  transition:0.2s;
 }
-.filter-area button.query{
-  background:#1e49e2; color:#fff;
+.filter-area .query {
+  background:#1e49e2;
+  color:#fff;
 }
-.filter-area button.query:hover{ background:#0d3bc4; }
-.filter-area button.reset{
-  background:#eef3fb; color:#334155; border-color:#dfe7f5;
+.filter-area .query:hover {
+  background:#0d3bc4;
 }
-.filter-area button.reset:hover{
-  background:#e6eefc; color:#1e293b;
+.filter-area .reset {
+  background:#eef3fb;
+  color:#334155;
 }
-
-/* 让整个筛选区轻微右缩（与图表标题竖线对齐） */
-.filter-area{ padding-left:16px; }
+.filter-area .reset:hover {
+  background:#e6eefc;
+  color:#1e293b;
+}
 
 /* 窄屏适配 */
 @media (max-width:1200px){
   .filter-area{
-    justify-content:center;           /* 窄屏自动居中 */
+    justify-content:center;
     gap:10px 12px;
-    padding:10px 14px;
   }
-  .filter-area label + select,
-  .filter-area label + input[type="text"],
-  .filter-area label + input[type="date"],
-  .filter-area select:not(label + select),
-  .filter-area input[type="text"]:not(label + input[type="text"]),
-  .filter-area input[type="date"]:not(label + input[type="date"]){
+  .filter-area select,
+  .filter-area input{
     min-width:130px;
   }
 }
