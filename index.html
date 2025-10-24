@@ -283,6 +283,64 @@
 /* 兜底：防止外层 flex/float 影响高度计算 */
 .kbar-belt, .kbar-left, .kbar-left-col, .kbar-left-grid{ min-width:0; }
 
+/* —— 1) 把这块从全局 float/flex 干扰里隔离 —— */
+.kbar-belt, .kbar-tabs { 
+  display: block; width: 100%;
+  clear: both;         /* 有任何 float 都被清掉 */
+  float: none !important;
+}
+.kbar-card, .kbar-issue, .kbar-kpi {
+  float: none !important;
+  display: block;
+}
+
+/* —— 2) 强制“kpi+问题分析”是一个两列网格，后面的内容不会并排 —— */
+.kbar-belt{
+  position: relative;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: grid !important;
+  grid-template-columns: calc(260px + 520px) 360px; /* 左区(3竖+2×2) | 右区 */
+  grid-auto-flow: row;
+  gap: 12px;
+  padding: 12px 20px 10px;
+}
+
+/* 左区＝两列：左 260（3竖），右 520（2×2） */
+.kbar-left{
+  display: grid !important;
+  grid-template-columns: 260px 520px;
+  gap: 12px;
+  min-width: 0;
+}
+.kbar-left-col{
+  display: grid !important;
+  grid-template-rows: 118px 118px 118px; /* 三行等高 */
+  gap: 12px;
+}
+.kbar-left-grid{
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 118px 118px 118px; /* 第3行留白与左侧齐平 */
+  gap: 12px;
+}
+.kbar-ghost{ background: transparent; border: 1px dashed transparent; border-radius: 12px; }
+
+/* 右侧问题分析贯穿左侧三行 */
+.kbar-issue{ grid-row: 1 / span 3; background:#fffdf7; border:1px solid #ffe6b3; border-radius:12px; padding:10px 12px; }
+
+/* —— 3) Tabs 独占新一行 —— */
+.kbar-tabs{
+  margin: 10px 20px 0;
+  border-bottom: 1px solid #e6edf5;
+}
+.kbar-tab{ padding:10px 16px; cursor:pointer; color:#475569; border-bottom:2px solid transparent; }
+.kbar-tab:hover{ background:#f3f6fb; }
+.kbar-active{ color:#003366; font-weight:600; border-bottom-color:#003366; }
+
+/* —— 4) 兜底：父容器 flex/overflow 造成的挤压 —— */
+.content-wrap, .content-scroll, .main-right { min-width: 0; }
+
 </style>
 </head>
 
