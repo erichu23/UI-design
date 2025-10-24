@@ -198,109 +198,78 @@
 .content-scroll { flex:1; overflow:auto; }
 .content-wrap { padding:16px 20px 32px; }
 
-/* 指标条 */
-.kpi-strip {
+    /* 面包屑 */
+.breadcrumb-bar{background:#fff;border-bottom:1px solid #e6edf5;padding:12px 20px;font-size:14px;color:#334155}
+.breadcrumb-bar .back-link{color:#003366;text-decoration:none;font-weight:600;margin-right:4px}
+.breadcrumb-bar .sep{margin:0 6px;color:#94a3b8}
+.breadcrumb-bar b{color:#003366}
+
+/* 顶部整体：左 KPI + 右 问题分析 */
+.kpi-and-issue{
   display:grid;
-  grid-template-columns:repeat(6,minmax(0,1fr));
-  gap:12px;
-  margin:8px 0 16px;
-}
-.kpi {
-  background:#f8fafc;
-  border:1px solid #e6edf5;
-  border-radius:10px;
-  padding:10px 12px;
-}
-.kpi-label { font-size:12px; color:#6b7280; margin-bottom:4px; }
-.kpi-value { font-size:18px; font-weight:600; color:#0f172a; }
-.kpi-value.pos { color:#0f7a43; }
-.kpi-value.neg { color:#b2162a; }
-
-/* Tab 页 */
-.tabbar {
-  display:flex;
-  align-items:center;
-  border-bottom:1px solid #e6edf5;
-  margin-bottom:12px;
-}
-.tab {
-  padding:10px 16px;
-  cursor:pointer;
-  color:#475569;
-  border-bottom:2px solid transparent;
-}
-.tab:hover { background:#f3f6fb; }
-.tab.active {
-  color:#003366;
-  font-weight:600;
-  border-bottom-color:#003366;
-}
-.tab.disabled {
-  color:#c0c7d0;
-  pointer-events:none;
-  border-bottom-color:transparent;
+  grid-template-columns: minmax(720px, 1fr) 380px; /* 左右布局 */
+  gap:16px;
+  padding:14px 20px 10px;
 }
 
-/* 占位区 */
-.panel-placeholder {
-  border:1px dashed #dbe2eb;
-  border-radius:10px;
-  padding:40px;
-  text-align:center;
-  color:#64748b;
-  background:#fcfdff;
-}
-/* KPI 带问题提示：7 卡 + 右侧提示框 */
-.kpi-band{
+/* 左侧 KPI 布局：3列网格，第一列放前三个纵排，后四个做2×2 */
+.kpi-grid{
   display:grid;
-  grid-template-columns: repeat(7, minmax(0,1fr)) 1.6fr; /* 7 个KPI + 右侧提示稍宽 */
+  /* 三列：左1列给k1~k3，右2列摆2x2的k4~k7 */
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-auto-rows: minmax(72px, 1fr); /* 统一高度 */
   gap:12px;
-  margin:8px 0 16px;
+  align-items:stretch;
+  /* 利用区域定位实现： 
+     Row1: k1 | k4 | k5
+     Row2: k2 | k6 | k7
+     Row3: k3 | (空) | (空)
+  */
+  grid-template-areas:
+    "k1 k4 k5"
+    "k2 k6 k7"
+    "k3 k6 k7"; /* 如果想后四个严格2行，可把这行改成 'k3 . .' */
 }
-.kpi{
-  background:#f8fafc;
-  border:1px solid #e6edf5;
-  border-radius:10px;
-  padding:10px 12px;
-  min-height:64px;
-}
-.kpi-label{ font-size:12px; color:#6b7280; margin-bottom:4px; }
-.kpi-value{ font-size:18px; font-weight:600; color:#0f172a; }
-.kpi-value.pos{ color:#0f7a43; }
-.kpi-value.neg{ color:#b2162a; }
-.link-num{ text-decoration:none; border-bottom:1px dotted currentColor; }
-.link-num:hover{ opacity:.85; }
-.link-num.danger{ color:#b2162a; }
 
-/* 右侧问题提示 */
-.kpi-issue{
-  background:#fffdf7;
-  border:1px solid #ffe6b3;
-  border-radius:10px;
-  padding:10px 12px;
-}
-.issue-head{
-  display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;
-}
-.issue-title{ color:#8a5c00; font-weight:600; }
-.issue-link{
-  font-size:12px; color:#8a5c00; text-decoration:none; border:1px solid #f5cf85;
-  padding:2px 8px; border-radius:999px; background:#fff7e3;
-}
-.issue-link:hover{ filter:brightness(1.05); }
-.dot{ width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; }
-.dot-warn{ background:#f59e0b; box-shadow:0 0 0 3px rgba(245,158,11,.15); }
+/* 指定每个块的区域 */
+.k1{ grid-area:k1; } .k2{ grid-area:k2; } .k3{ grid-area:k3; }
+.k4{ grid-area:k4; } .k5{ grid-area:k5; }
+.k6{ grid-area:k6; } .k7{ grid-area:k7; }
 
-.issue-body ul{ margin:0; padding-left:16px; color:#8a5c00; font-size:12px; line-height:1.6; }
-.issue-body b{ font-weight:700; }
-.issue-foot{ margin-top:6px; }
-.mini-link{ font-size:12px; color:#8a5c00; text-decoration:underline; }
+/* KPI 卡片通用 */
+.kpi{background:#f8fafc;border:1px solid #e6edf5;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;justify-content:center}
+.kpi-label{font-size:12px;color:#6b7280;margin-bottom:4px}
+.kpi-value{font-size:18px;font-weight:600;color:#0f172a}
+.kpi-value.pos{color:#0f7a43}
+.kpi-value.neg{color:#b2162a}
+.link-num{ text-decoration:none; border-bottom:1px dotted currentColor }
+.link-num:hover{ opacity:.85 } .link-num.danger{ color:#b2162a }
 
-/* 响应式（窄屏改为两行） */
-@media (max-width:1280px){
-  .kpi-band{ grid-template-columns: repeat(4, 1fr); }
-  .kpi-issue{ grid-column: span 4; }
+/* 右侧问题分析卡 */
+.issue-card{background:#fffdf7;border:1px solid #ffe6b3;border-radius:10px;padding:10px 12px}
+.issue-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.issue-title{color:#8a5c00;font-weight:600}
+.issue-link{font-size:12px;color:#8a5c00;text-decoration:none;border:1px solid #f5cf85;padding:2px 8px;border-radius:999px;background:#fff7e3}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.dot-warn{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.15)}
+.issue-body{color:#8a5c00;font-size:12px;line-height:1.6}
+.issue-body ul{margin:6px 0 0 18px;padding:0}
+.issue-foot{margin-top:8px}
+.mini-link{font-size:12px;color:#8a5c00;text-decoration:underline}
+
+/* Tabs */
+.tabbar{display:flex;align-items:center;border-bottom:1px solid #e6edf5;margin:10px 20px 0}
+.tab{padding:10px 16px;cursor:pointer;color:#475569;border-bottom:2px solid transparent}
+.tab:hover{background:#f3f6fb}
+.tab.active{color:#003366;font-weight:600;border-bottom-color:#003366}
+.tab.disabled{color:#c0c7d0;pointer-events:none}
+
+/* 响应式：窄屏下堆叠 */
+@media (max-width:1200px){
+  .kpi-and-issue{ grid-template-columns: 1fr; }
+  .issue-card{ order:2 }
 }
+
 
 
 
@@ -358,84 +327,73 @@
 
   
   <!-- 右侧（必须与 aside 同级，且共同包在 layout-main 内） -->
- <section class="main-right">
-  <div class="breadcrumb-bar">
+ <div class="breadcrumb-bar">
     <a href=" " class="back-link">← 返回项目列表</a >
     <span class="sep">/</span> <span class="proj">Test2</span>
     <span class="sep">/</span> <span class="date">20251022</span>
     <span class="sep">/</span> <b>银行流水分析</b>
   </div>
-
-  <div class="content-scroll">
-    <div class="content-wrap">
-
-      <!-- 指标条 -->
-      <div class="kpi-band">
-        <!-- 1 被审计单位 -->
-        <div class="kpi">
-          <div class="kpi-label">被审计单位</div>
-          <div class="kpi-value">1 家</div>
+  
+  <!-- KPI + 问题分析 -->
+  <div class="kpi-and-issue">
+    <!-- 左侧 KPI 总容器：左1列(前三个纵排) + 右2列(后四个2×2) -->
+    <div class="kpi-grid">
+      <div class="kpi k1">
+        <div class="kpi-label">被审计单位</div>
+        <div class="kpi-value">1 家</div>
+      </div>
+      <div class="kpi k2">
+        <div class="kpi-label">对手方</div>
+        <div class="kpi-value">29 家</div>
+      </div>
+      <div class="kpi k3">
+        <div class="kpi-label">账号</div>
+        <div class="kpi-value">17 个</div>
+      </div>
+  
+      <div class="kpi k4">
+        <div class="kpi-label">交易总额</div>
+        <div class="kpi-value">562.2 K</div>
+      </div>
+      <div class="kpi k5">
+        <div class="kpi-label">流入总额</div>
+        <div class="kpi-value pos"><a class="link-num" href="javascript:;">270.2 K</a ></div>
+      </div>
+      <div class="kpi k6">
+        <div class="kpi-label">流水总数</div>
+        <div class="kpi-value">145 笔</div>
+      </div>
+      <div class="kpi k7">
+        <div class="kpi-label">流出金额</div>
+        <div class="kpi-value neg"><a class="link-num danger" href="javascript:;">292.0 K</a ></div>
+      </div>
+    </div>
+  
+    <!-- 右侧：数据问题分析 -->
+    <aside class="issue-card">
+      <div class="issue-head">
+        <span class="dot dot-warn"></span>
+        <span class="issue-title">数据问题分析</span>
+        <a class="issue-link" href="#">处理建议</a >
+      </div>
+      <div class="issue-body">
+        <p>检测到导入银行流水部分未补开户行信息。</p >
+        <ul>
+          <li>入账明细存在重复流水 <b>3</b> 条。</li>
+          <li>个别文件模板不规范，建议替换模板。</li>
+          <li>个别大额支出缺少摘要，请补充。</li>
+        </ul>
+        <div class="issue-foot">
+          <a href="#" class="mini-link">查看异常列表</a >
         </div>
-      
-        <!-- 2 对手方 -->
-        <div class="kpi">
-          <div class="kpi-label">对手方</div>
-          <div class="kpi-value">29 家</div>
-        </div>
-      
-        <!-- 3 账号 -->
-        <div class="kpi">
-          <div class="kpi-label">账号</div>
-          <div class="kpi-value">17 个</div>
-        </div>
-      
-        <!-- 4 交易总额 -->
-        <div class="kpi">
-          <div class="kpi-label">交易总额</div>
-          <div class="kpi-value">562.2 K</div>
-        </div>
-      
-        <!-- 5 流入总额（可点击样式） -->
-        <div class="kpi">
-          <div class="kpi-label">流入总额</div>
-          <div class="kpi-value pos"><a class="link-num" href=" ">270.2 K</a ></div>
-        </div>
-      
-        <!-- 6 流水总数 -->
-        <div class="kpi">
-          <div class="kpi-label">流水总数</div>
-          <div class="kpi-value">145 笔</div>
-        </div>
-      
-        <!-- 7 流出金额（红色可点） -->
-        <div class="kpi">
-          <div class="kpi-label">流出金额</div>
-          <div class="kpi-value neg"><a class="link-num danger" href="javascript:void(0)">292.0 K</a ></div>
-        </div>
-
-        <!-- 右侧问题提示框（与截图右侧相似） -->
-        <div class="kpi-issue">
-          <div class="issue-head">
-            <span class="dot dot-warn"></span>
-            <span class="issue-title">数据问题分析</span>
-            <a class="issue-link" href="#">点击处理</a >
-          </div>
-          <div class="issue-body">
-            <ul>
-              <li>检测到部分银行账户未补充开户行信息。</li>
-              <li>导入明细存在重复流水 <b>3</b> 条，建议去重。</li>
-              <li>个别文件疑似非流水格式，请核验模板。</li>
-            </ul>
-            <div class="issue-foot">
-              <a href="#" class="mini-link">查看异常列表</a >
-            </div>
-
-
-
-      <!-- Tab 页 -->
-      <div class="tabbar" id="topTabs">
-        <div class="tab active" data-top="biz">经营实质</div>
-        <div class="tab" data-top="routine">特定交易查询</div>
+      </div>
+    </aside>
+  </div>
+  
+  <!-- Tabs -->
+  <div class="tabbar" id="topTabs">
+    <div class="tab active" data-top="biz">经营实质</div>
+    <div class="tab" data-top="routine">特定交易查询</div>
           </div>
 
             <!-- ===================== 经营实质 ===================== -->
