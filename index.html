@@ -441,6 +441,19 @@
   box-shadow:0 1px 3px rgba(0,0,0,0.03);
 }
 
+.scrollable-tab {
+  max-height: calc(100vh - 280px);   /* 减去顶部导航 + KPI 区高度 */
+  overflow-y: auto;                  /* 仅内部滚动 */
+  padding-right: 8px;
+  scrollbar-width: thin;             /* 火狐滚动条细化 */
+}
+.scrollable-tab::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollable-tab::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,.15);
+  border-radius: 4px;
+}    
 
 /* 响应式：窄屏堆叠 */
 @media (max-width:1200px){
@@ -590,22 +603,23 @@
             <!-- ===================== 经营实质 ===================== -->
             <section id="page-biz">
               <div class="card">
-                <div class="content">
-                  <div class="filters">
-                    <label>被审计单位公司：</label><select class="select" id="fCompany"></select>
-                    <label>银行账户：</label><select class="select" id="fBank"></select>
-                    <label>公司职能：</label><select class="select" id="fFunc"></select>
-                    <label>分析时间：</label><select class="select" id="fPeriod">
-                      <option value="36">近三年</option><option value="24">近两年</option><option value="12">近一年</option>
-                    </select>
-                    <label>对手方类型：</label><select class="select" id="fType">
-                      <option value="all">全部</option><option>客户</option><option>供应商</option><option>员工</option>
-                    </select>
-                    <button class="btn btn-primary" id="btnQueryBiz">查询</button>
-                    <button class="btn" id="btnResetBiz">重置</button>
+                <div class="tab-container scrollable-tab">
+                  <div class="content">
+                    <div class="filters">
+                      <label>被审计单位公司：</label><select class="select" id="fCompany"></select>
+                      <label>银行账户：</label><select class="select" id="fBank"></select>
+                      <label>公司职能：</label><select class="select" id="fFunc"></select>
+                      <label>分析时间：</label><select class="select" id="fPeriod">
+                        <option value="36">近三年</option><option value="24">近两年</option><option value="12">近一年</option>
+                      </select>
+                      <label>对手方类型：</label><select class="select" id="fType">
+                        <option value="all">全部</option><option>客户</option><option>供应商</option><option>员工</option>
+                      </select>
+                      <button class="btn btn-primary" id="btnQueryBiz">查询</button>
+                      <button class="btn" id="btnResetBiz">重置</button>
+                    </div>
                   </div>
                 </div>
-              </div>
 
               <div class="card"><div class="head"><div class="title">资金流水金额</div></div>
                 <div class="content"><div id="chart-balance" class="chart"></div></div>
