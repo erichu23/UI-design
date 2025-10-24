@@ -205,20 +205,19 @@
 .breadcrumb-bar .sep{margin:0 6px;color:#94a3b8}
 .breadcrumb-bar b{color:#003366}
 
-/* 顶部整体：左 KPI + 右 问题分析（右侧更宽，整体更紧凑） */
+/* 顶部整体：左 KPI + 右 问题分析 */
 .kpi-and-issue{
   display:grid;
-  grid-template-columns: minmax(520px, 1fr) 520px; /* ← 左侧更瘦、右侧更宽以变矮 */
+  grid-template-columns: minmax(520px, 1fr) 520px;
   gap:10px;
-  padding:8px 16px 6px;                             /* ← 上下再收一点 */
+  padding:8px 16px 6px;
 }
 
-/* 左侧 KPI：两行；前三列更瘦、后两列更宽（2×2 更“长”） */
+/* 左侧 KPI：两行结构（前三列更瘦，右两列更长） */
 .kpi-grid{
   display:grid;
-  /* 前三列 0.8fr，后两列 1.2fr：让 2×2 撑长；也让前三列更瘦 */
   grid-template-columns: 0.8fr 0.8fr 0.8fr 1.2fr 1.2fr;
-  grid-template-rows: 64px 64px;                   /* ← 两行更短 */
+  grid-template-rows: 64px 64px;
   gap:10px;
   align-items:stretch;
   grid-template-areas:
@@ -230,27 +229,49 @@
 .k1{ grid-area:k1; } .k2{ grid-area:k2; } .k3{ grid-area:k3; }
 .k4{ grid-area:k4; } .k5{ grid-area:k5; } .k6{ grid-area:k6; } .k7{ grid-area:k7; }
 
-/* 通用 KPI 卡片（前三列保持竖排：标在上、数在下） */
+/* 通用 KPI 样式 */
 .kpi{
   background:#f8fafc;
   border:1px solid #e6edf5;
   border-radius:8px;
-  padding:6px 10px;               /* 更紧凑 */
+  padding:6px 10px;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:flex-start;
 }
-.kpi-label{font-size:17px;color:#334155;margin-bottom:3px;white-space:nowrap}
-.kpi-value{font-size:17px;font-weight:700;color:#0f172a;line-height:1.1;white-space:nowrap}
+.kpi-label{
+  font-size:17px;
+  color:#334155;
+  font-weight:600;
+  margin-bottom:3px;
+  white-space:nowrap;
+}
+.kpi-value{
+  font-size:17px;
+  font-weight:700;
+  color:#0f172a;
+  line-height:1.1;
+  white-space:nowrap;
+}
 .kpi-value.pos{color:#0f7a43}
 .kpi-value.neg{color:#b2162a}
 .link-num{ text-decoration:none; border-bottom:1px dotted currentColor }
 .link-num:hover{ opacity:.85 }
 .link-num.danger{ color:#b2162a }
 
-/* 仅 2×2（k4~k7）改为横排，数值右对齐，显得更“长” */
+/* ✅ 前三列（k1~k3）内容整体居中 */
+.k1, .k2, .k3 {
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  align-items:center !important;
+  text-align:center !important;
+}
+
+/* ✅ 右侧 2×2（k4~k7）横排，数值右对齐 */
 .k4,.k5,.k6,.k7{
+  display:flex !important;
   flex-direction:row !important;
   align-items:center !important;
   justify-content:space-between !important;
@@ -260,19 +281,19 @@
   margin-left:auto; text-align:right;
 }
 
-/* 右侧问题分析卡：更宽 + 更紧凑，整体高度更矮 */
+/* 右侧问题分析卡：更宽 + 更紧凑 */
 .issue-card{
   background:#fffdf7;
   border:1px solid #ffe6b3;
   border-radius:10px;
-  padding:8px 10px;               /* 收紧留白 */
+  padding:8px 10px;
 }
 .issue-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .issue-title{color:#8a5c00;font-weight:600}
 .issue-link{font-size:12px;color:#8a5c00;text-decoration:none;border:1px solid #f5cf85;padding:2px 8px;border-radius:999px;background:#fff7e3}
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
 .dot-warn{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.15)}
-.issue-body{color:#8a5c00;font-size:12px;line-height:1.45}  /* 行距更紧凑 */
+.issue-body{color:#8a5c00;font-size:12px;line-height:1.45}
 .issue-body ul{margin:6px 0 0 18px;padding:0}
 .issue-foot{margin-top:6px}
 .mini-link{font-size:12px;color:#8a5c00;text-decoration:underline}
