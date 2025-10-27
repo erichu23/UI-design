@@ -661,45 +661,49 @@
   }
 }
 
-/* 颜色图例 */
-.legend{display:flex;gap:14px;justify-content:flex-end;margin:6px 0 10px}
-.legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px}
-.lg-warn{background:#facc15}.lg-none{background:#cbd5e1}.lg-ok{background:#3b82f6}.lg-err{background:#ef4444}
+/* 图例（如已有可忽略） */
+.accv-legend{display:flex;gap:14px;justify-content:flex-end;margin:6px 0 10px}
+.accv-legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px}
+.accv-lg-warn{background:#facc15}.accv-lg-none{background:#cbd5e1}
+.accv-lg-ok{background:#3b82f6}.accv-lg-err{background:#ef4444}
 
-/* 统一变量 */
-.check{--cell:20px; --gap:6px; --sep:18px; --dot:12px; --year:#334155}
+/* 命名空间根 */
+.accv{--cell:22px;--gap:4px;--sepw:20px;--dot:12px;--year:#334155;}
 
-/* 头部（箭头+年份） */
-.check-head{display:flex;align-items:center;gap:8px;font-size:13px;color:#475569;user-select:none}
-.check-head .y{color:var(--year);font-weight:600}
-.check-head .sep{width:var(--sep);text-align:center;color:#94a3b8}
-.arrow-btn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:22px;border:1px solid #cbd5e1;background:#fff;border-radius:6px;cursor:pointer;transition:.2s}
-.arrow-btn:hover{background:#f1f5f9}
-.arrow-btn svg{width:14px;height:14px;transition:transform .2s ease;fill:#334155}
-.arrow-btn.exp svg{transform:rotate(90deg)} /* ▶→▼ */
+/* 表头（箭头 + 年份） */
+.accv-head{display:flex;align-items:center;gap:8px;color:#475569;font-size:13px;user-select:none}
+.accv-head .y{color:var(--year);font-weight:600}
+.accv-head .sep{width:var(--sepw);text-align:center;color:#94a3b8}
 
-/* 关键：两种网格布局 */
-.grid{display:grid;align-items:center;column-gap:var(--gap)}
+.accv-arrow{display:inline-flex;align-items:center;justify-content:center;width:26px;height:24px;
+  border:1px solid #cbd5e1;background:#fff;border-radius:6px;cursor:pointer;transition:.2s}
+.accv-arrow:hover{background:#f1f5f9}
+.accv-arrow svg{width:14px;height:14px;fill:#334155;transition:transform .2s}
+.accv-arrow.exp svg{transform:rotate(90deg)} /* ▶→▼ */
+
+/* 栅格：合计行月份 & 数据行点位使用同一网格，保证完全对齐 */
+.accv-grid{display:grid;align-items:center;column-gap:var(--gap)}
 /* 展开：12(2023)+sep+12(2024) */
-.check.both .grid{grid-template-columns:repeat(12,var(--cell)) var(--sep) repeat(12,var(--cell))}
-/* 折叠：仅 2024 的 12 列 —— 没有多余列，所以无留白 */
-.check.y2024 .grid{grid-template-columns:repeat(12,var(--cell))}
+.accv.both  .accv-grid{grid-template-columns:repeat(12,var(--cell)) var(--sepw) repeat(12,var(--cell))}
+/* 收起：仅 2024 的 12 列，紧凑无留白 */
+.accv.y2024 .accv-grid{grid-template-columns:repeat(12,var(--cell))}
 
-/* 在折叠态隐藏 2023 和分隔列；展开态显示 */
-.check.y2024 .col-2023, .check.y2024 .col-sep{display:none}
-.check.both  .col-2023, .check.both  .col-sep{display:initial}
+/* 收起隐藏 2023 与分隔列（不占位） */
+.accv.y2024 .accv-2023,
+.accv.y2024 .accv-sep{display:none}
 
-/* 月份数字（合计行） */
-.mnum{font-size:12px;color:#64748b;text-align:center}
-.mnum.dim{opacity:.55}
+/* 合计行月份数字 */
+.accv-m{font-size:12px;color:#64748b;text-align:center}
+.accv-m.dim{opacity:.55}
 
-/* 点阵 */
-.dot{width:var(--dot);height:var(--dot);border-radius:3px;display:inline-block}
-.ok{background:#3b82f6}.none{background:#cbd5e1}.warn{background:#facc15}.err{background:#ef4444}
+/* 数据点 */
+.accv-dot{width:var(--dot);height:var(--dot);border-radius:3px;display:inline-block}
+.accv-ok{background:#3b82f6}.accv-none{background:#cbd5e1}
+.accv-warn{background:#facc15}.accv-err{background:#ef4444}
 
-/* 列宽建议（根据你主表格风格可调） */
-.table th.check-col,.table td.check-col{min-width:680px}
-.table td.check-col .row{padding:6px 0}
+/* 仅限制“校验情况”列的最小宽度，避免撑坏全表 */
+.table th.accv-col, .table td.accv-col{min-width:680px}
+.table td.accv-col .accv-row{padding:6px 0}
 
     
 </style>
@@ -989,76 +993,96 @@
                       <th>对手方数量</th>
                       <th>流水文件</th>
                       <th>操作</th>
-                      <th class="check-col">
-                        <div class="check y2024" id="chkHead">
-                          <div class="check-head">
-                            <button class="arrow-btn" id="btnChkToggle" title="展开/收起 2023">
+                      <th class="accv-col">
+                        <div class="accv y2024" id="accvHead">
+                          <div class="accv-head">
+                            <button class="accv-arrow" id="accvToggle" title="展开/收起 2023">
                               <svg viewBox="0 0 16 16"><path d="M6.2 3.5l5 4.5-5 4.5V3.5z"/></svg>
                             </button>
                             <span>校验情况：</span>
-                            <span class="y col-2023">2023</span>
-                            <span class="sep col-sep">|</span>
+                            <span class="y accv-2023">2023</span>
+                            <span class="accv-sep">|</span>
                             <span class="y">2024</span>
                           </div>
                         </div>
                       </th>
-                      
-                      <!-- 合计行：月份数字（与数据点同网格对齐） -->
-                      <td class="check-col">
-                        <div class="check y2024" id="chkMonths">
-                          <div class="grid">
-                            <!-- 2023 的 1-12 -->
-                            <span class="mnum col-2023">1</span><span class="mnum col-2023 dim">2</span>
-                            <span class="mnum col-2023">3</span><span class="mnum col-2023 dim">4</span>
-                            <span class="mnum col-2023">5</span><span class="mnum col-2023 dim">6</span>
-                            <span class="mnum col-2023">7</span><span class="mnum col-2023 dim">8</span>
-                            <span class="mnum col-2023">9</span><span class="mnum col-2023 dim">10</span>
-                            <span class="mnum col-2023">11</span><span class="mnum col-2023 dim">12</span>
+                    </tr>
+                  </thead>
+          
+                  <tbody>
+                    <!-- 合计行：在“校验情况”单元格里输出月份数字 -->
+                    <tr>
+                      <td><b>合计</b></td>
+                      <td>—</td><td>—</td>
+                      <td>¥0.00</td><td>¥0.00</td><td><b>¥0.00</b></td>
+                      <td>0</td><td>0</td><td>—</td><td>—</td>
+                      <td class="accv-col">
+                        <div class="accv y2024" id="accvMonths">
+                          <div class="accv-grid">
+                            <!-- 2023 · 1-12（默认隐藏，展开后显示） -->
+                            <span class="accv-m accv-2023">1</span><span class="accv-m accv-2023">2</span>
+                            <span class="accv-m accv-2023">3</span><span class="accv-m accv-2023">4</span>
+                            <span class="accv-m accv-2023">5</span><span class="accv-m accv-2023">6</span>
+                            <span class="accv-m accv-2023">7</span><span class="accv-m accv-2023">8</span>
+                            <span class="accv-m accv-2023">9</span><span class="accv-m accv-2023">10</span>
+                            <span class="accv-m accv-2023">11</span><span class="accv-m accv-2023">12</span>
                             <!-- 分隔列 -->
-                            <span class="col-sep"></span>
-                            <!-- 2024 的 1-12 -->
-                            <span class="mnum">1</span><span class="mnum dim">2</span>
-                            <span class="mnum">3</span><span class="mnum dim">4</span>
-                            <span class="mnum">5</span><span class="mnum dim">6</span>
-                            <span class="mnum">7</span><span class="mnum dim">8</span>
-                            <span class="mnum">9</span><span class="mnum dim">10</span>
-                            <span class="mnum">11</span><span class="mnum dim">12</span>
+                            <span class="accv-sep"></span>
+                            <!-- 2024 · 1-12（默认显示） -->
+                            <span class="accv-m">1</span><span class="accv-m">2</span>
+                            <span class="accv-m">3</span><span class="accv-m">4</span>
+                            <span class="accv-m">5</span><span class="accv-m">6</span>
+                            <span class="accv-m">7</span><span class="accv-m">8</span>
+                            <span class="accv-m">9</span><span class="accv-m">10</span>
+                            <span class="accv-m">11</span><span class="accv-m">12</span>
                           </div>
                         </div>
                       </td>
-                      
-                      <!-- 数据行：小圆点（与上面月份严格同网格） -->
-                      <td class="check-col">
-                        <div class="check y2024 chkRow">
-                          <div class="grid row">
-                            <!-- 2023 的点（默认折叠隐藏，不产生留白） -->
-                            <i class="dot ok col-2023"   title="2023-01"></i>
-                            <i class="dot ok col-2023"   title="2023-02"></i>
-                            <i class="dot err col-2023"  title="2023-03"></i>
-                            <i class="dot ok col-2023"   title="2023-04"></i>
-                            <i class="dot ok col-2023"   title="2023-05"></i>
-                            <i class="dot ok col-2023"   title="2023-06"></i>
-                            <i class="dot warn col-2023" title="2023-07"></i>
-                            <i class="dot ok col-2023"   title="2023-08"></i>
-                            <i class="dot ok col-2023"   title="2023-09"></i>
-                            <i class="dot ok col-2023"   title="2023-10"></i>
-                            <i class="dot err col-2023"  title="2023-11"></i>
-                            <i class="dot ok col-2023"   title="2023-12"></i>
+                    </tr>
+          
+                    <!-- ====== 数据行（示例）====== -->
+                    <tr>
+                      <td>abc有限公司</td>
+                      <td>574***0001</td>
+                      <td>招商银行</td>
+                      <td style="color:#2563eb">¥846,223,016</td>
+                      <td style="color:#ef4444">¥693,427,537</td>
+                      <td><b>¥1,539,650,553</b></td>
+                      <td>2,442</td>
+                      <td>401</td>
+                      <td><a href=" ">查看</a ></td>
+                      <td><a href="javascript:;">详情</a ></td>
+                      <td class="accv-col">
+                        <div class="accv y2024">
+                          <div class="accv-grid accv-row">
+                            <!-- 2023（默认隐藏；加 .accv-2023） -->
+                            <i class="accv-dot accv-ok   accv-2023" title="2023-01"></i>
+                            <i class="accv-dot accv-ok   accv-2023" title="2023-02"></i>
+                            <i class="accv-dot accv-err  accv-2023" title="2023-03"></i>
+                            <i class="accv-dot accv-ok   accv-2023" title="2023-04"></i>
+                            <i class="accv-dot accv-ok   accv-2023" title="2023-05"></i>
+                            <i class="accv-dot accv-none accv-2023" title="2023-06"></i>
+                            <i class="accv-dot accv-warn accv-2023" title="2023-07"></i>
+                            <i class="accv-dot accv-ok   accv-2023" title="2023-08"></i>
+                            <i class="accv-dot accv-ok   accv-2023" title="2023-09"></i>
+                            <i class="accv-dot accv-ok   accv-2023" title="2023-10"></i>
+                            <i class="accv-dot accv-err  accv-2023" title="2023-11"></i>
+                            <i class="accv-dot accv-ok   accv-2023" title="2023-12"></i>
                             <!-- 分隔列 -->
-                            <span class="col-sep"></span>
-                            <!-- 2024 的点（始终显示） -->
-                            <i class="dot ok"   title="2024-01"></i>
-                            <i class="dot ok"   title="2024-02"></i>
-                            <i class="dot ok"   title="2024-03"></i>
-                            <i class="dot warn" title="2024-04"></i>
-                            <i class="dot ok"   title="2024-05"></i>
-                            <i class="dot none" title="2024-06"></i>
-                            <i class="dot ok"   title="2024-07"></i>
-                            <i class="dot ok"   title="2024-08"></i>
-                            <i class="dot ok"   title="2024-09"></i>
-                            <i class="dot ok"   title="2024-10"></i>
-                            <i class="dot err"  title="2024-11"></i>
-                            <i class="dot ok"   title="2024-12"></i>
+                            <span class="accv-sep"></span>
+                            <!-- 2024（始终显示） -->
+                            <i class="accv-dot accv-ok"   title="2024-01"></i>
+                            <i class="accv-dot accv-ok"   title="2024-02"></i>
+                            <i class="accv-dot accv-ok"   title="2024-03"></i>
+                            <i class="accv-dot accv-warn" title="2024-04"></i>
+                            <i class="accv-dot accv-ok"   title="2024-05"></i>
+                            <i class="accv-dot accv-none" title="2024-06"></i>
+                            <i class="accv-dot accv-ok"   title="2024-07"></i>
+                            <i class="accv-dot accv-ok"   title="2024-08"></i>
+                            <i class="accv-dot accv-ok"   title="2024-09"></i>
+                            <i class="accv-dot accv-ok"   title="2024-10"></i>
+                            <i class="accv-dot accv-err"  title="2024-11"></i>
+                            <i class="accv-dot accv-ok"   title="2024-12"></i>
                           </div>
                         </div>
                       </td>
@@ -1332,26 +1356,20 @@
       });
     });
 
-    // 表头箭头 → 同步切换所有“校验情况”容器的布局类（y2024/both）
+    // 全表共享：点击表头箭头，所有“校验情况”同步展开/收起
     (function(){
-      const btn = document.getElementById('btnChkToggle');
-      const containers = () => document.querySelectorAll('.check'); // 头、合计、各行
-  
+      const btn = document.getElementById('accvToggle');
       function setMode(showBoth){
-        containers().forEach(c=>{
-          c.classList.toggle('y2024', !showBoth);
-          c.classList.toggle('both',  showBoth);
+        document.querySelectorAll('.accv').forEach(el=>{
+          el.classList.toggle('y2024', !showBoth);
+          el.classList.toggle('both',  showBoth);
         });
         btn.classList.toggle('exp', showBoth);
       }
-  
-      // 默认：仅 2024，紧凑无留白
-      setMode(false);
-  
+      setMode(false); // 默认仅 2024（无留白）
       btn.addEventListener('click', ()=>{
-        const any = document.querySelector('.check');
-        const showBoth = any && any.classList.contains('y2024'); // y2024 → both
-        setMode(showBoth);
+        const any = document.querySelector('.accv');
+        setMode(any && any.classList.contains('y2024')); // y2024 -> both
       });
     })();
 
