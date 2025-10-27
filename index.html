@@ -1361,7 +1361,7 @@
       });
     });
 
-    // 统一控制：点击表头箭头，所有校验区域同步展开/收起 2023
+     // 展开/收起：默认收起，仅显示 2024；展开后显示 2023｜2024
     (function(){
       const btn = document.getElementById('btnToggleCheck');
       const headWrap   = document.getElementById('checkWrap-head');
@@ -1380,23 +1380,6 @@
         setExpand(collapsed);
       });
     })();
-  
-      btn.addEventListener('click', ()=>{
-        const isCollapsed = headWrap.classList.contains('collapsed');
-        setExpand(isCollapsed); // 折叠→展开；展开→折叠
-      });
-    })();
-  
-    // 表头按钮：一键展开/收起当前页所有行
-    document.querySelector('#tblAccountSummary')?.addEventListener('click', e=>{
-      const headBtn = e.target.closest('.toggle-check-all');
-      if(!headBtn) return;
-      const allPanels = e.currentTarget.querySelectorAll('.check-panel');
-      const anyOpen = [...allPanels].some(p=>!p.classList.contains('hide'));
-      allPanels.forEach(p=>p.classList.toggle('hide', anyOpen)); // 如果有打开的，则一键收起；否则一键展开
-      const allRowBtns = e.currentTarget.querySelectorAll('.toggle-check');
-      allRowBtns.forEach(b=> b.textContent = anyOpen ? '展开' : '收起');
-    });
 
       
     /* =============== 经营实质：图表 =============== */
