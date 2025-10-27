@@ -1367,25 +1367,31 @@
       });
     });
 
-    // 一个按钮统一控制全部 grid 的折叠/展开（改变网格列数，避免留白/错位）
-    (function(){
-      const btn = document.getElementById('btnToggleCheck');
+    document.addEventListener("DOMContentLoaded", () => {
+    const scope = document.getElementById('checkScope');
+    const btn = document.getElementById('btnToggleCheck');
   
-      function setState(expanded){
-        btn.classList.toggle('expanded', expanded);
-        document.querySelectorAll('.months-grid').forEach(g=>{
-          g.classList.toggle('expanded', expanded);
-          g.classList.toggle('collapsed', !expanded);
-        });
-      }
-      // 默认：收起（仅 2024，行高紧凑、无留白）
-      setState(false);
+    // 若元素没加载好直接退出（防止报错）
+    if (!scope || !btn) {
+      console.warn("checkScope or btnToggleCheck not found");
+      return;
+    }
   
-      btn.addEventListener('click', ()=>{
-        const anyExpanded = document.querySelector('.months-grid.expanded');
-        setState(!anyExpanded);
-      });
-    })();
+    // 切换展开状态
+    function setExpand(expand) {
+      scope.classList.toggle('expanded', expand);
+      btn.classList.toggle('expanded', expand);
+    }
+  
+    // 默认：收起状态（只显示 2024）
+    setExpand(false);
+  
+    // 点击箭头按钮 → 展开/收起
+    btn.addEventListener('click', () => {
+      const isExpanded = scope.classList.contains('expanded');
+      setExpand(!isExpanded);
+    });
+  });
 
 
       
