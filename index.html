@@ -1367,22 +1367,26 @@
       });
     });
 
-     // 容器级同步：切换 #checkScope 的 expanded 类，即可让表头/合计行/数据行一起切换
-  (function(){
-    const scope = document.getElementById('checkScope');
-    const btn   = document.getElementById('btnToggleCheck');
+    // 一个按钮统一控制全部 grid 的折叠/展开（改变网格列数，避免留白/错位）
+    (function(){
+      const btn = document.getElementById('btnToggleCheck');
+  
+      function setState(expanded){
+        btn.classList.toggle('expanded', expanded);
+        document.querySelectorAll('.months-grid').forEach(g=>{
+          g.classList.toggle('expanded', expanded);
+          g.classList.toggle('collapsed', !expanded);
+        });
+      }
+      // 默认：收起（仅 2024，行高紧凑、无留白）
+      setState(false);
+  
+      btn.addEventListener('click', ()=>{
+        const anyExpanded = document.querySelector('.months-grid.expanded');
+        setState(!anyExpanded);
+      });
+    })();
 
-    function setExpand(expand){
-      scope.classList.toggle('expanded', expand);
-      btn.classList.toggle('expanded', expand);
-    }
-    // 默认：收起（只显示 2024，12 列，没有任何 2023 占位）
-    setExpand(false);
-
-    btn.addEventListener('click', ()=>{
-      setExpand(!scope.classList.contains('expanded'));
-    });
-  })();
 
       
     /* =============== 经营实质：图表 =============== */
