@@ -660,6 +660,20 @@
     min-width:130px;
   }
 }
+
+/* 校验情况单元格里的展开面板 */
+.check-cell{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.check-cell .toggle-check{font-size:12px;color:#2563eb}
+.check-grid{border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:#f8fafc}
+.check-year{display:flex;align-items:center;gap:10px;margin:4px 0}
+.check-year-hd{font-size:12px;color:#64748b;width:36px}
+.check-months{display:grid;grid-template-columns:repeat(12,12px);gap:6px}
+.check-months .dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+.check-months .ok{background:#3b82f6}     /* 蓝：检验无误 */
+.check-months .none{background:#cbd5e1}   /* 灰：无流水 */
+.check-months .warn{background:#facc15}   /* 黄：不连续 */
+.check-months .error{background:#ef4444}  /* 红：余额错误 */
+.hide{display:none}
     
 </style>
 </head>
@@ -902,176 +916,212 @@
       </section>
 
       <!-- ===================== 账户总览页 ===================== -->
-      <section id="tab-pane" class="pane-account">
-        <div class="card">
-          <div class="head">
-            <div class="title">资金总览</div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <button class="btn" id="btnAccountLogic">业务逻辑</button>
-              <button class="btn" id="btnAccountTips">操作提示</button>
-              <div style="width:1px;height:18px;background:#e5e7eb;margin:0 6px;"></div>
-              <button class="btn" id="btnCustomizeCols">自定义表头</button>
-              <button class="btn btn-primary" id="btnGenAccountResult">生成分析结果</button>
-            </div>
-          </div>
+      <section class="tab-pane" id="pane-account">
+        <div class="tab-scroll">
       
-          <!-- 状态图例 -->
-          <div class="content" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
-            <div class="small" style="display:flex;align-items:center;gap:10px;">
-              <span style="display:inline-flex;align-items:center;gap:6px;">
-                <span style="width:10px;height:10px;border-radius:50%;background:#facc15;"></span> 当日余额不连续
-              </span>
-              <span style="display:inline-flex;align-items:center;gap:6px;">
-                <span style="width:10px;height:10px;border-radius:50%;background:#cbd5e1;"></span> 无流水数据
-              </span>
-              <span style="display:inline-flex;align-items:center;gap:6px;">
-                <span style="width:10px;height:10px;border-radius:50%;background:#3b82f6;"></span> 检验无误
-              </span>
-              <span style="display:inline-flex;align-items:center;gap:6px;">
-                <span style="width:10px;height:10px;border-radius:50%;background:#ef4444;"></span> 余额错误
-              </span>
-            </div>
+          <!-- ========== 资金总览 ========== -->
+          <div class="card">
+            <div class="head">
+              <div class="title">资金总览</div>
       
-            <!-- 表格 -->
-            <div style="width:100%;overflow:auto;margin-top:8px;">
-              <table class="table" id="tblAccountSummary">
-                <thead>
-                  <tr>
-                    <th>被审计单位公司</th>
-                    <th>本方账号</th>
-                    <th>银行名称</th>
-                    <th>流入总额</th>
-                    <th>流出总额</th>
-                    <th>交易总额</th>
-                    <th>交易总额占比</th>
-                    <th>交易笔数</th>
-                    <th>对手方数量</th>
-                    <th>流水文件</th>
-                    <th>操作</th>
-                    <th>校验情况</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- 合计行 -->
-                  <tr>
-                    <td><b>合计</b></td>
-                    <td>—</td>
-                    <td>—</td>
-                    <td>¥0.00</td>
-                    <td>¥0.00</td>
-                    <td><b>¥0.00</b></td>
-                    <td>100%</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>—</td>
-                    <td>—</td>
-                    <td>
-                      <span class="small" style="padding:2px 6px;border-radius:6px;background:#e2e8f0;">—</span>
-                    </td>
-                  </tr>
-      
-                  <!-- 示例数据行（可复制若干行；真实数据由 JS 渲染覆盖） -->
-                  <tr>
-                    <td>abc有限公司</td>
-                    <td>1234 **** 5678</td>
-                    <td>招商银行</td>
-                    <td style="color:#2563eb">¥846,223,016</td>
-                    <td style="color:#ef4444">¥693,427,537</td>
-                    <td><b>¥1,539,650,553</b></td>
-                    <td>100.00%</td>
-                    <td>2,442</td>
-                    <td>401</td>
-                    <td><a href=" ">查看</a ></td>
-                    <td>
-                      <a href="javascript:void(0)">详情</a >
-                    </td>
-                    <td>
-                      <!-- 示例：蓝色=检验无误 -->
-                      <span class="small" style="padding:2px 6px;border-radius:6px;background:#dbeafe;color:#1e40af;">检验无误</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <!-- 分页占位 -->
-            <div id="pagination-account" class="pagination"></div>
-          </div>
-        </div>
-      
-        <!-- ===================== 缺失同名账户 ===================== -->
-        <div class="card">
-          <div class="head">
-            <div class="title">缺失同名账户</div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <button class="btn" id="btnMissingLogic">业务逻辑</button>
-              <button class="btn" id="btnMissingTips">操作提示</button>
-              <div style="width:1px;height:18px;background:#e5e7eb;margin:0 6px;"></div>
-              <button class="btn btn-primary" id="btnMissingGenResult">生成分析结果</button>
-              <button class="btn" id="btnMissingGenFlow">生成流水</button>
-            </div>
-          </div>
-      
-          <div class="content">
-            <!-- 指标小卡 -->
-            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px;">
-              <div class="top-item">
-                <div class="lbl small">交易总额</div>
-                <div class="num">¥0.00</div>
+              <!-- 紧跟标题：业务逻辑 / 操作提示 -->
+              <div class="head-inline" style="margin-left:8px;display:flex;gap:8px;">
+                <button class="btn" id="btnAccountLogic">业务逻辑</button>
+                <button class="btn" id="btnAccountTips">操作提示</button>
               </div>
-              <div class="top-item">
-                <div class="lbl small">流入本方总额</div>
-                <div class="num" style="color:#2563eb">¥0.00</div>
-              </div>
-              <div class="top-item">
-                <div class="lbl small">本方流出总额</div>
-                <div class="num" style="color:#ef4444">¥0.00</div>
-              </div>
-              <div class="top-item">
-                <div class="lbl small">已解释/总数</div>
-                <div class="num">0 / 5</div>
+      
+              <!-- 右侧：自定义表头 / 生成分析结果 -->
+              <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+                <button class="btn" id="btnCustomizeCols">自定义表头</button>
+                <button class="btn btn-primary" id="btnGenAccountResult">生成分析结果</button>
               </div>
             </div>
       
-            <!-- 表格 -->
-            <div style="width:100%;overflow:auto;">
-              <table class="table" id="tblMissingSameName">
-                <thead>
-                  <tr>
-                    <th>对手方名称（被审计单位）</th>
-                    <th>缺失条件说明</th>
-                    <th>第三方账户名</th>
-                    <th>第三方银行账号</th>
-                    <th>第三方银行</th>
-                    <th>涉入交易总额</th>
-                    <th>本方流出总额</th>
-                    <th>占比</th>
-                    <th>本方流出次数</th>
-                    <th>已解释/总数</th>
-                    <th>操作</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- 示例一行 -->
-                  <tr>
-                    <td>abc有限公司</td>
-                    <td>对手方开户名与我方名称不一致</td>
-                    <td>张三</td>
-                    <td>6214 **** 8890</td>
-                    <td>中国银行</td>
-                    <td><b>¥12,360,000</b></td>
-                    <td style="color:#ef4444">¥12,360,000</td>
-                    <td>100.00%</td>
-                    <td>26</td>
-                    <td>0 / 5</td>
-                    <td><a href="javascript:void(0)">生成分析报告</a ></td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="content">
+      
+              <!-- 状态图例：靠右对齐 -->
+              <div class="small" style="display:flex;gap:16px;flex-wrap:wrap;justify-content:flex-end;margin-bottom:8px;">
+                <span style="display:inline-flex;align-items:center;gap:6px;">
+                  <i style="width:10px;height:10px;border-radius:50%;background:#facc15;display:inline-block;"></i> 当日余额不连续
+                </span>
+                <span style="display:inline-flex;align-items:center;gap:6px;">
+                  <i style="width:10px;height:10px;border-radius:50%;background:#cbd5e1;display:inline-block;"></i> 无流水数据
+                </span>
+                <span style="display:inline-flex;align-items:center;gap:6px;">
+                  <i style="width:10px;height:10px;border-radius:50%;background:#3b82f6;display:inline-block;"></i> 检验无误
+                </span>
+                <span style="display:inline-flex;align-items:center;gap:6px;">
+                  <i style="width:10px;height:10px;border-radius:50%;background:#ef4444;display:inline-block;"></i> 余额错误
+                </span>
+              </div>
+      
+              <!-- 总览表 -->
+              <div style="overflow:auto;">
+                <table class="table" id="tblAccountSummary">
+                  <thead>
+                    <tr>
+                      <th>被审计单位公司</th>
+                      <th>本方账号</th>
+                      <th>银行名称</th>
+                      <th>流入总额</th>
+                      <th>流出总额</th>
+                      <th>交易总额</th>
+                      <th>交易总额占比</th>
+                      <th>交易笔数</th>
+                      <th>对手方数量</th>
+                      <th>流水文件</th>
+                      <th>操作</th>
+                      <th style="min-width:220px;">校验情况</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- 合计行（示例） -->
+                    <tr>
+                      <td><b>合计</b></td><td>—</td><td>—</td>
+                      <td>¥0.00</td><td>¥0.00</td><td><b>¥0.00</b></td>
+                      <td>100%</td><td>0</td><td>0</td>
+                      <td>—</td><td>—</td>
+                      <td>
+                        <div class="check-cell">
+                          <a class="toggle-check" href=" ">展开</a >
+                          <div class="check-grid hide">
+                            <!-- 年份块 - 可按需要生成多个 -->
+                            <div class="check-year">
+                              <div class="check-year-hd">2024</div>
+                              <div class="check-months">
+                                <!-- 1~12月色块：蓝=无误 灰=无流水 黄=不连续 红=错误 -->
+                                <i class="dot ok"    title="1月"></i>
+                                <i class="dot ok"    title="2月"></i>
+                                <i class="dot warn"  title="3月"></i>
+                                <i class="dot ok"    title="4月"></i>
+                                <i class="dot none"  title="5月"></i>
+                                <i class="dot error" title="6月"></i>
+                                <i class="dot ok"    title="7月"></i>
+                                <i class="dot ok"    title="8月"></i>
+                                <i class="dot ok"    title="9月"></i>
+                                <i class="dot ok"    title="10月"></i>
+                                <i class="dot ok"    title="11月"></i>
+                                <i class="dot ok"    title="12月"></i>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+      
+                    <!-- 示例数据行（演示“展开后显示月度色块”） -->
+                    <tr>
+                      <td>abc有限公司</td>
+                      <td>574***0001</td>
+                      <td>招商银行</td>
+                      <td style="color:#2563eb">¥846,223,016</td>
+                      <td style="color:#ef4444">¥693,427,537</td>
+                      <td><b>¥1,539,650,553</b></td>
+                      <td>100.00%</td>
+                      <td>2,442</td>
+                      <td>401</td>
+                      <td><a href="javascript:void(0)">查看</a ></td>
+                      <td><a href="javascript:void(0)">详情</a ></td>
+                      <td>
+                        <div class="check-cell">
+                          <a class="toggle-check" href="javascript:void(0)">展开</a >
+                          <div class="check-grid hide">
+                            <div class="check-year">
+                              <div class="check-year-hd">2024</div>
+                              <div class="check-months">
+                                <i class="dot ok"    title="1月"></i>
+                                <i class="dot ok"    title="2月"></i>
+                                <i class="dot ok"    title="3月"></i>
+                                <i class="dot warn"  title="4月"></i>
+                                <i class="dot ok"    title="5月"></i>
+                                <i class="dot ok"    title="6月"></i>
+                                <i class="dot none"  title="7月"></i>
+                                <i class="dot ok"    title="8月"></i>
+                                <i class="dot ok"    title="9月"></i>
+                                <i class="dot ok"    title="10月"></i>
+                                <i class="dot error" title="11月"></i>
+                                <i class="dot ok"    title="12月"></i>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+      
+              <div id="pagination-account" class="pagination"></div>
+            </div>
+          </div>
+      
+          <!-- ========== 缺失同名账户 ========== -->
+          <div class="card">
+            <div class="head">
+              <div class="title">缺失同名账户</div>
+      
+              <!-- 紧跟标题：业务逻辑 / 操作提示 -->
+              <div class="head-inline" style="margin-left:8px;display:flex;gap:8px;">
+                <button class="btn" id="btnMissingLogic">业务逻辑</button>
+                <button class="btn" id="btnMissingTips">操作提示</button>
+              </div>
+      
+              <!-- 右侧：生成分析结果 / 生成流水 -->
+              <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+                <button class="btn btn-primary" id="btnMissingGenResult">生成分析结果</button>
+                <button class="btn" id="btnMissingGenFlow">生成流水</button>
+              </div>
             </div>
       
-            <!-- 分页占位 -->
-            <div id="pagination-missing" class="pagination"></div>
+            <div class="content">
+              <!-- 指标条 -->
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px;">
+                <div class="top-item"><div class="lbl small">交易总额</div><div class="num">¥0.00</div></div>
+                <div class="top-item"><div class="lbl small">流入本方总额</div><div class="num" style="color:#2563eb">¥0.00</div></div>
+                <div class="top-item"><div class="lbl small">本方流出总额</div><div class="num" style="color:#ef4444">¥0.00</div></div>
+                <div class="top-item"><div class="lbl small">已解释/总数</div><div class="num">0 / 5</div></div>
+              </div>
+      
+              <!-- 缺失同名账户表 -->
+              <div style="overflow:auto;">
+                <table class="table" id="tblMissingSameName">
+                  <thead>
+                    <tr>
+                      <th>对手方名称（被审计单位）</th>
+                      <th>缺失条件说明</th>
+                      <th>第三方账户名</th>
+                      <th>第三方银行账号</th>
+                      <th>第三方银行</th>
+                      <th>涉入交易总额</th>
+                      <th>本方流出总额</th>
+                      <th>占比</th>
+                      <th>本方流出次数</th>
+                      <th>已解释/总数</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>abc有限公司</td>
+                      <td>对手方开户名与我方名称不一致</td>
+                      <td>张三</td>
+                      <td>6214 **** 8890</td>
+                      <td>中国银行</td>
+                      <td><b>¥12,360,000</b></td>
+                      <td style="color:#ef4444">¥12,360,000</td>
+                      <td>100.00%</td>
+                      <td>26</td>
+                      <td>0 / 5</td>
+                      <td><a href="javascript:void(0)">生成分析报告</a ></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+      
+              <div id="pagination-missing" class="pagination"></div>
+            </div>
           </div>
+      
         </div>
       </section>
     
@@ -1268,6 +1318,14 @@
       });
     });
 
+    // 切换“校验情况”展开/收起
+    document.addEventListener('click', function(e){
+      const btn = e.target.closest('.toggle-check');
+      if(!btn) return;
+      const grid = btn.parentElement.querySelector('.check-grid');
+      const isHide = grid.classList.toggle('hide');
+      btn.textContent = isHide ? '展开' : '收起';
+    });
 
       
     /* =============== 经营实质：图表 =============== */
