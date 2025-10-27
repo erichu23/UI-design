@@ -662,25 +662,42 @@
 }
 
 /* 校验情况单元格里的展开面板 */
-.btn.btn-sm{padding:6px 10px;font-size:12px;border-radius:8px}
-  .check-grid{border:1px solid #e5e7eb;border-radius:8px;background:#f8fafc;padding:8px 10px}
-  .check-top{display:grid;grid-template-columns:160px 1fr;align-items:center;margin-bottom:4px}
-  .check-top-left{display:flex;align-items:center;gap:6px}
-  .check-top .chev{font-weight:700;color:#334155}
-  .check-top .lbl{font-size:13px;color:#0f172a}
-  .check-top-right{display:flex;align-items:center;gap:12px;justify-content:flex-start}
-  .check-top-right .split{width:1px;height:14px;background:#e5e7eb;display:inline-block}
-  .check-top-right .year{font-weight:600;color:#334155}
-  .check-month-head{display:grid;grid-template-columns:1fr 1fr 120px;gap:12px;margin-bottom:6px}
-  .check-month-head .months{display:flex;gap:12px;color:#64748b;font-size:12px;align-items:center}
-  .check-body{display:grid;grid-template-columns:1fr 1fr 120px;gap:12px}
-  .dots{display:grid;grid-template-columns:repeat(12,14px);gap:6px;align-items:center}
-  .dot{width:14px;height:14px;border-radius:3px;display:inline-block}
-  .dot.ok{background:#3b82f6}
-  .dot.error{background:#ef4444}
-  .dot.warn{background:#facc15}
-  .dot.none{background:#cbd5e1}
-  .hide{display:none}
+/* 小按钮风格（沿用你现有的btn基础上微调） */
+.btn.btn-xs{padding:4px 8px;font-size:12px;border-radius:6px}
+.btn.btn-ghost{background:#fff;border:1px solid var(--border)}
+
+/* 校验列容器 */
+.check-cell{position:relative}
+
+/* 面板采用4列网格：标签 | 年份 | 年份 | 合计 */
+.check-panel{margin-top:6px;border:1px dashed var(--border);border-radius:8px;padding:8px 10px}
+.check-panel.hide{display:none}
+
+.check-grid-head,
+.check-grid-months,
+.check-grid-dots{
+  display:grid;
+  grid-template-columns: 100px 1fr 1fr 120px; /* 标签、2023、2024、合计 */
+  align-items:center;
+  gap:8px;
+  margin:3px 0;
+}
+
+/* 标签/年份 */
+.check-grid-head .lab{font-weight:600;color:#334155}
+.check-grid-head .year{font-weight:600;color:#475569}
+.check-grid-head .total{color:#0f172a}
+
+/* 月份数字行 */
+.months{font-size:12px;letter-spacing:2px;color:#64748b;white-space:nowrap}
+
+/* 点阵行 */
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dot{width:12px;height:12px;border-radius:3px;background:#e2e8f0;display:inline-block}
+.dot.ok{background:#3b82f6}
+.dot.none{background:#cbd5e1}
+.dot.warn{background:#facc15}
+.dot.error{background:#ef4444}
 
 
  
@@ -973,77 +990,64 @@
                       <th>对手方数量</th>
                       <th>流水文件</th>
                       <th>操作</th>
-                      <th style="min-width:380px;">
-                        校验情况
-                        <button id="toggleAllCheck" class="btn btn-sm" style="margin-left:10px;">展开校验情况</button>
+                      <!-- 按钮式表头：校验情况 -->
+                      <th style="min-width:320px;">
+                        <button class="btn btn-xs toggle-check-all" type="button">校验情况 ▾</button>
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-      
                     <!-- 合计行 -->
                     <tr>
-                      <td><b>合计</b></td>
-                      <td>—</td>
-                      <td>—</td>
-                      <td>¥0.00</td>
-                      <td>¥0.00</td>
-                      <td><b>¥0.00</b></td>
-                      <td>100%</td>
-                      <td>0</td>
-                      <td>0</td>
-                      <td>—</td>
-                      <td>—</td>
+                      <td><b>合计</b></td><td>—</td><td>—</td>
+                      <td>¥0.00</td><td>¥0.00</td><td><b>¥0.00</b></td>
+                      <td>100%</td><td>0</td><td>0</td>
+                      <td>—</td><td>—</td>
                       <td>
-                        <!-- 展开区（默认收起） -->
-                        <div class="check-grid hide">
-                          <!-- 顶部：校验情况/年份/合计 同一行 -->
-                          <div class="check-top">
-                            <div class="check-top-left">
-                              <span class="chev">»</span>
-                              <span class="lbl">校验情况</span>
-                            </div>
-                            <div class="check-top-right">
+                        <div class="check-cell">
+                          <button class="btn btn-ghost btn-xs toggle-check" type="button">展开</button>
+                          <div class="check-panel hide">
+                            <!-- 行1：标题列（标签 | 2023 | 2024 | 合计） -->
+                            <div class="check-grid-head">
+                              <span class="lab">校验情况</span>
                               <span class="year">2023</span>
-                              <span class="split"></span>
                               <span class="year">2024</span>
-                              <span class="split"></span>
-                              <span class="year">合计</span>
+                              <span class="year total">合计</span>
                             </div>
-                          </div>
-                          <!-- 第二行：月份（同一行显示各年份与合计的月份） -->
-                          <div class="check-month-head">
-                            <div class="months">
-                              <span>1</span><span>3</span><span>5</span><span>7</span><span>9</span><span>11</span>
+                            <!-- 行2：月份列 -->
+                            <div class="check-grid-months">
+                              <span class="lab">&nbsp;</span>
+                              <div class="months">1 3 5 7 9 11</div>
+                              <div class="months">1 3 5</div>
+                              <div class="months">—</div>
                             </div>
-                            <div class="months">
-                              <span>1</span><span>3</span><span>5</span>
-                            </div>
-                            <div class="months">
-                              <!-- 合计列可留空或放 “—” -->
-                              <span></span>
-                            </div>
-                          </div>
-                          <!-- 结果（色块行） -->
-                          <div class="check-body">
-                            <div class="dots">
-                              <!-- 2023: 6 个占位色块 -->
-                              <i class="dot ok"></i><i class="dot error"></i><i class="dot ok"></i>
-                              <i class="dot warn"></i><i class="dot ok"></i><i class="dot ok"></i>
-                            </div>
-                            <div class="dots">
-                              <!-- 2024: 3 个占位色块 -->
-                              <i class="dot ok"></i><i class="dot ok"></i><i class="dot ok"></i>
-                            </div>
-                            <div class="dots">
-                              <!-- 合计: 1 个占位色块（可按月度汇总/异常） -->
-                              <i class="dot ok"></i>
+                            <!-- 行3：结果点阵 -->
+                            <div class="check-grid-dots">
+                              <span class="lab">&nbsp;</span>
+                              <div class="dots">
+                                <!-- 2023 对应月：蓝=ok 灰=none 黄=warn 红=error -->
+                                <i class="dot ok"   title="1月"></i>
+                                <i class="dot ok"   title="3月"></i>
+                                <i class="dot warn" title="5月"></i>
+                                <i class="dot ok"   title="7月"></i>
+                                <i class="dot ok"   title="9月"></i>
+                                <i class="dot ok"   title="11月"></i>
+                              </div>
+                              <div class="dots">
+                                <!-- 2024 对应月 -->
+                                <i class="dot ok"    title="1月"></i>
+                                <i class="dot error" title="3月"></i>
+                                <i class="dot ok"    title="5月"></i>
+                              </div>
+                              <div class="dots">
+                                <!-- 合计：通常不画月度点；保留为空或统计点 -->
+                              </div>
                             </div>
                           </div>
                         </div>
                       </td>
                     </tr>
-      
+              
                     <!-- 示例数据行 -->
                     <tr>
                       <td>abc有限公司</td>
@@ -1058,45 +1062,37 @@
                       <td><a href=" ">查看</a ></td>
                       <td><a href="javascript:void(0)">详情</a ></td>
                       <td>
-                        <div class="check-grid hide">
-                          <div class="check-top">
-                            <div class="check-top-left">
-                              <span class="chev">»</span>
-                              <span class="lbl">校验情况</span>
-                            </div>
-                            <div class="check-top-right">
+                        <div class="check-cell">
+                          <button class="btn btn-ghost btn-xs toggle-check" type="button">展开</button>
+                          <div class="check-panel hide">
+                            <div class="check-grid-head">
+                              <span class="lab">校验情况</span>
                               <span class="year">2023</span>
-                              <span class="split"></span>
                               <span class="year">2024</span>
-                              <span class="split"></span>
-                              <span class="year">合计</span>
+                              <span class="year total">合计</span>
                             </div>
-                          </div>
-                          <div class="check-month-head">
-                            <div class="months">
-                              <span>1</span><span>3</span><span>5</span><span>7</span><span>9</span><span>11</span>
+                            <div class="check-grid-months">
+                              <span class="lab">&nbsp;</span>
+                              <div class="months">1 3 5 7 9 11</div>
+                              <div class="months">1 3 5</div>
+                              <div class="months">—</div>
                             </div>
-                            <div class="months">
-                              <span>1</span><span>3</span><span>5</span>
-                            </div>
-                            <div class="months"><span>—</span></div>
-                          </div>
-                          <div class="check-body">
-                            <div class="dots">
-                              <i class="dot ok"></i><i class="dot error"></i><i class="dot ok"></i>
-                              <i class="dot warn"></i><i class="dot ok"></i><i class="dot ok"></i>
-                            </div>
-                            <div class="dots">
-                              <i class="dot ok"></i><i class="dot ok"></i><i class="dot ok"></i>
-                            </div>
-                            <div class="dots">
-                              <i class="dot error"></i>
+                            <div class="check-grid-dots">
+                              <span class="lab">&nbsp;</span>
+                              <div class="dots">
+                                <i class="dot ok"></i><i class="dot ok"></i><i class="dot ok"></i>
+                                <i class="dot warn"></i><i class="dot ok"></i><i class="dot none"></i>
+                              </div>
+                              <div class="dots">
+                                <i class="dot ok"></i><i class="dot error"></i><i class="dot ok"></i>
+                              </div>
+                              <div class="dots"></div>
                             </div>
                           </div>
                         </div>
                       </td>
                     </tr>
-      
+              
                   </tbody>
                 </table>
               </div>
@@ -1365,15 +1361,25 @@
     });
 
     // 切换“校验情况”展开/收起
-    document.addEventListener('DOMContentLoaded', function(){
-      const btn = document.getElementById('toggleAllCheck');
-      btn.addEventListener('click', ()=>{
-        const expand = btn.textContent.includes('展开');
-        document.querySelectorAll('#tblAccountSummary .check-grid').forEach(g=>{
-          g.classList.toggle('hide', !expand);
-        });
-        btn.textContent = expand ? '收起校验情况' : '展开校验情况';
-      });
+    // 单行展开/收起
+    document.addEventListener('click', e=>{
+      const btn = e.target.closest('.toggle-check');
+      if(btn){
+        const panel = btn.parentElement.querySelector('.check-panel');
+        panel.classList.toggle('hide');
+        btn.textContent = panel.classList.contains('hide') ? '展开' : '收起';
+      }
+    });
+  
+    // 表头按钮：一键展开/收起当前页所有行
+    document.querySelector('#tblAccountSummary')?.addEventListener('click', e=>{
+      const headBtn = e.target.closest('.toggle-check-all');
+      if(!headBtn) return;
+      const allPanels = e.currentTarget.querySelectorAll('.check-panel');
+      const anyOpen = [...allPanels].some(p=>!p.classList.contains('hide'));
+      allPanels.forEach(p=>p.classList.toggle('hide', anyOpen)); // 如果有打开的，则一键收起；否则一键展开
+      const allRowBtns = e.currentTarget.querySelectorAll('.toggle-check');
+      allRowBtns.forEach(b=> b.textContent = anyOpen ? '展开' : '收起');
     });
 
       
