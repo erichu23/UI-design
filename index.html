@@ -422,13 +422,87 @@
 .tab.disabled{color:#c0c7d0;pointer-events:none}
 
 /* ✅ Tab 容器卡片风格 */
-.tab-container {
+.tab-container{
   background:#fff;
   border:1px solid #e6edf5;
   border-radius:8px;
-  margin:10px 16px 0;
-  padding:12px 20px 18px;
-  box-shadow:0 1px 3px rgba(0,0,0,0.04);
+  /* 统一与页面宽度对齐 */
+  width:100%;
+  max-width:1280px;
+  margin:10px auto 0;        /* 居中，不用左右 16px 了 */
+  padding:0;                 /* 内边距交给 .tabbar/.tab-intro 管 */
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+  box-sizing:border-box;
+  flex:1 1 auto;             /* 若父是 flex，允许拉满 */
+  min-width:0;               /* 防止被压成最小内容宽 */
+}
+
+/* =============== 统一：Tab 行 =============== */
+/* 用更高特异性，避免旧的 .tabbar 规则覆盖 */
+.tab-container .tabbar{
+  position:relative;
+  display:flex;
+  align-items:center;
+  flex-wrap:nowrap;          /* 不换行 */
+  gap:10px;
+  /* 内边距移到这里，别用外边距挤布局 */
+  padding:10px 20px 8px;
+  border-bottom:1px solid #e6edf5;
+  background:#fff;
+
+  /* ★ 关键：占满外框且不被父级 inline/fit-content 影响 */
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  flex:1 1 auto;
+  min-width:0;
+
+  /* ★ 标签多时横向滚动，而不是把整条挤窄 */
+  overflow-x:auto;
+  overflow-y:hidden;
+}
+
+/* =============== 统一：单个 Tab =============== */
+.tab-container .tab{
+  flex:0 0 auto;             /* 宽度随内容，不被拉伸 */
+  padding:10px 16px;
+  cursor:pointer;
+  color:#475569;
+  border-bottom:2px solid transparent;
+  border-radius:6px 6px 0 0;
+  white-space:nowrap;
+  transition:background .15s;
+}
+.tab-container .tab:hover{ background:#f3f6fb; }
+.tab-container .tab.active{
+  color:#003366;
+  font-weight:600;
+  border-bottom-color:#003366;
+}
+.tab-container .tab.disabled{ color:#c0c7d0; pointer-events:none; }
+
+/* =============== 统一：Tab 说明条（可选） =============== */
+.tab-container .tab-intro{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  padding:8px 20px 12px;
+  color:#334155;
+  font-size:12.5px;
+  line-height:1.5;
+  width:100%;
+  box-sizing:border-box;
+}
+.tab-container .tab-intro .ti-icon{ width:14px;height:14px;margin-top:2px;color:#1e40af; }
+.tab-container .tab-intro .ti-title{ font-weight:600;margin-right:6px; }
+
+/* ===== inkbar ===== */
+.inkbar{
+  position:absolute;
+  bottom:0; height:2px;
+  background:#1e40af;
+  border-radius:2px;
+  transition:left .25s ease, width .25s ease;
 }
 
 /* ✅ 图表区块也包裹在卡片中更融合 */
@@ -784,95 +858,7 @@
 }
 
 
-/* Tab外框整体 */
-/* ===== Tab外框整体（统一版） ===== */
-.tabhead{
-  background:#f6f8fe;
-  border:1px solid #e2e8f0;
-  border-radius:10px;
-  overflow:hidden;
-  /* ↓ 统一与下方卡片距离 */
-  margin:0 auto 10px;
-  /* ↓ 拉满行宽，且与主体同宽（可改 1280） */
-  width:100%;
-  max-width:1280px;
-  /* ↓ 防止父级 padding 导致视觉不齐 */
-  box-sizing:border-box;
-  /* ↓ 若外层是 flex 容器，强制占满可用宽度 */
-  flex:1 1 auto;
-  /* ↓ 防止被外层设置成 min-content 导致变窄 */
-  min-width:0;
-}
 
-/* ===== Tab按钮行 ===== */
-.tabbar{
-  position:relative;
-  display:flex;
-  /* ↓ 不换行，保持一排 */
-  flex-wrap:nowrap;
-  justify-content:flex-start;
-  gap:10px;
-  padding:10px 20px 8px 20px;
-  background:transparent;
-  border-bottom:1px solid #e2e8f0;
-
-  /* ★ 关键：占满外框，不受父级 inline/fit-content 影响 */
-  width:100%;
-  max-width:100%;
-  box-sizing:border-box;
-  flex:1 1 auto;
-  min-width:0;
-
-  /* ★ 多 Tab 时允许横向滚动，而不是被挤成一小块 */
-  overflow-x:auto;
-  overflow-y:hidden;
-  /* 可选：隐藏滚动条（按需保留） */
-  /* scrollbar-width:none; }
-  .tabbar::-webkit-scrollbar{ display:none; } */
-}
-.tabbar .tab{
-  /* ↓ 每个 Tab 自身宽度由内容决定，不拉伸 */
-  flex:0 0 auto;
-  padding:6px 14px;
-  border-radius:6px;
-  cursor:pointer;
-  user-select:none;
-  color:#334155;
-  transition:all .15s;
-  white-space:nowrap;
-}
-.tabbar .tab:hover{ background:#eef2ff; }
-.tabbar .tab.active{
-  color:#0f172a;
-  font-weight:600;
-}
-
-/* ===== inkbar ===== */
-.inkbar{
-  position:absolute;
-  bottom:0; height:2px;
-  background:#1e40af;
-  border-radius:2px;
-  transition:left .25s ease, width .25s ease;
-}
-
-/* ===== Tab 说明条（与上方在同框内） ===== */
-.tab-intro{
-  display:flex;
-  align-items:flex-start;
-  gap:8px;
-  padding:8px 20px 10px 20px;
-  background:transparent;
-  color:#334155;
-  font-size:12.5px;
-  line-height:1.5;
-
-  /* ↓ 与 tabbar 同宽，防止被压缩 */
-  width:100%;
-  box-sizing:border-box;
-}
-.tab-intro .ti-icon{ width:14px; height:14px; margin-top:2px; color:#1e40af; }
-.tab-intro .ti-title{ font-weight:600; margin-right:6px; }
     
 </style>
 </head>
@@ -1015,10 +1001,10 @@
       </aside>
     
     <!-- 3) Tabs（紧贴在KPI/问题卡下面） -->
-    <div class="tabhead">
+    <div class="tab-container">
       <div class="tabbar" id="topTabs">
-        <div class="tab" data-top="account">账户总览</div>
-        <div class="tab active" data-top="biz">经营实质</div>
+        <div class="tab active" data-top="account">账户总览</div>
+        <div class="tab" data-top="biz">经营实质</div>
         <div class="tab" data-top="relation">已知关联方交易</div>
         <div class="tab" data-top="transaction">特定交易查询</div>
         <div class="tab" data-top="routine">特定工商查询</div>
@@ -1035,7 +1021,7 @@
     <div class="tab-stage">
     
       <!-- ===================== 经营实质 面板 ===================== -->
-      <section class="tab-pane active" id="pane-biz">
+      <section class="tab-pane" id="pane-biz">
         <div class="tab-scroll">
       
           <!-- 1) 只放筛选区：.filter-card 里只保留 .filter-area -->
