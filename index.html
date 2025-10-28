@@ -783,27 +783,34 @@
   min-width: 70px;
 }
 
-  /* 让 Tab 与说明条连成一体 */
+
+/* Tab外框整体 */
 .tabhead {
-  background: #f6f8fe;              /* 外框背景 */
+  background: #f6f8fe;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 16px;
+  margin-bottom: 10px;  /* ← 原本16px改成10px，减小与下方卡片距离 */
+  width: 100%;
+  max-width: 1280px;   /* ← 控制对齐宽度 */
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* tab行 */
+/* Tab按钮行 */
 .tabbar {
   position: relative;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 8px 12px 6px 12px;
-  background: transparent;         /* 和外框同底色 */
+  flex-wrap: nowrap;  /* ← 不换行，保持一条横向铺满 */
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 10px 20px 8px 20px; /* ← 加宽左右内边距 */
+  background: transparent;
   border-bottom: 1px solid #e2e8f0;
+  min-width: 100%; /* ← 让 tab 区域拉满外框 */
 }
 .tabbar .tab {
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 6px;
   cursor: pointer;
   user-select: none;
@@ -819,7 +826,7 @@
   font-weight: 600;
 }
 
-/* 滑动下划线 */
+/* inkbar */
 .inkbar {
   position: absolute;
   bottom: 0;
@@ -829,12 +836,12 @@
   transition: left .25s ease, width .25s ease;
 }
 
-/* ✅ 说明条与Tab在同框内，去掉外边框 */
+/* Tab 说明条（与上方在同框内） */
 .tab-intro {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  padding: 8px 14px 10px 14px;
+  padding: 8px 20px 10px 20px; /* ← 内边距和上面对齐 */
   background: transparent;
   color: #334155;
   font-size: 12.5px;
