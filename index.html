@@ -412,6 +412,7 @@
 .issue-body-simple::-webkit-scrollbar-track{ background:transparent; }
 
 /* ===== Tab 容器：强制撑满整行，与 KPI 左对齐 ===== */
+/* ===== Tab 容器：强制撑满整行，与 KPI 左对齐 ===== */
 .tab-container{
   background:#fff;
   border:1px solid #e6edf5;
@@ -421,9 +422,9 @@
   box-shadow:0 1px 3px rgba(0,0,0,.04);
   box-sizing:border-box;
   width:calc(100% - 32px);
-  flex:1 1 100%;               /* ★ 在 flex 或 grid 下强制撑满整行 */
-  min-width:calc(100% - 32px); /* ★ 防止被内容宽度压缩 */
-  align-self:stretch;          /* ★ 在 grid/flex 里强制与父容器拉齐 */
+  flex:1 1 100%;
+  min-width:calc(100% - 32px);
+  align-self:stretch;
 }
 
 /* ===== Tab 行：撑满卡片宽度（与下方表格等宽） ===== */
@@ -433,18 +434,22 @@
   align-items:center;
   flex-wrap:nowrap;
   gap:10px;
-  padding:10px 20px 8px;
+
+  /* 与 KPI/卡片统一的左右 16px 内边距，并强制去掉任何外边距 */
+  padding:10px 16px 8px 16px;   /* ← 改成 16px，对齐左边线 */
+  margin:0 !important;          /* ← 关键：覆盖旧的 .tabbar{margin:8px 16px 0} */
+
   border-bottom:1px solid #e6edf5;
   background:#fff;
 
   width:100%; max-width:100%;
   box-sizing:border-box;
-  flex:1 1 100%;               /* ★ 同样强制拉满父容器宽度 */
-  min-width:100%;              /* ★ 防止被压缩成内容宽度 */
+  flex:1 1 100%;
+  min-width:100%;
   overflow-x:auto; overflow-y:hidden;
 }
 
-/* ===== 单个 Tab ===== */
+/* ===== 单个 Tab：仅文字变化，不高亮整块背景 ===== */
 .tab-container .tab{
   flex:0 0 auto;
   padding:10px 16px;
@@ -455,15 +460,8 @@
   white-space:nowrap;
   transition:color .15s;
 }
-.tab-container .tab:hover{
-  background:transparent;
-  color:#1e40af;
-}
-.tab-container .tab.active{
-  color:#003366;
-  font-weight:600;
-  background:transparent;
-}
+.tab-container .tab:hover{ background:transparent; color:#1e40af; }
+.tab-container .tab.active{ color:#003366; font-weight:600; background:transparent; }
 
 /* ===== inkbar：底部蓝线 ===== */
 .tab-container .inkbar{
@@ -475,12 +473,12 @@
   transition:left .25s ease, width .25s ease;
 }
 
-/* ===== 说明条 ===== */
+/* ===== 说明条（不变） ===== */
 .tab-container .tab-intro{
   display:flex;
   align-items:flex-start;
   gap:8px;
-  padding:8px 20px 12px 20px;
+  padding:8px 16px 12px 16px;   /* ← 与 tabbar 同步为 16px */
   color:#334155;
   font-size:12.5px;
   line-height:1.5;
