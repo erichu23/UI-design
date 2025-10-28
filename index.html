@@ -412,7 +412,6 @@
 .issue-body-simple::-webkit-scrollbar-track{ background:transparent; }
 
 /* ===== Tab 容器：强制撑满整行，与 KPI 左对齐 ===== */
-/* ===== Tab 容器：强制撑满整行，与 KPI 左对齐 ===== */
 .tab-container{
   background:#fff;
   border:1px solid #e6edf5;
@@ -847,7 +846,25 @@
   min-width: 70px;
 }
 
-
+#btnAccountLogic::before {
+  content: "\e6b3";          /* 对应 iconfont 灯泡 */
+  font-family: "iconfont";
+  color: #facc15;            /* 明亮黄色 */
+  margin-right: 6px;
+}
+#btnAccountTips::before {
+  content: "\e67a";          /* 对应 iconfont 星星 */
+  font-family: "iconfont";
+  color: #facc15;
+  margin-right: 6px;
+}
+/* 按钮内容整体对齐微调（可选） */
+.head-inline .btn {
+  display: inline-flex;
+  align-items: center;     /* ✅ 图标与文字垂直居中 */
+  justify-content: center;
+  gap: 4px;                /* 图标和文字之间的间距 */
+}
 
     
 </style>
