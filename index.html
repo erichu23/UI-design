@@ -661,7 +661,7 @@
   }
 }
 
-/* 图例（保留） */
+/* 图例（原样保留） */
 .legend{display:flex;gap:14px;justify-content:flex-end;margin:6px 0 10px}
 .legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px}
 .lg-warn{background:#facc15}.lg-none{background:#cbd5e1}.lg-ok{background:#3b82f6}.lg-err{background:#ef4444}
@@ -669,7 +669,7 @@
 /* 统一控制作用域 */
 .check-scope{ --dot:12px; --col:22px; --gap:4px; --sepw:20px; --year:#334155 }
 
-/* 箭头 + 表头（保留你的风格） */
+/* 表头与箭头 */
 .check-head{display:flex;align-items:center;gap:8px;color:#475569;font-size:13px;user-select:none}
 .check-head .y{color:var(--year);font-weight:600}
 .arrow-btn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:24px;border:1px solid #cbd5e1;background:#fff;border-radius:6px;cursor:pointer;transition:.25s}
@@ -677,41 +677,52 @@
 .arrow-btn svg{width:14px;height:14px;fill:#334155;transition:transform .25s}
 .arrow-btn.expanded svg{transform:rotate(90deg)} /* ▶→▼ */
 
-/* ===== 关键：同一网格（月份刻度 & 数据点） ===== */
-/* 收起：只有 [y24] 的 12 列，没有 2023 占位 */
+/* ===== 同一网格：月份刻度 & 数据点共用 ===== */
 .months-grid{
-  display:grid;align-items:center;justify-content:flex-start;column-gap:var(--gap);
-  grid-template-columns: [y24] repeat(12, var(--col));
+  display:grid;align-items:center;justify-content:flex-start;
+  column-gap:var(--gap);
+  /* 收起：仅 2024 的 12 列 */
+  grid-template-columns:[y24] repeat(12, var(--col));
   white-space:nowrap;
 }
-/* 展开： [y23]12 + [sep] + [y24]12 */
+/* 展开：2023(12)+分隔(1)+2024(12) */
 .check-scope.expanded .months-grid{
-  grid-template-columns: [y23] repeat(12, var(--col)) [sep] var(--sepw) [y24] repeat(12, var(--col));
+  grid-template-columns:[y23] repeat(12, var(--col)) [sep] var(--sepw) [y24] repeat(12, var(--col));
 }
 
-/* 表头中的“2023｜2024”也走同一套网格，保证 2024 正好在 y24 的 1 月上方 */
+/* 表头年份标签也放在同一网格，确保 2024 正对 y24 的1月 */
 .y-labels{
   display:grid;align-items:center;column-gap:var(--gap);
-  grid-template-columns: [y24] repeat(12, var(--col));
+  grid-template-columns:[y24] repeat(12, var(--col));
 }
 .check-scope.expanded .y-labels{
-  grid-template-columns: [y23] repeat(12, var(--col)) [sep] var(--sepw) [y24] repeat(12, var(--col));
+  grid-template-columns:[y23] repeat(12, var(--col)) [sep] var(--sepw) [y24] repeat(12, var(--col));
 }
 .y-2023{grid-column:y23}
 .y-2024{grid-column:y24}
 .sep-label{grid-column:sep;text-align:center;color:#94a3b8}
 
-/* 收起隐藏 2023&分隔；展开显示 */
+/* 收起隐藏 2023 & 分隔；展开显示 */
 .y-2023,.sep-label,.col-2023,.col-sep{display:none}
 .check-scope.expanded .y-2023,
 .check-scope.expanded .sep-label,
 .check-scope.expanded .col-2023,
 .check-scope.expanded .col-sep{display:inline-block}
 
-/* 视觉样式（保留） */
+/* 月份数字 */
 .month-num{font-size:12px;color:#64748b;text-align:center}
-.dot{width:var(--dot);height:var(--dot);border-radius:3px;display:inline-block}
-.dot.ok{background:#3b82f6}.dot.none{background:#cbd5e1}.dot.warn{background:#facc15}.dot.err{background:#ef4444}
+
+/* —— 关键：把 dot 改名为 chk-dot，避免被全局样式覆盖 —— */
+.months-grid .chk-dot{
+  display:inline-block;
+  width:var(--dot); height:var(--dot);
+  border-radius:3px;
+  vertical-align:middle;
+}
+.months-grid .chk-ok{background:#3b82f6}
+.months-grid .chk-none{background:#cbd5e1}
+.months-grid .chk-warn{background:#facc15}
+.months-grid .chk-err{background:#ef4444}
 
 /* 列宽：自适应且不强制撑开 */
 .table th.check-col, .table td.check-col{min-width:unset;width:auto;white-space:nowrap}
@@ -1032,7 +1043,7 @@
                         <td>—</td><td>—</td>
                         <td>¥0.00</td><td>¥0.00</td><td><b>¥0.00</b></td>
                         <td>0</td><td>0</td><td>—</td><td>—</td>
-                        <td class="check-col">
+                        <th class="check-col">
                           <div class="months-grid">
                             <!-- 2023（展开才显示） -->
                             <span class="month-num col-2023">1</span><span class="month-num col-2023">2</span>
