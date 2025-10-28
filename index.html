@@ -716,9 +716,7 @@
 .dot.err{background:#ef4444}
 
 /* 关键：去掉最小宽度，避免收起时仍被撑出空白；让列自适应内容宽度 */
-.table th.check-col, .table td.check-col{
-  min-width:0; width:1%; white-space:nowrap;
-}
+.table th.check-col, .table td.check-col{min-width:0;width:1%;white-space:nowrap}
 .table td .check-row{padding:6px 0}
 
     
@@ -996,113 +994,114 @@
       
               <!-- 总览表 -->
               <div style="overflow:auto">
-                <table class="table" id="tblAccountSummary">
-                  <thead>
-                    <tr>
-                      <th>被审计单位公司</th>
-                      <th>本方账号</th>
-                      <th>银行名称</th>
-                      <th>流入总额</th>
-                      <th>流出总额</th>
-                      <th>交易总额</th>
-                      <th>交易笔数</th>
-                      <th>对手方数量</th>
-                      <th>流水文件</th>
-                      <th>操作</th>
-                      <th class="check-col">
-                        <div class="check-head">
-                          <button class="arrow-btn" id="btnToggleCheck" title="展开/收起 2023 年">
-                            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 3.5l5 4.5-5 4.5V3.5z"/></svg>
-                          </button>
-                          <span>校验情况：</span>
-                          <span class="y y-2023">2023</span>
-                          <span class="sep-label">｜</span>
-                          <span class="y y-2024">2024</span>
-                        </div>
-                      </th>
-                    </tr>
-                   </thead>
-          
-                  <tbody>
-                    <!-- 合计行：只显示月份数字 -->
-                    <tr>
-                      <td><b>合计</b></td>
-                      <td>—</td><td>—</td>
-                      <td>¥0.00</td><td>¥0.00</td><td><b>¥0.00</b></td>
-                      <td>0</td><td>0</td><td>—</td><td>—</td>
-                      <td class="check-col">
-                        <div class="months-grid">
-                          <!-- 2023（展开才显示） -->
-                          <span class="month-num col-2023">1</span><span class="month-num col-2023">2</span>
-                          <span class="month-num col-2023">3</span><span class="month-num col-2023">4</span>
-                          <span class="month-num col-2023">5</span><span class="month-num col-2023">6</span>
-                          <span class="month-num col-2023">7</span><span class="month-num col-2023">8</span>
-                          <span class="month-num col-2023">9</span><span class="month-num col-2023">10</span>
-                          <span class="month-num col-2023">11</span><span class="month-num col-2023">12</span>
-                          <!-- 分隔 -->
-                          <span class="col-sep"></span>
-                          <!-- 2024（默认显示） -->
-                          <span class="month-num">1</span><span class="month-num">2</span>
-                          <span class="month-num">3</span><span class="month-num">4</span>
-                          <span class="month-num">5</span><span class="month-num">6</span>
-                          <span class="month-num">7</span><span class="month-num">8</span>
-                          <span class="month-num">9</span><span class="month-num">10</span>
-                          <span class="month-num">11</span><span class="month-num">12</span>
-                        </div>
-                      </td>
-                    </tr>
-          
-                    <!-- 示例数据行：圆点与月份严格对齐 -->
-                    <tr>
-                      <td>abc有限公司</td>
-                      <td>574***0001</td>
-                      <td>招商银行</td>
-                      <td style="color:#2563eb">¥846,223,016</td>
-                      <td style="color:#ef4444">¥693,427,537</td>
-                      <td><b>¥1,539,650,553</b></td>
-                      <td>2,442</td>
-                      <td>401</td>
-                      <td><a href=" ">查看</a ></td>
-                      <td><a href="javascript:;">详情</a ></td>
-                      <td class="check-col">
-                        <div class="months-grid check-row">
-                          <!-- 2023（展开才显示） -->
-                          <i class="dot ok  col-2023" title="2023-01"></i>
-                          <i class="dot ok  col-2023" title="2023-02"></i>
-                          <i class="dot err col-2023" title="2023-03"></i>
-                          <i class="dot ok  col-2023" title="2023-04"></i>
-                          <i class="dot ok  col-2023" title="2023-05"></i>
-                          <i class="dot ok  col-2023" title="2023-06"></i>
-                          <i class="dot warn col-2023" title="2023-07"></i>
-                          <i class="dot ok  col-2023" title="2023-08"></i>
-                          <i class="dot ok  col-2023" title="2023-09"></i>
-                          <i class="dot ok  col-2023" title="2023-10"></i>
-                          <i class="dot err col-2023" title="2023-11"></i>
-                          <i class="dot ok  col-2023" title="2023-12"></i>
-                          <!-- 分隔 -->
-                          <span class="col-sep"></span>
-                          <!-- 2024 -->
-                          <i class="dot ok"   title="2024-01"></i>
-                          <i class="dot ok"   title="2024-02"></i>
-                          <i class="dot ok"   title="2024-03"></i>
-                          <i class="dot warn" title="2024-04"></i>
-                          <i class="dot ok"   title="2024-05"></i>
-                          <i class="dot ok"   title="2024-06"></i>
-                          <i class="dot none" title="2024-07"></i>
-                          <i class="dot ok"   title="2024-08"></i>
-                          <i class="dot ok"   title="2024-09"></i>
-                          <i class="dot ok"   title="2024-10"></i>
-                          <i class="dot err"  title="2024-11"></i>
-                          <i class="dot ok"   title="2024-12"></i>
-                        </div>
-                      </td>
-                    </tr>
-
-          
-                    <!-- ……更多数据行 -->
-                  </tbody>
-                </table>
-              </div>
+                <div id="checkScope" class="check-scope">
+                  <table class="table" id="tblAccountSummary">
+                    <thead>
+                      <tr>
+                        <th>被审计单位公司</th>
+                        <th>本方账号</th>
+                        <th>银行名称</th>
+                        <th>流入总额</th>
+                        <th>流出总额</th>
+                        <th>交易总额</th>
+                        <th>交易笔数</th>
+                        <th>对手方数量</th>
+                        <th>流水文件</th>
+                        <th>操作</th>
+                        <th class="check-col">
+                          <div class="check-head">
+                            <button class="arrow-btn" id="btnToggleCheck" title="展开/收起 2023 年">
+                              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 3.5l5 4.5-5 4.5V3.5z"/></svg>
+                            </button>
+                            <span>校验情况：</span>
+                            <span class="y y-2023">2023</span>
+                            <span class="sep-label">｜</span>
+                            <span class="y y-2024">2024</span>
+                          </div>
+                        </th>
+                      </tr>
+                     </thead>
+            
+                    <tbody>
+                      <!-- 合计行：只显示月份数字 -->
+                      <tr>
+                        <td><b>合计</b></td>
+                        <td>—</td><td>—</td>
+                        <td>¥0.00</td><td>¥0.00</td><td><b>¥0.00</b></td>
+                        <td>0</td><td>0</td><td>—</td><td>—</td>
+                        <td class="check-col">
+                          <div class="months-grid">
+                            <!-- 2023（展开才显示） -->
+                            <span class="month-num col-2023">1</span><span class="month-num col-2023">2</span>
+                            <span class="month-num col-2023">3</span><span class="month-num col-2023">4</span>
+                            <span class="month-num col-2023">5</span><span class="month-num col-2023">6</span>
+                            <span class="month-num col-2023">7</span><span class="month-num col-2023">8</span>
+                            <span class="month-num col-2023">9</span><span class="month-num col-2023">10</span>
+                            <span class="month-num col-2023">11</span><span class="month-num col-2023">12</span>
+                            <!-- 分隔 -->
+                            <span class="col-sep"></span>
+                            <!-- 2024（默认显示） -->
+                            <span class="month-num">1</span><span class="month-num">2</span>
+                            <span class="month-num">3</span><span class="month-num">4</span>
+                            <span class="month-num">5</span><span class="month-num">6</span>
+                            <span class="month-num">7</span><span class="month-num">8</span>
+                            <span class="month-num">9</span><span class="month-num">10</span>
+                            <span class="month-num">11</span><span class="month-num">12</span>
+                          </div>
+                        </td>
+                      </tr>
+            
+                      <!-- 示例数据行：圆点与月份严格对齐 -->
+                      <tr>
+                        <td>abc有限公司</td>
+                        <td>574***0001</td>
+                        <td>招商银行</td>
+                        <td style="color:#2563eb">¥846,223,016</td>
+                        <td style="color:#ef4444">¥693,427,537</td>
+                        <td><b>¥1,539,650,553</b></td>
+                        <td>2,442</td>
+                        <td>401</td>
+                        <td><a href=" ">查看</a ></td>
+                        <td><a href="javascript:;">详情</a ></td>
+                        <td class="check-col">
+                          <div class="months-grid check-row">
+                            <!-- 2023（展开才显示） -->
+                            <i class="dot ok  col-2023" title="2023-01"></i>
+                            <i class="dot ok  col-2023" title="2023-02"></i>
+                            <i class="dot err col-2023" title="2023-03"></i>
+                            <i class="dot ok  col-2023" title="2023-04"></i>
+                            <i class="dot ok  col-2023" title="2023-05"></i>
+                            <i class="dot ok  col-2023" title="2023-06"></i>
+                            <i class="dot warn col-2023" title="2023-07"></i>
+                            <i class="dot ok  col-2023" title="2023-08"></i>
+                            <i class="dot ok  col-2023" title="2023-09"></i>
+                            <i class="dot ok  col-2023" title="2023-10"></i>
+                            <i class="dot err col-2023" title="2023-11"></i>
+                            <i class="dot ok  col-2023" title="2023-12"></i>
+                            <!-- 分隔 -->
+                            <span class="col-sep"></span>
+                            <!-- 2024 -->
+                            <i class="dot ok"   title="2024-01"></i>
+                            <i class="dot ok"   title="2024-02"></i>
+                            <i class="dot ok"   title="2024-03"></i>
+                            <i class="dot warn" title="2024-04"></i>
+                            <i class="dot ok"   title="2024-05"></i>
+                            <i class="dot ok"   title="2024-06"></i>
+                            <i class="dot none" title="2024-07"></i>
+                            <i class="dot ok"   title="2024-08"></i>
+                            <i class="dot ok"   title="2024-09"></i>
+                            <i class="dot ok"   title="2024-10"></i>
+                            <i class="dot err"  title="2024-11"></i>
+                            <i class="dot ok"   title="2024-12"></i>
+                          </div>
+                        </td>
+                      </tr>
+  
+            
+                      <!-- ……更多数据行 -->
+                    </tbody>
+                  </table>
+                </div>
       
               <div id="pagination-account" class="pagination"></div>
             </div>
@@ -1368,31 +1367,24 @@
     });
 
     document.addEventListener("DOMContentLoaded", () => {
-    const scope = document.getElementById('checkScope');
-    const btn = document.getElementById('btnToggleCheck');
-  
-    // 若元素没加载好直接退出（防止报错）
-    if (!scope || !btn) {
-      console.warn("checkScope or btnToggleCheck not found");
-      return;
-    }
-  
-    // 切换展开状态
-    function setExpand(expand) {
-      scope.classList.toggle('expanded', expand);
-      btn.classList.toggle('expanded', expand);
-    }
-  
-    // 默认：收起状态（只显示 2024）
-    setExpand(false);
-  
-    // 点击箭头按钮 → 展开/收起
-    btn.addEventListener('click', () => {
-      const isExpanded = scope.classList.contains('expanded');
-      setExpand(!isExpanded);
+      const scope = document.getElementById('checkScope');
+      const btn   = document.getElementById('btnToggleCheck');
+    
+      if (!scope || !btn) {
+        console.warn("checkScope or btnToggleCheck not found");
+        return;
+      }
+    
+      function setExpand(expand){
+        scope.classList.toggle('expanded', expand); // 控制展开样式
+        btn.classList.toggle('expanded', expand);   // 箭头旋转
+      }
+    
+      setExpand(false); // 默认收起（只显示 2024）
+      btn.addEventListener('click', () => {
+        setExpand(!scope.classList.contains('expanded'));
+      });
     });
-  });
-
 
       
     /* =============== 经营实质：图表 =============== */
