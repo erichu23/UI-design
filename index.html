@@ -661,68 +661,67 @@
   }
 }
 
-/* 图例（原样） */
+/* 图例 */
 .legend{display:flex;gap:14px;justify-content:flex-end;margin:6px 0 10px}
 .legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px}
 .lg-warn{background:#facc15}.lg-none{background:#cbd5e1}.lg-ok{background:#3b82f6}.lg-err{background:#ef4444}
 
-/* 统一控制作用域 */
-.check-scope{ --dot:12px; --col:22px; --gap:4px; --sepw:20px; --year:#334155 }
+/* 控制参数 */
+.check-scope{--dot:12px;--col:22px;--gap:4px;--sepw:20px;--year:#334155}
 
 /* 表头与箭头 */
-.check-head{display:flex;align-items:center;gap:8px;color:#475569;font-size:13px;user-select:none}
+.check-head{display:flex;align-items:center;gap:8px;color:#475569;font-size:13px;user-select:none;white-space:nowrap}
 .check-head .y{color:var(--year);font-weight:600}
 .arrow-btn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:24px;border:1px solid #cbd5e1;background:#fff;border-radius:6px;cursor:pointer;transition:.25s}
 .arrow-btn:hover{background:#f1f5f9}
 .arrow-btn svg{width:14px;height:14px;fill:#334155;transition:transform .25s}
-.arrow-btn.expanded svg{transform:rotate(90deg)} /* ▶→▼ */
+.arrow-btn.expanded svg{transform:rotate(90deg)}
 
-/* ===== 同一网格：月份刻度 & 数据点共用 ===== */
+/* 月份网格 */
 .months-grid{
-  display:grid;align-items:center;justify-content:flex-start;
+  display:inline-grid;
+  align-items:center;justify-content:flex-start;
   column-gap:var(--gap);
-  /* 收起：仅 2024 的 12 列 */
-  grid-template-columns:[y24] repeat(12, var(--col));
-  white-space:nowrap;
+  grid-template-columns:[y24] repeat(12,var(--col));
+  width:max-content;white-space:nowrap;
 }
-/* 展开：2023(12)+分隔(1)+2024(12) */
 .check-scope.expanded .months-grid{
-  grid-template-columns:[y23] repeat(12, var(--col)) [sep] var(--sepw) [y24] repeat(12, var(--col));
+  grid-template-columns:[y23] repeat(12,var(--col)) [sep] var(--sepw) [y24] repeat(12,var(--col));
 }
 
-/* 表头年份标签也放在同一网格，确保 2024 正对 y24 的 1 月 */
+/* 年份标签网格 */
 .y-labels{
-  display:grid;align-items:center;column-gap:var(--gap);
-  grid-template-columns:[y24] repeat(12, var(--col));
+  display:inline-grid;align-items:center;column-gap:var(--gap);
+  grid-template-columns:[y24] repeat(12,var(--col));
+  width:max-content;
 }
 .check-scope.expanded .y-labels{
-  grid-template-columns:[y23] repeat(12, var(--col)) [sep] var(--sepw) [y24] repeat(12, var(--col));
+  grid-template-columns:[y23] repeat(12,var(--col)) [sep] var(--sepw) [y24] repeat(12,var(--col));
 }
 .y-2023{grid-column:y23}
 .y-2024{grid-column:y24}
 .sep-label{grid-column:sep;text-align:center;color:#94a3b8}
 
-/* 收起隐藏 2023 & 分隔；展开显示 */
-.y-2023,.sep-label,.col-2023,.col-sep{display:none}
+/* 收起默认隐藏2023列 */
+.y-2023,.sep-label,.col-2023,.col-sep{display:none!important}
 .check-scope.expanded .y-2023,
 .check-scope.expanded .sep-label,
 .check-scope.expanded .col-2023,
-.check-scope.expanded .col-sep{display:inline-block}
+.check-scope.expanded .col-sep{display:inline-block!important}
 
-/* 月份数字（只用于“合计”这行） */
-.month-num{font-size:12px;color:#64748b;text-align:center}
+/* 月份数字（合计行） */
+.month-num{font-size:12px;color:#64748b;text-align:center;line-height:1}
 
-/* —— 数据行的“点” ——（避免被全局 .dot 样式影响，统一用 chk- 前缀） */
-.months-grid .chk-dot{
-  display:inline-block;width:var(--dot);height:var(--dot);border-radius:3px;vertical-align:middle;
-}
+/* 数据点 */
+.months-grid .chk-dot{display:inline-block;width:var(--dot);height:var(--dot);border-radius:3px;vertical-align:middle}
 .months-grid .chk-ok{background:#3b82f6}
 .months-grid .chk-none{background:#cbd5e1}
 .months-grid .chk-warn{background:#facc15}
 .months-grid .chk-err{background:#ef4444}
 
-/* 列宽：自适应且不强制撑开 */
-.table th.check-col, .table td.check-col{min-width:unset;width:auto;white-space:nowrap}
+/* 表格列宽优化 */
+.table{table-layout:auto}
+.table th.check-col,.table td.check-col{width:1%;white-space:nowrap}
 .table td .check-row{padding:6px 0}
 
     
@@ -1016,11 +1015,10 @@
                         <th>操作</th>
                         <th class="check-col">
                           <div class="check-head">
-                            <button class="arrow-btn" id="btnToggleCheck" title="展开/收起 2023 年">
+                            <button class="arrow-btn" id="btnToggleCheck" title="展开/收起2023年">
                               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 3.5l5 4.5-5 4.5V3.5z"/></svg>
                             </button>
                             <span>校验情况：</span>
-                            <!-- 年份标签放在网格里，保证 2024 对齐 y24 的 1 月 -->
                             <div class="y-labels">
                               <span class="y y-2023">2023</span>
                               <span class="sep-label">｜</span>
@@ -1030,26 +1028,21 @@
                         </th>
                       </tr>
                     </thead>
-              
                     <tbody>
-                      <!-- 合计行：只显示月份数字（始终一行） -->
+                      <!-- 合计行 -->
                       <tr>
-                        <td><b>合计</b></td>
-                        <td>—</td><td>—</td>
+                        <td><b>合计</b></td><td>—</td><td>—</td>
                         <td>¥0.00</td><td>¥0.00</td><td><b>¥0.00</b></td>
                         <td>0</td><td>0</td><td>—</td><td>—</td>
                         <td class="check-col">
                           <div class="months-grid">
-                            <!-- 2023（展开才显示） -->
                             <span class="month-num col-2023">1</span><span class="month-num col-2023">2</span>
                             <span class="month-num col-2023">3</span><span class="month-num col-2023">4</span>
                             <span class="month-num col-2023">5</span><span class="month-num col-2023">6</span>
                             <span class="month-num col-2023">7</span><span class="month-num col-2023">8</span>
                             <span class="month-num col-2023">9</span><span class="month-num col-2023">10</span>
                             <span class="month-num col-2023">11</span><span class="month-num col-2023">12</span>
-                            <!-- 分隔 -->
                             <span class="col-sep"></span>
-                            <!-- 2024（默认显示） -->
                             <span class="month-num">1</span><span class="month-num">2</span>
                             <span class="month-num">3</span><span class="month-num">4</span>
                             <span class="month-num">5</span><span class="month-num">6</span>
@@ -1060,7 +1053,7 @@
                         </td>
                       </tr>
               
-                      <!-- 数据行：只放“点”（不要再放 month-num，否则就会出现两行/重复刻度） -->
+                      <!-- 数据行（仅一行圆点） -->
                       <tr>
                         <td>abc有限公司</td>
                         <td>574***0001</td>
@@ -1071,41 +1064,37 @@
                         <td>2,442</td>
                         <td>401</td>
                         <td><a href=" ">查看</a ></td>
-                        <td><a href="javascript:;">详情</a ></td>
+                        <td><a href="#">详情</a ></td>
                         <td class="check-col">
                           <div class="months-grid check-row">
-                            <!-- 2023（展开才显示） -->
-                            <i class="chk-dot chk-ok   col-2023" title="2023-01"></i>
-                            <i class="chk-dot chk-ok   col-2023" title="2023-02"></i>
-                            <i class="chk-dot chk-err  col-2023" title="2023-03"></i>
-                            <i class="chk-dot chk-ok   col-2023" title="2023-04"></i>
-                            <i class="chk-dot chk-ok   col-2023" title="2023-05"></i>
-                            <i class="chk-dot chk-ok   col-2023" title="2023-06"></i>
+                            <i class="chk-dot chk-ok col-2023" title="2023-01"></i>
+                            <i class="chk-dot chk-ok col-2023" title="2023-02"></i>
+                            <i class="chk-dot chk-err col-2023" title="2023-03"></i>
+                            <i class="chk-dot chk-ok col-2023" title="2023-04"></i>
+                            <i class="chk-dot chk-ok col-2023" title="2023-05"></i>
+                            <i class="chk-dot chk-ok col-2023" title="2023-06"></i>
                             <i class="chk-dot chk-warn col-2023" title="2023-07"></i>
-                            <i class="chk-dot chk-ok   col-2023" title="2023-08"></i>
-                            <i class="chk-dot chk-ok   col-2023" title="2023-09"></i>
-                            <i class="chk-dot chk-ok   col-2023" title="2023-10"></i>
-                            <i class="chk-dot chk-err  col-2023" title="2023-11"></i>
-                            <i class="chk-dot chk-ok   col-2023" title="2023-12"></i>
-                            <!-- 分隔 -->
+                            <i class="chk-dot chk-ok col-2023" title="2023-08"></i>
+                            <i class="chk-dot chk-ok col-2023" title="2023-09"></i>
+                            <i class="chk-dot chk-ok col-2023" title="2023-10"></i>
+                            <i class="chk-dot chk-err col-2023" title="2023-11"></i>
+                            <i class="chk-dot chk-ok col-2023" title="2023-12"></i>
                             <span class="col-sep"></span>
-                            <!-- 2024（默认显示） -->
-                            <i class="chk-dot chk-ok"   title="2024-01"></i>
-                            <i class="chk-dot chk-ok"   title="2024-02"></i>
-                            <i class="chk-dot chk-ok"   title="2024-03"></i>
+                            <i class="chk-dot chk-ok" title="2024-01"></i>
+                            <i class="chk-dot chk-ok" title="2024-02"></i>
+                            <i class="chk-dot chk-ok" title="2024-03"></i>
                             <i class="chk-dot chk-warn" title="2024-04"></i>
-                            <i class="chk-dot chk-ok"   title="2024-05"></i>
-                            <i class="chk-dot chk-ok"   title="2024-06"></i>
+                            <i class="chk-dot chk-ok" title="2024-05"></i>
+                            <i class="chk-dot chk-ok" title="2024-06"></i>
                             <i class="chk-dot chk-none" title="2024-07"></i>
-                            <i class="chk-dot chk-ok"   title="2024-08"></i>
-                            <i class="chk-dot chk-ok"   title="2024-09"></i>
-                            <i class="chk-dot chk-ok"   title="2024-10"></i>
-                            <i class="chk-dot chk-err"  title="2024-11"></i>
-                            <i class="chk-dot chk-ok"   title="2024-12"></i>
+                            <i class="chk-dot chk-ok" title="2024-08"></i>
+                            <i class="chk-dot chk-ok" title="2024-09"></i>
+                            <i class="chk-dot chk-ok" title="2024-10"></i>
+                            <i class="chk-dot chk-err" title="2024-11"></i>
+                            <i class="chk-dot chk-ok" title="2024-12"></i>
                           </div>
                         </td>
                       </tr>
-                      <!-- ……更多数据行按上面“点”的结构追加 -->
                     </tbody>
                   </table>
                 </div>
@@ -1374,22 +1363,16 @@
       });
     });
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const scope = document.getElementById('checkScope');
-      const btn   = document.getElementById('btnToggleCheck');
-      if(!scope || !btn) return;
-    
-      const setExpand = (expand) => {
-        scope.classList.toggle('expanded', expand); // 控制 2023/分隔 的显隐 + 列数
-        btn.classList.toggle('expanded', expand);   // 箭头旋转
+    document.addEventListener("DOMContentLoaded",()=>{
+      const scope=document.getElementById('checkScope');
+      const btn=document.getElementById('btnToggleCheck');
+      if(!scope||!btn)return;
+      const setExpand=(expand)=>{
+        scope.classList.toggle('expanded',expand);
+        btn.classList.toggle('expanded',expand);
       };
-    
-      // 默认收起：只显示 2024（刻度一行 + 点一行）
       setExpand(false);
-    
-      btn.addEventListener('click', () => {
-        setExpand(!scope.classList.contains('expanded'));
-      });
+      btn.addEventListener('click',()=>{setExpand(!scope.classList.contains('expanded'));});
     });
 
       
