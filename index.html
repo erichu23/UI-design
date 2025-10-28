@@ -728,7 +728,19 @@
 .table th.check-col, .table td.check-col{min-width:unset;width:auto;white-space:nowrap}
 .table td .check-row{padding:6px 0}
 
+/* 只在“合计行”显示月份数字；数据行一律隐藏月份数字 */
+.check-scope tbody tr .months-grid .month-num{ display:none; }
+.check-scope tbody tr:first-child .months-grid .month-num{ display:inline-block; }
 
+/* 防止全局 .dot 冲突：我们只认 .chk-dot */
+.months-grid .chk-dot{
+  display:inline-block; width:var(--dot); height:var(--dot);
+  border-radius:3px; vertical-align:middle;
+}
+.months-grid .chk-ok{background:#3b82f6}
+.months-grid .chk-none{background:#cbd5e1}
+.months-grid .chk-warn{background:#facc15}
+.months-grid .chk-err{background:#ef4444}
 
     
 </style>
@@ -1043,7 +1055,7 @@
                         <td>—</td><td>—</td>
                         <td>¥0.00</td><td>¥0.00</td><td><b>¥0.00</b></td>
                         <td>0</td><td>0</td><td>—</td><td>—</td>
-                        <th class="check-col">
+                        <td class="check-col">  <!-- 注意：这里必须是 td 不是 th -->
                           <div class="months-grid">
                             <!-- 2023（展开才显示） -->
                             <span class="month-num col-2023">1</span><span class="month-num col-2023">2</span>
@@ -1054,7 +1066,7 @@
                             <span class="month-num col-2023">11</span><span class="month-num col-2023">12</span>
                             <!-- 分隔 -->
                             <span class="col-sep"></span>
-                            <!-- 2024（默认显示） -->
+                            <!-- 2024 -->
                             <span class="month-num">1</span><span class="month-num">2</span>
                             <span class="month-num">3</span><span class="month-num">4</span>
                             <span class="month-num">5</span><span class="month-num">6</span>
@@ -1077,27 +1089,53 @@
                         <td>401</td>
                         <td><a href=" ">查看</a ></td>
                         <td><a href="javascript:;">详情</a ></td>
+                        <!-- 示例数据行：圆点与月份严格对齐 -->
+                      <tr>
+                        <td>abc有限公司</td>
+                        <td>574***0001</td>
+                        <td>招商银行</td>
+                        <td style="color:#2563eb">¥846,223,016</td>
+                        <td style="color:#ef4444">¥693,427,537</td>
+                        <td><b>¥1,539,650,553</b></td>
+                        <td>2,442</td>
+                        <td>401</td>
+                        <td><a href=" ">查看</a ></td>
+                        <td><a href="javascript:;">详情</a ></td>
                         <td class="check-col">
-                          <div class="months-grid">
+                          <div class="months-grid check-row">
                             <!-- 2023（展开才显示） -->
-                            <span class="month-num col-2023">1</span><span class="month-num col-2023">2</span>
-                            <span class="month-num col-2023">3</span><span class="month-num col-2023">4</span>
-                            <span class="month-num col-2023">5</span><span class="month-num col-2023">6</span>
-                            <span class="month-num col-2023">7</span><span class="month-num col-2023">8</span>
-                            <span class="month-num col-2023">9</span><span class="month-num col-2023">10</span>
-                            <span class="month-num col-2023">11</span><span class="month-num col-2023">12</span>
-                            <!-- 分隔 -->
+                            <i class="chk-dot chk-ok   col-2023" title="2023-01"></i>
+                            <i class="chk-dot chk-ok   col-2023" title="2023-02"></i>
+                            <i class="chk-dot chk-err  col-2023" title="2023-03"></i>
+                            <i class="chk-dot chk-ok   col-2023" title="2023-04"></i>
+                            <i class="chk-dot chk-ok   col-2023" title="2023-05"></i>
+                            <i class="chk-dot chk-ok   col-2023" title="2023-06"></i>
+                            <i class="chk-dot chk-warn col-2023" title="2023-07"></i>
+                            <i class="chk-dot chk-ok   col-2023" title="2023-08"></i>
+                            <i class="chk-dot chk-ok   col-2023" title="2023-09"></i>
+                            <i class="chk-dot chk-ok   col-2023" title="2023-10"></i>
+                            <i class="chk-dot chk-err  col-2023" title="2023-11"></i>
+                            <i class="chk-dot chk-ok   col-2023" title="2023-12"></i>
+                        
+                            <!-- 分隔（展开才显示） -->
                             <span class="col-sep"></span>
+                        
                             <!-- 2024（默认显示） -->
-                            <span class="month-num">1</span><span class="month-num">2</span>
-                            <span class="month-num">3</span><span class="month-num">4</span>
-                            <span class="month-num">5</span><span class="month-num">6</span>
-                            <span class="month-num">7</span><span class="month-num">8</span>
-                            <span class="month-num">9</span><span class="month-num">10</span>
-                            <span class="month-num">11</span><span class="month-num">12</span>
+                            <i class="chk-dot chk-ok"   title="2024-01"></i>
+                            <i class="chk-dot chk-ok"   title="2024-02"></i>
+                            <i class="chk-dot chk-ok"   title="2024-03"></i>
+                            <i class="chk-dot chk-warn" title="2024-04"></i>
+                            <i class="chk-dot chk-ok"   title="2024-05"></i>
+                            <i class="chk-dot chk-ok"   title="2024-06"></i>
+                            <i class="chk-dot chk-none" title="2024-07"></i>
+                            <i class="chk-dot chk-ok"   title="2024-08"></i>
+                            <i class="chk-dot chk-ok"   title="2024-09"></i>
+                            <i class="chk-dot chk-ok"   title="2024-10"></i>
+                            <i class="chk-dot chk-err"  title="2024-11"></i>
+                            <i class="chk-dot chk-ok"   title="2024-12"></i>
                           </div>
                         </td>
-                      </tr>
+                      </tr>          
   
             
                       <!-- ……更多数据行 -->
