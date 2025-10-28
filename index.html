@@ -411,21 +411,22 @@
 }
 .issue-body-simple::-webkit-scrollbar-track{ background:transparent; }
 
-/* ===== Tabs 外层：保留白底卡片框，与 KPI 对齐 ===== */
+/* ===== Tab 容器：强制撑满整行，与 KPI 左对齐 ===== */
 .tab-container{
   background:#fff;
   border:1px solid #e6edf5;
   border-radius:8px;
-  margin:10px 16px 0;        /* 与 KPI、chart-card 对齐 */
+  margin:10px 16px 0;          /* 与 KPI、chart-card 对齐 */
   padding:0;
   box-shadow:0 1px 3px rgba(0,0,0,.04);
   box-sizing:border-box;
   width:calc(100% - 32px);
-  flex:1 1 auto;
-  min-width:0;
+  flex:1 1 100%;               /* ★ 在 flex 或 grid 下强制撑满整行 */
+  min-width:calc(100% - 32px); /* ★ 防止被内容宽度压缩 */
+  align-self:stretch;          /* ★ 在 grid/flex 里强制与父容器拉齐 */
 }
 
-/* ===== Tab 行：撑满、不换行，可横向滚动 ===== */
+/* ===== Tab 行：撑满卡片宽度（与下方表格等宽） ===== */
 .tab-container .tabbar{
   position:relative;
   display:flex;
@@ -436,52 +437,50 @@
   border-bottom:1px solid #e6edf5;
   background:#fff;
 
-  width:100%;
-  max-width:100%;
-  margin:0;
+  width:100%; max-width:100%;
   box-sizing:border-box;
-  flex:1 1 auto;
-  min-width:0;
-  overflow-x:auto;
-  overflow-y:hidden;
+  flex:1 1 100%;               /* ★ 同样强制拉满父容器宽度 */
+  min-width:100%;              /* ★ 防止被压缩成内容宽度 */
+  overflow-x:auto; overflow-y:hidden;
 }
 
-/* ===== 单个 Tab：取消背景切换，仅靠 Linkbar 激活 ===== */
+/* ===== 单个 Tab ===== */
 .tab-container .tab{
   flex:0 0 auto;
   padding:10px 16px;
   cursor:pointer;
   color:#475569;
-  border:none;                 /* 不要边框 */
-  background:transparent;      /* 无背景变化 */
+  border:none;
+  background:transparent;
   white-space:nowrap;
   transition:color .15s;
 }
 .tab-container .tab:hover{
-  background:#f3f6fb;          /* hover 可保留轻微高亮 */
+  background:transparent;
+  color:#1e40af;
 }
 .tab-container .tab.active{
-  color:#003366;               /* 仅改变字体颜色 */
+  color:#003366;
   font-weight:600;
-  background:transparent;      /* 不出现块状选中效果 */
+  background:transparent;
 }
 
-/* ===== Linkbar：下划线激活指示 ===== */
+/* ===== inkbar：底部蓝线 ===== */
 .tab-container .inkbar{
   position:absolute;
   bottom:0;
   height:2px;
-  background:#1e40af;
+  background:#003366;   /* 与 KPI 主色一致 */
   border-radius:2px;
-  transition:left .25s ease,width .25s ease;
+  transition:left .25s ease, width .25s ease;
 }
 
-/* ===== 说明条（可选） ===== */
+/* ===== 说明条 ===== */
 .tab-container .tab-intro{
   display:flex;
   align-items:flex-start;
   gap:8px;
-  padding:8px 20px 12px;
+  padding:8px 20px 12px 20px;
   color:#334155;
   font-size:12.5px;
   line-height:1.5;
