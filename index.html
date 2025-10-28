@@ -784,52 +784,92 @@
 }
 
   /* 让 Tab 与说明条连成一体 */
-.tabhead{
-  background:#F6F8FE;
-  border:1px solid #e2e8f0;
-  border-radius:10px;
-  margin:8px 0 12px;
-  overflow:hidden;              /* 圆角统一 */
+:root{
+  --wrap-max: 1280px;          /* ✅ 固定内容最大宽度 */
+  --wrap-pad: 16px;            /* ✅ 左右留白一致 */
+  --summary-bg:#F6F8FE;
+  --border:#e2e8f0;
+  --ink:#334155;
+  --primary:#1e40af;
 }
 
-/* 顶部 tabs 的底线与容器边框衔接 */
+/* 统一容器：保证 Tab 头与下面卡片左右对齐且宽度固定 */
+.section-wrap{
+  max-width: var(--wrap-max);
+  padding: 0 var(--wrap-pad);
+  margin: 8px auto 16px;
+  box-sizing: border-box;
+}
+
+/* Tab 头保持整体卡片样式 */
+.tabhead{
+  background:var(--summary-bg);
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+}
+
+/* —— Tabs —— */
 .tabbar{
-  display:flex; gap:8px;
+  position:relative;
+  display:flex; gap:8px; flex-wrap:wrap;
   padding:8px 10px;
-  background:#F6F8FE;
-  border-bottom:1px solid #e2e8f0;
+  background:var(--summary-bg);
+  border-bottom:1px solid var(--border);
 }
 .tabbar .tab{
+  position:relative;
   padding:6px 12px;
-  border:1px solid transparent;
   border-radius:6px;
   cursor:pointer; user-select:none;
-  transition:.15s;
+  color:var(--ink);
+  transition:color .15s, background .15s;
+  white-space:nowrap;
 }
 .tabbar .tab:hover{ background:#eef2ff }
-.tabbar .tab.active{
-  background:#fff;
-  border-color:#e2e8f0;
-  font-weight:600;
-  color:#0f172a;
+.tabbar .tab.active{ color:#0f172a; font-weight:600 }
+
+/* ✅ 滑动下划线（更顺滑的切换效果） */
+.tabbar .inkbar{
+  position:absolute; bottom:0; height:2px; background:#1e40af;
+  border-radius:2px;
+  transition:left .25s ease, width .25s ease;
+  content:"";
+  display:block;
 }
 
-/* 说明条与容器同底色、去掉自身边框/外边距 */
+/* 说明条与上面无缝衔接（前面你已有） */
 .tab-intro{
   display:flex; align-items:flex-start; gap:8px;
-  margin:0;                     /* ✅ 不与 tabbar 断层 */
-  padding:8px 12px;
-  background:transparent;       /* ✅ 与 .tabhead 同底色 */
-  border:0;                     /* ✅ 由 .tabhead 统一出边框 */
-  color:#334155;
-  font-size:12.5px;             /* 字体略小 */
-  line-height:1.5;
+  margin:0; padding:8px 12px;
+  background:transparent; border:0; color:#334155;
+  font-size:12.5px; line-height:1.5;
 }
 .tab-intro .ti-icon{width:14px;height:14px;margin-top:2px;color:#1e40af}
 .tab-intro .ti-title{font-weight:600;margin-right:6px;font-size:12.5px}
 
-/* 可选：吸顶 */
-.tabhead.sticky{position:sticky;top:0;z-index:9;background:#F6F8FE}
+/* —— 内容卡片对齐 + 统一大小 —— */
+.tab-stage{
+  margin-top:12px;  /* 与 tabhead 间距 */
+}
+
+.tab-pane .tab-scroll{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap:16px;
+  align-items:stretch;
+}
+
+.card{
+  background:#fff; border:1px solid #e2e8f0; border-radius:8px;
+  padding:12px 16px; box-shadow:0 1px 3px rgba(0,0,0,.05);
+  display:flex; flex-direction:column; height:320px;   /* ✅ 高度一致 */
+}
+.card .head{font-weight:600;font-size:14px;color:#1e293b;border-bottom:1px solid #e2e8f0;padding-bottom:6px;margin-bottom:10px}
+.card .chart{flex:1; min-height:220px}
+
+/* 可选：让整个头部吸顶（卡片不动） */
+.tabhead.sticky{position:sticky; top:0; z-index:9}
     
 </style>
 </head>
@@ -972,21 +1012,24 @@
       </aside>
     
     <!-- 3) Tabs（紧贴在KPI/问题卡下面） -->
-    <div class="tabhead">
-      <!-- 原来的 tabbar -->
-      <div class="tabbar" id="topTabs">
-        <div class="tab active" data-top="account">账户总览</div>
-        <div class="tab" data-top="biz">经营实质</div>
-        <div class="tab" data-top="relation">已知关联方交易</div>
-        <div class="tab" data-top="transaction">特定交易查询</div>
-        <div class="tab" data-top="routine">特定工商查询</div>
-        <div class="tab" data-top="statement">流水查询</div>
-        <div class="tab" data-top="verify">总账核对</div>
-      </div>
+    <!-- ✅ 页面区块统一容器：宽度/左右内边距由它控制 -->
+    <div class="section-wrap">
     
-      <!-- 说明条 -->
-      <div class="tab-intro" id="tabIntro"></div>
-    </div>
+      <!-- Tab 头（你的 tabbar + 说明条） -->
+      <div class="tabhead">
+        <div class="tabbar" id="topTabs">
+          <div class="tab active" data-top="account">账户总览</div>
+          <div class="tab" data-top="biz">经营实质</div>
+          <div class="tab" data-top="relation">已知关联方交易</div>
+          <div class="tab" data-top="transaction">特定交易查询</div>
+          <div class="tab" data-top="routine">特定工商查询</div>
+          <div class="tab" data-top="statement">流水查询</div>
+          <div class="tab" data-top="verify">总账核对</div>
+          <!-- ✅ 滑动指示条 -->
+          <i class="inkbar" id="inkbar"></i>
+        </div>
+        <div class="tab-intro" id="tabIntro"></div>
+      </div>
     
     <!-- 统一白板舞台：两个面板共用同一块“白板” -->
     <div class="tab-stage">
@@ -1516,17 +1559,42 @@
     }
     initFilters();
 
-    // 顶部 tab 切换：只换 active，不改高度/白板
     document.querySelectorAll('#topTabs .tab').forEach(tab=>{
       tab.addEventListener('click', ()=>{
         document.querySelectorAll('#topTabs .tab').forEach(t=>t.classList.remove('active'));
         tab.classList.add('active');
-  
-        const key = tab.dataset.top; // 'biz' or 'routine'
+    
+        const key = tab.dataset.top;
         document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
         document.getElementById('pane-' + key).classList.add('active');
-        setTabIntro(key);
+    
+        setTabIntro(key);       // 你的说明条更新
+        moveInkbar(tab);        // ✅ 新增：滑动下划线
       });
+    });
+    
+    // ✅ inkbar 定位函数（根据激活的 tab 计算 left/width）
+    function moveInkbar(activeEl){
+      const bar = document.getElementById('inkbar');
+      const wrap = document.getElementById('topTabs');
+      if(!bar || !wrap || !activeEl) return;
+      const r1 = wrap.getBoundingClientRect();
+      const r2 = activeEl.getBoundingClientRect();
+      bar.style.left = (r2.left - r1.left + wrap.scrollLeft) + 'px';
+      bar.style.width = r2.width + 'px';
+    }
+    
+    // 页面初始：说明条 & inkbar 对齐
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const active = document.querySelector('#topTabs .tab.active');
+      setTabIntro(active ? active.dataset.top : 'account');
+      moveInkbar(active);
+    });
+    
+    // 窗口变化时，保持 inkbar 对齐
+    window.addEventListener('resize', ()=>{
+      const active = document.querySelector('#topTabs .tab.active');
+      moveInkbar(active);
     });
 
     // 每个 Tab 的说明内容
