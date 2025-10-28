@@ -782,15 +782,54 @@
   text-align: center;
   min-width: 70px;
 }
-/* 顶部Tab介绍 */
-.tab-intro{
-  display:flex;align-items:flex-start;gap:8px;
-  margin:10px 0 14px;padding:10px 12px;
-  background:#F6F8FE;border:1px solid #e2e8f0;border-radius:8px;
-  color:#334155;font-size:10px;line-height:1.2;
+
+  /* 让 Tab 与说明条连成一体 */
+.tabhead{
+  background:#F6F8FE;
+  border:1px solid #e2e8f0;
+  border-radius:10px;
+  margin:8px 0 12px;
+  overflow:hidden;              /* 圆角统一 */
 }
-.tab-intro .ti-icon{width:16px;height:16px;margin-top:2px;color:#1e40af}
-.tab-intro .ti-title{font-weight:600;margin-right:6px}
+
+/* 顶部 tabs 的底线与容器边框衔接 */
+.tabbar{
+  display:flex; gap:8px;
+  padding:8px 10px;
+  background:#F6F8FE;
+  border-bottom:1px solid #e2e8f0;
+}
+.tabbar .tab{
+  padding:6px 12px;
+  border:1px solid transparent;
+  border-radius:6px;
+  cursor:pointer; user-select:none;
+  transition:.15s;
+}
+.tabbar .tab:hover{ background:#eef2ff }
+.tabbar .tab.active{
+  background:#fff;
+  border-color:#e2e8f0;
+  font-weight:600;
+  color:#0f172a;
+}
+
+/* 说明条与容器同底色、去掉自身边框/外边距 */
+.tab-intro{
+  display:flex; align-items:flex-start; gap:8px;
+  margin:0;                     /* ✅ 不与 tabbar 断层 */
+  padding:8px 12px;
+  background:transparent;       /* ✅ 与 .tabhead 同底色 */
+  border:0;                     /* ✅ 由 .tabhead 统一出边框 */
+  color:#334155;
+  font-size:12.5px;             /* 字体略小 */
+  line-height:1.5;
+}
+.tab-intro .ti-icon{width:14px;height:14px;margin-top:2px;color:#1e40af}
+.tab-intro .ti-title{font-weight:600;margin-right:6px;font-size:12.5px}
+
+/* 可选：吸顶 */
+.tabhead.sticky{position:sticky;top:0;z-index:9;background:#F6F8FE}
     
 </style>
 </head>
@@ -933,18 +972,21 @@
       </aside>
     
     <!-- 3) Tabs（紧贴在KPI/问题卡下面） -->
-    <div class="tabbar" id="topTabs">
-      <div class="tab" data-top="account">账户总览</div>
-      <div class="tab active" data-top="biz">经营实质</div>
-      <div class="tab" data-top="relation">已知关联方交易</div>
-      <div class="tab" data-top="transaction">特定交易查询</div>
-      <div class="tab" data-top="routine">特定工商查询</div>
-      <div class="tab" data-top="statement">流水查询</div>
-      <div class="tab" data-top="verify">总账核对</div>
+    <div class="tabhead">
+      <!-- 原来的 tabbar -->
+      <div class="tabbar" id="topTabs">
+        <div class="tab active" data-top="account">账户总览</div>
+        <div class="tab" data-top="biz">经营实质</div>
+        <div class="tab" data-top="relation">已知关联方交易</div>
+        <div class="tab" data-top="transaction">特定交易查询</div>
+        <div class="tab" data-top="routine">特定工商查询</div>
+        <div class="tab" data-top="statement">流水查询</div>
+        <div class="tab" data-top="verify">总账核对</div>
+      </div>
+    
+      <!-- 说明条 -->
+      <div class="tab-intro" id="tabIntro"></div>
     </div>
-
-    <!-- 新增：Tab 说明条 -->
-    <div class="tab-intro" id="tabIntro"></div>
     
     <!-- 统一白板舞台：两个面板共用同一块“白板” -->
     <div class="tab-stage">
