@@ -867,6 +867,64 @@
   gap: 4px;                /* 图标和文字之间的间距 */
 }
 
+/* 只给 .sortable 的表头做箭头（排除校验列） */
+#tblAccountSummary thead th.sortable:not(.check-col) {
+  position: relative;
+  padding-right: 18px;           /* 给箭头留空间 */
+  white-space: nowrap;
+}
+
+/* 上箭头（默认灰） */
+#tblAccountSummary thead th.sortable:not(.check-col)::before {
+  content: "▲";
+  position: absolute;
+  right: 6px;
+  top: calc(50% - 8px);          /* 放在上半部分 */
+  font-size: 10px;
+  line-height: 1;
+  color: #cbd5e1;
+}
+
+/* 下箭头（默认灰） */
+#tblAccountSummary thead th.sortable:not(.check-col)::after {
+  content: "▼";
+  position: absolute;
+  right: 6px;
+  top: calc(50% + 1px);          /* 放在下半部分 */
+  font-size: 10px;
+  line-height: 1;
+  color: #cbd5e1;
+}
+
+/* 默认高亮（无状态时两者都灰）——可选让可排序列看起来可点击 */
+#tblAccountSummary thead th.sortable:not(.check-col) {
+  cursor: default;               /* 仅展示，不交互 */
+}
+
+/* 升序：高亮上箭头、下箭头浅灰 */
+#tblAccountSummary thead th.sortable.sort-asc:not(.check-col)::before {
+  color: #1e40af;                /* 主色高亮 */
+  font-weight: 700;
+}
+#tblAccountSummary thead th.sortable.sort-asc:not(.check-col)::after {
+  color: #cbd5e1;
+}
+
+/* 降序：高亮下箭头、上箭头浅灰 */
+#tblAccountSummary thead th.sortable.sort-desc:not(.check-col)::after {
+  color: #1e40af;
+  font-weight: 700;
+}
+#tblAccountSummary thead th.sortable.sort-desc:not(.check-col)::before {
+  color: #cbd5e1;
+}
+
+/* 明确不展示箭头的列（可选） */
+#tblAccountSummary thead th.nosort::before,
+#tblAccountSummary thead th.nosort::after {
+  content: none !important;
+}
+
     
 </style>
 </head>
@@ -1152,14 +1210,14 @@
                   <table class="table" id="tblAccountSummary">
                     <thead>
                       <tr>
-                        <th>被审计单位公司</th>
-                        <th>本方账号</th>
-                        <th>银行名称</th>
-                        <th>流入总额</th>
-                        <th>流出总额</th>
-                        <th>交易总额</th>
-                        <th>交易笔数</th>
-                        <th>对手方数量</th>
+                        <th class="sortable">被审计单位公司</th>
+                        <th class="sortable">本方账号</th>
+                        <th class="sortable">银行名称</th>
+                        <th class="sortable sort-desc">流入总额</th>
+                        <th class="sortable">流出总额</th>
+                        <th class="sortable">交易总额</th>
+                        <thc lass="sortable">交易笔数</th>
+                        <th class="sortable">对手方数量</th>
                         <th>流水文件</th>
                         <th>操作</th>
                         <th class="check-col">
