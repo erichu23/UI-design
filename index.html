@@ -412,30 +412,22 @@
 .issue-body-simple::-webkit-scrollbar-track{ background:transparent; }
 
 /* ===== Tab 容器：强制撑满整行，与 KPI 左对齐 ===== */
-/* ===== Tab 容器：与卡片一样跨整行、左右 16px，对齐 KPI ===== */
+/* ===== Tab 容器：强制撑满整行，与 KPI 左对齐 ===== */
 .tab-container{
   background:#fff;
   border:1px solid #e6edf5;
   border-radius:8px;
-  /* 和 .chart-card 一样用外边距控制对齐 */
-  margin:10px 16px 0;
+  margin:10px 16px 0;          /* 与 KPI、chart-card 对齐 */
   padding:0;
   box-shadow:0 1px 3px rgba(0,0,0,.04);
   box-sizing:border-box;
-
-  /* 关键：不要再用 calc(100% - 32px)；改成自动宽+跨整行 */
-  width:auto;                 /* ← 让宽度由父容器决定 */
-  max-width:none;
-  min-width:0;
-
-  /* 若父级是 grid/flex，强制跨整行并拉满 */
-  grid-column:1 / -1;         /* ← Grid 跨全列 */
-  justify-self:stretch;       /* Grid 拉满 */
-  align-self:stretch;         /* Flex/Grid 拉满 */
-  flex:1 1 auto;              /* Flex 可伸展 */
+  width:calc(100% - 32px);
+  flex:1 1 100%;
+  min-width:calc(100% - 32px);
+  align-self:stretch;
 }
 
-/* ===== Tab 行：拉满容器，禁用任何 margin 缩短 ===== */
+/* ===== Tab 行：撑满卡片宽度（与下方表格等宽） ===== */
 .tab-container .tabbar{
   position:relative;
   display:flex;
@@ -443,17 +435,18 @@
   flex-wrap:nowrap;
   gap:10px;
 
-  /* 内边距与卡片内容留白一致即可 */
-  padding:10px 16px 8px;
-  margin:0 !important;        /* ← 覆盖全局 .tabbar{ margin:8px 16px } */
+  /* 与 KPI/卡片统一的左右 16px 内边距，并强制去掉任何外边距 */
+  padding:10px 16px 8px 16px;   /* ← 改成 16px，对齐左边线 */
+  margin:0 !important;          /* ← 关键：覆盖旧的 .tabbar{margin:8px 16px 0} */
+
   border-bottom:1px solid #e6edf5;
   background:#fff;
 
-  width:100%;
-  max-width:100%;
-  min-width:0;
-  overflow-x:auto;
-  overflow-y:hidden;
+  width:100%; max-width:100%;
+  box-sizing:border-box;
+  flex:1 1 100%;
+  min-width:100%;
+  overflow-x:auto; overflow-y:hidden;
 }
 
 /* ===== 单个 Tab：仅文字变化，不高亮整块背景 ===== */
@@ -475,13 +468,25 @@
   position:absolute;
   bottom:0;
   height:2px;
-  background:#003366;
+  background:#003366;   /* 与 KPI 主色一致 */
   border-radius:2px;
   transition:left .25s ease, width .25s ease;
 }
 
-/* （可留可不留）说明条与 tabbar 同左右内边距 */
-.tab-container .tab-intro{ padding:8px 16px 12px; }
+/* ===== 说明条（不变） ===== */
+.tab-container .tab-intro{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  padding:8px 16px 12px 16px;   /* ← 与 tabbar 同步为 16px */
+  color:#334155;
+  font-size:12.5px;
+  line-height:1.5;
+  width:100%;
+  box-sizing:border-box;
+}
+.tab-container .ti-icon{ width:14px; height:14px; margin-top:2px; color:#1e40af; }
+.tab-container .ti-title{ font-weight:600; margin-right:6px; }
 
 /* ===== 图表卡片对齐 KPI ===== */
 .chart-card{
