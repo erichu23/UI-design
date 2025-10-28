@@ -411,62 +411,72 @@
 }
 .issue-body-simple::-webkit-scrollbar-track{ background:transparent; }
 
-/* Tabs：更贴近 KPI */
-/* ============ Tab 容器：与页面其它卡片对齐（10px 16px） ============ */
+/* ===== Tabs 外层：保留白底卡片框，与 KPI 对齐 ===== */
 .tab-container{
   background:#fff;
   border:1px solid #e6edf5;
   border-radius:8px;
-  margin:10px 16px 0;        /* 与 chart-card 对齐 */
+  margin:10px 16px 0;        /* 与 KPI、chart-card 对齐 */
   padding:0;
   box-shadow:0 1px 3px rgba(0,0,0,.04);
   box-sizing:border-box;
   width:calc(100% - 32px);
   flex:1 1 auto;
-  min-width:0;               /* ★ 防止在 flex 布局里被压缩 */
+  min-width:0;
 }
 
-/* ============ Tab 行：占满、不换行、可横向滚动 ============ */
+/* ===== Tab 行：撑满、不换行，可横向滚动 ===== */
 .tab-container .tabbar{
   position:relative;
   display:flex;
   align-items:center;
-  flex-wrap:nowrap;          /* ★ 不换行 */
+  flex-wrap:nowrap;
   gap:10px;
   padding:10px 20px 8px;
   border-bottom:1px solid #e6edf5;
   background:#fff;
 
-  width:100% !important;     /* ★ 压掉旧的 .tabbar 宽度/边距 */
+  width:100%;
   max-width:100%;
-  margin:0 !important;       /* ★ 防止旧样式把整条缩短 */
+  margin:0;
   box-sizing:border-box;
   flex:1 1 auto;
   min-width:0;
-  overflow-x:auto;           /* ★ 标签多时横向滚动 */
+  overflow-x:auto;
   overflow-y:hidden;
 }
 
-/* 单个 Tab */
+/* ===== 单个 Tab：取消背景切换，仅靠 Linkbar 激活 ===== */
 .tab-container .tab{
   flex:0 0 auto;
   padding:10px 16px;
   cursor:pointer;
   color:#475569;
-  border-bottom:2px solid transparent;
-  border-radius:6px 6px 0 0;
+  border:none;                 /* 不要边框 */
+  background:transparent;      /* 无背景变化 */
   white-space:nowrap;
-  transition:background .15s;
+  transition:color .15s;
 }
-.tab-container .tab:hover{ background:#f3f6fb; }
+.tab-container .tab:hover{
+  background:#f3f6fb;          /* hover 可保留轻微高亮 */
+}
 .tab-container .tab.active{
-  color:#003366;
+  color:#003366;               /* 仅改变字体颜色 */
   font-weight:600;
-  border-bottom-color:#003366;
+  background:transparent;      /* 不出现块状选中效果 */
 }
-.tab-container .tab.disabled{ color:#c0c7d0; pointer-events:none; }
 
-/* 说明条（可留可去） */
+/* ===== Linkbar：下划线激活指示 ===== */
+.tab-container .inkbar{
+  position:absolute;
+  bottom:0;
+  height:2px;
+  background:#1e40af;
+  border-radius:2px;
+  transition:left .25s ease,width .25s ease;
+}
+
+/* ===== 说明条（可选） ===== */
 .tab-container .tab-intro{
   display:flex;
   align-items:flex-start;
@@ -478,24 +488,11 @@
   width:100%;
   box-sizing:border-box;
 }
-.tab-container .ti-icon{ width:14px;height:14px;margin-top:2px;color:#1e40af; }
-.tab-container .ti-title{ font-weight:600;margin-right:6px; }
+.tab-container .ti-icon{ width:14px; height:14px; margin-top:2px; color:#1e40af; }
+.tab-container .ti-title{ font-weight:600; margin-right:6px; }
 
-/* 下划线 */
-.tab-container .inkbar{
-  position:absolute;
-  bottom:-1px;               /* 与 1px 边框贴齐 */
-  height:2px;
-  background:#1e40af;
-  border-radius:2px;
-  transition:left .25s ease, width .25s ease;
-}
-
-/* 兜底：若上层是 flex 容器，统一允许伸展 */
-.page-wrap, .page-inner, .content-area { min-width:0; }
-
-/* ✅ 图表区块也包裹在卡片中更融合 */
-.chart-card {
+/* ===== 图表卡片对齐 KPI ===== */
+.chart-card{
   background:#fff;
   border:1px solid #e6edf5;
   border-radius:8px;
