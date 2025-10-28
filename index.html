@@ -412,59 +412,44 @@
 .issue-body-simple::-webkit-scrollbar-track{ background:transparent; }
 
 /* Tabs：更贴近 KPI */
-.tabbar{
-  display:flex;align-items:center;border-bottom:1px solid #e6edf5;
-  margin:8px 16px 0;
-}
-.tab{padding:10px 16px;cursor:pointer;color:#475569;border-bottom:2px solid transparent}
-.tab:hover{background:#f3f6fb}
-.tab.active{color:#003366;font-weight:600;border-bottom-color:#003366}
-.tab.disabled{color:#c0c7d0;pointer-events:none}
-
-/* ✅ Tab 容器卡片风格 */
+/* ============ Tab 容器：与页面其它卡片对齐（10px 16px） ============ */
 .tab-container{
   background:#fff;
   border:1px solid #e6edf5;
   border-radius:8px;
-  /* 统一与页面宽度对齐 */
-  width:100%;
-  max-width:1280px;
-  margin:10px auto 0;        /* 居中，不用左右 16px 了 */
-  padding:0;                 /* 内边距交给 .tabbar/.tab-intro 管 */
+  margin:10px 16px 0;        /* 与 chart-card 对齐 */
+  padding:0;
   box-shadow:0 1px 3px rgba(0,0,0,.04);
   box-sizing:border-box;
-  flex:1 1 auto;             /* 若父是 flex，允许拉满 */
-  min-width:0;               /* 防止被压成最小内容宽 */
+  width:calc(100% - 32px);
+  flex:1 1 auto;
+  min-width:0;               /* ★ 防止在 flex 布局里被压缩 */
 }
 
-/* =============== 统一：Tab 行 =============== */
-/* 用更高特异性，避免旧的 .tabbar 规则覆盖 */
+/* ============ Tab 行：占满、不换行、可横向滚动 ============ */
 .tab-container .tabbar{
   position:relative;
   display:flex;
   align-items:center;
-  flex-wrap:nowrap;          /* 不换行 */
+  flex-wrap:nowrap;          /* ★ 不换行 */
   gap:10px;
-  /* 内边距移到这里，别用外边距挤布局 */
   padding:10px 20px 8px;
   border-bottom:1px solid #e6edf5;
   background:#fff;
 
-  /* ★ 关键：占满外框且不被父级 inline/fit-content 影响 */
-  width:100%;
+  width:100% !important;     /* ★ 压掉旧的 .tabbar 宽度/边距 */
   max-width:100%;
+  margin:0 !important;       /* ★ 防止旧样式把整条缩短 */
   box-sizing:border-box;
   flex:1 1 auto;
   min-width:0;
-
-  /* ★ 标签多时横向滚动，而不是把整条挤窄 */
-  overflow-x:auto;
+  overflow-x:auto;           /* ★ 标签多时横向滚动 */
   overflow-y:hidden;
 }
 
-/* =============== 统一：单个 Tab =============== */
+/* 单个 Tab */
 .tab-container .tab{
-  flex:0 0 auto;             /* 宽度随内容，不被拉伸 */
+  flex:0 0 auto;
   padding:10px 16px;
   cursor:pointer;
   color:#475569;
@@ -481,7 +466,7 @@
 }
 .tab-container .tab.disabled{ color:#c0c7d0; pointer-events:none; }
 
-/* =============== 统一：Tab 说明条（可选） =============== */
+/* 说明条（可留可去） */
 .tab-container .tab-intro{
   display:flex;
   align-items:flex-start;
@@ -493,17 +478,21 @@
   width:100%;
   box-sizing:border-box;
 }
-.tab-container .tab-intro .ti-icon{ width:14px;height:14px;margin-top:2px;color:#1e40af; }
-.tab-container .tab-intro .ti-title{ font-weight:600;margin-right:6px; }
+.tab-container .ti-icon{ width:14px;height:14px;margin-top:2px;color:#1e40af; }
+.tab-container .ti-title{ font-weight:600;margin-right:6px; }
 
-/* ===== inkbar ===== */
-.inkbar{
+/* 下划线 */
+.tab-container .inkbar{
   position:absolute;
-  bottom:0; height:2px;
+  bottom:-1px;               /* 与 1px 边框贴齐 */
+  height:2px;
   background:#1e40af;
   border-radius:2px;
   transition:left .25s ease, width .25s ease;
 }
+
+/* 兜底：若上层是 flex 容器，统一允许伸展 */
+.page-wrap, .page-inner, .content-area { min-width:0; }
 
 /* ✅ 图表区块也包裹在卡片中更融合 */
 .chart-card {
@@ -1107,7 +1096,7 @@
       </section>
 
       <!-- ===================== 账户总览页 ===================== -->
-      <section class="tab-pane" id="pane-account">
+      <section class="tab-pane active" id="pane-account">
         <div class="tab-scroll">
       
           <!-- ========== 资金总览 ========== -->
@@ -1547,54 +1536,75 @@
 
     // 顶部 tab 切换
     const TAB_INTROS = {
-      account: "提供资金总览、账户交易按月分布与缺失同名账户分析，帮助快速了解资金规模及流向。",
-      biz: "围绕“经营实质”分析，支持多条件筛选，展示流入流出趋势、构成与明细。",
-      relation: "汇总已知关联方交易情况，支持穿透明细与关联度评估。",
-      transaction: "多条件检索特定交易并支持导出，便于核查异常交易。",
-      routine: "聚合工商信息并与交易规模联动校验企业真实性与风险。",
-      statement: "查询银行流水明细，支持关键词搜索与导出功能。",
-      verify: "对比银行流水与总账数据，实现余额与发生额核对。"
+      account:"提供资金总览、账户交易按月分布与缺失同名账户分析，帮助快速了解资金规模及流向。",
+      biz:"围绕“经营实质”分析，支持多条件筛选，展示流入流出趋势、构成与明细。",
+      relation:"汇总已知关联方交易情况，支持穿透明细与关联度评估。",
+      transaction:"多条件检索特定交易并支持导出，便于核查异常交易。",
+      routine:"聚合工商信息并与交易规模联动校验企业真实性与风险。",
+      statement:"查询银行流水明细，支持关键词搜索与导出功能。",
+      verify:"对比银行流水与总账数据，实现余额与发生额核对。"
     };
     
     function setTabIntro(key){
       const el = document.getElementById('tabIntro');
+      if(!el) return;
       el.innerHTML = `
-        <svg class="ti-icon" viewBox="0 0 24 24" fill="currentColor">
+        <svg class="ti-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm0 14a1 1 0 1 1 0 2 1 1 0 0 1 0-2Zm1-9h-2a1 1 0 0 0-1 1v1h2v6h2V8a2 2 0 0 0-2-2Z"/>
         </svg>
-        <div><span class="ti-title">页面说明：</span>${TAB_INTROS[key] || ''}</div>`;
+        <div><span class="ti-title">页面说明：</span>${TAB_INTROS[key]||''}</div>`;
     }
     
     function moveInkbar(activeEl){
-      const bar = document.getElementById('inkbar');
-      const wrap = document.getElementById('topTabs');
+      const bar  = document.getElementById('inkbar');
+      const wrap = document.getElementById('topTabs'); // 滚动容器
       if(!bar || !wrap || !activeEl) return;
-      const r1 = wrap.getBoundingClientRect(), r2 = activeEl.getBoundingClientRect();
-      bar.style.left = (r2.left - r1.left + wrap.scrollLeft) + 'px';
-      bar.style.width = r2.width + 'px';
+    
+      const rWrap = wrap.getBoundingClientRect();
+      const rTab  = activeEl.getBoundingClientRect();
+    
+      const left = (rTab.left - rWrap.left) + wrap.scrollLeft;
+      bar.style.left  = left + 'px';
+      bar.style.width = rTab.width + 'px';
     }
     
-    // Tab切换（保留原逻辑+说明&下划线）
-    document.querySelectorAll('#topTabs .tab').forEach(tab=>{
-      tab.addEventListener('click', ()=>{
-        document.querySelectorAll('#topTabs .tab').forEach(t=>t.classList.remove('active'));
-        tab.classList.add('active');
-        const key = tab.dataset.top;
-        document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
-        document.getElementById('pane-' + key)?.classList.add('active');
-        setTabIntro(key);
-        moveInkbar(tab);
+    // 绑定
+    function bindTabs(){
+      document.querySelectorAll('#topTabs .tab').forEach(tab=>{
+        tab.addEventListener('click', ()=>{
+          document.querySelectorAll('#topTabs .tab').forEach(t=>t.classList.remove('active'));
+          tab.classList.add('active');
+    
+          const key = tab.dataset.top;
+          document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+          document.getElementById('pane-'+key)?.classList.add('active');
+    
+          setTabIntro(key);
+          // 下一帧再计算，避免布局还未完成
+          requestAnimationFrame(()=>moveInkbar(tab));
+        });
       });
-    });
+    
+      // 横向滚动时也要更新 inkbar
+      const wrap = document.getElementById('topTabs');
+      wrap?.addEventListener('scroll', ()=>{
+        const active = document.querySelector('#topTabs .tab.active');
+        if(active) moveInkbar(active);
+      }, { passive:true });
+    }
     
     document.addEventListener('DOMContentLoaded', ()=>{
-      const active = document.querySelector('#topTabs .tab.active');
-      setTabIntro(active ? active.dataset.top : 'account');
-      moveInkbar(active);
+      bindTabs();
+      const active = document.querySelector('#topTabs .tab.active') || document.querySelector('#topTabs .tab');
+      if(active) {
+        setTabIntro(active.dataset.top);
+        // 字体/滚动条渲染后再定位
+        requestAnimationFrame(()=>moveInkbar(active));
+      }
     });
     window.addEventListener('resize', ()=>{
       const active = document.querySelector('#topTabs .tab.active');
-      moveInkbar(active);
+      if(active) moveInkbar(active);
     });
     
      //账户总览展开收起
