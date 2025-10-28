@@ -417,17 +417,24 @@
   background:#fff;
   border:1px solid #e6edf5;
   border-radius:8px;
-  margin:10px 16px 0;          /* 与 KPI、chart-card 对齐 */
+  margin:10px 16px 0;      /* 和 .chart-card 一样用外边距对齐 */
   padding:0;
   box-shadow:0 1px 3px rgba(0,0,0,.04);
   box-sizing:border-box;
-  width:calc(100% - 32px);
-  flex:1 1 100%;
-  min-width:calc(100% - 32px);
-  align-self:stretch;
+
+  /* ⛔ 删掉 calc，避免再次被父容器“缩一遍” */
+  width:auto;              /* 让父容器决定宽度 */
+  min-width:0;
+  max-width:none;
+
+  /* 无论父级是 grid 还是 flex，都强制跨整行并拉满 */
+  grid-column: 1 / -1;     /* Grid: 跨全列 */
+  justify-self: stretch;   /* Grid: 拉满 */
+  align-self: stretch;     /* Flex/Grid: 拉满 */
+  flex: 1 1 auto;          /* Flex: 可伸展 */
 }
 
-/* ===== Tab 行：撑满卡片宽度（与下方表格等宽） ===== */
+/* ===== Tab 行：拉满容器，禁用任何 margin 缩短 ===== */
 .tab-container .tabbar{
   position:relative;
   display:flex;
@@ -435,19 +442,19 @@
   flex-wrap:nowrap;
   gap:10px;
 
-  /* 与 KPI/卡片统一的左右 16px 内边距，并强制去掉任何外边距 */
-  padding:10px 16px 8px 16px;   /* ← 改成 16px，对齐左边线 */
-  margin:0 !important;          /* ← 关键：覆盖旧的 .tabbar{margin:8px 16px 0} */
+  padding:10px 16px 8px;   /* 与卡片内容留白一致 */
+  margin:0 !important;     /* 覆盖全局 `.tabbar{ margin:8px 16px }` 的干扰 */
 
   border-bottom:1px solid #e6edf5;
   background:#fff;
 
-  width:100%; max-width:100%;
-  box-sizing:border-box;
-  flex:1 1 100%;
-  min-width:100%;
-  overflow-x:auto; overflow-y:hidden;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:auto;
+  overflow-y:hidden;
 }
+
 
 /* ===== 单个 Tab：仅文字变化，不高亮整块背景 ===== */
 .tab-container .tab{
