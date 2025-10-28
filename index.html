@@ -785,8 +785,8 @@
 
   /* 让 Tab 与说明条连成一体 */
 :root{
-  --wrap-max: 1280px;          /* ✅ 固定内容最大宽度 */
-  --wrap-pad: 16px;            /* ✅ 左右留白一致 */
+  --wrap-max: 1280px;
+  --wrap-pad: 16px;
   --summary-bg:#F6F8FE;
   --border:#e2e8f0;
   --ink:#334155;
@@ -794,82 +794,51 @@
 }
 
 /* 统一容器：保证 Tab 头与下面卡片左右对齐且宽度固定 */
-.section-wrap{
-  max-width: var(--wrap-max);
-  padding: 0 var(--wrap-pad);
-  margin: 8px auto 16px;
-  box-sizing: border-box;
-}
+.section-wrap{ max-width:var(--wrap-max); padding:0 var(--wrap-pad); margin:8px auto 16px; box-sizing:border-box; }
 
-/* Tab 头保持整体卡片样式 */
-.tabhead{
-  background:var(--summary-bg);
-  border:1px solid var(--border);
-  border-radius:10px;
-  overflow:hidden;
-}
+/* Tab 头 */
+.tabhead{ background:var(--summary-bg); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
 
 /* —— Tabs —— */
-.tabbar{
-  position:relative;
-  display:flex; gap:8px; flex-wrap:wrap;
-  padding:8px 10px;
-  background:var(--summary-bg);
-  border-bottom:1px solid var(--border);
-}
-.tabbar .tab{
-  position:relative;
-  padding:6px 12px;
-  border-radius:6px;
-  cursor:pointer; user-select:none;
-  color:var(--ink);
-  transition:color .15s, background .15s;
-  white-space:nowrap;
-}
+.tabbar{ position:relative; display:flex; gap:8px; flex-wrap:wrap; padding:8px 10px; background:var(--summary-bg); border-bottom:1px solid var(--border); }
+.tabbar .tab{ position:relative; padding:6px 12px; border-radius:6px; cursor:pointer; user-select:none; color:var(--ink); transition:color .15s, background .15s; white-space:nowrap; }
 .tabbar .tab:hover{ background:#eef2ff }
 .tabbar .tab.active{ color:#0f172a; font-weight:600 }
+.tabbar .inkbar{ position:absolute; bottom:0; height:2px; background:#1e40af; border-radius:2px; transition:left .25s ease, width .25s ease; content:""; display:block; }
 
-/* ✅ 滑动下划线（更顺滑的切换效果） */
-.tabbar .inkbar{
-  position:absolute; bottom:0; height:2px; background:#1e40af;
-  border-radius:2px;
-  transition:left .25s ease, width .25s ease;
-  content:"";
-  display:block;
-}
-
-/* 说明条与上面无缝衔接（前面你已有） */
-.tab-intro{
-  display:flex; align-items:flex-start; gap:8px;
-  margin:0; padding:8px 12px;
-  background:transparent; border:0; color:#334155;
-  font-size:12.5px; line-height:1.5;
-}
-.tab-intro .ti-icon{width:14px;height:14px;margin-top:2px;color:#1e40af}
-.tab-intro .ti-title{font-weight:600;margin-right:6px;font-size:12.5px}
+/* 说明条（字体已调小） */
+.tab-intro{ display:flex; align-items:flex-start; gap:8px; margin:0; padding:8px 12px; background:transparent; border:0; color:#334155; font-size:12.5px; line-height:1.5; }
+.tab-intro .ti-icon{ width:14px; height:14px; margin-top:2px; color:#1e40af; }
+.tab-intro .ti-title{ font-weight:600; margin-right:6px; font-size:12.5px; }
 
 /* —— 内容卡片对齐 + 统一大小 —— */
-.tab-stage{
-  margin-top:12px;  /* 与 tabhead 间距 */
-}
+.tab-stage{ margin-top:12px; }
 
-.tab-pane .tab-scroll{
+/* ✅ 恢复整页容器为普通流式布局，避免把所有东西都当成网格 */
+.tab-pane .tab-scroll{ display:block; }
+
+/* ✅ 仅卡片区使用网格 */
+.cards-grid{
   display:grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap:16px;
   align-items:stretch;
 }
 
+/* 卡片基础样式 */
 .card{
   background:#fff; border:1px solid #e2e8f0; border-radius:8px;
   padding:12px 16px; box-shadow:0 1px 3px rgba(0,0,0,.05);
-  display:flex; flex-direction:column; height:320px;   /* ✅ 高度一致 */
+  display:flex; flex-direction:column; height:auto;   /* 默认自适应 */
 }
-.card .head{font-weight:600;font-size:14px;color:#1e293b;border-bottom:1px solid #e2e8f0;padding-bottom:6px;margin-bottom:10px}
-.card .chart{flex:1; min-height:220px}
+/* 需要统一高度的卡片，加 same-h */
+.card.same-h{ min-height:320px; }
 
-/* 可选：让整个头部吸顶（卡片不动） */
-.tabhead.sticky{position:sticky; top:0; z-index:9}
+.card .head{ font-weight:600; font-size:14px; color:#1e293b; border-bottom:1px solid #e2e8f0; padding-bottom:6px; margin-bottom:10px; }
+.card .chart{ flex:1; min-height:220px; }
+
+/* 可选：Tab头吸顶 */
+.tabhead.sticky{ position:sticky; top:0; z-index:9; }
     
 </style>
 </head>
@@ -1014,7 +983,6 @@
     <!-- 3) Tabs（紧贴在KPI/问题卡下面） -->
     <!-- ✅ 页面区块统一容器：宽度/左右内边距由它控制 -->
     <div class="section-wrap">
-    
       <!-- Tab 头（你的 tabbar + 说明条） -->
       <div class="tabhead">
         <div class="tabbar" id="topTabs">
@@ -1025,7 +993,6 @@
           <div class="tab" data-top="routine">特定工商查询</div>
           <div class="tab" data-top="statement">流水查询</div>
           <div class="tab" data-top="verify">总账核对</div>
-          <!-- ✅ 滑动指示条 -->
           <i class="inkbar" id="inkbar"></i>
         </div>
         <div class="tab-intro" id="tabIntro"></div>
@@ -1559,6 +1526,7 @@
     }
     initFilters();
 
+    // 顶部 tab 切换
     document.querySelectorAll('#topTabs .tab').forEach(tab=>{
       tab.addEventListener('click', ()=>{
         document.querySelectorAll('#topTabs .tab').forEach(t=>t.classList.remove('active'));
@@ -1566,14 +1534,15 @@
     
         const key = tab.dataset.top;
         document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
-        document.getElementById('pane-' + key).classList.add('active');
+        const pane = document.getElementById('pane-' + key);
+        if(pane) pane.classList.add('active');
     
-        setTabIntro(key);       // 你的说明条更新
-        moveInkbar(tab);        // ✅ 新增：滑动下划线
+        setTabIntro(key);
+        moveInkbar(tab);
       });
     });
     
-    // ✅ inkbar 定位函数（根据激活的 tab 计算 left/width）
+    // inkbar 定位
     function moveInkbar(activeEl){
       const bar = document.getElementById('inkbar');
       const wrap = document.getElementById('topTabs');
@@ -1590,8 +1559,6 @@
       setTabIntro(active ? active.dataset.top : 'account');
       moveInkbar(active);
     });
-    
-    // 窗口变化时，保持 inkbar 对齐
     window.addEventListener('resize', ()=>{
       const active = document.querySelector('#topTabs .tab.active');
       moveInkbar(active);
