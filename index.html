@@ -785,60 +785,41 @@
 
   /* 让 Tab 与说明条连成一体 */
 :root{
-  --wrap-max: 1280px;
-  --wrap-pad: 16px;
-  --summary-bg:#F6F8FE;
-  --border:#e2e8f0;
-  --ink:#334155;
-  --primary:#1e40af;
+  --wrap-max:1280px; --wrap-pad:16px;
+  --summary-bg:#F6F8FE; --border:#e2e8f0;
+  --ink:#334155; --primary:#1e40af;
 }
 
-/* 统一容器：保证 Tab 头与下面卡片左右对齐且宽度固定 */
-.section-wrap{ max-width:var(--wrap-max); padding:0 var(--wrap-pad); margin:8px auto 16px; box-sizing:border-box; }
+/* 作用域容器，控制宽度与左右对齐 */
+.section-wrap{max-width:var(--wrap-max);padding:0 var(--wrap-pad);margin:8px auto 16px;box-sizing:border-box}
 
-/* Tab 头 */
-.tabhead{ background:var(--summary-bg); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+/* Tab头壳 */
+.section-wrap .tabhead{background:var(--summary-bg);border:1px solid var(--border);border-radius:10px;overflow:hidden}
 
-/* —— Tabs —— */
-.tabbar{ position:relative; display:flex; gap:8px; flex-wrap:wrap; padding:8px 10px; background:var(--summary-bg); border-bottom:1px solid var(--border); }
-.tabbar .tab{ position:relative; padding:6px 12px; border-radius:6px; cursor:pointer; user-select:none; color:var(--ink); transition:color .15s, background .15s; white-space:nowrap; }
-.tabbar .tab:hover{ background:#eef2ff }
-.tabbar .tab.active{ color:#0f172a; font-weight:600 }
-.tabbar .inkbar{ position:absolute; bottom:0; height:2px; background:#1e40af; border-radius:2px; transition:left .25s ease, width .25s ease; content:""; display:block; }
+/* 顶部Tabs */
+.section-wrap .tabbar{position:relative;display:flex;gap:8px;flex-wrap:wrap;padding:8px 10px;background:var(--summary-bg);border-bottom:1px solid var(--border)}
+.section-wrap .tabbar .tab{padding:6px 12px;border-radius:6px;cursor:pointer;color:var(--ink);white-space:nowrap;transition:.15s}
+.section-wrap .tabbar .tab:hover{background:#eef2ff}
+.section-wrap .tabbar .tab.active{color:#0f172a;font-weight:600}
 
-/* 说明条（字体已调小） */
-.tab-intro{ display:flex; align-items:flex-start; gap:8px; margin:0; padding:8px 12px; background:transparent; border:0; color:#334155; font-size:12.5px; line-height:1.5; }
-.tab-intro .ti-icon{ width:14px; height:14px; margin-top:2px; color:#1e40af; }
-.tab-intro .ti-title{ font-weight:600; margin-right:6px; font-size:12.5px; }
+/* 滑动下划线 */
+.section-wrap .inkbar{position:absolute;bottom:0;height:2px;background:var(--primary);border-radius:2px;transition:left .25s ease,width .25s ease;display:block}
 
-/* —— 内容卡片对齐 + 统一大小 —— */
-.tab-stage{ margin-top:12px; }
+/* 说明条（小一号） */
+.section-wrap .tab-intro{display:flex;gap:8px;align-items:flex-start;margin:0;padding:8px 12px;background:transparent;border:0;color:#334155;font-size:12.5px;line-height:1.5}
+.section-wrap .tab-intro .ti-icon{width:14px;height:14px;margin-top:2px;color:var(--primary)}
+.section-wrap .tab-intro .ti-title{font-weight:600;margin-right:6px;font-size:12.5px}
 
-/* ✅ 恢复整页容器为普通流式布局，避免把所有东西都当成网格 */
-.tab-pane .tab-scroll{ display:block; }
+/* 舞台与卡片区域：仅限定在本 wrap 内，避免影响页面其它 card */
+.section-wrap .tab-stage{margin-top:12px}
+.section-wrap .tab-pane{display:none}
+.section-wrap .tab-pane.active{display:block}
 
-/* ✅ 仅卡片区使用网格 */
-.cards-grid{
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap:16px;
-  align-items:stretch;
-}
-
-/* 卡片基础样式 */
-.card{
-  background:#fff; border:1px solid #e2e8f0; border-radius:8px;
-  padding:12px 16px; box-shadow:0 1px 3px rgba(0,0,0,.05);
-  display:flex; flex-direction:column; height:auto;   /* 默认自适应 */
-}
-/* 需要统一高度的卡片，加 same-h */
-.card.same-h{ min-height:320px; }
-
-.card .head{ font-weight:600; font-size:14px; color:#1e293b; border-bottom:1px solid #e2e8f0; padding-bottom:6px; margin-bottom:10px; }
-.card .chart{ flex:1; min-height:220px; }
-
-/* 可选：Tab头吸顶 */
-.tabhead.sticky{ position:sticky; top:0; z-index:9; }
+/* 若要让卡片等高：给需要的卡片容器加 .card 等高规则（保持你原class名） */
+.section-wrap .tab-scroll{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;align-items:stretch}
+.section-wrap .card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;box-shadow:0 1px 3px rgba(0,0,0,.05);display:flex;flex-direction:column;min-height:320px}
+.section-wrap .card .head{font-weight:600;font-size:14px;color:#1e293b;border-bottom:1px solid #e2e8f0;padding-bottom:6px;margin-bottom:10px}
+.section-wrap .card .chart{flex:1;min-height:220px}
     
 </style>
 </head>
