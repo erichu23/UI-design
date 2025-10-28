@@ -785,78 +785,94 @@
 
 
 /* Tab外框整体 */
-.tabhead {
-  background: #f6f8fe;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 10px;  /* ← 原本16px改成10px，减小与下方卡片距离 */
-  width: 100%;
-  max-width: 1280px;   /* ← 控制对齐宽度 */
-  margin-left: auto;
-  margin-right: auto;
+/* ===== Tab外框整体（统一版） ===== */
+.tabhead{
+  background:#f6f8fe;
+  border:1px solid #e2e8f0;
+  border-radius:10px;
+  overflow:hidden;
+  /* ↓ 统一与下方卡片距离 */
+  margin:0 auto 10px;
+  /* ↓ 拉满行宽，且与主体同宽（可改 1280） */
+  width:100%;
+  max-width:1280px;
+  /* ↓ 防止父级 padding 导致视觉不齐 */
+  box-sizing:border-box;
+  /* ↓ 若外层是 flex 容器，强制占满可用宽度 */
+  flex:1 1 auto;
+  /* ↓ 防止被外层设置成 min-content 导致变窄 */
+  min-width:0;
 }
 
-/* Tab按钮行 */
-.tabbar {
-  position: relative;
-  display: flex;
-  flex-wrap: nowrap;  /* ← 不换行，保持一条横向铺满 */
-  justify-content: flex-start;
-  gap: 10px;
-  padding: 10px 20px 8px 20px; /* ← 加宽左右内边距 */
-  background: transparent;
-  border-bottom: 1px solid #e2e8f0;
-  min-width: 100%; /* ← 让 tab 区域拉满外框 */
+/* ===== Tab按钮行 ===== */
+.tabbar{
+  position:relative;
+  display:flex;
+  /* ↓ 不换行，保持一排 */
+  flex-wrap:nowrap;
+  justify-content:flex-start;
+  gap:10px;
+  padding:10px 20px 8px 20px;
+  background:transparent;
+  border-bottom:1px solid #e2e8f0;
+
+  /* ★ 关键：占满外框，不受父级 inline/fit-content 影响 */
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  flex:1 1 auto;
+  min-width:0;
+
+  /* ★ 多 Tab 时允许横向滚动，而不是被挤成一小块 */
+  overflow-x:auto;
+  overflow-y:hidden;
+  /* 可选：隐藏滚动条（按需保留） */
+  /* scrollbar-width:none; }
+  .tabbar::-webkit-scrollbar{ display:none; } */
 }
-.tabbar .tab {
-  padding: 6px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  user-select: none;
-  color: #334155;
-  transition: all 0.15s;
-  white-space: nowrap;
+.tabbar .tab{
+  /* ↓ 每个 Tab 自身宽度由内容决定，不拉伸 */
+  flex:0 0 auto;
+  padding:6px 14px;
+  border-radius:6px;
+  cursor:pointer;
+  user-select:none;
+  color:#334155;
+  transition:all .15s;
+  white-space:nowrap;
 }
-.tabbar .tab:hover {
-  background: #eef2ff;
-}
-.tabbar .tab.active {
-  color: #0f172a;
-  font-weight: 600;
+.tabbar .tab:hover{ background:#eef2ff; }
+.tabbar .tab.active{
+  color:#0f172a;
+  font-weight:600;
 }
 
-/* inkbar */
-.inkbar {
-  position: absolute;
-  bottom: 0;
-  height: 2px;
-  background: #1e40af;
-  border-radius: 2px;
-  transition: left .25s ease, width .25s ease;
+/* ===== inkbar ===== */
+.inkbar{
+  position:absolute;
+  bottom:0; height:2px;
+  background:#1e40af;
+  border-radius:2px;
+  transition:left .25s ease, width .25s ease;
 }
 
-/* Tab 说明条（与上方在同框内） */
-.tab-intro {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 8px 20px 10px 20px; /* ← 内边距和上面对齐 */
-  background: transparent;
-  color: #334155;
-  font-size: 12.5px;
-  line-height: 1.5;
+/* ===== Tab 说明条（与上方在同框内） ===== */
+.tab-intro{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  padding:8px 20px 10px 20px;
+  background:transparent;
+  color:#334155;
+  font-size:12.5px;
+  line-height:1.5;
+
+  /* ↓ 与 tabbar 同宽，防止被压缩 */
+  width:100%;
+  box-sizing:border-box;
 }
-.tab-intro .ti-icon {
-  width: 14px;
-  height: 14px;
-  margin-top: 2px;
-  color: #1e40af;
-}
-.tab-intro .ti-title {
-  font-weight: 600;
-  margin-right: 6px;
-}
+.tab-intro .ti-icon{ width:14px; height:14px; margin-top:2px; color:#1e40af; }
+.tab-intro .ti-title{ font-weight:600; margin-right:6px; }
     
 </style>
 </head>
