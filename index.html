@@ -719,6 +719,71 @@
 .table th.check-col, .table td.check-col{min-width:0;width:1%;white-space:nowrap}
 .table td .check-row{padding:6px 0}
 
+    <!-- ========== CSS：保持你的样式，未做语义性改动 ========== -->
+<style>
+/* 图例 */
+.legend{display:flex;gap:14px;justify-content:flex-end;margin:6px 0 10px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px}
+.lg-warn{background:#facc15}.lg-none{background:#cbd5e1}.lg-ok{background:#3b82f6}.lg-err{background:#ef4444}
+
+/* 统一控制作用域（很关键）：给整张表一个容器class来切换展开/收起 */
+.check-scope{--dot:12px;--sepw:20px;--year:#334155}
+
+/* 表头：年份标签与分隔符 */
+.check-head{display:flex;align-items:center;gap:8px;color:#475569;font-size:13px;user-select:none}
+.check-head .y{color:var(--year);font-weight:600}
+.check-head .sep-label{width:var(--sepw);text-align:center;color:#94a3b8}
+
+/* 箭头按钮 */
+.arrow-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:24px;border:1px solid #cbd5e1;background:#fff;border-radius:6px;
+  cursor:pointer;transition:.25s;
+}
+.arrow-btn:hover{background:#f1f5f9}
+.arrow-btn svg{width:14px;height:14px;fill:#334155;transition:transform .25s}
+.arrow-btn.expanded svg{transform:rotate(90deg)} /* ▶→▼ */
+
+/* ——同一网格：合计行“月份数字”和数据行“圆点”使用同一套列定义—— */
+.months-grid{
+  display:grid;align-items:center;column-gap:4px;justify-content:flex-start;
+  /* 默认收起：只有 2024 的 12 列（真正无空白） */
+  grid-template-columns: repeat(12, 22px);
+}
+/* 展开：2023(12) + 分隔(1) + 2024(12) = 25 列。两年各自从“1月”开始，严格上下对齐 */
+.check-scope.expanded .months-grid{
+  grid-template-columns: repeat(12, 22px) var(--sepw) repeat(12, 22px);
+}
+
+/* 收起时，隐藏 2023 的内容和分隔符；展开时显示 */
+.col-2023,.col-sep{display:none}
+.check-scope.expanded .col-2023{display:inline-block}
+.check-scope.expanded .col-sep{display:inline-block}
+
+/* 表头年份联动：收起时只显示“2024”，展开时“2023｜2024” */
+.y-2023,.sep-label{display:none}
+.check-scope.expanded .y-2023,
+.check-scope.expanded .sep-label{display:inline}
+
+/* 月份数字（显示在“合计”这一行） */
+.month-num{font-size:12px;color:#64748b;text-align:center}
+
+/* 圆点（数据行） */
+.dot{width:var(--dot);height:var(--dot);border-radius:3px;display:inline-block}
+.dot.ok{background:#3b82f6}
+.dot.none{background:#cbd5e1}
+.dot.warn{background:#facc15}
+.dot.err{background:#ef4444}
+
+/* 关键：去掉最小宽度，避免收起时仍被撑出空白；让列自适应内容宽度 */
+.table th.check-col, .table td.check-col{min-width:0;width:1%;white-space:nowrap}
+.table td .check-row{padding:6px 0}
+/* 收起状态：隐藏合计行（月份数字与上面的点） */
+.check-scope:not(.expanded) tr:first-child .months-grid {
+  display: none;
+}
+
+
     
 </style>
 </head>
