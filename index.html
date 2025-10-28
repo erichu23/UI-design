@@ -724,6 +724,20 @@
 .table th.check-col,.table td.check-col{width:1%;white-space:nowrap}
 .table td .check-row{padding:6px 0}
 
+/* ===== 表头颜色定义 ===== */
+.table thead th {
+  background: #F6F8FE;   /* 这是你截图中表头的浅蓝灰色，可换其他色 */
+  color: #0f172a;         /* 字体颜色 */
+  font-weight: 600;
+}
+
+/* ===== 合计行与表头同色 ===== */
+.table tr.sum-row td {
+  background: #F6F8FE;
+  color: #0f172a;
+  font-weight: 600;
+}
+
     
 </style>
 </head>
@@ -1030,7 +1044,7 @@
                     </thead>
                     <tbody>
                       <!-- 合计行 -->
-                      <tr>
+                      <tr class="sum-row">
                         <td><b>合计</b></td><td></td><td></td>
                         <td>846,223,016</td><td>693,427,537</td><td><b>1,539,650,553</b></td>
                         <td>2,442</td><td>401</td><td></td><td></td>
