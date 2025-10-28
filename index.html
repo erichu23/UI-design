@@ -782,6 +782,15 @@
   text-align: center;
   min-width: 70px;
 }
+/* 顶部Tab介绍 */
+.tab-intro{
+  display:flex;align-items:flex-start;gap:8px;
+  margin:10px 0 14px;padding:10px 12px;
+  background:#F6F8FE;border:1px solid #e2e8f0;border-radius:8px;
+  color:#334155;font-size:10px;line-height:1.2;
+}
+.tab-intro .ti-icon{width:16px;height:16px;margin-top:2px;color:#1e40af}
+.tab-intro .ti-title{font-weight:600;margin-right:6px}
     
 </style>
 </head>
@@ -933,6 +942,9 @@
       <div class="tab" data-top="statement">流水查询</div>
       <div class="tab" data-top="verify">总账核对</div>
     </div>
+
+    <!-- 新增：Tab 说明条 -->
+    <div class="tab-intro" id="tabIntro"></div>
     
     <!-- 统一白板舞台：两个面板共用同一块“白板” -->
     <div class="tab-stage">
@@ -1471,8 +1483,38 @@
         const key = tab.dataset.top; // 'biz' or 'routine'
         document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
         document.getElementById('pane-' + key).classList.add('active');
+        setTabIntro(key);
       });
     });
+
+    // 每个 Tab 的说明内容
+    const TAB_INTROS = {
+      account: "本页为用户提供资金总览、账户交易按月分布、缺失同名账户三大功能模块，旨在帮助用户全面了解已上传并执行分析的银行流水的资金规模、各银行账号交易分布情况，同时识别出未获取流水的银行账号。",
+      biz: "本页为用户提供已上传并执行分析的银行流水的多维度分析，包括：资金流水余额、流入流出趋势、流入流出构成，通过时间序列分析、交易性质和对手方性质等分析，旨在帮助用户识别到与被审计单位的资金规模与运营模式预期不符的情况。(本页的所有金额，已按照用户上传的汇率主档或系统默认PBOC汇率进行转换，均以人民币显示)",
+      relation: "本页展示和分析：(1)关联方主档中的对手方，和(2)于“经营实质>流入流出构成”中手工标记为关联方的对手方的交易，旨在帮助用户全面了解被审计单位与关联方的资金往来，协助用户进行关联方披露。如用户暂未上传关联方主档或未手工打标，则本页展示内容为空。。",
+      transaction: "本页展示和分析：(1)员工主档中的对手方，和(2)其他个人(小于或等于四个字符)的对手方交易，旨在帮助用户全面了解被审计单位与个人的资金往来，协助用户进行关联个人和董监高的识别与披露、个人交易的合理性分析及风险识别。如用户暂未上传员工主档，则本页仅展示与其他个人对手方交易。",
+      routine: "本页展示基于特定筛选条件组合（例如交易频率、交易金额、收支重合比例等）筛选出来的交易对手方及相关流水，旨在协助用户识别重大异常交易或交易对手方。用户需要进行进一步的筛选和风险评估，以确定这些重大异常交易或交易对手方是否需要进行实质性测试以应对重大错报风险。",
+      statement: "用户可对本页的多维筛选器设置筛选条件，系统将在已上传并执行分析的银行流水中选出符合筛选条件的异常交易流水，并支持流水导出，旨在帮助用户根据项目需求，全面、快速、精准地筛选出异常银行流水，协助用户进一步执行审计程序。",
+      verify: "本页汇总已上传并执行分析的电子银行流水的期初金额、借方发生额、贷方发生额及期末余额，并将其与上传的银行科目总账/分账号余额表进行比对，并展示两者差异，协助用户完成银行流水的完整性测试。。"
+    };
+    
+    // 说明条渲染函数
+    function setTabIntro(key){
+      const el = document.getElementById('tabIntro');
+      const text = TAB_INTROS[key] || '';
+      el.innerHTML = `
+        <svg class="ti-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm0 14a1 1 0 1 1 0 2 1 1 0 0 1 0-2Zm1-9h-2a1 1 0 0 0-1 1v1h2v6h2V8a2 2 0 0 0-2-2Z"/></svg>
+        <div><span class="ti-title">页面说明：</span>${text}</div>
+      `;
+    }
+    
+    // 页面加载后显示默认 tab 的说明
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const active = document.querySelector('#topTabs .tab.active');
+      setTabIntro(active ? active.dataset.top : 'account');
+    });
+
+    
      //账户总览展开收起
     document.addEventListener("DOMContentLoaded",()=>{
       const scope=document.getElementById('checkScope');
