@@ -869,75 +869,59 @@
 
 /* ========== 表头双箭头美化（紧凑对齐版） ========== */
 
-/* 只给 .sortable 的表头做箭头（排除校验列） */
-#tblAccountSummary thead th.sortable:not(.check-col) {
+/* 仅给可排序表头加右侧图标位 */
+#tblAccountSummary thead th.sortable:not(.check-col){
   position: relative;
-  padding-right: 20px;          /* 稍微多留一点空间 */
+  padding-right: 22px;            /* 给箭头留空间 */
   white-space: nowrap;
-  font-weight: 500;
-  color: #334155;
   cursor: pointer;
-  transition: color .15s ease;
+  color: #334155;
+  font-weight: 500;
+  user-select: none;
 }
 
-/* 上箭头（默认灰） */
-#tblAccountSummary thead th.sortable:not(.check-col)::before {
-  content: "▲";
-  position: absolute;
-  right: 6px;
-  top: calc(50% - 7px);
-  font-size: 9px;               /* 稍小，更精致 */
-  line-height: 1;
-  color: #cbd5e1;
-  transition: color .2s ease, transform .2s ease;
+/* 单箭头：用 CSS 三角形画一个“▼”，默认半透明灰 */
+#tblAccountSummary thead th.sortable:not(.check-col)::after{
+  content:"";
+  position:absolute;
+  right:6px;
+  top:50%;
+  width:0;height:0;
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-top:6px solid #cbd5e1;   /* ▼ */
+  transform: translateY(-50%);
+  opacity:.6;
+  transition: transform .18s ease, border-top-color .18s ease, opacity .18s ease;
 }
 
-/* 下箭头（默认灰） */
-#tblAccountSummary thead th.sortable:not(.check-col)::after {
-  content: "▼";
-  position: absolute;
-  right: 6px;
-  top: calc(50% + 3px);
-  font-size: 9px;
-  line-height: 1;
-  color: #cbd5e1;
-  transition: color .2s ease, transform .2s ease;
+/* 悬停反馈（仍未排序） */
+#tblAccountSummary thead th.sortable:not(.check-col):hover::after{
+  opacity:.9;
+  border-top-color:#94a3b8;
 }
 
-/* 悬停：轻微变深表示可点击 */
-#tblAccountSummary thead th.sortable:not(.check-col):hover {
-  color: #1e40af;
+/* 升序：箭头翻转朝上（▲）并高亮主色 */
+#tblAccountSummary thead th.sortable.sort-asc:not(.check-col){
+  color:#1e40af;
 }
-#tblAccountSummary thead th.sortable:not(.check-col):hover::before,
-#tblAccountSummary thead th.sortable:not(.check-col):hover::after {
-  color: #94a3b8;
-}
-
-/* 升序：高亮上箭头，轻微上移增强视觉 */
-#tblAccountSummary thead th.sortable.sort-asc:not(.check-col)::before {
-  color: #1e40af;
-  font-weight: 700;
-  transform: translateY(-1px);
-}
-#tblAccountSummary thead th.sortable.sort-asc:not(.check-col)::after {
-  color: #cbd5e1;
+#tblAccountSummary thead th.sortable.sort-asc:not(.check-col)::after{
+  transform: translateY(-50%) rotate(180deg);   /* ▲ */
+  border-top-color:#1e40af;
+  opacity:1;
 }
 
-/* 降序：高亮下箭头，轻微下移增强视觉 */
-#tblAccountSummary thead th.sortable.sort-desc:not(.check-col)::after {
-  color: #1e40af;
-  font-weight: 700;
-  transform: translateY(1px);
+/* 降序：箭头保持朝下（▼）并高亮主色 */
+#tblAccountSummary thead th.sortable.sort-desc:not(.check-col){
+  color:#1e40af;
 }
-#tblAccountSummary thead th.sortable.sort-desc:not(.check-col)::before {
-  color: #cbd5e1;
+#tblAccountSummary thead th.sortable.sort-desc:not(.check-col)::after{
+  border-top-color:#1e40af;
+  opacity:1;
 }
 
-/* 不展示箭头的列 */
-#tblAccountSummary thead th.nosort::before,
-#tblAccountSummary thead th.nosort::after {
-  content: none !important;
-}
+/* 明确不展示箭头的列（如需要） */
+#tblAccountSummary thead th.nosort::after{ content:none !important; }
 
     
 </style>
