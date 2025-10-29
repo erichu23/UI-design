@@ -869,59 +869,74 @@
 
 /* ========== 表头双箭头美化（紧凑对齐版） ========== */
 
-/* 仅给可排序表头加右侧图标位 */
-#tblAccountSummary thead th.sortable:not(.check-col){
+/* ==================== 表头双箭头样式 ==================== */
+#tblAccountSummary thead th.sortable:not(.check-col) {
   position: relative;
-  padding-right: 22px;            /* 给箭头留空间 */
-  white-space: nowrap;
+  padding-right: 20px;         /* 箭头预留空间 */
   cursor: pointer;
   color: #334155;
   font-weight: 500;
   user-select: none;
+  white-space: nowrap;
 }
 
-/* 单箭头：用 CSS 三角形画一个“▼”，默认半透明灰 */
-#tblAccountSummary thead th.sortable:not(.check-col)::after{
-  content:"";
-  position:absolute;
-  right:6px;
-  top:50%;
-  width:0;height:0;
-  border-left:5px solid transparent;
-  border-right:5px solid transparent;
-  border-top:6px solid #cbd5e1;   /* ▼ */
-  transform: translateY(-50%);
-  opacity:.6;
-  transition: transform .18s ease, border-top-color .18s ease, opacity .18s ease;
+/* 默认状态：上下灰箭头 */
+#tblAccountSummary thead th.sortable:not(.check-col)::before,
+#tblAccountSummary thead th.sortable:not(.check-col)::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  opacity: 0.6;
+  transition: all 0.2s ease;
 }
 
-/* 悬停反馈（仍未排序） */
-#tblAccountSummary thead th.sortable:not(.check-col):hover::after{
-  opacity:.9;
-  border-top-color:#94a3b8;
+/* 上箭头（朝上） */
+#tblAccountSummary thead th.sortable:not(.check-col)::before {
+  top: calc(50% - 6px);
+  border-bottom: 5px solid #cbd5e1;
 }
 
-/* 升序：箭头翻转朝上（▲）并高亮主色 */
-#tblAccountSummary thead th.sortable.sort-asc:not(.check-col){
-  color:#1e40af;
-}
-#tblAccountSummary thead th.sortable.sort-asc:not(.check-col)::after{
-  transform: translateY(-50%) rotate(180deg);   /* ▲ */
-  border-top-color:#1e40af;
-  opacity:1;
+/* 下箭头（朝下） */
+#tblAccountSummary thead th.sortable:not(.check-col)::after {
+  top: calc(50% + 3px);
+  border-top: 5px solid #cbd5e1;
 }
 
-/* 降序：箭头保持朝下（▼）并高亮主色 */
-#tblAccountSummary thead th.sortable.sort-desc:not(.check-col){
-  color:#1e40af;
-}
-#tblAccountSummary thead th.sortable.sort-desc:not(.check-col)::after{
-  border-top-color:#1e40af;
-  opacity:1;
+/* 悬停时整体变亮 */
+#tblAccountSummary thead th.sortable:not(.check-col):hover::before,
+#tblAccountSummary thead th.sortable:not(.check-col):hover::after {
+  border-bottom-color: #94a3b8;
+  border-top-color: #94a3b8;
+  opacity: 0.9;
 }
 
-/* 明确不展示箭头的列（如需要） */
-#tblAccountSummary thead th.nosort::after{ content:none !important; }
+/* 升序：上箭头蓝，下箭头灰 */
+#tblAccountSummary thead th.sortable.sort-asc:not(.check-col)::before {
+  border-bottom-color: #1e40af;
+  opacity: 1;
+}
+#tblAccountSummary thead th.sortable.sort-asc:not(.check-col)::after {
+  border-top-color: #cbd5e1;
+  opacity: 0.5;
+}
+
+/* 降序：下箭头蓝，上箭头灰 */
+#tblAccountSummary thead th.sortable.sort-desc:not(.check-col)::after {
+  border-top-color: #1e40af;
+  opacity: 1;
+}
+#tblAccountSummary thead th.sortable.sort-desc:not(.check-col)::before {
+  border-bottom-color: #cbd5e1;
+  opacity: 0.5;
+}
+
+/* 明确不显示箭头的列 */
+#tblAccountSummary thead th.nosort::before,
+#tblAccountSummary thead th.nosort::after {
+  content: none !important;
+}
 
     
 </style>
