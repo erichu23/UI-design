@@ -939,9 +939,9 @@
 }
 
 /* ==================== 表头双箭头样式 ==================== */
-#tblMissingSameNamey thead th.sortable:not(.check-col) {
+#tblMissingSameName thead th.sortable:not(.check-col) {
   position: relative;
-  padding-right: 20px;         /* 箭头预留空间 */
+  padding-right: 20px;
   cursor: pointer;
   color: #334155;
   font-weight: 500;
@@ -973,7 +973,7 @@
   border-top: 6px solid #cbd5e1;
 }
 
-/* 悬停时整体变亮 */
+/* 悬停亮一点 */
 #tblMissingSameName thead th.sortable:not(.check-col):hover::before,
 #tblMissingSameName thead th.sortable:not(.check-col):hover::after {
   border-bottom-color: #94a3b8;
@@ -981,27 +981,27 @@
   opacity: 0.9;
 }
 
-/* 升序：上箭头蓝，下箭头灰 */
+/* ✅ 升序状态 */
 #tblMissingSameName thead th.sortable.sort-asc:not(.check-col)::before {
   border-bottom-color: #1e40af;
   opacity: 1;
 }
 #tblMissingSameName thead th.sortable.sort-asc:not(.check-col)::after {
   border-top-color: #cbd5e1;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
-/* 降序：下箭头蓝，上箭头灰 */
+/* ✅ 降序状态 */
 #tblMissingSameName thead th.sortable.sort-desc:not(.check-col)::after {
   border-top-color: #1e40af;
   opacity: 1;
 }
 #tblMissingSameName thead th.sortable.sort-desc:not(.check-col)::before {
   border-bottom-color: #cbd5e1;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
-/* 明确不显示箭头的列 */
+/* 不排序的列 */
 #tblMissingSameName thead th.nosort::before,
 #tblMissingSameName thead th.nosort::after {
   content: none !important;
