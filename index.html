@@ -938,6 +938,75 @@
   content: none !important;
 }
 
+/* ==================== 表头双箭头样式 ==================== */
+#tblMissingSameNamey thead th.sortable:not(.check-col) {
+  position: relative;
+  padding-right: 20px;         /* 箭头预留空间 */
+  cursor: pointer;
+  color: #334155;
+  font-weight: 500;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* 默认状态：上下灰箭头 */
+#tblMissingSameName thead th.sortable:not(.check-col)::before,
+#tblMissingSameName thead th.sortable:not(.check-col)::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+/* 上箭头（朝上） */
+#tblMissingSameName thead th.sortable:not(.check-col)::before {
+  top: calc(50% - 6px);
+  border-bottom: 6px solid #cbd5e1;
+}
+
+/* 下箭头（朝下） */
+#tblMissingSameName thead th.sortable:not(.check-col)::after {
+  top: calc(50% + 3px);
+  border-top: 6px solid #cbd5e1;
+}
+
+/* 悬停时整体变亮 */
+#tblMissingSameName thead th.sortable:not(.check-col):hover::before,
+#tblMissingSameName thead th.sortable:not(.check-col):hover::after {
+  border-bottom-color: #94a3b8;
+  border-top-color: #94a3b8;
+  opacity: 0.9;
+}
+
+/* 升序：上箭头蓝，下箭头灰 */
+#tblMissingSameName thead th.sortable.sort-asc:not(.check-col)::before {
+  border-bottom-color: #1e40af;
+  opacity: 1;
+}
+#tblMissingSameName thead th.sortable.sort-asc:not(.check-col)::after {
+  border-top-color: #cbd5e1;
+  opacity: 0.5;
+}
+
+/* 降序：下箭头蓝，上箭头灰 */
+#tblMissingSameName thead th.sortable.sort-desc:not(.check-col)::after {
+  border-top-color: #1e40af;
+  opacity: 1;
+}
+#tblMissingSameName thead th.sortable.sort-desc:not(.check-col)::before {
+  border-bottom-color: #cbd5e1;
+  opacity: 0.5;
+}
+
+/* 明确不显示箭头的列 */
+#tblMissingSameName thead th.nosort::before,
+#tblMissingSameName thead th.nosort::after {
+  content: none !important;
+}
+
     
 </style>
 </head>
