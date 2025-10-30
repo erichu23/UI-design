@@ -633,7 +633,7 @@
   display:flex;
   flex-wrap:wrap;
   align-items:center;
-  justify-content:flex-start; /* 想居中可改 center */
+  justify-content:flex-start;
   gap:12px 16px;
   padding:10px 0 14px;
 }
@@ -681,8 +681,7 @@
 .select-wrap{ position:relative; display:inline-block; }
 .select-wrap select{
   appearance:none; -webkit-appearance:none; -moz-appearance:none;
-  padding-right:36px; /* 给箭头留空 */
-  background:#fff;
+  padding-right:36px; background:#fff;
 }
 .select-wrap .chev{
   position:absolute; right:12px; top:50%; transform:translateY(-50%);
@@ -702,40 +701,75 @@
 .negate input:checked{ border-color:#1e49e2; }
 .negate input:checked::after{ content:""; position:absolute; inset:2px; border-radius:50%; background:#1e49e2; }
 
-/* —— 面板头部、备注说明、KPI、图尺寸 —— */
-.panel{ background:#fff; border:1px solid #e6edf5; border-radius:10px; margin:12px 16px; padding:12px 16px; }
-.panel-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+/* ====== 经营实质面板（左侧蓝条 + 头部淡蓝条） ====== */
+#pane-biz .panel{
+  position:relative;
+  background:#fff;
+  border:1px solid #e6edf5;
+  border-radius:10px;
+  margin:12px 16px;
+  padding:12px 16px 16px 28px; /* 左侧留空间 */
+  box-shadow:0 2px 8px rgba(17,24,39,.04);
+}
+#pane-biz .panel::before{
+  content:"";
+  position:absolute;
+  left:10px; top:12px; bottom:12px;
+  width:4px; border-radius:4px;
+  background:#1e49e2;
+}
+
+/* 面板头部 */
+#pane-biz .panel-head{
+  display:flex; align-items:center; justify-content:space-between;
+  background:#f8fbff;
+  border:1px solid #e8f0ff;
+  border-radius:8px;
+  padding:8px 12px;
+  margin:-4px 0 10px;
+}
 .ph-left{ display:flex; align-items:center; gap:10px; }
-.ph-title{ font-size:16px; font-weight:700; color:#0f172a; }
+.ph-title{ font-size:15px; font-weight:700; color:#0f172a; }
+
+/* 右侧按钮 */
 .btn-ghost{
-  height:28px; padding:0 10px; border:1px solid #d8e1ee; border-radius:6px;
-  background:#f7f9fe; color:#334155; font-size:12px; cursor:pointer;
+  height:26px; padding:0 10px; border:1px solid #d8e1ee; border-radius:14px;
+  background:#fff; color:#334155; font-size:12px; cursor:pointer;
 }
 .btn-ghost:hover{ background:#eef3ff; border-color:#c7d4f4; }
-.ph-right{ display:flex; align-items:center; gap:12px; }
+.ph-right{ display:flex; align-items:center; gap:10px; }
 .note-link{ display:inline-flex; align-items:center; gap:6px; color:#1e49e2; cursor:pointer; }
 .note-link .icon{ width:14px; height:14px; }
 .note-link u{ text-underline-offset:3px; }
 
-/* 标题右侧小胶囊下拉 */
+/* 标题右侧胶囊下拉 */
+.pill-wrap{ position:relative; display:inline-block; }
 .pill-select{
   appearance:none; -webkit-appearance:none; -moz-appearance:none;
-  height:30px; line-height:30px; border-radius:20px; border:1px solid #cfd9e5;
+  height:30px; line-height:30px;
+  border-radius:20px; border:1px solid #cfd9e5;
   padding:0 30px 0 12px; font-size:13px; background:#fff; cursor:pointer;
 }
-.pill-wrap{ position:relative; display:inline-block; }
 .pill-wrap .chev{
   position:absolute; right:10px; top:50%; transform:translateY(-50%);
-  width:16px; height:16px; pointer-events:none; opacity:.75;
+  width:16px; height:16px; pointer-events:none; color:#64748b;
 }
 
-.kpi-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:8px; }
-.kpi{ background:#f7f9fe; border:1px solid #e6edf5; border-radius:8px; padding:10px 12px; min-height:56px; }
-.kpi .k{ font-size:12px; color:#64748b; margin-bottom:4px; }
-.kpi .v{ font-size:16px; font-weight:700; color:#0f172a; }
+/* KPI 统一 */
+#pane-biz .kpi-row{
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:10px; margin:8px 0 4px;
+}
+#pane-biz .kpi{
+  background:#f8fafc; border:1px solid #eef2f7;
+  border-radius:10px; padding:10px 12px;
+}
+#pane-biz .kpi .k{ font-size:12px; color:#64748b; margin-bottom:2px; }
+#pane-biz .kpi .v{ font-weight:700; color:#0f172a; }
 
-.chart-lg{ height:320px; }
-.chart-md{ height:260px; }
+/* 图表高度 */
+#pane-biz .chart-lg{ height:300px; }
+#pane-biz .chart-md{ height:260px; }
 
 /* —— 构成区：Tab / 7占比 / 双图 —— */
 .tabs-mini{ display:flex; gap:8px; margin:8px 16px; }
