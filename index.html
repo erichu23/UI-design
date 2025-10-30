@@ -2107,17 +2107,15 @@
             </div>`;
         }),
         // 右上角“余额角标”
-        graphic: [{
-          type:'text',
-          right: 10, top: 8,
-          z: 10,
-          style:{
-            text: `余额：¥ ${fmtK(lastBal)}`,
-            fontSize: 12, fontWeight: 600, fill: '#1f2937',
-            backgroundColor: '#eef3ff', padding:[4,8],
-            borderRadius: 6, lineWidth: 0
-          }
-        }],
+        /* ✅ 这里新增 legend */
+        legend: {
+          top: 6,
+          right: 10,
+          icon: 'roundRect',
+          itemWidth: 12,
+          itemHeight: 12,
+          textStyle:{ color:'#475569' }
+        },
         xAxis: { ...baseAxis(xSel).xAxis, boundaryGap: false },
         yAxis: { ...baseAxis(xSel).yAxis, min: 0 },             // y 轴从 0 开始
         series: [{
