@@ -785,52 +785,74 @@
 .chart-md{width:100%;height:320px;min-height:300px;background:#fff;border:1px solid #e6edf5;border-radius:10px;padding:8px}
 
 /* —— Top20 列表卡 —— */
-/* ===== Top20：标题在上 + 右侧显示总额，下面为可滚动列表 ===== */
+/* ===== Top20：标题在上 + 右侧总额，列表自适应剩余高度（无需改JS） ===== */
 .top20-card{
-  background:#fff; border:1px solid #e6edf5; border-radius:10px;
-  padding:10px 12px; height:320px; overflow:hidden;
+  background:#fff;
+  border:1px solid #e6edf5;
+  border-radius:10px;
+  padding:10px 12px;
+
+  /* 关键：改为弹性布局并占满容器高度 */
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  overflow:hidden;   /* 防止阴影/内容溢出 */
+  min-height:0;     /* 关键：允许在父容器中被压缩 */
 }
+
+/* 头部：左标题 + 右总额 */
 .top20-head{
-  display:flex; align-items:baseline; justify-content:space-between;
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
   margin-bottom:8px;
+  flex:0 0 auto;    /* 固定高度区域 */
 }
 .top20-title{ font-size:14px; font-weight:800; color:#0f172a; }
 .top20-total{ font-weight:800; color:#2152ff; font-variant-numeric:tabular-nums; }
 .top20-sub{ font-size:12px; color:#64748b; margin-left:8px; }
 
-/* 列表区域（可滚动） */
-.top20-list{ max-height:260px; overflow:auto; padding-right:4px; }
+/* 列表区域：占满剩余空间 + 可滚动（核心改动） */
+.top20-list{
+  flex:1 1 auto;    /* 吃掉剩余高度 */
+  min-height:0;     /* 关键：不写这句会把父容器撑破导致“框外” */
+  overflow:auto;
+  padding-right:4px;
+}
 
 /* 行：排行 + 名称 + 金额 */
 .top20-row{
-  display:grid; grid-template-columns:26px 1fr 120px; align-items:center;
-  padding:6px 0; border-bottom:1px dashed #eef2f7;
+  display:grid;
+  grid-template-columns:26px 1fr 120px;
+  align-items:center;
+  padding:6px 0;
+  border-bottom:1px dashed #eef2f7;
 }
 .top20-row:last-child{ border-bottom:none; }
 
 /* 排名徽章：前三（金/银/铜），其余蓝描边 */
 .rank-badge{
-  width:22px;height:22px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;
-  color:#2152ff;background:#eef3ff;border:1px solid #d6e4ff;
+  width:22px; height:22px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700;
+  color:#2152ff; background:#eef3ff; border:1px solid #d6e4ff;
 }
 .rank-badge.top1{ background:#fddc7a; color:#7a5900; border-color:#f4cc50; } /* 金 */
 .rank-badge.top2{ background:#e8edf5; color:#364152; border-color:#cfd8e3; } /* 银 */
 .rank-badge.top3{ background:#f4e1cf; color:#6b3f23; border-color:#edc8a9; } /* 铜 */
 
 .cp-name{
-  color:#0f172a;font-size:13px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:#0f172a; font-size:13px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .cp-amt{
-  text-align:right;color:#0f172a;font-weight:700;
+  text-align:right; color:#0f172a; font-weight:700;
   font-variant-numeric:tabular-nums;
 }
 
 /* 滚动条美化 */
 .top20-list::-webkit-scrollbar{ width:6px }
-.top20-list::-webkit-scrollbar-thumb{ background:#e6edf5;border-radius:99px }
+.top20-list::-webkit-scrollbar-thumb{ background:#e6edf5; border-radius:99px }
 .top20-list::-webkit-scrollbar-thumb:hover{ background:#d5dfef }
 
 /* 响应式：窄屏把总额卡堆到上面 */
