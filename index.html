@@ -2199,106 +2199,45 @@
     document.getElementById('yearIO')?.addEventListener('change', renderIO);
     
     /* =============== 构成：7占比 + 月度分布 + Top20 =============== */
-    // —— Top20（右侧列表：占位数据，接你真实聚合即可）
-    (function ensureTop20Data(){
-      if(!window.__top20List){
-        window.__top20List = Array.from({length:10},(_,i)=>({
-          name: [
-            'abc有限公司','a****新能源汽车技术有限公司','w**股份有限公司','b****汽车部件有限公司',
+    // —— Top20（右侧列表，图一风格）。这里演示用占位，接你真实聚合即可。
+    const list = Array.from({length:10},(_,i)=>({
+      name:['abc有限公司','a****新能源汽车技术有限公司','w**股份有限公司','b****汽车部件有限公司',
             'k****汽车电子零部件有限公司','o3****金属塑料制品厂','p****集团股份有限公司募集合资专户',
-            'h****motivesystemsholdingco.ltd','l****汽车零部件有限公司','x****材料科技有限公司'
-          ][i] || `对手方 ${i+1}`,
-          amount: Math.round(2e7 + Math.random()*5e8)
-        })).sort((a,b)=>b.amount-a.amount);
-      }
-    })();
-    
-    // 统一金额格式
-    function fmtCNY(n){ return `¥${(Number(n)||0).toLocaleString('zh-CN')}`; }
-    
-    /* ===== Top20 列表渲染（排名 + 金额 + 总额卡） ===== */
-    function renderTop20Panel(list){
-      const box = document.getElementById('chart-comp-top20');
-      if(!box) return;
-    
-      // 若这个容器之前被 ECharts 使用过，先释放，避免覆盖布局
-      const old = echarts.getInstanceByDom(box);
-      if(old) old.dispose();
-    
-      // 允许外部传空时使用全局占位
-      list = Array.isArray(list) ? list : (window.__top20List || []);
-      const total = list.reduce((s,x)=>s + (Number(x.amount)||0), 0);
-    
-      box.innerHTML = `
-        <div class="top20-panel">
-          <div class="top20-left">
-            <div style="text-align:center">
-              <div class="big">Top20 交易总额</div>
-              <div class="big">${fmtCNY(total)}</div>
-              <div class="sub">占比：可替换为真实值</div>
-            </div>
+            'h****motivesystemsholdingco.ltd','l****汽车零部件有限公司','x****材料科技有限公司'][i] || `对手方 ${i+1}`,
+      amount:Math.round(2e7+Math.random()*5e8)
+    })).sort((a,b)=>b.amount-a.amount);
+    renderTop20Panel(list);
+  }
+  
+  /* ===== Top20 列表渲染（排名 + 金额 + 总额卡） ===== */
+  function renderTop20Panel(list){
+    const box=document.getElementById('chart-comp-top20'); if(!box) return;
+    const total=list.reduce((s,x)=>s+(x.amount||0),0);
+    box.innerHTML=`
+      <div class="top20-panel">
+        <div class="top20-left">
+          <div style="text-align:center">
+            <div class="big">Top20 交易总额</div>
+            <div class="big">¥${total.toLocaleString('zh-CN')}</div>
+            <div class="sub">占比：可替换为真实值</div>
           </div>
-          <div class="top20-list">
-            ${list.map((row,idx)=>`
-              <div class="top20-row">
-                <div class="${idx<3 ? 'rank-badge top3' : 'rank-badge'}">${idx+1}</div>
-                <div class="cp-name" title="${row.name}">${row.name}</div>
-                <div class="cp-amt">${fmtCNY(row.amount)}</div>
-              </div>
-            `).join('')}
-            <div class="top20-caption">* 名称按你的脱敏规则展示。</div>
-          </div>
-        </div>`;
-    }
-    
-    /* ===== 月度分布（交易总额 / 流入方 / 流出方） ===== */
-    const C_BLUE = '#2152ff', C_RED = '#E64646';
-    function renderCompCharts(mode='total', top20List){
-      // 左侧柱状（沿用你现有的 months / dataIn / dataOut / ez）
-      let series = [];
-      if(mode === 'in'){
-        series = [{ name:'流入', type:'bar', barWidth:16, itemStyle:{color:C_BLUE}, data:dataIn }];
-      }else if(mode === 'out'){
-        series = [{ name:'流出', type:'bar', barWidth:16, itemStyle:{color:C_RED }, data:dataOut }];
-      }else{
-        series = [
-          { name:'流入', type:'bar', barWidth:16, itemStyle:{color:C_BLUE}, data:dataIn },
-          { name:'流出', type:'bar', barWidth:16, itemStyle:{color:C_RED }, data:dataOut }
-        ];
-      }
-    
-      if(document.getElementById('chart-comp-monthly')){
-        ez('chart-comp-monthly',{
-          grid:{left:56,right:16,top:30,bottom:40,containLabel:true},
-          color:[C_BLUE, C_RED],
-          legend:{top:6,right:8,icon:'roundRect',itemWidth:10,itemHeight:10},
-          tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:v=> (v||0).toLocaleString('zh-CN')},
-          xAxis:{type:'category',data:months,axisTick:{show:false}},
-          yAxis:{type:'value',axisTick:{show:false},splitLine:{lineStyle:{color:'#eef2f7'}},
-                 axisLabel:{formatter:v=> (v||0).toLocaleString('zh-CN')}},
-          series
-        });
-      }
-    
-      // 右侧 Top20 列表
-      renderTop20Panel(top20List || window.__top20List);
-    }
-    
-    /* ===== Tab 切换（交易总额 / 流入方 / 流出方） ===== */
-    document.getElementById('compTabs')?.addEventListener('click', e=>{
-      const tab = e.target.closest('.tab'); 
-      if(!tab) return;
-      // 切换样式
-      document.querySelectorAll('#compTabs .tab').forEach(t=>t.classList.remove('active'));
-      tab.classList.add('active');
-      // 根据 data-mode 渲染
-      const mode = tab.dataset.mode || 'total';
-      renderCompCharts(mode, window.__top20List);
-    });
-    
-    // 首次渲染（如果你 elsewhere 已经调用，可删掉以下两行）
-    renderCompCharts('total', window.__top20List);
-    renderTop20Panel(window.__top20List);
+        </div>
+        <div class="top20-list">
+          ${list.map((row,idx)=>`
+            <div class="top20-row">
+              <div class="${idx<3?'rank-badge top3':'rank-badge'}">${idx+1}</div>
+              <div class="cp-name" title="${row.name}">${row.name}</div>
+              <div class="cp-amt">¥ ${row.amount.toLocaleString('zh-CN')}</div>
+            </div>`).join('')}
+          <div class="top20-caption">* 名称按你的脱敏规则展示。</div>
+        </div>
+      </div>`;
+  }
+  
+  /* ===== Tab 切换 ===== */
+  document.getElementById('compTabs')?.addEventListener('click',e=>{
+    const tab=e.target.closest('.tab'); if(!tab) return;
+    document.querySelectorAll('#compTabs .tab').forEach(t=>t.classList.remove('active'));
     
     /* =============== 你原有的表格分页与填充（不改动结构） =============== */
     let currentPageDeal=1, currentPageCorp=1, currentRoutinePage=1;
