@@ -2080,47 +2080,59 @@
     
     /* ========= 资金流水余额：单蓝线（阶梯）+ 角标 + 缩放 ========= */
     function renderBalance(){
-      const y = document.getElementById('yearBalance')?.value || '2023-2024';
-      const xSel  = (y==='2023'? months.slice(0,12) : y==='2024'? months.slice(12) : months);
+      const y    = document.getElementById('yearBalance')?.value || '2023-2024';
+      const xSel = pickDaysX(y);
     
-      const inSel  = pickByYear(y, dataIn);
-      const outSel = pickByYear(y, dataOut);
-      let acc = 0; 
-      const balanceData = inSel.map((v,i)=> (acc += (v - (outSel[i]||0)), acc));
+      // 用“日流入-日流出”的累计近似余额（>0 约束）；如有真实余额，替换 balanceData/xSel 即可
+      const inSel  = pickByYearDays(y, dataInDaily);
+      const outSel = pickByYearDays(y, dataOutDaily);
+      let acc = 0;
+      const balanceData = inSel.map((v,i)=>{
+        acc = Math.max(0, acc + v - (outSel[i] || 0));   // ← 不允许为负
+        return acc;
+      });
+      const lastBal = balanceData.length ? balanceData[balanceData.length-1] : 0;
     
-      ez('chart-balance', {
-        grid: { left: 46, right: 28, top: 36, bottom: 60 },
-    
-        tooltip: { trigger: 'axis', confine: true },
-    
-        /* ✅ 这里新增 legend */
-        legend: {
-          top: 6,
-          right: 10,
-          icon: 'roundRect',
-          itemWidth: 12,
-          itemHeight: 12,
-          textStyle:{ color:'#475569' }
-        },
-    
-        xAxis: { type: 'category', data: xSel, axisTick:{show:false} },
-        yAxis: { type: 'value', axisTick:{show:false}, splitLine:{lineStyle:{color:'#eef2f7'}} },
-    
-        dataZoom: [
-          { type:'inside', start:0, end:100 },
-          { type:'slider', height:14, bottom:10, handleSize:0, borderColor:'#dfe6f2' }
-        ],
-    
+      makeLineChart('chart-balance', {
+        color: [palette.blue],                                  // 固定调色
+        grid:  baseGrid(),
+        ...baseAxis(xSel),
+        dataZoom: baseDataZoom(),
+        tooltip: baseTooltip(p=>{
+          const v = p[0]?.value ?? 0;
+          return `
+            <div class="tip-card">
+              <div class="t">${p[0].axisValue}</div>
+              <div class="tip-row"><span class="tip-k">余额</span><span class="tip-v">¥ ${fmtK(v)}</span></div>
+            </div>`;
+        }),
+        // 右上角“余额角标”
+        graphic: [{
+          type:'text',
+          right: 10, top: 8,
+          z: 10,
+          style:{
+            text: `余额：¥ ${fmtK(lastBal)}`,
+            fontSize: 12, fontWeight: 600, fill: '#1f2937',
+            backgroundColor: '#eef3ff', padding:[4,8],
+            borderRadius: 6, lineWidth: 0
+          }
+        }],
+        xAxis: { ...baseAxis(xSel).xAxis, boundaryGap: false },
+        yAxis: { ...baseAxis(xSel).yAxis, min: 0 },             // y 轴从 0 开始
         series: [{
-          name:'余额',   // ✅ 名称用于 legend 显示
+          name:'余额',
           type:'line',
-          smooth: 0.18,
-          showSymbol: false,
-          lineStyle: { width: 3, color: palette.blue },
-          areaStyle: {
+          step: 'middle',                                       // ← 阶梯线，更像余额变化
+          smooth:false,
+          sampling:'lttb',
+          showSymbol:false,
+          connectNulls:true,
+          lineStyle:{ width: 2.4, color: palette.blue },
+          areaStyle:{
             color: new echarts.graphic.LinearGradient(0,0,0,1,[
-              {offset:0, color:'rgba(33,82,255,0.14)'},
-              {offset:1, color:'rgba(33,82,255,0.00)'}
+              {offset:0, color: palette.blueA},
+              {offset:1, color:'rgba(33,82,255,0)'}
             ])
           },
           data: balanceData
