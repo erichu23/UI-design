@@ -785,87 +785,52 @@
 .chart-md{width:100%;height:320px;min-height:300px;background:#fff;border:1px solid #e6edf5;border-radius:10px;padding:8px}
 
 /* —— Top20 列表卡 —— */
-/* —— Top20 列表卡（精修排版） —— */
-
-/* 容器：用在 #chart-comp-top20 外层（保留你的 chart-md 也没问题） */
-#chart-comp-top20{
-  /* 统一内边距与高度，形成可滚动区 */
-  padding: 10px !important;
-  height: 340px;                /* 你也可调成 320/360 */
-  overflow: hidden;             /* 由列表区自己滚动 */
+/* ===== Top20：标题在上 + 右侧显示总额，下面为可滚动列表 ===== */
+.top20-card{
+  background:#fff; border:1px solid #e6edf5; border-radius:10px;
+  padding:10px 12px; height:320px; overflow:hidden;
 }
-
-/* 面板骨架：左（总额） + 右（列表） */
-.top20-panel{
-  display: grid;
-  grid-template-columns: 172px 1fr;  /* 比 180px 稍紧凑 */
-  gap: 12px;
-  align-items: start;
+.top20-head{
+  display:flex; align-items:baseline; justify-content:space-between;
+  margin-bottom:8px;
 }
+.top20-title{ font-size:14px; font-weight:800; color:#0f172a; }
+.top20-total{ font-weight:800; color:#2152ff; font-variant-numeric:tabular-nums; }
+.top20-sub{ font-size:12px; color:#64748b; margin-left:8px; }
 
-/* 左侧总额小卡 */
-.top20-left{
-  height: 118px;
-  border: 1px dashed #dbe5f3;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  color: #2152ff;
-  background: radial-gradient(circle at 50% 50%, rgba(33,82,255,.06) 0%, rgba(33,82,255,0) 65%);
-  padding: 6px 8px;
-  text-align: center;
-}
-.top20-left .big{ font-size: 17px; font-weight: 800; line-height: 1.15 }
-.top20-left .sub{ font-size: 12px; color: #64748b; margin-top: 6px }
+/* 列表区域（可滚动） */
+.top20-list{ max-height:260px; overflow:auto; padding-right:4px; }
 
-/* 右侧列表：自身滚动 */
-.top20-list{
-  min-width: 0;
-  max-height: 308px;      /* = 容器高 340 - 上下内边距/卡片余量 */
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-/* 行样式：更紧凑、更对齐 */
+/* 行：排行 + 名称 + 金额 */
 .top20-row{
-  display: grid;
-  grid-template-columns: 26px 1fr 136px;  /* 排名 / 名称 / 金额 */
-  gap: 10px;
-  align-items: center;
-  padding: 8px 6px;
-  border-bottom: 1px dashed #eef2f7;
+  display:grid; grid-template-columns:26px 1fr 120px; align-items:center;
+  padding:6px 0; border-bottom:1px dashed #eef2f7;
 }
-.top20-row:last-child{ border-bottom: 0 }
-.top20-row:hover{ background: #f8fafc }
+.top20-row:last-child{ border-bottom:none; }
 
-/* 排名徽标：前三名强化，其余淡蓝 */
+/* 排名徽章：前三（金/银/铜），其余蓝描边 */
 .rank-badge{
-  width: 22px; height: 22px; border-radius: 6px;
-  display: inline-flex; align-items: center; justify-content: center;
-  background: #eef3ff; color: #2152ff; font-weight: 700; font-size: 12px;
-  flex-shrink: 0;
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;
+  color:#2152ff;background:#eef3ff;border:1px solid #d6e4ff;
 }
-.rank-badge.top1{ background:#2152ff; color:#fff }
-.rank-badge.top2{ background:#4b66ee; color:#fff }
-.rank-badge.top3{ background:#6e84f5; color:#fff }
+.rank-badge.top1{ background:#fddc7a; color:#7a5900; border-color:#f4cc50; } /* 金 */
+.rank-badge.top2{ background:#e8edf5; color:#364152; border-color:#cfd8e3; } /* 银 */
+.rank-badge.top3{ background:#f4e1cf; color:#6b3f23; border-color:#edc8a9; } /* 铜 */
 
-/* 名称列：单行省略，颜色更沉稳 */
 .cp-name{
-  color:#0f172a; font-size:13px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color:#0f172a;font-size:13px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-
-/* 金额列：右对齐、等宽数字、字号略大 */
 .cp-amt{
-  color:#0f172a; text-align:right; font-weight:700;
-  font-variant-numeric: tabular-nums; letter-spacing: .2px;
+  text-align:right;color:#0f172a;font-weight:700;
+  font-variant-numeric:tabular-nums;
 }
 
-/* 说明文字 */
-.top20-caption{ font-size:12px; color:#64748b; margin-top: 6px }
-
-/* 细节：滚动条更细一些（WebKit） */
-.top20-list::-webkit-scrollbar{ width: 6px }
-.top20-list::-webkit-scrollbar-thumb{ background:#e6edf5; border-radius: 99px }
+/* 滚动条美化 */
+.top20-list::-webkit-scrollbar{ width:6px }
+.top20-list::-webkit-scrollbar-thumb{ background:#e6edf5;border-radius:99px }
 .top20-list::-webkit-scrollbar-thumb:hover{ background:#d5dfef }
 
 /* 响应式：窄屏把总额卡堆到上面 */
@@ -2339,27 +2304,40 @@
       renderTop20Panel(list);
     }
     
-    /* ===== Top20 列表渲染（排名 + 金额 + 总额卡） ===== */
+    // 统一金额格式
+    function fmtCNY(n){ return `¥${(Number(n)||0).toLocaleString('zh-CN')}`; }
+    
+    /* ===== Top20 列表渲染：标题 = “Top20 交易总额” ===== */
     function renderTop20Panel(list){
-      const box=document.getElementById('chart-comp-top20'); if(!box) return;
-      const total=list.reduce((s,x)=>s+(x.amount||0),0);
-      box.innerHTML=`
-        <div class="top20-panel">
-          <div class="top20-left">
-            <div style="text-align:center">
-              <div class="big">Top20 交易总额</div>
-              <div class="big">¥${total.toLocaleString('zh-CN')}</div>
-              <div class="sub">占比：可替换为真实值</div>
+      const box = document.getElementById('chart-comp-top20');
+      if(!box) return;
+    
+      // 如果这个容器之前被 ECharts 使用过，先释放，避免覆盖
+      const old = echarts.getInstanceByDom(box);
+      if(old) old.dispose();
+    
+      // 允许传空使用外部占位
+      list = Array.isArray(list) ? list : (window.__top20List || []);
+      const total = list.reduce((s,x)=>s + (Number(x.amount)||0), 0);
+    
+      box.innerHTML = `
+        <div class="top20-card">
+          <div class="top20-head">
+            <div>
+              <span class="top20-title">Top20 交易总额</span>
+              <span class="top20-sub">占比可替换为真实值</span>
             </div>
+            <div class="top20-total">${fmtCNY(total)}</div>
           </div>
+    
           <div class="top20-list">
             ${list.map((row,idx)=>`
               <div class="top20-row">
-                <div class="${idx<3?'rank-badge top3':'rank-badge'}">${idx+1}</div>
+                <div class="rank-badge ${idx===0?'top1':idx===1?'top2':idx===2?'top3':''}">${idx+1}</div>
                 <div class="cp-name" title="${row.name}">${row.name}</div>
-                <div class="cp-amt">¥ ${row.amount.toLocaleString('zh-CN')}</div>
-              </div>`).join('')}
-            <div class="top20-caption">* 名称按你的脱敏规则展示。</div>
+                <div class="cp-amt">${fmtCNY(row.amount)}</div>
+              </div>
+            `).join('')}
           </div>
         </div>`;
     }
