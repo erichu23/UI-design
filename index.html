@@ -2309,109 +2309,80 @@
     renderCompCharts();
     fillBizTables
 
-    // —— 防抖：避免 resize 频繁触发
-    function debounce(fn, delay=150){
-      let t=null; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), delay); };
-    }
-    
-    // —— 判定容器是否可见且有尺寸
-    function isRenderable(el){
-      if(!el) return false;
-      const style = getComputedStyle(el);
-      const w = el.clientWidth, h = el.clientHeight;
-      return w>0 && h>0 && style.visibility!=='hidden' && style.display!=='none';
-    }
-    
-    // —— 安全初始化：可见就 init；不可见就重试（最多 40 次，每 100ms）
-    function initChartSafe(domId){
+    /* ===================== 增强版 ez：大数据量稳态渲染 ===================== */
+    function ez(domId, option){
       const el = document.getElementById(domId);
-      if(!el) return null;
-      let inst = echarts.getInstanceByDom(el);
+      if (!el) return null;
     
-      let tries = 0;
-      function attempt(){
-        if(isRenderable(el)){
-          inst = inst || echarts.init(el, null, {renderer: 'canvas'});
-          inst.resize();          // 有尺寸时立即调一次
-          return inst;
-        }else if(tries < 40){
-          tries++;
-          setTimeout(attempt, 100);
-        }
-        return null;
-      }
-      return inst || attempt();
-    }
+      // 1) 初始化（canvas + useDirtyRect 提升刷新效率）
+      const chart = echarts.getInstanceByDom(el) ||
+                    echarts.init(el, null, { renderer: 'canvas', useDirtyRect: true });
     
-    // —— 统一渲染：确保实例存在，再 setOption
-    function renderChart(domId, option){
-      const inst = initChartSafe(domId);
-      if(!inst) return null;
-      inst.setOption(option, true);
-      return inst;
-    }
+      // 2) 性能与健壮性缺省项（不覆盖你已设置的同名项）
+      //    - 采样 lttb：降低 700+ 点对 DOM 的压力且保持形状
+      //    - progressive 大图优化；large 模式
+      //    - 关闭动画；避免首帧卡/白屏
+      //    - 轴标签自动避让；dataZoom 加 throttle 防抖
+      const enriched = (() => {
+        // xAxis / yAxis 统一成数组处理
+        const toArr = v => Array.isArray(v) ? v : (v ? [v] : []);
+        const xAxes = toArr(option.xAxis).map(ax => ({
+          boundaryGap: ax?.boundaryGap ?? false,
+          axisTick: { show: false, ...(ax?.axisTick||{}) },
+          axisLabel: { hideOverlap: true, interval: 'auto', ...(ax?.axisLabel||{}) },
+          ...ax
+        }));
+        const yAxes = toArr(option.yAxis).map(ay => ({
+          min: ay?.min ?? 0, // 余额/收支一般从 0 起，更直观；你已自设则不改
+          axisTick: { show: false, ...(ay?.axisTick||{}) },
+          splitLine: { lineStyle:{ color:'#eef2f7' }, ...(ay?.splitLine||{}) },
+          ...ay
+        }));
     
-    // —— 监听尺寸变化：父容器布局变化、窗口缩放、页面恢复、设备旋转等
-    const roMap = new Map();
-    function watchResize(domId){
-      const el = document.getElementById(domId);
-      if(!el || roMap.has(domId)) return;
-      const inst = echarts.getInstanceByDom(el);
+        const series = (option.series || []).map(s => ({
+          showSymbol: false,
+          symbol: 'circle',
+          symbolSize: 3,
+          smooth: false,                 // 不要过度平滑，保持“折线/脉冲感”
+          sampling: 'lttb',              // 关键：大幅减轻渲染负担
+          large: true,
+          largeThreshold: 2000,
+          progressive: 8000,
+          progressiveThreshold: 3000,
+          clip: true,
+          ...(s || {})
+        }));
     
-      const ro = new ResizeObserver(debounce(()=>{
-        const c = echarts.getInstanceByDom(el);
-        if(c && isRenderable(el)) c.resize();
-      }));
-      ro.observe(el);
-      roMap.set(domId, ro);
-    }
+        const dataZoom = (option.dataZoom || []).map(z => ({
+          throttle: 50,
+          // 不改变你的类型/位置，仅补上防抖
+          ...z
+        }));
     
-    // —— 常见触发：窗口尺寸、页面可见性、历史导航返回
-    ['resize','orientationchange'].forEach(evt=>{
-      window.addEventListener(evt, debounce(()=>{
-        document.querySelectorAll('#chart-balance,#chart-io').forEach(el=>{
-          const c = echarts.getInstanceByDom(el);
-          if(c && isRenderable(el)) c.resize();
-        });
-      }));
-    });
-    window.addEventListener('pageshow', ()=>{
-      document.querySelectorAll('#chart-balance,#chart-io').forEach(el=>{
-        const c = echarts.getInstanceByDom(el);
-        if(c) c.resize();
-      });
-    });
-    document.addEventListener('visibilitychange', ()=>{
-      if(document.visibilityState==='visible'){
-        document.querySelectorAll('#chart-balance,#chart-io').forEach(el=>{
-          const c = echarts.getInstanceByDom(el);
-          if(c) c.resize();
+        return {
+          animation: false,
+          grid: { containLabel: true, ...(option.grid||{}) },
+          xAxis: xAxes.length ? (Array.isArray(option.xAxis) ? xAxes : xAxes[0]) : option.xAxis,
+          yAxis: yAxes.length ? (Array.isArray(option.yAxis) ? yAxes : yAxes[0]) : option.yAxis,
+          series,
+          dataZoom,
+          ...option
+        };
+      })();
+    
+      // 3) 渲染（notMerge + lazyUpdate 更稳）
+      chart.setOption(enriched, { notMerge: true, lazyUpdate: true });
+    
+      // 4) 尺寸监听（避免缩放/切换后白屏）
+      if (!ez._ro) {
+        ez._ro = new ResizeObserver(() => {
+          try { chart.resize(); } catch(e){}
         });
       }
-    });
+      ez._ro.observe(el);
     
-    // —— 如果你有 Tab/折叠切换，切换后记得主动 resize
-    function onPaneShown(){
-      ['chart-balance','chart-io'].forEach(id=>{
-        const el = document.getElementById(id);
-        if(!el) return;
-        const c = echarts.getInstanceByDom(el);
-        if(c && isRenderable(el)) c.resize();
-      });
+      return chart;
     }
-    // 示例：监听你的表格顶部 Tab（按你的 DOM 调整选择器）
-    document.getElementById('listTabs')?.addEventListener('click', debounce(onPaneShown, 50));
-    
-    // —— 用 renderChart 替换原来的 ez(...)
-    //    你的 renderBalance/renderIO 里把 ez('chart-xxx', option) 改成：
-    /*
-      renderChart('chart-balance', option);
-      watchResize('chart-balance');
-    
-      renderChart('chart-io', option);
-      watchResize('chart-io');
-    */
-
     /* =============== Routine 区域 =============== */
     const routineMenu=document.getElementById('routineMenu');
     routineMenu.addEventListener('click',e=>{
