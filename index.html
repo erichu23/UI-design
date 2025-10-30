@@ -619,98 +619,138 @@
 }
 
 /* ===== 筛选区：label 普通，筛选框才是胶囊 ===== */
+/* ===== 筛选区：label 普通，筛选框才是胶囊 ===== */
 .filter-card {
   background: #fff;
   border: 1px solid #e6edf5;
   border-radius: 10px;
   padding: 18px 24px;
   margin: 10px 16px 12px;
-  max-width: calc(100% - 32px);               /* 宽度略窄，使内容更集中 */
+  max-width: calc(100% - 32px);
   box-shadow: 0 2px 8px rgba(17,24,39,0.05);
 }
 .filter-area {
   display:flex;
   flex-wrap:wrap;
   align-items:center;
-  justify-content:flex-start;  /* 想整体居中可改 center */
+  justify-content:flex-start; /* 想居中可改 center */
   gap:12px 16px;
   padding:10px 0 14px;
 }
-
-/* label 保持文字说明样式 */
 .filter-area label {
-  font-size:14px;
-  color:#334155;
-  font-weight:600;
-  line-height:36px;
-  margin-right:6px;
+  font-size:14px; color:#334155; font-weight:600;
+  line-height:36px; margin-right:6px;
 }
-
-/* 所有输入/下拉框统一胶囊化 */
+/* 胶囊输入/下拉 */
 .filter-area select,
 .filter-area input[type="text"],
 .filter-area input[type="date"] {
-  font-size:14px;
-  height:36px;
-  line-height:36px;
-  padding:0 14px;
-  min-width:160px;
-  border:1px solid #cfd9e5;
-  border-radius:50px;  /* ← 关键：圆角“胶囊”效果 */
-  background:#fff;
-  box-shadow:0 1px 2px rgba(0,0,0,0.04);
+  font-size:14px; height:36px; line-height:36px;
+  padding:0 14px; min-width:160px;
+  border:1px solid #cfd9e5; border-radius:50px;
+  background:#fff; box-shadow:0 1px 2px rgba(0,0,0,0.04);
   transition:all .2s ease;
 }
-
-/* hover / focus 状态 */
 .filter-area select:hover,
 .filter-area input[type="text"]:hover,
 .filter-area input[type="date"]:hover {
-  border-color:#1e49e2;
-  box-shadow:0 0 0 3px rgba(30,73,226,0.08);
+  border-color:#1e49e2; box-shadow:0 0 0 3px rgba(30,73,226,0.08);
 }
 .filter-area select:focus,
 .filter-area input[type="text"]:focus,
 .filter-area input[type="date"]:focus {
-  outline:none;
-  border-color:#0d3bc4;
-  box-shadow:0 0 0 3px rgba(13,59,196,0.12);
+  outline:none; border-color:#0d3bc4; box-shadow:0 0 0 3px rgba(13,59,196,0.12);
 }
-
-/* 日期范围中“至”的分隔符 */
 .filter-area .range-sep {
-  margin:0 6px;
-  color:#64748b;
-  font-size:13px;
-  line-height:36px;
-  user-select:none;
+  margin:0 6px; color:#64748b; font-size:13px; line-height:36px; user-select:none;
+}
+.filter-area button {
+  height:36px; font-size:14px; padding:0 18px; border-radius:50px;
+  border:none; cursor:pointer; transition:0.2s;
+}
+.filter-area .query { background:#1e49e2; color:#fff; }
+.filter-area .query:hover { background:#0d3bc4; }
+.filter-area .reset { background:#eef3fb; color:#334155; }
+.filter-area .reset:hover { background:#e6eefc; color:#1e293b; }
+@media (max-width:1200px){
+  .filter-area{ justify-content:center; gap:10px 12px; }
+  .filter-area select,.filter-area input{ min-width:130px; }
 }
 
-/* 查询 / 重置按钮 */
-.filter-area button {
-  height:36px;
-  font-size:14px;
-  padding:0 18px;
-  border-radius:50px;    /* 与筛选框保持统一圆角风格 */
-  border:none;
-  cursor:pointer;
-  transition:0.2s;
+/* —— 下拉小箭头（美观） —— */
+.select-wrap{ position:relative; display:inline-block; }
+.select-wrap select{
+  appearance:none; -webkit-appearance:none; -moz-appearance:none;
+  padding-right:36px; /* 给箭头留空 */
+  background:#fff;
 }
-.filter-area .query {
-  background:#1e49e2;
-  color:#fff;
+.select-wrap .chev{
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  width:18px; height:18px; pointer-events:none; opacity:.75;
 }
-.filter-area .query:hover {
-  background:#0d3bc4;
+.select-wrap .chev svg{ width:100%; height:100%; display:block; }
+
+/* —— “不包含” 圆圈按钮 —— */
+.negate{
+  display:inline-flex; align-items:center; gap:6px; margin-left:8px;
+  font-size:13px; color:#5b6b7e; user-select:none;
 }
-.filter-area .reset {
-  background:#eef3fb;
-  color:#334155;
+.negate input{
+  appearance:none; width:14px; height:14px; border:2px solid #7788a0;
+  border-radius:50%; position:relative; cursor:pointer; outline:0;
 }
-.filter-area .reset:hover {
-  background:#e6eefc;
-  color:#1e293b;
+.negate input:checked{ border-color:#1e49e2; }
+.negate input:checked::after{ content:""; position:absolute; inset:2px; border-radius:50%; background:#1e49e2; }
+
+/* —— 面板头部、备注说明、KPI、图尺寸 —— */
+.panel{ background:#fff; border:1px solid #e6edf5; border-radius:10px; margin:12px 16px; padding:12px 16px; }
+.panel-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.ph-left{ display:flex; align-items:center; gap:10px; }
+.ph-title{ font-size:16px; font-weight:700; color:#0f172a; }
+.btn-ghost{
+  height:28px; padding:0 10px; border:1px solid #d8e1ee; border-radius:6px;
+  background:#f7f9fe; color:#334155; font-size:12px; cursor:pointer;
 }
+.btn-ghost:hover{ background:#eef3ff; border-color:#c7d4f4; }
+.ph-right{ display:flex; align-items:center; gap:12px; }
+.note-link{ display:inline-flex; align-items:center; gap:6px; color:#1e49e2; cursor:pointer; }
+.note-link .icon{ width:14px; height:14px; }
+.note-link u{ text-underline-offset:3px; }
+
+/* 标题右侧小胶囊下拉 */
+.pill-select{
+  appearance:none; -webkit-appearance:none; -moz-appearance:none;
+  height:30px; line-height:30px; border-radius:20px; border:1px solid #cfd9e5;
+  padding:0 30px 0 12px; font-size:13px; background:#fff; cursor:pointer;
+}
+.pill-wrap{ position:relative; display:inline-block; }
+.pill-wrap .chev{
+  position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  width:16px; height:16px; pointer-events:none; opacity:.75;
+}
+
+.kpi-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:8px; }
+.kpi{ background:#f7f9fe; border:1px solid #e6edf5; border-radius:8px; padding:10px 12px; min-height:56px; }
+.kpi .k{ font-size:12px; color:#64748b; margin-bottom:4px; }
+.kpi .v{ font-size:16px; font-weight:700; color:#0f172a; }
+
+.chart-lg{ height:320px; }
+.chart-md{ height:260px; }
+
+/* —— 构成区：Tab / 7占比 / 双图 —— */
+.tabs-mini{ display:flex; gap:8px; margin:8px 16px; }
+.tabs-mini .tab{
+  padding:6px 12px; border:1px solid #d8e1ee; border-radius:16px;
+  font-size:12px; color:#334155; background:#fff; cursor:pointer;
+}
+.tabs-mini .tab.active{ background:#1e49e2; color:#fff; border-color:#1e49e2; }
+
+.seven-cats{ display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin:8px 16px; }
+.cat{ background:#f7f9fe; border:1px solid #e6edf5; border-radius:8px; padding:8px 10px; text-align:center; }
+.cat .name{ font-size:12px; color:#64748b; }
+.cat .pct{ font-size:14px; font-weight:700; color:#0f172a; }
+
+.grid-2{ display:grid; grid-template-columns:2fr 1fr; gap:12px; margin:8px 16px; }
 
 /* 窄屏适配 */
 @media (max-width:1200px){
@@ -1172,14 +1212,29 @@
       <section class="tab-pane" id="pane-biz">
         <div class="tab-scroll">
       
-          <!-- 1) 只放筛选区：.filter-card 里只保留 .filter-area -->
+          <!-- 1) 筛选区 -->
           <div class="filter-card">
             <div class="filter-area">
-              <label>被审计单位公司：</label><select class="select" id="fCompany"></select>
+              <label>被审计单位公司：</label>
+              <span class="select-wrap">
+                <select class="select" id="fCompany"></select>
+                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+              </span>
+              <label class="negate"><input type="checkbox" id="negCompany">不包含</label>
       
-              <label>银行账户：</label><select class="select" id="fBank"></select>
+              <label>银行账户：</label>
+              <span class="select-wrap">
+                <select class="select" id="fBank"></select>
+                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+              </span>
+              <label class="negate"><input type="checkbox" id="negBank">不包含</label>
       
-              <label>公司职能：</label><select class="select" id="fFunc"></select>
+              <label>公司职能：</label>
+              <span class="select-wrap">
+                <select class="select" id="fFunc"></select>
+                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+              </span>
+              <label class="negate"><input type="checkbox" id="negFunc">不包含</label>
       
               <label>分析时间：</label>
               <input type="date" id="beginDate" />
@@ -1187,67 +1242,148 @@
               <input type="date" id="endDate" />
       
               <label>对手方类型：</label>
-              <select class="select" id="fType">
-                <option value="all">全部</option><option>客户</option><option>供应商</option><option>员工</option>
-              </select>
+              <span class="select-wrap">
+                <select class="select" id="fType">
+                  <option value="all">全部</option><option>客户</option><option>供应商</option><option>员工</option>
+                </select>
+                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+              </span>
       
               <button class="query" id="btnQueryBiz">查询</button>
               <button class="reset" id="btnResetBiz">重置</button>
             </div>
-          </div> <!-- ← 这里结束 filter-card -->
-      
-          <!-- 2) 资金流水金额（独立卡片） -->
-          <div class="card">
-            <div class="head"><div class="title">资金流水金额</div></div>
-            <div class="content"><div id="chart-balance" class="chart"></div></div>
           </div>
       
-          <!-- 3) 流入流出趋势（独立卡片） -->
-          <div class="card">
-            <div class="head"><div class="title">流入流出趋势</div></div>
-            <div class="content"><div id="chart-io" class="chart"></div></div>
+          <!-- 2) 资金流水金额 -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="ph-left">
+                <div class="ph-title">资金流水金额</div>
+                <button class="btn-ghost">业务逻辑</button>
+                <button class="btn-ghost">操作提示</button>
+              </div>
+              <div class="ph-right">
+                <span class="note-link"><i class="icon">
+                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                </i><u>备注说明</u></span>
+                <span class="pill-wrap">
+                  <select id="yearBalance" class="pill-select">
+                    <option>2023-2024</option><option>2023</option><option>2024</option>
+                  </select>
+                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+                </span>
+              </div>
+            </div>
+      
+            <div class="kpi-row" id="kpi-balance">
+              <div class="kpi"><div class="k">流入金额</div><div class="v" id="k_in_sum">—</div></div>
+              <div class="kpi"><div class="k">月均流入</div><div class="v" id="k_in_avg">—</div></div>
+              <div class="kpi"><div class="k">流出总额</div><div class="v" id="k_out_sum">—</div></div>
+              <div class="kpi"><div class="k">月均流出</div><div class="v" id="k_out_avg">—</div></div>
+            </div>
+      
+            <div id="chart-balance" class="chart-lg"></div>
           </div>
       
-          <!-- 4) 构成 + 表格（独立卡片） -->
-          <div class="card">
-            <div class="head"><div class="title">流入流出构成</div></div>
-            <div class="content">
-              <div id="chart-compose" class="chart"></div>
-      
-              <div class="table-tabs" id="listTabs">
-                <div class="table-tab active" data-view="deal">交易明细</div>
-                <div class="table-tab" data-view="corp">工商信息</div>
+          <!-- 3) 流入流出趋势 -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="ph-left">
+                <div class="ph-title">流入流出趋势</div>
+                <button class="btn-ghost">业务逻辑</button>
+                <button class="btn-ghost">操作提示</button>
               </div>
+              <div class="ph-right">
+                <span class="note-link"><i class="icon">
+                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                </i><u>备注说明</u></span>
       
-              <!-- 交易明细 -->
-              <div id="tbl-deal-wrap">
-                <table class="table" id="tblDeal">
-                  <thead>
-                  <tr>
-                    <th>对手方名称</th><th>对手方类型</th><th>关联关系</th><th>黑名单</th>
-                    <th>流入总额</th><th>流出总额</th><th>交易总额</th><th>交易总额占比</th><th>交易笔数</th>
-                    <th>销售类别</th><th>采购类别</th><th>职位</th><th>备注说明</th><th>操作</th>
-                  </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
-                <div id="pagination-deal" class="pagination"></div>
-              </div>
+                <span class="pill-wrap">
+                  <select id="yearIO" class="pill-select">
+                    <option>2023-2024</option><option>2023</option><option>2024</option>
+                  </select>
+                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+                </span>
       
-              <!-- 工商信息 -->
-              <div id="tbl-corp-wrap" class="hide">
-                <table class="table" id="tblCorp">
-                  <thead>
-                  <tr>
-                    <th>对手方名称</th><th>交易总额</th><th>成立日期</th><th>经营开始时间</th>
-                    <th>经营结束时间</th><th>营业期限</th><th>经营状态</th><th>注册资本</th>
-                    <th>行业</th><th>经营范围</th><th>注册地址</th><th>企业联系方式</th><th>董监高</th>
-                  </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
-                <div id="pagination-corp" class="pagination"></div>
+                <span class="pill-wrap">
+                  <select id="ctypeIO" class="pill-select">
+                    <option value="all">全部类型</option><option>供应商</option><option>客户</option><option>员工</option><option>其他</option><option>个人</option>
+                  </select>
+                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+                </span>
               </div>
+            </div>
+      
+            <div class="kpi-row" id="kpi-io">
+              <div class="kpi"><div class="k">流入金额</div><div class="v" id="io_in_sum">—</div></div>
+              <div class="kpi"><div class="k">月均流入</div><div class="v" id="io_in_avg">—</div></div>
+              <div class="kpi"><div class="k">流出总额</div><div class="v" id="io_out_sum">—</div></div>
+              <div class="kpi"><div class="k">月均流出</div><div class="v" id="io_out_avg">—</div></div>
+            </div>
+      
+            <div id="chart-io" class="chart-md"></div>
+          </div>
+      
+          <!-- 4) 流入流出构成（标题 + Tab + 7占比 + 左右两图） -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="ph-left">
+                <div class="ph-title">流入流出构成</div>
+                <button class="btn-ghost">业务逻辑</button>
+                <button class="btn-ghost">操作提示</button>
+              </div>
+              <div class="ph-right">
+                <span class="note-link"><i class="icon">
+                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                </i><u>备注说明</u></span>
+              </div>
+            </div>
+      
+            <div class="tabs-mini" id="compTabs">
+              <div class="tab active" data-mode="total">交易总额</div>
+              <div class="tab" data-mode="in">流入方</div>
+              <div class="tab" data-mode="out">流出方</div>
+            </div>
+      
+            <div class="seven-cats" id="compCats"></div>
+      
+            <div class="grid-2">
+              <div id="chart-comp-monthly" class="chart-md"></div>
+              <div id="chart-comp-top20"  class="chart-md"></div>
+            </div>
+      
+            <!-- 你原有的“交易明细 / 工商信息”表格保持不动 -->
+            <div class="table-tabs" id="listTabs">
+              <div class="table-tab active" data-view="deal">交易明细</div>
+              <div class="table-tab" data-view="corp">工商信息</div>
+            </div>
+      
+            <div id="tbl-deal-wrap">
+              <table class="table" id="tblDeal">
+                <thead>
+                <tr>
+                  <th>对手方名称</th><th>对手方类型</th><th>关联关系</th><th>黑名单</th>
+                  <th>流入总额</th><th>流出总额</th><th>交易总额</th><th>交易总额占比</th><th>交易笔数</th>
+                  <th>销售类别</th><th>采购类别</th><th>职位</th><th>备注说明</th><th>操作</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+              <div id="pagination-deal" class="pagination"></div>
+            </div>
+      
+            <div id="tbl-corp-wrap" class="hide">
+              <table class="table" id="tblCorp">
+                <thead>
+                <tr>
+                  <th>对手方名称</th><th>交易总额</th><th>成立日期</th><th>经营开始时间</th>
+                  <th>经营结束时间</th><th>营业期限</th><th>经营状态</th><th>注册资本</th>
+                  <th>行业</th><th>经营范围</th><th>注册地址</th><th>企业联系方式</th><th>董监高</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+              <div id="pagination-corp" class="pagination"></div>
             </div>
           </div>
       
@@ -1803,19 +1939,119 @@
 
       
     /* =============== 经营实质：图表 =============== */
-    const months = Array.from({length:17},(_,i)=> i<12?`2023-${String(i+1).padStart(2,'0')}`:`2024-${String(i-11).padStart(2,'0')}`);
-    ez('chart-balance',{tooltip:{trigger:'axis'},xAxis:{type:'category',data:months},yAxis:{type:'value'},series:[{type:'line',smooth:true,areaStyle:{},data:months.map(()=>Math.round(Math.random()*120)+50)}]});
-    ez('chart-io',{tooltip:{trigger:'axis'},legend:{data:['流入','流出']},xAxis:{type:'category',data:months},yAxis:{type:'value'},
-      series:[{name:'流入',type:'bar',data:months.map(()=>Math.round(Math.random()*150)+40)},{name:'流出',type:'bar',data:months.map(()=>Math.round(Math.random()*130)+30)}]});
-    ez('chart-compose',{tooltip:{trigger:'item'},series:[{type:'pie',radius:['42%','70%'],label:{formatter:'{b}\n{d}%'},data:[
-      {name:'已识别',value:companies.filter(c=>c.recognized).length},
-      {name:'未识别',value:companies.filter(c=>!c.recognized).length}
-    ]}]});
-
-    /* =============== 表格分页（10/页） =============== */
-    let currentPageDeal=1,currentPageCorp=1,currentRoutinePage=1;
+    /* =============== 经营实质：通用 =============== */
+    const months = Array.from({length:24}, (_,i) => (i<12?`2023-`:`2024-`) + String(i%12+1).padStart(2,'0'));
+    
+    // 示例序列（接入真实数据时替换 dataIn / dataOut）
+    const dataIn  = months.map(()=> Math.round(2e6 + Math.random()*8e6));   // 流入
+    const dataOut = months.map(()=> Math.round(1.5e6 + Math.random()*7e6)); // 流出
+    function sum(a){return a.reduce((s,x)=>s+x,0)}
+    function avg(a){return a.length? (sum(a)/a.length):0}
+    function fmt(n){return n.toLocaleString('zh-CN')}
+    function pickByYear(y, arr){
+      if (y==='2023') return arr.slice(0,12);
+      if (y==='2024') return arr.slice(12);
+      return arr;
+    }
+    
+    /* =============== 资金流水金额（含 KPI） =============== */
+    function renderBalance(){
+      const y = document.getElementById('yearBalance')?.value || '2023-2024';
+      const xSel = (y==='2023'? months.slice(0,12) : y==='2024'? months.slice(12) : months);
+      const inSel  = pickByYear(y, dataIn);
+      const outSel = pickByYear(y, dataOut);
+    
+      // KPI
+      const $ = id => document.getElementById(id);
+      if ($('k_in_sum'))  $('k_in_sum').textContent  = '¥' + fmt(sum(inSel));
+      if ($('k_in_avg'))  $('k_in_avg').textContent  = '¥' + fmt(Math.round(avg(inSel)));
+      if ($('k_out_sum')) $('k_out_sum').textContent = '¥' + fmt(sum(outSel));
+      if ($('k_out_avg')) $('k_out_avg').textContent = '¥' + fmt(Math.round(avg(outSel)));
+    
+      ez('chart-balance',{
+        tooltip:{trigger:'axis'},
+        legend:{data:['流入','流出']},
+        xAxis:{type:'category',data:xSel},
+        yAxis:{type:'value'},
+        series:[
+          {name:'流入', type:'line', smooth:true, areaStyle:{}, data:inSel},
+          {name:'流出', type:'line', smooth:true, areaStyle:{}, data:outSel}
+        ]
+      });
+    }
+    
+    /* =============== 流入流出趋势（含 KPI） =============== */
+    function renderIO(){
+      const y  = document.getElementById('yearIO')?.value || '2023-2024';
+      // 占位：有需要可按对手方类型过滤数据
+      // const ct = document.getElementById('ctypeIO')?.value || 'all';
+    
+      const xSel = (y==='2023'? months.slice(0,12) : y==='2024'? months.slice(12) : months);
+      const inSel  = pickByYear(y, dataIn);
+      const outSel = pickByYear(y, dataOut);
+    
+      const $ = id => document.getElementById(id);
+      if ($('io_in_sum'))  $('io_in_sum').textContent  = '¥' + fmt(sum(inSel));
+      if ($('io_in_avg'))  $('io_in_avg').textContent  = '¥' + fmt(Math.round(avg(inSel)));
+      if ($('io_out_sum')) $('io_out_sum').textContent = '¥' + fmt(sum(outSel));
+      if ($('io_out_avg')) $('io_out_avg').textContent = '¥' + fmt(Math.round(avg(outSel)));
+    
+      ez('chart-io',{
+        tooltip:{trigger:'axis'},
+        legend:{data:['流入','流出']},
+        xAxis:{type:'category',data:xSel},
+        yAxis:{type:'value'},
+        series:[
+          {name:'流入', type:'bar', data:inSel},
+          {name:'流出', type:'bar', data:outSel}
+        ]
+      });
+    }
+    
+    /* =============== 构成：7占比 + 月度分布 + Top20 =============== */
+    const categories = ['全体对手方','已知关联方','供应商','客户','员工','其他','个人'];
+    function renderCompCats(){
+      const nums = [100,10,15,30,5,25,15]; // 占位
+      const total = nums.reduce((s,x)=>s+x,0);
+      const wrap = document.getElementById('compCats');
+      if (!wrap) return;
+      wrap.innerHTML = categories.map((n,i)=>(
+        `<div class="cat"><div class="name">${n}</div><div class="pct">${(nums[i]/total*100).toFixed(2)}%</div></div>`
+      )).join('');
+    }
+    function renderCompCharts(mode='total'){
+      if (!document.getElementById('chart-comp-monthly')) return;
+    
+      ez('chart-comp-monthly',{
+        tooltip:{trigger:'axis'},
+        legend:{data:(mode==='in'?['流入']:(mode==='out'?['流出']:['流入','流出']))},
+        xAxis:{type:'category',data:months},
+        yAxis:{type:'value'},
+        series:(mode==='in'
+          ? [{name:'流入', type:'bar', data:dataIn}]
+          : mode==='out'
+            ? [{name:'流出', type:'bar', data:dataOut}]
+            : [{name:'流入', type:'bar', data:dataIn}, {name:'流出', type:'bar', data:dataOut}]
+        )
+      });
+    
+      // Top20 占位
+      const topNames = Array.from({length:10},(_,i)=>`对手方 ${i+1}`).reverse();
+      const topVals  = Array.from({length:10},()=> Math.round(5e6 + Math.random()*4e7)).sort((a,b)=>a-b);
+      ez('chart-comp-top20',{
+        tooltip:{trigger:'axis'},
+        grid:{left:80,right:10,top:10,bottom:20},
+        xAxis:{type:'value'},
+        yAxis:{type:'category',data:topNames},
+        series:[{type:'bar',data:topVals}]
+      });
+    }
+    
+    /* =============== 你原有的表格分页与填充（不改动结构） =============== */
+    let currentPageDeal=1, currentPageCorp=1, currentRoutinePage=1;
     const pageSize=10;
     let bizFilteredList = companies.slice(); // 经营实质区域当前筛选结果
+    
     function paginate(arr,page){return arr.slice((page-1)*pageSize,page*pageSize);}
     function renderPagination(eleId,total,current,handler){
       const pages=Math.max(1,Math.ceil(total/pageSize));
@@ -1826,79 +2062,84 @@
       document.getElementById(eleId).innerHTML=html;
     }
     
-  function toggleSb(li){
-    li.classList.toggle('open');
-    const submenu = li.querySelector('.sb-submenu');
-    if (submenu) submenu.classList.toggle('show');
-  }
-      /* =============== 经营实质：两张表 =============== */
-  function fillBizTables(list=bizFilteredList){
-    const totalSum = list.reduce((s,x)=>s+x.total,0)||1;
-    // 交易明细
-    const dealPage=paginate(list,currentPageDeal);
-    document.querySelector('#tblDeal tbody').innerHTML = dealPage.map(r=>`
-      <tr>
-        <td>${r.name}</td>
-        <td>${r.ctype}</td><td>${r.relation}</td>
-        <td>${r.blacklist}</td>
-        <td style="color:#2563eb">${fmtWan(r.inflow)}</td>
-        <td style="color:#ef4444">${fmtWan(r.outflow)}</td>
-        <td><b>${fmtWan(r.total)}</b></td>
-        <td>${(r.total/totalSum*100).toFixed(2)}%</td>
-        <td>${r.txCnt}</td>
-        <td>${r.sales}</td><td>${r.purchase}</td><td>${r.job}</td>
-        <td>${r.note}</td>
-        <td><button class="btn">查看详情</button></td>
-      </tr>`).join('');
-    renderPagination('pagination-deal',list.length,currentPageDeal,'gotoDeal');
-
-    // 工商信息
-    const corpPage=paginate(list,currentPageCorp);
-    document.querySelector('#tblCorp tbody').innerHTML = corpPage.map(r=>`
-      <tr>
-        <td>${r.name}</td><td><b>${fmtWan(r.total)}</b></td>
-        <td>${r.foundedDate}</td><td>${r.startDate}</td><td>${r.endDate}</td>
-        <td>${r.term}</td><td>${r.status}</td><td>${r.capital}</td>
-        <td>${r.industry}</td><td>${r.scope}</td><td>${r.addr}</td>
-        <td>${r.contact}</td><td>${r.directors}</td>
-      </tr>`).join('');
-    renderPagination('pagination-corp',list.length,currentPageCorp,'gotoCorp');
-  }
-  function gotoDeal(p){currentPageDeal=p;fillBizTables()}
-  function gotoCorp(p){currentPageCorp=p;fillBizTables()}
-  fillBizTables();
-
-    /* 表格顶部 Tab 切换 */
+    function toggleSb(li){
+      li.classList.toggle('open');
+      const submenu = li.querySelector('.sb-submenu');
+      if (submenu) submenu.classList.toggle('show');
+    }
+    
+    /* 两张表 */
+    function fillBizTables(list=bizFilteredList){
+      const totalSum = list.reduce((s,x)=>s+x.total,0)||1;
+    
+      // 交易明细
+      const dealPage=paginate(list,currentPageDeal);
+      document.querySelector('#tblDeal tbody').innerHTML = dealPage.map(r=>`
+        <tr>
+          <td>${r.name}</td>
+          <td>${r.ctype}</td><td>${r.relation}</td>
+          <td>${r.blacklist}</td>
+          <td style="color:#2563eb">${fmtWan(r.inflow)}</td>
+          <td style="color:#ef4444">${fmtWan(r.outflow)}</td>
+          <td><b>${fmtWan(r.total)}</b></td>
+          <td>${(r.total/totalSum*100).toFixed(2)}%</td>
+          <td>${r.txCnt}</td>
+          <td>${r.sales}</td><td>${r.purchase}</td><td>${r.job}</td>
+          <td>${r.note}</td>
+          <td><button class="btn">查看详情</button></td>
+        </tr>`).join('');
+      renderPagination('pagination-deal',list.length,currentPageDeal,'gotoDeal');
+    
+      // 工商信息
+      const corpPage=paginate(list,currentPageCorp);
+      document.querySelector('#tblCorp tbody').innerHTML = corpPage.map(r=>`
+        <tr>
+          <td>${r.name}</td><td><b>${fmtWan(r.total)}</b></td>
+          <td>${r.foundedDate}</td><td>${r.startDate}</td><td>${r.endDate}</td>
+          <td>${r.term}</td><td>${r.status}</td><td>${r.capital}</td>
+          <td>${r.industry}</td><td>${r.scope}</td><td>${r.addr}</td>
+          <td>${r.contact}</td><td>${r.directors}</td>
+        </tr>`).join('');
+      renderPagination('pagination-corp',list.length,currentPageCorp,'gotoCorp');
+    }
+    function gotoDeal(p){currentPageDeal=p;fillBizTables()}
+    function gotoCorp(p){currentPageCorp=p;fillBizTables()}
+    
+    /* 表格顶部 Tab 切换（保持原交互） */
     document.getElementById('listTabs').addEventListener('click',e=>{
       const tab=e.target.closest('.table-tab'); if(!tab) return;
-      [...e.currentTarget.children].forEach(x=>x.classList.remove('active')); tab.classList.add('active');
+      [...e.currentTarget.children].forEach(x=>x.classList.remove('active'));
+      tab.classList.add('active');
       const showDeal = tab.dataset.view==='deal';
       document.getElementById('tbl-deal-wrap').classList.toggle('hide',!showDeal);
       document.getElementById('tbl-corp-wrap').classList.toggle('hide',showDeal);
-    });
-
-    /* =============== 经营实质：筛选（演示逻辑） =============== */
-    document.getElementById('btnQueryBiz').onclick=()=>{
-      const typeSel=document.getElementById('fType').value;
-      const bankSel=document.getElementById('fBank').value;
-      // 这里 fCompany、fFunc 仅作为 UI 展示，如有真实映射可在此扩展
-      let filtered = companies.slice();
-      if(typeSel!=='all') filtered = filtered.filter(x=>x.rel===typeSel);
-      if(bankSel!=='全部') filtered = filtered.filter(x=>x.bank===bankSel);
-      bizFilteredList = filtered;
-      currentPageDeal=1; currentPageCorp=1;
-      fillBizTables(filtered);
-    };
-    document.getElementById('btnResetBiz').onclick=()=>{
-      document.getElementById('fCompany').selectedIndex=0;
-      document.getElementById('fBank').selectedIndex=0;
-      document.getElementById('fFunc').selectedIndex=0;
-      document.getElementById('fPeriod').selectedIndex=0;
       document.getElementById('fType').selectedIndex=0;
       bizFilteredList = companies.slice();
-      currentPageDeal=1; currentPageCorp=1;
       fillBizTables();
-    };
+    });
+    
+    /* 构成 Tab 切换 */
+    const compTabs = document.getElementById('compTabs');
+    if (compTabs){
+      compTabs.addEventListener('click',e=>{
+        const t=e.target.closest('.tab'); if(!t) return;
+        [...compTabs.children].forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');
+        renderCompCharts(t.dataset.mode);
+      });
+    }
+    
+    /* 年度/类型筛选联动 */
+    document.getElementById('yearBalance')?.addEventListener('change',renderBalance);
+    document.getElementById('yearIO')?.addEventListener('change',renderIO);
+    document.getElementById('ctypeIO')?.addEventListener('change',renderIO);
+    
+    /* 首次渲染 */
+    renderBalance();
+    renderIO();
+    renderCompCats();
+    renderCompCharts();
+    fillBizTables();
 
     /* =============== Routine 区域 =============== */
     const routineMenu=document.getElementById('routineMenu');
