@@ -2200,44 +2200,44 @@
     
     /* =============== 构成：7占比 + 月度分布 + Top20 =============== */
     // —— Top20（右侧列表，图一风格）。这里演示用占位，接你真实聚合即可。
-    const list = Array.from({length:10},(_,i)=>({
-      name:['abc有限公司','a****新能源汽车技术有限公司','w**股份有限公司','b****汽车部件有限公司',
-            'k****汽车电子零部件有限公司','o3****金属塑料制品厂','p****集团股份有限公司募集合资专户',
-            'h****motivesystemsholdingco.ltd','l****汽车零部件有限公司','x****材料科技有限公司'][i] || `对手方 ${i+1}`,
-      amount:Math.round(2e7+Math.random()*5e8)
-    })).sort((a,b)=>b.amount-a.amount);
-    renderTop20Panel(list);
-  }
-  
-  /* ===== Top20 列表渲染（排名 + 金额 + 总额卡） ===== */
-  function renderTop20Panel(list){
-    const box=document.getElementById('chart-comp-top20'); if(!box) return;
-    const total=list.reduce((s,x)=>s+(x.amount||0),0);
-    box.innerHTML=`
-      <div class="top20-panel">
-        <div class="top20-left">
-          <div style="text-align:center">
-            <div class="big">Top20 交易总额</div>
-            <div class="big">¥${total.toLocaleString('zh-CN')}</div>
-            <div class="sub">占比：可替换为真实值</div>
+      const list = Array.from({length:10},(_,i)=>({
+        name:['abc有限公司','a****新能源汽车技术有限公司','w**股份有限公司','b****汽车部件有限公司',
+              'k****汽车电子零部件有限公司','o3****金属塑料制品厂','p****集团股份有限公司募集合资专户',
+              'h****motivesystemsholdingco.ltd','l****汽车零部件有限公司','x****材料科技有限公司'][i] || `对手方 ${i+1}`,
+        amount:Math.round(2e7+Math.random()*5e8)
+      })).sort((a,b)=>b.amount-a.amount);
+      renderTop20Panel(list);
+    }
+    
+    /* ===== Top20 列表渲染（排名 + 金额 + 总额卡） ===== */
+    function renderTop20Panel(list){
+      const box=document.getElementById('chart-comp-top20'); if(!box) return;
+      const total=list.reduce((s,x)=>s+(x.amount||0),0);
+      box.innerHTML=`
+        <div class="top20-panel">
+          <div class="top20-left">
+            <div style="text-align:center">
+              <div class="big">Top20 交易总额</div>
+              <div class="big">¥${total.toLocaleString('zh-CN')}</div>
+              <div class="sub">占比：可替换为真实值</div>
+            </div>
           </div>
-        </div>
-        <div class="top20-list">
-          ${list.map((row,idx)=>`
-            <div class="top20-row">
-              <div class="${idx<3?'rank-badge top3':'rank-badge'}">${idx+1}</div>
-              <div class="cp-name" title="${row.name}">${row.name}</div>
-              <div class="cp-amt">¥ ${row.amount.toLocaleString('zh-CN')}</div>
-            </div>`).join('')}
-          <div class="top20-caption">* 名称按你的脱敏规则展示。</div>
-        </div>
-      </div>`;
-  }
-  
-  /* ===== Tab 切换 ===== */
-  document.getElementById('compTabs')?.addEventListener('click',e=>{
-    const tab=e.target.closest('.tab'); if(!tab) return;
-    document.querySelectorAll('#compTabs .tab').forEach(t=>t.classList.remove('active'));
+          <div class="top20-list">
+            ${list.map((row,idx)=>`
+              <div class="top20-row">
+                <div class="${idx<3?'rank-badge top3':'rank-badge'}">${idx+1}</div>
+                <div class="cp-name" title="${row.name}">${row.name}</div>
+                <div class="cp-amt">¥ ${row.amount.toLocaleString('zh-CN')}</div>
+              </div>`).join('')}
+            <div class="top20-caption">* 名称按你的脱敏规则展示。</div>
+          </div>
+        </div>`;
+    }
+    
+    /* ===== Tab 切换 ===== */
+    document.getElementById('compTabs')?.addEventListener('click',e=>{
+      const tab=e.target.closest('.tab'); if(!tab) return;
+      document.querySelectorAll('#compTabs .tab').forEach(t=>t.classList.remove('active'));
     
     /* =============== 你原有的表格分页与填充（不改动结构） =============== */
     let currentPageDeal=1, currentPageCorp=1, currentRoutinePage=1;
