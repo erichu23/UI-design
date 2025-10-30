@@ -784,19 +784,11 @@
 .tabs-mini .tab{padding:6px 12px;border-radius:14px;font-size:12px;color:#475569;cursor:pointer}
 .tabs-mini .tab.active{background:#eef3ff;color:var(--blue);border:1px solid #d6e4ff}
 
-/* 七类占比 & KPI */
-.kpi-row{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0 8px}
-.kpi-pill{background:#f7f9fe;border:1px solid #d8e1ee;border-radius:24px;padding:6px 12px;color:#334155;font-size:13px}
-.kpi-pill b{font-weight:700;color:#0f172a;margin-left:6px}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
-.dot-blue{background:#2152ff}
-.dot-red{background:#E64646}
-
-.cats-row{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
-.cat{border:1px solid #e6edf5;border-radius:10px;padding:10px 12px;background:#fff}
-.cat-title{color:#475569;font-size:12px}
-.cat-val{font-size:16px;color:#0f172a;font-weight:700;margin-top:4px}
-.cat-sub{color:#64748b;font-size:12px;margin-top:2px}
+/* 七分类（保留） */
+.seven-cats{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin:4px 0 6px}
+.seven-cats .cat{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center}
+.seven-cats .name{font-size:12px;color:#475569;margin-bottom:6px}
+.seven-cats .pct{font-weight:700;color:var(--text)}
 
 /* 图容器 */
 .grid-2{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;margin-top:6px}
@@ -804,21 +796,25 @@
   border-radius:10px;padding:8px}
 
 /* —— Top20 卡（右） —— */
-#chart-comp-top20{display:flex;flex-direction:column}
-.top20-head{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
-.top20-title{font-weight:700;color:#0f172a}
-.top20-sub{color:#64748b;font-size:12px}
-.top20-total{margin-left:auto;font-weight:700;color:#0f172a}
+.top20-wrap{display:flex;flex-direction:column;height:100%}
+.top20-head{display:flex;align-items:flex-end;gap:10px;padding:6px 8px 8px}
+.top20-title{font-weight:800;color:var(--text);font-size:14px}
+.top20-total{margin-left:auto;text-align:right}
+.top20-total .num{font-weight:800;font-size:16px;color:var(--blue);font-variant-numeric:tabular-nums}
+.top20-total .sub{font-size:12px;color:var(--muted)}
 
-.top20-list{border:1px solid #e6edf5;border-radius:10px;overflow:auto;max-height:320px}
-.top20-item{display:grid;grid-template-columns:32px 1fr auto 70px;gap:8px;align-items:center;
-            padding:8px 12px;border-bottom:1px solid #eef2f7}
-.top20-item:last-child{border-bottom:none}
-.rank{width:22px;height:22px;border-radius:6px;background:#eef3ff;color:#2152ff;
-      display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
-.name{color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.amt{color:#0f172a;font-weight:700}
-.ratio{color:#64748b;font-size:12px;text-align:right}
+.top20-list{flex:1;overflow:auto;padding:4px 8px 10px}
+.t20-row{display:grid;grid-template-columns:28px 1fr 120px;align-items:center;gap:10px;
+  padding:8px 4px;border-bottom:1px dashed var(--grid)}
+.t20-rank{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;background:#99a7ff}
+.t20-rank.top1{background:var(--blue)}
+.t20-rank.top2{background:#4b66ee}
+.t20-rank.top3{background:#6e84f5}
+.t20-name{color:var(--text);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t20-amt{color:var(--text);font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.t20-bar{grid-column:2 / 4;height:4px;background:#f1f5f9;border-radius:99px;overflow:hidden;margin-top:6px}
+.t20-bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),#6e84f5)}
 
 /* 让 ECharts 容器更高级一些（圆角+阴影与面板统一） */
 .chart-lg, .chart-md {
@@ -2224,145 +2220,114 @@
     /* ===== 统一配色 & 工具 ===== */
     const compCats = ['全体对手方','已知关联方','供应商','客户','员工','其他','个人'];
 
-    // —— 统一调色（与你的 palette 一致）
-    const C_BLUE = '#2152ff';
-    const C_BLUE_A = 'rgba(33,82,255,.12)';
-    const C_RED  = '#E64646';
-    const C_TEXT = '#334155';
-    const C_AXIS = '#cbd5e1';
-    const C_GRID = '#e9eef7';
+    /* ===== 统一配色 & 工具 ===== */
+    const UBLUE='#1E49E2', URED='#E64646';
+    const fmtY = v => (v||0).toLocaleString('zh-CN');
     
-    // —— demo 数据（接入真实数据时替换这两处：catsNums、top20）
-    function mockMonthly(n=24, base=2e6, jitter=8e6){
-      return Array.from({length:n},()=> Math.round(base + Math.random()*jitter));
-    }
-    const catsNums = [100, 28, 0, 0, 0, 0, 0]; // 7类数量占位：接你后台统计
-    const monthlyIn  = mockMonthly();           // 月度流入
-    const monthlyOut = mockMonthly(24, 1.6e6, 7e6); // 月度流出
-    let   top20 = Array.from({length:10}, (_,i)=>({
-      name: (i===0?'abc有限公司':`对手方 ${i+1}`),
-      amount: Math.round(2e7 + Math.random()*8e7)
-    }));
-    
-    // —— 小工具
-    const sum = arr => arr.reduce((s,x)=>s+x,0);
-    const pct = (a,b) => b>0 ? (a/b*100) : 0;
-    
-    // ========== 七类占比（含汇总） ==========
-    function renderCompCats(){
-      const wrap = document.getElementById('compCats');
-      if(!wrap) return;
-    
-      const total = sum(catsNums);
-      const cards = compCats.map((n,i)=>{
-        const v = catsNums[i]||0;
-        const p = pct(v, total).toFixed(2);
-        return `
-          <div class="cat">
-            <div class="cat-title">${n}</div>
-            <div class="cat-val">${v.toLocaleString('zh-CN')}</div>
-            <div class="cat-sub">${p}%</div>
-          </div>`;
-      }).join('');
-    
-      // 总览KPI
-      const kpiHTML = `
-        <div class="kpi-row">
-          <div class="kpi-pill"><span class="dot dot-blue"></span>流入总额 <b>¥${sum(monthlyIn).toLocaleString('zh-CN')}</b></div>
-          <div class="kpi-pill"><span class="dot dot-red"></span>流出总额 <b>¥${sum(monthlyOut).toLocaleString('zh-CN')}</b></div>
-          <div class="kpi-pill">对手方总数 <b>${total.toLocaleString('zh-CN')}</b></div>
-        </div>`;
-    
-      wrap.innerHTML = kpiHTML + `<div class="cats-row">${cards}</div>`;
-    }
-    
-    // ========== 左侧：月度分布 ==========
-    function renderCompMonthly(mode='total'){
-      const dom = document.getElementById('chart-comp-monthly');
-      if(!dom) return;
-    
-      let series = [];
-      if (mode === 'in') {
-        series = [{ name:'流入', type:'bar', data: monthlyIn, itemStyle:{color:C_BLUE}, barMaxWidth:18 }];
-      } else if (mode === 'out') {
-        series = [{ name:'流出', type:'bar', data: monthlyOut, itemStyle:{color:C_RED}, barMaxWidth:18 }];
-      } else {
-        series = [
-          { name:'流入', type:'bar', data: monthlyIn,  itemStyle:{color:C_BLUE}, barMaxWidth:18 },
-          { name:'流出', type:'bar', data: monthlyOut, itemStyle:{color:C_RED},  barMaxWidth:18 }
-        ];
+    function _ensureDeps(){
+      if(typeof window.months==='undefined'){
+        window.months=[...Array.from({length:12},(_,i)=>`2023-${String(i+1).padStart(2,'0')}`),
+                       ...Array.from({length:12},(_,i)=>`2024-${String(i+1).padStart(2,'0')}`)];
       }
+      if(typeof window.dataIn==='undefined'||typeof window.dataOut==='undefined'){
+        window.dataIn = months.map(()=>Math.round(2e6+Math.random()*8e6));
+        window.dataOut= months.map(()=>Math.round(1.5e6+Math.random()*7e6));
+      }
+      if(typeof window.ez==='undefined'){
+        window.ez=(domId,opt)=>{const el=document.getElementById(domId);
+          const ins=echarts.getInstanceByDom(el)||echarts.init(el); ins.setOption(opt,true); return ins;}
+      }
+    }
+    _ensureDeps();
     
-      const months = Array.from({length:24}, (_,i)=>
-        (i<12?'2023-':'2024-') + String(i%12+1).padStart(2,'0')
-      );
+    /* ===== 月度分布（左）：图二风格，统一蓝红圆角柱 ===== */
+    function renderCompMonthly(mode='total'){
+      const series = (()=>{
+        const base = {
+          type:'bar', barWidth:14, barGap:'12%', barCategoryGap:'30%',
+          itemStyle:{borderRadius:[6,6,0,0]}, emphasis:{focus:'series'}
+        };
+        if(mode==='in')  return [{...base, name:'流入',  itemStyle:{...base.itemStyle,color:UBLUE}, data:dataIn}];
+        if(mode==='out') return [{...base, name:'流出', itemStyle:{...base.itemStyle,color:URED }, data:dataOut}];
+        return [
+          {...base, name:'流入',  itemStyle:{...base.itemStyle,color:UBLUE}, data:dataIn},
+          {...base, name:'流出', itemStyle:{...base.itemStyle,color:URED }, data:dataOut}
+        ];
+      })();
     
-      ez('chart-comp-monthly', {
-        grid:{left:56,right:16,top:36,bottom:40,containLabel:true},
-        legend:{top:6,right:8, textStyle:{color:C_TEXT}},
-        tooltip:{trigger:'axis'},
-        xAxis:{type:'category', data:months, axisLine:{lineStyle:{color:C_AXIS}}, axisLabel:{color:C_TEXT}},
-        yAxis:{type:'value', axisLine:{show:false}, axisLabel:{color:C_TEXT}, splitLine:{lineStyle:{color:C_GRID}}},
+      ez('chart-comp-monthly',{
+        grid:{left:56,right:16,top:34,bottom:40,containLabel:true},
+        color:[UBLUE, URED],
+        legend:{top:6,right:8,icon:'roundRect',itemWidth:10,itemHeight:10},
+        tooltip:{trigger:'axis',axisPointer:{type:'shadow'},
+                 valueFormatter:fmtY},
+        xAxis:{type:'category',data:months,axisTick:{show:false}},
+        yAxis:{type:'value',axisTick:{show:false},
+               splitLine:{lineStyle:{color:'#eef2f7'}},
+               axisLabel:{formatter:fmtY}},
         series
       });
     }
     
-    // ========== 右侧：Top20 列表卡 ==========
-    function renderCompTop20(mode='total'){
-      const box = document.getElementById('chart-comp-top20');
+    /* ===== Top20（右）：总额卡 + 排名列表（更简洁） =====
+       接入真实数据时，传入 [{name:'xxx', amount:123456}, ...] 即可。
+    */
+    function renderTop20(list){
+      const box=document.getElementById('chart-comp-top20');
       if(!box) return;
     
-      // 计算“基数”：用于显示「占比于当前选项的交易总额」
-      const baseTotal = (mode==='in') ? sum(monthlyIn)
-                       : (mode==='out')? sum(monthlyOut)
-                       : (sum(monthlyIn) + sum(monthlyOut));
+      // 占位：若无真实 Top20，则随机生成
+      if(!Array.isArray(list)){
+        list = Array.from({length:10},(_,i)=>({
+          name: ['abc有限公司','b****汽车部件有限公司','o3****塑料制品厂','p****集团募集专户',
+                 'k****电子零部件有限公司','w**股份有限公司','h****motivesystemsholdingco.ltd',
+                 'l****零部件有限公司','x****材料科技有限公司','m****贸易有限公司'][i] || `对手方 ${i+1}`,
+          amount: Math.round(2e7 + Math.random()*5e8)
+        }));
+      }
+      list = list.sort((a,b)=>b.amount-a.amount).slice(0,20);
+      const total = list.reduce((s,x)=>s+(x.amount||0),0) || 1;
     
-      // 排序取前20（这里示例10条）
-      const list = [...top20].sort((a,b)=> b.amount - a.amount).slice(0,20);
-    
-      const right = `
-        <div class="top20-head">
-          <div class="top20-title">Top20 交易总额</div>
-          <div class="top20-sub">占比：可帮助发现关键客户</div>
-          <div class="top20-total">¥${sum(list.map(x=>x.amount)).toLocaleString('zh-CN')}</div>
-        </div>
-        <div class="top20-list">
-          ${list.map((it,idx)=>`
-            <div class="top20-item">
-              <div class="rank">${idx+1}</div>
-              <div class="name" title="${it.name}">${it.name}</div>
-              <div class="amt">¥${it.amount.toLocaleString('zh-CN')}</div>
-              <div class="ratio">${pct(it.amount, baseTotal).toFixed(2)}%</div>
+      box.innerHTML = `
+        <div class="top20-wrap">
+          <div class="top20-head">
+            <div class="top20-title">Top20 交易总额</div>
+            <div class="top20-total">
+              <div class="num">¥${fmtY(total)}</div>
+              <div class="sub">单位：可替换为真实占比</div>
             </div>
-          `).join('')}
-        </div>
-      `;
-    
-      box.innerHTML = right; // 用列表卡样式填充右侧容器
+          </div>
+          <div class="top20-list">
+            ${list.map((r,idx)=>{
+              const pct = Math.max(0, Math.min(1, (r.amount||0)/total));
+              return `
+              <div class="t20-row">
+                <div class="t20-rank ${idx===0?'top1':idx===1?'top2':idx===2?'top3':''}">${idx+1}</div>
+                <div class="t20-name" title="${r.name}">${r.name}</div>
+                <div class="t20-amt">¥${fmtY(r.amount)}</div>
+                <div class="t20-bar"><i style="width:${(pct*100).toFixed(2)}%"></i></div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
     }
     
-    // ========== 入口：渲染 & Tab 切换 ==========
-    function renderCompCharts(mode='total'){
-      renderCompCats();
+    /* ===== Tab 联动（交易总额 / 流入方 / 流出方） ===== */
+    function renderCompCharts(mode='total', top20List){
       renderCompMonthly(mode);
-      renderCompTop20(mode);
+      renderTop20(top20List);
     }
     
-    // Tab 事件
-    (function bindCompTabs(){
-      const tabs = document.getElementById('compTabs');
-      if(!tabs) return;
-      tabs.addEventListener('click', (e)=>{
-        const t = e.target.closest('.tab');
-        if(!t) return;
-        tabs.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-        t.classList.add('active');
-        const mode = t.dataset.mode || 'total';
-        renderCompCharts(mode);
-      });
-    })();
+    /* ===== 事件绑定 ===== */
+    document.getElementById('compTabs')?.addEventListener('click', e=>{
+      const tab = e.target.closest('.tab'); if(!tab) return;
+      document.querySelectorAll('#compTabs .tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      renderCompCharts(tab.dataset.mode);  // 可传真实 Top20：renderCompCharts(tab.dataset.mode, myTop20)
+    });
     
-    // 首次执行
+    /* ===== 初始化 ===== */
+    renderCompCats();       // 7 占比
     renderCompCharts('total');
     
     /* =============== 你原有的表格分页与填充（不改动结构） =============== */
