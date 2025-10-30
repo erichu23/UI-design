@@ -2198,8 +2198,60 @@
     document.getElementById('yearBalance')?.addEventListener('change', renderBalance);
     document.getElementById('yearIO')?.addEventListener('change', renderIO);
     
-    /* =============== 构成：7占比 + 月度分布 + Top20 =============== */
-    // —— Top20（右侧列表，图一风格）。这里演示用占位，接你真实聚合即可。
+    /* ===== 依赖与占位（若你项目里已有 months / dataIn / dataOut / ez 就会自动复用） ===== */
+    const C_BLUE='#2152ff', C_RED='#E64646';
+    if(typeof window.months==='undefined'){
+      window.months=[...Array.from({length:12},(_,i)=>`2023-${String(i+1).padStart(2,'0')}`),
+                     ...Array.from({length:12},(_,i)=>`2024-${String(i+1).padStart(2,'0')}`)];
+    }
+    if(typeof window.dataIn==='undefined' || typeof window.dataOut==='undefined'){
+      window.dataIn = months.map(()=>Math.round(2e6+Math.random()*8e6));
+      window.dataOut= months.map(()=>Math.round(1.5e6+Math.random()*7e6));
+    }
+    if(typeof window.ez==='undefined'){
+      window.ez=function(domId,opt){const el=document.getElementById(domId);
+        const inst=echarts.getInstanceByDom(el)||echarts.init(el);inst.setOption(opt,true);return inst;}
+    }
+    const yFmt=v=>(v||0).toLocaleString('zh-CN');
+    
+    /* ===== 7 类占比（可接真实值） ===== */
+    const categories=['全体对手方','已知关联方','供应商','客户','员工','其他','个人'];
+    function renderCompCats(){
+      const nums=[100,28,0,0,0,0,0]; // TODO: 替换成你的真实统计
+      const total=nums.reduce((s,x)=>s+x,0)||1;
+      const wrap=document.getElementById('compCats'); if(!wrap) return;
+      wrap.innerHTML=categories.map((n,i)=>`
+        <div class="cat">
+          <div class="name">${n}</div>
+          <div class="pct">${(nums[i]/total*100).toFixed(2)}%</div>
+        </div>`).join('');
+    }
+    
+    /* ===== 月度分布（交易总额 / 流入方 / 流出方）——图二样式蓝红柱状 ===== */
+    function renderCompCharts(mode='total'){
+      if(!document.getElementById('chart-comp-monthly')) return;
+      let series=[];
+      if(mode==='in'){
+        series=[{name:'流入',type:'bar',barWidth:16,itemStyle:{color:C_BLUE},data:dataIn}];
+      }else if(mode==='out'){
+        series=[{name:'流出',type:'bar',barWidth:16,itemStyle:{color:C_RED},data:dataOut}];
+      }else{
+        series=[
+          {name:'流入',type:'bar',barWidth:16,itemStyle:{color:C_BLUE},data:dataIn},
+          {name:'流出',type:'bar',barWidth:16,itemStyle:{color:C_RED}, data:dataOut}
+        ];
+      }
+      ez('chart-comp-monthly',{
+        grid:{left:56,right:16,top:30,bottom:40,containLabel:true},
+        color:[C_BLUE,C_RED],
+        legend:{top:6,right:8,icon:'roundRect',itemWidth:10,itemHeight:10},
+        tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:yFmt},
+        xAxis:{type:'category',data:months,axisTick:{show:false}},
+        yAxis:{type:'value',axisTick:{show:false},splitLine:{lineStyle:{color:'#eef2f7'}},axisLabel:{formatter:yFmt}},
+        series
+      });
+    
+      // —— Top20（右侧列表，图一风格）。这里演示用占位，接你真实聚合即可。
       const list = Array.from({length:10},(_,i)=>({
         name:['abc有限公司','a****新能源汽车技术有限公司','w**股份有限公司','b****汽车部件有限公司',
               'k****汽车电子零部件有限公司','o3****金属塑料制品厂','p****集团股份有限公司募集合资专户',
@@ -2238,6 +2290,7 @@
     document.getElementById('compTabs')?.addEventListener('click',e=>{
       const tab=e.target.closest('.tab'); if(!tab) return;
       document.querySelectorAll('#compTabs .tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
     
     /* =============== 你原有的表格分页与填充（不改动结构） =============== */
     let currentPageDeal=1, currentPageCorp=1, currentRoutinePage=1;
