@@ -2307,7 +2307,110 @@
     renderIO();
     renderCompCats();
     renderCompCharts();
-    fillBizTables();
+    fillBizTables
+
+    // —— 防抖：避免 resize 频繁触发
+    function debounce(fn, delay=150){
+      let t=null; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), delay); };
+    }
+    
+    // —— 判定容器是否可见且有尺寸
+    function isRenderable(el){
+      if(!el) return false;
+      const style = getComputedStyle(el);
+      const w = el.clientWidth, h = el.clientHeight;
+      return w>0 && h>0 && style.visibility!=='hidden' && style.display!=='none';
+    }
+    
+    // —— 安全初始化：可见就 init；不可见就重试（最多 40 次，每 100ms）
+    function initChartSafe(domId){
+      const el = document.getElementById(domId);
+      if(!el) return null;
+      let inst = echarts.getInstanceByDom(el);
+    
+      let tries = 0;
+      function attempt(){
+        if(isRenderable(el)){
+          inst = inst || echarts.init(el, null, {renderer: 'canvas'});
+          inst.resize();          // 有尺寸时立即调一次
+          return inst;
+        }else if(tries < 40){
+          tries++;
+          setTimeout(attempt, 100);
+        }
+        return null;
+      }
+      return inst || attempt();
+    }
+    
+    // —— 统一渲染：确保实例存在，再 setOption
+    function renderChart(domId, option){
+      const inst = initChartSafe(domId);
+      if(!inst) return null;
+      inst.setOption(option, true);
+      return inst;
+    }
+    
+    // —— 监听尺寸变化：父容器布局变化、窗口缩放、页面恢复、设备旋转等
+    const roMap = new Map();
+    function watchResize(domId){
+      const el = document.getElementById(domId);
+      if(!el || roMap.has(domId)) return;
+      const inst = echarts.getInstanceByDom(el);
+    
+      const ro = new ResizeObserver(debounce(()=>{
+        const c = echarts.getInstanceByDom(el);
+        if(c && isRenderable(el)) c.resize();
+      }));
+      ro.observe(el);
+      roMap.set(domId, ro);
+    }
+    
+    // —— 常见触发：窗口尺寸、页面可见性、历史导航返回
+    ['resize','orientationchange'].forEach(evt=>{
+      window.addEventListener(evt, debounce(()=>{
+        document.querySelectorAll('#chart-balance,#chart-io').forEach(el=>{
+          const c = echarts.getInstanceByDom(el);
+          if(c && isRenderable(el)) c.resize();
+        });
+      }));
+    });
+    window.addEventListener('pageshow', ()=>{
+      document.querySelectorAll('#chart-balance,#chart-io').forEach(el=>{
+        const c = echarts.getInstanceByDom(el);
+        if(c) c.resize();
+      });
+    });
+    document.addEventListener('visibilitychange', ()=>{
+      if(document.visibilityState==='visible'){
+        document.querySelectorAll('#chart-balance,#chart-io').forEach(el=>{
+          const c = echarts.getInstanceByDom(el);
+          if(c) c.resize();
+        });
+      }
+    });
+    
+    // —— 如果你有 Tab/折叠切换，切换后记得主动 resize
+    function onPaneShown(){
+      ['chart-balance','chart-io'].forEach(id=>{
+        const el = document.getElementById(id);
+        if(!el) return;
+        const c = echarts.getInstanceByDom(el);
+        if(c && isRenderable(el)) c.resize();
+      });
+    }
+    // 示例：监听你的表格顶部 Tab（按你的 DOM 调整选择器）
+    document.getElementById('listTabs')?.addEventListener('click', debounce(onPaneShown, 50));
+    
+    // —— 用 renderChart 替换原来的 ez(...)
+    //    你的 renderBalance/renderIO 里把 ez('chart-xxx', option) 改成：
+    /*
+      renderChart('chart-balance', option);
+      watchResize('chart-balance');
+    
+      renderChart('chart-io', option);
+      watchResize('chart-io');
+    */
 
     /* =============== Routine 区域 =============== */
     const routineMenu=document.getElementById('routineMenu');
