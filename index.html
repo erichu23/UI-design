@@ -786,6 +786,22 @@
 
 .grid-2{ display:grid; grid-template-columns:2fr 1fr; gap:12px; margin:8px 16px; }
 
+/* 让 ECharts 容器更高级一些（圆角+阴影与面板统一） */
+.chart-lg, .chart-md {
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(17,24,39,.04) inset;
+}
+/* tooltip 卡片 */
+.tip-card{
+  padding:8px 10px;border:1px solid #e6edf5;border-radius:8px;background:#fff;
+  box-shadow:0 6px 24px rgba(15,23,42,.08);font-size:12px;color:#0f172a
+}
+.tip-card .t{font-weight:700;margin-bottom:6px;color:#334155}
+.tip-row{display:flex;justify-content:space-between;gap:16px;line-height:18px}
+.tip-k{color:#64748b}
+.tip-v{font-variant-numeric:tabular-nums}
+
 /* 窄屏适配 */
 @media (max-width:1200px){
   .filter-area{
@@ -1982,110 +1998,156 @@
       return arr;
     }
     
-    /* =============== 资金流水金额（含 KPI，单蓝线 + dataZoom） =============== */
+    const palette = {
+      blue:  '#2152ff',
+      blueA: 'rgba(33,82,255,0.14)',
+      red:   '#ef4444',
+      redA:  'rgba(239,68,68,0.12)',
+      axis:  '#cbd5e1',
+      text:  '#334155',
+      grid:  '#e9eef7'
+    };
+    const fmtK = n => (n||0).toLocaleString();
+    function baseGrid() {
+      return {top: 28, right: 16, bottom: 56, left: 56, containLabel: true};
+    }
+    function baseDataZoom() {
+      return [
+        { type:'inside', zoomOnMouseWheel:false, moveOnMouseWheel:true, moveOnMouseMove:true },
+        { height: 16, bottom: 18, borderColor: 'transparent',
+          fillerColor: 'rgba(30,73,226,.12)', handleIcon:'', backgroundColor:'#f1f5f9' }
+      ];
+    }
+    function baseAxis(xCats){
+      return {
+        xAxis: {
+          type:'category', data:xCats,
+          axisLine:{lineStyle:{color:palette.axis}},
+          axisLabel:{color:palette.text, margin:12},
+          axisTick:{show:false},
+          splitLine:{show:false}
+        },
+        yAxis:{
+          type:'value',
+          axisLine:{show:false},
+          axisLabel:{color:palette.text, formatter: v=>fmtK(v)},
+          splitLine:{show:true, lineStyle:{color:palette.grid}}
+        }
+      };
+    }
+    function baseTooltip(formatter){
+      return {
+        trigger:'axis',
+        className:'echarts-tip',
+        borderWidth:0,
+        backgroundColor:'transparent',
+        padding:0,
+        axisPointer:{type:'line', lineStyle:{color:'#94a3b8', type:'dashed'}},
+        formatter
+      };
+    }
+    function makeLineChart(domId, opt){
+      const chart = echarts.init(document.getElementById(domId));
+      chart.setOption(opt, true);
+      window.addEventListener('resize', ()=>chart.resize());
+      return chart;
+    }
+    
+    /* ========= 资金流水余额：单蓝线 + 渐变面积 + 底部缩放 ========= */
     function renderBalance(){
       const y = document.getElementById('yearBalance')?.value || '2023-2024';
-      const xSel = (y==='2023' ? months.slice(0,12) : y==='2024' ? months.slice(12) : months);
+      const xSel  = (y==='2023'? months.slice(0,12) : y==='2024'? months.slice(12) : months);
+      // 余额：如果你有真实余额数组，用它替换 balanceData
       const inSel  = pickByYear(y, dataIn);
       const outSel = pickByYear(y, dataOut);
+      // 用流入-流出做一个示例“净额累计”为余额，可改成你的真实余额
+      let acc = 0; const balanceData = inSel.map((v,i)=> (acc += (v - (outSel[i]||0)), acc));
     
-      // ---- KPI ----
-      const $ = id => document.getElementById(id);
-      if ($('k_in_sum'))  $('k_in_sum').textContent  = '¥' + fmt(sum(inSel));
-      if ($('k_in_avg'))  $('k_in_avg').textContent  = '¥' + fmt(Math.round(avg(inSel)));
-      if ($('k_out_sum')) $('k_out_sum').textContent = '¥' + fmt(sum(outSel));
-      if ($('k_out_avg')) $('k_out_avg').textContent = '¥' + fmt(Math.round(avg(outSel)));
-    
-      // ---- 余额序列：期初 + 累计(流入-流出) ----
-      const start = (typeof window.balanceStart === 'number') ? window.balanceStart : 0;
-      const balance = [];
-      let cur = start;
-      for (let i=0;i<xSel.length;i++){
-        cur += (inSel[i]||0) - (outSel[i]||0);
-        balance.push(cur);
-      }
-    
-      ez('chart-balance',{
-        grid:{left:40,right:24,top:12,bottom:52},
-        tooltip:{
-          trigger:'axis',
-          axisPointer:{type:'line'},
-          valueFormatter:v=>'¥'+fmt(Math.round(v||0))
-        },
-        xAxis:{type:'category',data:xSel,boundaryGap:false,axisTick:{alignWithLabel:true}},
-        yAxis:{type:'value',axisLabel:{formatter:v=>fmt(v)}},
-        dataZoom:[
-          {type:'inside',start:30,end:100},
-          {type:'slider',start:30,end:100,height:18,bottom:16}
-        ],
-        series:[{
+      makeLineChart('chart-balance', {
+        grid: baseGrid(),
+        ...baseAxis(xSel),
+        dataZoom: baseDataZoom(),
+        tooltip: baseTooltip(params=>{
+          const p = params[0];
+          return `
+            <div class="tip-card">
+              <div class="t">${p.axisValue}</div>
+              <div class="tip-row"><span class="tip-k">余额</span><span class="tip-v">¥ ${fmtK(p.value)}</span></div>
+            </div>`;
+        }),
+        series: [{
           name:'余额',
           type:'line',
           smooth:true,
           showSymbol:false,
-          symbolSize:4,
-          lineStyle:{width:2,color:'#1e49e2'},
-          itemStyle:{color:'#1e49e2'},
-          data:balance
+          lineStyle:{width:2.4,color:palette.blue},
+          areaStyle:{
+            color: new echarts.graphic.LinearGradient(0,0,0,1,[
+              {offset:0,color:palette.blueA},{offset:1,color:'rgba(33,82,255,0)'}
+            ])
+          },
+          data: balanceData
         }]
       });
     }
     
-    /* =============== 流入流出趋势（两条折线 + dataZoom，含 KPI） =============== */
+    /* ========= 流入流出趋势：双线 + 平滑 + 底部缩放 ========= */
     function renderIO(){
       const y = document.getElementById('yearIO')?.value || '2023-2024';
-      // 若后续要按对手方类型过滤，可在此处理 ctype：
-      // const ct = document.getElementById('ctypeIO')?.value || 'all';
-    
-      const xSel = (y==='2023' ? months.slice(0,12) : y==='2024' ? months.slice(12) : months);
+      const xSel  = (y==='2023'? months.slice(0,12) : y==='2024'? months.slice(12) : months);
       const inSel  = pickByYear(y, dataIn);
       const outSel = pickByYear(y, dataOut);
     
-      // ---- KPI ----
+      // KPI（保留你原有的）
       const $ = id => document.getElementById(id);
       if ($('io_in_sum'))  $('io_in_sum').textContent  = '¥' + fmt(sum(inSel));
       if ($('io_in_avg'))  $('io_in_avg').textContent  = '¥' + fmt(Math.round(avg(inSel)));
       if ($('io_out_sum')) $('io_out_sum').textContent = '¥' + fmt(sum(outSel));
       if ($('io_out_avg')) $('io_out_avg').textContent = '¥' + fmt(Math.round(avg(outSel)));
     
-      ez('chart-io',{
-        grid:{left:40,right:24,top:12,bottom:52},
-        legend:{data:['流入','流出'],top:0},
-        tooltip:{
-          trigger:'axis',
-          axisPointer:{type:'line'},
-          valueFormatter:v=>'¥'+fmt(Math.round(v||0))
+      makeLineChart('chart-io', {
+        grid: baseGrid(),
+        ...baseAxis(xSel),
+        legend:{
+          right: 8, top: 0,
+          icon:'roundRect', itemWidth:10, itemHeight:10,
+          textStyle:{color:palette.text}
         },
-        xAxis:{type:'category',data:xSel,boundaryGap:false,axisTick:{alignWithLabel:true}},
-        yAxis:{type:'value',axisLabel:{formatter:v=>fmt(v)}},
-        dataZoom:[
-          {type:'inside',start:30,end:100},
-          {type:'slider',start:30,end:100,height:18,bottom:16}
-        ],
+        dataZoom: baseDataZoom(),
+        tooltip: baseTooltip(params=>{
+          const pin = params.find(p=>p.seriesName==='流入');
+          const pout= params.find(p=>p.seriesName==='流出');
+          return `
+            <div class="tip-card">
+              <div class="t">${params[0].axisValue}</div>
+              <div class="tip-row"><span class="tip-k">流入</span><span class="tip-v" style="color:${palette.blue}">¥ ${fmtK(pin?.value||0)}</span></div>
+              <div class="tip-row"><span class="tip-k">流出</span><span class="tip-v" style="color:${palette.red}">¥ ${fmtK(pout?.value||0)}</span></div>
+            </div>`;
+        }),
         series:[
           {
-            name:'流入',
-            type:'line',
-            smooth:true,
-            showSymbol:false,
-            symbolSize:4,
-            lineStyle:{width:2,color:'#1e49e2'},
-            itemStyle:{color:'#1e49e2'},
-            data:inSel
+            name:'流入', type:'line', smooth:true, showSymbol:false,
+            lineStyle:{width:2.2, color:palette.blue},
+            areaStyle:{color:palette.blueA},
+            emphasis:{focus:'series'},
+            data: inSel
           },
           {
-            name:'流出',
-            type:'line',
-            smooth:true,
-            showSymbol:false,
-            symbolSize:4,
-            lineStyle:{width:2,color:'#ef4444'},
-            itemStyle:{color:'#ef4444'},
-            data:outSel
+            name:'流出', type:'line', smooth:true, showSymbol:false,
+            lineStyle:{width:2.2, color:palette.red},
+            areaStyle:{color:palette.redA},
+            emphasis:{focus:'series'},
+            data: outSel
           }
         ]
       });
     }
+    
+    /* ========= 首次渲染 & 下拉联动 ========= */
+    renderBalance();
+    renderIO();
+    document.getElementById('yearBalance')?.addEventListener('change', renderBalance);
+    document.getElementById('yearIO')?.addEventListener('change', renderIO);
     
     /* =============== 构成：7占比 + 月度分布 + Top20 =============== */
     const categories = ['全体对手方','已知关联方','供应商','客户','员工','其他','个人'];
