@@ -2900,13 +2900,44 @@ function gotoRoutine(p){
 // 初始化
 renderRoutine('2.1');
 
-    /* =============== 顶部页面切换 =============== */
-    document.getElementById('topTabs').addEventListener('click',e=>{
-      const t=e.target.closest('.tab'); if(!t) return;
-      [...e.currentTarget.children].forEach(x=>x.classList.remove('active')); t.classList.add('active');
-      document.getElementById('page-biz').classList.toggle('hide',t.dataset.top!=='biz');
-      document.getElementById('page-routine').classList.toggle('hide',t.dataset.top!=='routine');
-      setTimeout(()=>window.dispatchEvent(new Event('resize')),50);
+    /* ===== 顶部页面切换 + 刷新保持当前页 ===== */
+    const TAB_STORAGE_KEY = 'topTabs.active';
+    const PAGE_KEYS = ['account','biz','relation','transaction','routine','statement','verify'];
+    
+    function activateTopTab(key){
+      // 1) Tab 高亮
+      document.querySelectorAll('#topTabs .tab')
+        .forEach(el => el.classList.toggle('active', el.dataset.top === key));
+    
+      // 2) 面板显隐（按你现有的 page-xxx 约定）
+      PAGE_KEYS.forEach(k=>{
+        const pg = document.getElementById(`page-${k}`);
+        if (pg) pg.classList.toggle('hide', k !== key);
+      });
+    
+      // 3) 墨水条位置（若存在）
+      const active = document.querySelector(`#topTabs .tab[data-top="${key}"]`);
+      const ink = document.getElementById('inkbar');
+      if (active && ink) {
+        ink.style.width = active.offsetWidth + 'px';
+        ink.style.transform = `translateX(${active.offsetLeft}px)`;
+      }
+    
+      // 4) 记录当前 Tab，并触发一次 resize（和你原逻辑一致）
+      localStorage.setItem(TAB_STORAGE_KEY, key);
+      setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
+    }
+    
+    // 点击切换
+    document.getElementById('topTabs')?.addEventListener('click', e=>{
+      const t = e.target.closest('.tab'); if(!t) return;
+      activateTopTab(t.dataset.top);
+    });
+    
+    // 刷新/进页时恢复
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const saved = localStorage.getItem(TAB_STORAGE_KEY) || 'account';
+      activateTopTab(saved);
     });
   </script>
 </body>
