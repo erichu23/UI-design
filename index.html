@@ -2987,6 +2987,156 @@
     
       return chart;
     }
+
+    /* ===================== 已知关联方交易：就地初始化 ===================== */
+    (function initRelationPanel(){
+      const root = document.getElementById('pane-relation');
+      if (!root) return;
+    
+      // —— 小工具：在 root 作用域内查 DOM，避免与“经营实质”冲突 —— //
+      const $  = (sel) => root.querySelector(sel);
+      const $$ = (sel) => root.querySelectorAll(sel);
+    
+      // ===== 依赖占位（若全局已有 months/dataIn/dataOut/ez 会复用） =====
+      window.months  = window.months || [
+        ...Array.from({length:12},(_,i)=>`2023-${String(i+1).padStart(2,'0')}`),
+        ...Array.from({length:12},(_,i)=>`2024-${String(i+1).padStart(2,'0')}`)
+      ];
+      window.dataIn  = window.dataIn  || months.map(()=>Math.round(2e6+Math.random()*8e6));
+      window.dataOut = window.dataOut || months.map(()=>Math.round(1.5e6+Math.random()*7e6));
+      window.ez      = window.ez      || function(domId,opt){
+        const el = document.getElementById(domId);
+        const inst = echarts.getInstanceByDom(el) || echarts.init(el);
+        inst.setOption(opt,true); return inst;
+      };
+    
+      const C_BLUE = '#2152ff', C_RED = '#E64646';
+      const yFmt = v => (v||0).toLocaleString('zh-CN');
+    
+      /* ========== 7 类占比（面板内） ========== */
+      function renderCompCats_Rel(){
+        // TODO：换成“已知关联方交易”的真实分类统计
+        const cats = ['已知关联方','供应商','客户','员工','其他','个人'];
+        const nums = [28,0,0,0,0,0];
+        const total = nums.reduce((s,x)=>s+x,0)||1;
+        const wrap = $('#compCats'); if(!wrap) return;
+        wrap.innerHTML = cats.map((n,i)=>`
+          <div class="cat"><div class="name">${n}</div>
+          <div class="pct">${(nums[i]/total*100).toFixed(2)}%</div></div>
+        `).join('');
+      }
+    
+      /* ========== 月度柱图 + Top20（仅本面板） ========== */
+      function renderCompCharts_Rel(mode='total'){
+        if (!$('#chart-comp-monthly')) return;
+    
+        let series = [];
+        if (mode==='in'){
+          series=[{name:'流入',type:'bar',barWidth:16,itemStyle:{color:C_BLUE},data:dataIn}];
+        }else if(mode==='out'){
+          series=[{name:'流出',type:'bar',barWidth:16,itemStyle:{color:C_RED}, data:dataOut}];
+        }else{
+          series=[
+            {name:'流入',type:'bar',barWidth:16,itemStyle:{color:C_BLUE},data:dataIn},
+            {name:'流出',type:'bar',barWidth:16,itemStyle:{color:C_RED}, data:dataOut}
+          ];
+        }
+    
+        // 用容器内的 DOM 渲染（避免与 Biz 共用同 id 的问题）
+        const mEl = $('#chart-comp-monthly');
+        const mChart = echarts.getInstanceByDom(mEl) || echarts.init(mEl);
+        mChart.setOption({
+          grid:{left:56,right:16,top:30,bottom:40,containLabel:true},
+          color:[C_BLUE,C_RED],
+          legend:{top:6,right:8,icon:'roundRect',itemWidth:10,itemHeight:10},
+          tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:yFmt},
+          xAxis:{type:'category',data:months,axisTick:{show:false}},
+          yAxis:{type:'value',axisTick:{show:false},splitLine:{lineStyle:{color:'#eef2f7'}},axisLabel:{formatter:yFmt}},
+          series
+        });
+    
+        // Top20 面板（右侧）
+        const box = $('#chart-comp-top20'); if(!box) return;
+        const old = echarts.getInstanceByDom(box); if (old) old.dispose();
+        const list = Array.from({length:10},(_,i)=>({
+          name: ['a****集团','b****股份','c****有限公司','d****科技','e****材料',
+                 'f****电子','g****系统','h****动力','i****贸易','j****机电'][i],
+          amount: Math.round(2e7 + Math.random()*5e8)
+        })).sort((a,b)=>b.amount-a.amount);
+        const total = list.reduce((s,x)=>s+(+x.amount||0),0);
+        box.innerHTML = `
+          <div class="top20-card">
+            <div class="top20-head">
+              <div>
+                <span class="top20-title">Top20 交易总额</span>
+                <span class="top20-sub">（关联方子集）</span>
+              </div>
+              <div class="top20-total">¥${total.toLocaleString('zh-CN')}</div>
+            </div>
+            <div class="top20-list">
+              ${list.map((r,i)=>`
+                <div class="top20-row">
+                  <div class="rank-badge ${i<3?('top'+(i+1)):""}">${i+1}</div>
+                  <div class="cp-name" title="${r.name}">${r.name}</div>
+                  <div class="cp-amt">¥${(+r.amount).toLocaleString('zh-CN')}</div>
+                </div>`).join('')}
+            </div>
+          </div>`;
+      }
+    
+      /* ========== Tabs（交易总额 / 流入方 / 流出方） ========== */
+      $('#compTabs')?.addEventListener('click', e=>{
+        const t = e.target.closest('.tab'); if(!t) return;
+        $$('#compTabs .tab').forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');
+        renderCompCharts_Rel(t.dataset.mode || 'total');
+      });
+    
+      /* ========== 子表切换（交易明细 / 工商信息） ========== */
+      $('#tblSwitcher')?.addEventListener('click', e=>{
+        const btn = e.target.closest('.opt'); if(!btn) return;
+        $$('#tblSwitcher .opt').forEach(x=>{
+          const on = x===btn; x.classList.toggle('active', on);
+          x.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        const showDeal = btn.dataset.view==='deal';
+        $('#tbl-deal-wrap')?.classList.toggle('hide', !showDeal);
+        $('#tbl-corp-wrap')?.classList.toggle('hide',  showDeal);
+        // ← 如需切换时刷新/重置筛选，可在这里接你的 fill/重置逻辑
+      });
+    
+      /* ========== 表格上方提示的两个交互 ========== */
+      (function wireTips(){
+        // 造假数量（有真实值时调用 update）
+        const updateFraudCount = (n)=>{ const el = $('#fraudCount'); if(el) el.textContent = +n||0; };
+        updateFraudCount(0);
+    
+        // 点击“第三方配合造假名单.xlsx”
+        $('#fraudListFile')?.addEventListener('click', ()=>{
+          // TODO: 替换为真实下载/预览
+          console.log('打开：第三方配合造假名单.xlsx');
+        });
+      })();
+    
+      /* ========== 面板出现时渲染（你顶部大 Tab 切换时记得调用 onRelationShown） ========== */
+      function onRelationShown(){
+        renderCompCats_Rel();
+        // 默认选中“交易总额”
+        const active = $('#compTabs .tab.active') || $('#compTabs .tab[data-mode="total"]');
+        const mode   = active ? (active.dataset.mode || 'total') : 'total';
+        renderCompCharts_Rel(mode);
+        // 如需：刷新两张表
+        // if (typeof fillBizTables === 'function') fillBizTables();
+      }
+    
+      // 暴露给外部顶层 Tab 切换时调用
+      window.__onRelationShown = onRelationShown;
+    
+      // 如果当前进入页面时“已知关联方交易”就是激活 Tab，则立即渲染一次
+      const topTabs = document.getElementById('topTabs');
+      const activeTop = topTabs?.querySelector('.tab.active')?.dataset.top;
+      if (activeTop === 'relation') onRelationShown();
+    })();
     /* =============== Routine 区域 =============== */
     const routineMenu=document.getElementById('routineMenu');
     routineMenu.addEventListener('click',e=>{
