@@ -2438,18 +2438,147 @@
     function gotoDeal(p){currentPageDeal=p;fillBizTables()}
     function gotoCorp(p){currentPageCorp=p;fillBizTables()}
     
-    /* 表格顶部 Tab 切换（保持原交互） */
-    document.getElementById('listTabs').addEventListener('click',e=>{
-      const tab=e.target.closest('.table-tab'); if(!tab) return;
-      [...e.currentTarget.children].forEach(x=>x.classList.remove('active'));
-      tab.classList.add('active');
-      const showDeal = tab.dataset.view==='deal';
-      document.getElementById('tbl-deal-wrap').classList.toggle('hide',!showDeal);
-      document.getElementById('tbl-corp-wrap').classList.toggle('hide',showDeal);
-      document.getElementById('fType').selectedIndex=0;
-      bizFilteredList = companies.slice();
-      fillBizTables();
-    });
+    // ================== 刷新后记忆：顶层 Tab & 子表 Tab ==================
+    const STORAGE_KEYS = {
+      topTab:  'topTab.active',   // 账户总览 / 经营实质 / ...
+      listTab: 'biz.listTab'      // deal / corp
+    };
+    
+    // ================== 一次性初始化标记（惰性渲染） ==================
+    let __dealInited = false;
+    let __corpInited = false;
+    
+    // 你原有的全量数据/筛选数据（示例变量名，沿用你的）
+    window.bizFilteredList = window.bizFilteredList || (window.companies ? companies.slice() : []);
+    
+    // ================== 渲染函数（复用你现有逻辑） ==================
+    // 若你有更细分的两个函数（如 fillDealTable / fillCorpTable），可在此分别调用。
+    function renderDealOnce(){
+      if (__dealInited) return;
+      __dealInited = true;
+      // 不要在这里重置筛选（保持外部筛选状态）
+      // bizFilteredList = companies.slice();
+      if (typeof fillBizTables === 'function') fillBizTables();
+    }
+    
+    function renderCorpOnce(){
+      if (__corpInited) return;
+      __corpInited = true;
+      if (typeof fillBizTables === 'function') fillBizTables();
+    }
+    
+    // ================== 子表 Tab 切换（交易明细 / 工商信息） ==================
+    (function initListTabs(){
+      const listTabs = document.getElementById('listTabs');
+      if (!listTabs) return;
+    
+      listTabs.addEventListener('click', e=>{
+        const tab = e.target.closest('.table-tab'); 
+        if (!tab) return;
+    
+        // 激活样式
+        [...listTabs.children].forEach(x=>x.classList.remove('active'));
+        tab.classList.add('active');
+    
+        const showDeal = tab.dataset.view === 'deal';
+        document.getElementById('tbl-deal-wrap')?.classList.toggle('hide', !showDeal);
+        document.getElementById('tbl-corp-wrap')?.classList.toggle('hide',  showDeal);
+    
+        // 记忆当前子表
+        sessionStorage.setItem(STORAGE_KEYS.listTab, showDeal ? 'deal' : 'corp');
+    
+        // 惰性渲染一次
+        if (showDeal) renderDealOnce(); else renderCorpOnce();
+    
+        // 可能需要重算表头/宽度
+        setTimeout(()=>window.dispatchEvent(new Event('resize')), 0);
+      });
+    })();
+    
+    // ================== 经营实质页显示时，确保渲染当前可见子表 ==================
+    function onBizPageShown(){
+      // 恢复子表激活状态（若有记忆）
+      const saved = sessionStorage.getItem(STORAGE_KEYS.listTab);
+      if (saved === 'corp') {
+        // 切到“工商信息”
+        const corpTab = document.querySelector('#listTabs .table-tab[data-view="corp"]');
+        if (corpTab && !corpTab.classList.contains('active')) corpTab.click();
+      } else {
+        // 默认/记忆为“交易明细”
+        const dealTab = document.querySelector('#listTabs .table-tab[data-view="deal"]');
+        if (dealTab && !dealTab.classList.contains('active')) dealTab.click();
+      }
+    
+      // 如果上面的 click 没触发（例如初始就处于 active），手动保证渲染一次
+      const showDeal = !document.getElementById('tbl-deal-wrap')?.classList.contains('hide');
+      if (showDeal) renderDealOnce(); else renderCorpOnce();
+    }
+    
+    // ================== 顶部页面切换（带记忆） ==================
+    (function initTopTabs(){
+      const topTabs = document.getElementById('topTabs');
+      if (!topTabs) return;
+    
+      // 封装一个激活函数，方便首次恢复时用
+      function activateTopTab(key){
+        const target = topTabs.querySelector(`.tab[data-top="${key}"]`);
+        if (!target) return;
+    
+        // 若已为激活状态，直接处理业务逻辑
+        if (target.classList.contains('active')){
+          if (key === 'biz') onBizPageShown();
+          return;
+        }
+    
+        // 切换样式
+        [...topTabs.querySelectorAll('.tab')].forEach(t=>t.classList.remove('active'));
+        target.classList.add('active');
+    
+        // 显隐页面（按你现有的逻辑扩展其它 pane 即可）
+        document.getElementById('page-biz')?.classList.toggle('hide', key !== 'biz');
+        document.getElementById('page-routine')?.classList.toggle('hide', key !== 'routine');
+        document.getElementById('page-account')?.classList.toggle('hide', key !== 'account');
+        document.getElementById('page-relation')?.classList.toggle('hide', key !== 'relation');
+        document.getElementById('page-transaction')?.classList.toggle('hide', key !== 'transaction');
+        document.getElementById('page-statement')?.classList.toggle('hide', key !== 'statement');
+        document.getElementById('page-verify')?.classList.toggle('hide', key !== 'verify');
+    
+        // inkbar 若有函数可在此更新：updateInkbar();
+    
+        // 记忆当前顶层 Tab
+        sessionStorage.setItem(STORAGE_KEYS.topTab, key);
+    
+        // 进入经营实质时，确保子表就绪
+        if (key === 'biz') onBizPageShown();
+    
+        setTimeout(()=>window.dispatchEvent(new Event('resize')), 50);
+      }
+    
+      // 点击事件（替换你原来的 listener）
+      topTabs.addEventListener('click', e=>{
+        const t = e.target.closest('.tab'); 
+        if (!t) return;
+        activateTopTab(t.dataset.top);
+      });
+    
+      // 首次加载：恢复顶层 Tab
+      const savedTop = sessionStorage.getItem(STORAGE_KEYS.topTab);
+      if (savedTop){
+        activateTopTab(savedTop);
+      }else{
+        // 若页面初始 DOM 中已有一个 .tab.active，就以它为准；否则默认“经营实质”
+        const domActive = topTabs.querySelector('.tab.active');
+        activateTopTab(domActive?.dataset.top || 'biz');
+      }
+    })();
+    
+    // ================== 首次进入时，如果“经营实质”面板已经可见，确保渲染一次 ==================
+    (function ensureFirstPaint(){
+      const bizPane = document.getElementById('pane-biz');
+      if (bizPane && !bizPane.classList.contains('hide')) {
+        onBizPageShown();
+      }
+    })();
     
     
     /* 年度/类型筛选联动 */
