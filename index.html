@@ -1239,6 +1239,51 @@
   content: none !important;
 }
 
+    /* ====== 已知关联方面板（左侧蓝条 + 头部淡蓝条） ====== */
+#pane-relation .panel{
+  position:relative;
+  background:#fff;
+  border:1px solid #e6edf5;
+  border-radius:10px;
+  margin:12px 16px;
+  padding:12px 16px 16px 28px; /* 左侧留空间 */
+  box-shadow:0 2px 8px rgba(17,24,39,.04);
+}
+#pane-relation .panel::before{
+  content:"";
+  position:absolute;
+  left:10px; top:12px; bottom:12px;
+  width:4px; border-radius:4px;
+  background:#1e49e2;
+}
+
+/* 面板头部 */
+#pane-relation .panel-head{
+  display:flex; align-items:center; justify-content:space-between;
+  background:#f8fbff;
+  border:1px solid #e8f0ff;
+  border-radius:8px;
+  padding:8px 12px;
+  margin:-4px 0 10px;
+}
+.ph-left{ display:flex; align-items:center; gap:10px; }
+.ph-title{ font-size:15px; font-weight:700; color:#0f172a; }
+
+/* KPI 统一 */
+#pane-relation .kpi-row{
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:10px; margin:8px 0 4px;
+}
+#pane-relation .kpi{
+  background:#f8fafc; border:1px solid #eef2f7;
+  border-radius:10px; padding:10px 12px;
+}
+#pane-relation .kpi .k{ font-size:12px; color:#64748b; margin-bottom:2px; }
+#pane-relation .kpi .v{ font-weight:700; color:#0f172a; }
+
+/* 图表高度 */
+#pane-relation .chart-lg{ height:300px; }
+#pane-relation .chart-md{ height:260px; }
     
 </style>
 </head>
