@@ -857,6 +857,30 @@
 .top20-list::-webkit-scrollbar-thumb{ background:#e6edf5; border-radius:99px }
 .top20-list::-webkit-scrollbar-thumb:hover{ background:#d5dfef }
 
+/* —— 表格上方提示行 —— */
+.table-announce{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; padding:6px 2px 8px; margin:8px 0 6px;
+  font-size:13px; line-height:1.7; color:#334155;
+  /* 跟卡片/表格对齐：容器宽度由父级决定 */
+  width:100%; box-sizing:border-box;
+}
+.table-announce .left-msg{ flex:1 1 auto; min-width:0; }
+.table-announce .right-msg{ flex:0 0 auto; white-space:nowrap; color:#64748b; }
+
+/* 文件名高亮（蓝色） */
+.table-announce .file-link{
+  color:#2152ff; text-decoration:underline; cursor:pointer;
+}
+.table-announce .file-link:hover{ text-decoration:none; }
+
+/* 小屏时自动换行，右侧提示下移靠右 */
+@media (max-width: 1200px){
+  .table-announce{ flex-direction:column; align-items:flex-start; }
+  .table-announce .right-msg{ align-self:flex-end; }
+}
+
+
 /* 响应式：窄屏把总额卡堆到上面 */
 @media (max-width: 1280px){
   .top20-panel{ grid-template-columns: 1fr }
@@ -1531,6 +1555,18 @@
                 <button class="btn primary" id="btnAnalyze">生成分析结果</button>
                 <button class="btn primary" id="btnFlow">生成流水</button>
               </div>
+            </div>
+
+            <!-- 表格上方提示行：左侧 + 右侧各一条 -->
+            <div class="table-announce" id="tableAnnounce">
+              <div class="left-msg">
+                当前工作簿下总计有
+                <strong id="fraudCount" style="font-weight:700;">0</strong>
+                个对手方存在配合造假行为，请关注！
+                （AQPP-Audit 提供的全量配合造假清单见
+                <span class="file-link" id="fraudListFile">第三方配合造假名单.xlsx</span>）
+              </div>
+              <div class="right-msg">不勾选即默认基于全部记录导出</div>
             </div>
       
             <div id="tbl-deal-wrap">
@@ -2675,6 +2711,24 @@
     renderCompCats();
     renderCompCharts();
     fillBizTables
+
+    // —— 造假数量：如果你有真实统计，这里替换即可 —— //
+    function updateFraudCount(n){
+      var el = document.getElementById('fraudCount');
+      if (el) el.textContent = Number(n||0);
+    }
+    // 首次给个默认值（0）；你实际渲染完列表后可再次调用更新
+    updateFraudCount(0);
+    
+    // —— 点击“第三方配合造假名单.xlsx”：你可以改成实际下载/预览逻辑 —— //
+    document.getElementById('fraudListFile')?.addEventListener('click', ()=>{
+      // TODO: 换成真实行为（例如打开链接/调用下载接口）
+      // window.open('/files/第三方配合造假名单.xlsx', '_blank');
+      console.log('打开：第三方配合造假名单.xlsx');
+    });
+    
+    // —— 如果切换“交易明细/工商信息”或筛选后需要更新数量，调用 updateFraudCount(x) 即可 —— //
+    // 例如：在 fillBizTables() 末尾： updateFraudCount(calculatedCount);
 
     /* ===================== 增强版 ez：大数据量稳态渲染 ===================== */
     function ez(domId, option){
