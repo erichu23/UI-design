@@ -892,6 +892,46 @@
   }
 }
 
+/* 工具栏行：左右分布，自动换行 */
+.table-toolbar{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; margin:10px 0 8px;
+}
+
+/* 两段式切换（Segmented Control） */
+.seg{
+  display:inline-flex; gap:0; background:#f8fafc;
+  border:1px solid #e6edf5; border-radius:22px; padding:3px;
+}
+.seg .opt{
+  min-width:86px; padding:6px 14px; border:0; cursor:pointer;
+  background:transparent; color:#334155; font-size:13px; border-radius:16px;
+  transition:all .18s ease; outline:none;
+}
+.seg .opt:hover{ color:#1e40af; }
+.seg .opt.active{
+  background:#eef3ff; color:#2152ff; border:1px solid #d6e4ff;
+}
+
+/* 右侧按钮组（与你现有风格协调） */
+.btn-bar{ display:flex; gap:8px; flex-wrap:wrap; }
+.btn{
+  padding:6px 12px; border-radius:8px; font-size:13px; line-height:1;
+  border:1px solid #e6edf5; background:#fff; color:#0f172a; cursor:pointer;
+  transition:all .15s ease;
+}
+.btn:hover{ background:#f6f9ff; border-color:#d6e4ff; }
+.btn.ghost{ color:#2152ff; border-color:#d6e4ff; background:#fff; }
+.btn.ghost:hover{ background:#eef3ff; }
+.btn.primary{ color:#fff; background:#2152ff; border-color:#2152ff; }
+.btn.primary:hover{ filter:brightness(.96); }
+
+/* 收窄屏处理：按钮换行，切换始终在最左 */
+@media (max-width: 1200px){
+  .table-toolbar{ flex-direction:column; align-items:stretch; }
+  .btn-bar{ justify-content:flex-end; }
+}
+
 /* 图例 */
 .legend{display:flex;gap:14px;justify-content:flex-end;margin:6px 0 10px}
 .legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px}
@@ -1474,10 +1514,23 @@
               <div id="chart-comp-top20"  class="chart-md"></div>
             </div>
       
-            <!-- 你原有的“交易明细 / 工商信息”表格保持不动 -->
-            <div class="table-tabs" id="listTabs">
-              <div class="table-tab active" data-view="deal">交易明细</div>
-              <div class="table-tab" data-view="corp">工商信息</div>
+            <!-- 工具栏：左侧切换 / 右侧按钮组 -->
+            <div class="table-toolbar">
+              <!-- 左：两段式切换 -->
+              <div class="seg" id="tblSwitcher" role="tablist" aria-label="明细视图切换">
+                <button class="opt active" role="tab" aria-selected="true" data-view="deal">交易明细</button>
+                <button class="opt" role="tab" aria-selected="false" data-view="corp">工商信息</button>
+              </div>
+            
+              <!-- 右：功能按钮 -->
+              <div class="btn-bar">
+                <button class="btn ghost" id="btnQuick">快速查看勾选结果</button>
+                <button class="btn ghost" id="btnReset">重置筛选</button>
+                <button class="btn ghost" id="btnHead">自定义表头</button>
+                <button class="btn ghost" id="btnDist">流入流出分布</button>
+                <button class="btn primary" id="btnAnalyze">生成分析结果</button>
+                <button class="btn primary" id="btnFlow">生成流水</button>
+              </div>
             </div>
       
             <div id="tbl-deal-wrap">
@@ -2439,146 +2492,162 @@
     function gotoCorp(p){currentPageCorp=p;fillBizTables()}
     
     // ================== 刷新后记忆：顶层 Tab & 子表 Tab ==================
+    /* ================== 刷新记忆的 key ================== */
     const STORAGE_KEYS = {
-      topTab:  'topTab.active',   // 账户总览 / 经营实质 / ...
-      listTab: 'biz.listTab'      // deal / corp
+      topTab:  'topTab.active',   // 顶部：account/biz/...
+      listTab: 'biz.listTab'      // 子表：deal/corp
     };
     
-    // ================== 一次性初始化标记（惰性渲染） ==================
+    /* ================== 惰性渲染开关 ================== */
     let __dealInited = false;
     let __corpInited = false;
     
-    // 你原有的全量数据/筛选数据（示例变量名，沿用你的）
+    /* 若外部已准备好 companies / bizFilteredList，则复用 */
     window.bizFilteredList = window.bizFilteredList || (window.companies ? companies.slice() : []);
     
-    // ================== 渲染函数（复用你现有逻辑） ==================
-    // 若你有更细分的两个函数（如 fillDealTable / fillCorpTable），可在此分别调用。
+    /* ================== 渲染函数（复用你自己的） ================== */
     function renderDealOnce(){
-      if (__dealInited) return;
-      __dealInited = true;
-      // 不要在这里重置筛选（保持外部筛选状态）
-      // bizFilteredList = companies.slice();
+      if (__dealInited) return; __dealInited = true;
       if (typeof fillBizTables === 'function') fillBizTables();
     }
-    
     function renderCorpOnce(){
-      if (__corpInited) return;
-      __corpInited = true;
+      if (__corpInited) return; __corpInited = true;
       if (typeof fillBizTables === 'function') fillBizTables();
     }
     
-    // ================== 子表 Tab 切换（交易明细 / 工商信息） ==================
+    /* ================== inkbar 同步（可选） ================== */
+    function updateInkbar(){
+      const bar  = document.getElementById('inkbar');
+      const tabs = document.getElementById('topTabs');
+      if (!bar || !tabs) return;
+      const act = tabs.querySelector('.tab.active');
+      if (!act) return;
+      const rb = tabs.getBoundingClientRect();
+      const ra = act.getBoundingClientRect();
+      bar.style.left  = (ra.left - rb.left + tabs.scrollLeft) + 'px';
+      bar.style.width = ra.width + 'px';
+    }
+    
+    /* ================== 子表切换（两种入口都支持） ================== */
+    function switchSubTable(view){ // view: 'deal' | 'corp'
+      const showDeal = view === 'deal';
+      document.getElementById('tbl-deal-wrap')?.classList.toggle('hide', !showDeal);
+      document.getElementById('tbl-corp-wrap')?.classList.toggle('hide',  showDeal);
+    
+      // 记忆当前子表
+      sessionStorage.setItem(STORAGE_KEYS.listTab, view);
+    
+      // 惰性渲染一次
+      if (showDeal) renderDealOnce(); else renderCorpOnce();
+    
+      // 统一“视觉激活态”：旧 tabs
+      const listTabs = document.getElementById('listTabs');
+      if (listTabs){
+        listTabs.querySelectorAll('.table-tab').forEach(x=>{
+          x.classList.toggle('active', x.dataset.view === view);
+        });
+      }
+      // 新的切换条：#tblSwitcher
+      const switcher = document.getElementById('tblSwitcher');
+      if (switcher){
+        switcher.querySelectorAll('.opt').forEach(x=>{
+          const on = x.dataset.view === view;
+          x.classList.toggle('active', on);
+          x.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+      }
+    
+      // 如果你的表格需要重算列宽
+      setTimeout(()=>window.dispatchEvent(new Event('resize')), 0);
+    }
+    
+    /* —— 旧的顶部子表 Tab（可留可删） —— */
     (function initListTabs(){
       const listTabs = document.getElementById('listTabs');
       if (!listTabs) return;
-    
       listTabs.addEventListener('click', e=>{
-        const tab = e.target.closest('.table-tab'); 
-        if (!tab) return;
-    
-        // 激活样式
-        [...listTabs.children].forEach(x=>x.classList.remove('active'));
-        tab.classList.add('active');
-    
-        const showDeal = tab.dataset.view === 'deal';
-        document.getElementById('tbl-deal-wrap')?.classList.toggle('hide', !showDeal);
-        document.getElementById('tbl-corp-wrap')?.classList.toggle('hide',  showDeal);
-    
-        // 记忆当前子表
-        sessionStorage.setItem(STORAGE_KEYS.listTab, showDeal ? 'deal' : 'corp');
-    
-        // 惰性渲染一次
-        if (showDeal) renderDealOnce(); else renderCorpOnce();
-    
-        // 可能需要重算表头/宽度
-        setTimeout(()=>window.dispatchEvent(new Event('resize')), 0);
+        const tab = e.target.closest('.table-tab'); if(!tab) return;
+        switchSubTable(tab.dataset.view === 'corp' ? 'corp' : 'deal');
       });
     })();
     
-    // ================== 经营实质页显示时，确保渲染当前可见子表 ==================
-    function onBizPageShown(){
-      // 恢复子表激活状态（若有记忆）
-      const saved = sessionStorage.getItem(STORAGE_KEYS.listTab);
-      if (saved === 'corp') {
-        // 切到“工商信息”
-        const corpTab = document.querySelector('#listTabs .table-tab[data-view="corp"]');
-        if (corpTab && !corpTab.classList.contains('active')) corpTab.click();
-      } else {
-        // 默认/记忆为“交易明细”
-        const dealTab = document.querySelector('#listTabs .table-tab[data-view="deal"]');
-        if (dealTab && !dealTab.classList.contains('active')) dealTab.click();
-      }
+    /* —— 新的右侧“左右切换条” —— */
+    (function initSwitcher(){
+      const wrap = document.getElementById('tblSwitcher');
+      if (!wrap) return;
+      wrap.addEventListener('click', e=>{
+        const btn = e.target.closest('.opt'); if(!btn) return;
     
-      // 如果上面的 click 没触发（例如初始就处于 active），手动保证渲染一次
-      const showDeal = !document.getElementById('tbl-deal-wrap')?.classList.contains('hide');
-      if (showDeal) renderDealOnce(); else renderCorpOnce();
+        // 如需重置筛选，放开下面两行；否则保持当前筛选状态
+        // const sel = document.getElementById('fType'); if (sel) sel.selectedIndex = 0;
+        // window.bizFilteredList = (window.companies || []).slice();
+    
+        if (typeof window.fillBizTables === 'function') window.fillBizTables(); // 可留作刷新
+        switchSubTable(btn.dataset.view === 'corp' ? 'corp' : 'deal');
+      });
+    })();
+    
+    /* ================== 经营实质页显示时，按记忆恢复子表 ================== */
+    function onBizPageShown(){
+      const saved = sessionStorage.getItem(STORAGE_KEYS.listTab);
+      switchSubTable(saved === 'corp' ? 'corp' : 'deal');
     }
     
-    // ================== 顶部页面切换（带记忆） ==================
+    /* ================== 顶部页面切换（带记忆 + 首次恢复） ================== */
     (function initTopTabs(){
       const topTabs = document.getElementById('topTabs');
       if (!topTabs) return;
     
-      // 封装一个激活函数，方便首次恢复时用
+      function showPane(key){
+        document.getElementById('page-account')   ?.classList.toggle('hide', key !== 'account');
+        document.getElementById('page-biz')       ?.classList.toggle('hide', key !== 'biz');
+        document.getElementById('page-relation')  ?.classList.toggle('hide', key !== 'relation');
+        document.getElementById('page-transaction')?.classList.toggle('hide', key !== 'transaction');
+        document.getElementById('page-routine')   ?.classList.toggle('hide', key !== 'routine');
+        document.getElementById('page-statement') ?.classList.toggle('hide', key !== 'statement');
+        document.getElementById('page-verify')    ?.classList.toggle('hide', key !== 'verify');
+      }
+    
       function activateTopTab(key){
         const target = topTabs.querySelector(`.tab[data-top="${key}"]`);
         if (!target) return;
     
-        // 若已为激活状态，直接处理业务逻辑
-        if (target.classList.contains('active')){
-          if (key === 'biz') onBizPageShown();
-          return;
-        }
-    
-        // 切换样式
-        [...topTabs.querySelectorAll('.tab')].forEach(t=>t.classList.remove('active'));
+        topTabs.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
         target.classList.add('active');
     
-        // 显隐页面（按你现有的逻辑扩展其它 pane 即可）
-        document.getElementById('page-biz')?.classList.toggle('hide', key !== 'biz');
-        document.getElementById('page-routine')?.classList.toggle('hide', key !== 'routine');
-        document.getElementById('page-account')?.classList.toggle('hide', key !== 'account');
-        document.getElementById('page-relation')?.classList.toggle('hide', key !== 'relation');
-        document.getElementById('page-transaction')?.classList.toggle('hide', key !== 'transaction');
-        document.getElementById('page-statement')?.classList.toggle('hide', key !== 'statement');
-        document.getElementById('page-verify')?.classList.toggle('hide', key !== 'verify');
-    
-        // inkbar 若有函数可在此更新：updateInkbar();
-    
-        // 记忆当前顶层 Tab
+        showPane(key);
         sessionStorage.setItem(STORAGE_KEYS.topTab, key);
+        updateInkbar();
     
-        // 进入经营实质时，确保子表就绪
         if (key === 'biz') onBizPageShown();
-    
-        setTimeout(()=>window.dispatchEvent(new Event('resize')), 50);
       }
     
-      // 点击事件（替换你原来的 listener）
+      // 点击切换
       topTabs.addEventListener('click', e=>{
-        const t = e.target.closest('.tab'); 
-        if (!t) return;
-        activateTopTab(t.dataset.top);
+        const t = e.target.closest('.tab'); if(!t) return;
+        const key = t.dataset.top; if(!key) return;
+        activateTopTab(key);
       });
     
-      // 首次加载：恢复顶层 Tab
-      const savedTop = sessionStorage.getItem(STORAGE_KEYS.topTab);
-      if (savedTop){
-        activateTopTab(savedTop);
-      }else{
-        // 若页面初始 DOM 中已有一个 .tab.active，就以它为准；否则默认“经营实质”
-        const domActive = topTabs.querySelector('.tab.active');
-        activateTopTab(domActive?.dataset.top || 'biz');
-      }
+      // 首次恢复
+      const savedKey  = sessionStorage.getItem(STORAGE_KEYS.topTab);
+      const domActive = topTabs.querySelector('.tab.active');
+      const initialKey = savedKey || domActive?.dataset.top || 'biz';
+      activateTopTab(initialKey);
+    
+      setTimeout(updateInkbar, 0);
     })();
     
-    // ================== 首次进入时，如果“经营实质”面板已经可见，确保渲染一次 ==================
-    (function ensureFirstPaint(){
-      const bizPane = document.getElementById('pane-biz');
-      if (bizPane && !bizPane.classList.contains('hide')) {
-        onBizPageShown();
-      }
-    })();
+    /* ================== 窗口尺寸变化时同步 inkbar ================== */
+    window.addEventListener('resize', updateInkbar);
+    
+    /* ================== 六个操作按钮：占位监听（替换成真实逻辑） ================== */
+    document.getElementById('btnQuick')  ?.addEventListener('click', ()=>console.log('快速查看勾选结果'));
+    document.getElementById('btnReset')  ?.addEventListener('click', ()=>console.log('重置筛选'));
+    document.getElementById('btnHead')   ?.addEventListener('click', ()=>console.log('自定义表头'));
+    document.getElementById('btnDist')   ?.addEventListener('click', ()=>console.log('流入流出分布'));
+    document.getElementById('btnAnalyze')?.addEventListener('click', ()=>console.log('生成分析结果'));
+    document.getElementById('btnFlow')   ?.addEventListener('click', ()=>console.log('生成流水'));
     
     
     /* 年度/类型筛选联动 */
