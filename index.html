@@ -1386,44 +1386,44 @@
 /* 右侧主内容 */
 #pane-routine main{ flex:1 1 auto; min-width:0; }
 
-/* ===== 可收起侧栏的竖条 bar ===== */
-.side-divider{
-  width:6px;
-  cursor:pointer;
-  background:#dbeafe; /* 淡蓝 */
+/* 左侧栏内部右侧竖线收起按钮 */
+#pane-routine .sidebar-pane{
   position:relative;
-  transition:0.2s;
+  border-right:2px solid #1e40af;
+}
+
+/* 内贴式箭头小按钮 */
+.sidebar-collapse-btn{
+  position:absolute;
+  top:12px;
+  right:-10px;       /* 让箭头正好贴在竖线右侧 */
+  width:20px;
+  height:20px;
+  border-radius:4px;
+  background:#fff;
+  border:1px solid #d1d5db;
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
   display:flex;
   align-items:center;
   justify-content:center;
-}
-.side-divider:hover{
-  background:#bfdbfe;
-}
-
-/* 按钮样式 */
-.divider-btn{
-  position:absolute;
-  right:-12px;
-  width:22px; height:22px;
-  border-radius:4px;
-  background:#fff;
-  border:1px solid #cbd5e1;
-  box-shadow:0 1px 4px rgba(0,0,0,.07);
-  display:flex; align-items:center; justify-content:center;
-  font-size:12px; color:#475569;
   cursor:pointer;
+  font-size:12px;
+  color:#475569;
+}
+.sidebar-collapse-btn::before{
+  content:'◀';  /* 收起状态箭头 */
 }
 
-/* 折叠状态 */
+/* 折叠状态外观变化 */
 #pane-routine .split.is-collapsed .sidebar-pane{
-  width:0; min-width:0; padding:0; overflow:hidden;
-  border:none;
+  width:0; min-width:0; padding:0; overflow:hidden; border:none;
 }
-#pane-routine .split.is-collapsed .side-divider .divider-btn{
-  transform:rotate(180deg);
+#pane-routine .split.is-collapsed .sidebar-collapse-btn{
+  right:-10px;
 }
-
+#pane-routine .split.is-collapsed .sidebar-collapse-btn::before{
+  content:'▶';  /* 展开状态箭头 */
+}
 
 
 /* 窄屏时 KPI 降为两列 */
@@ -2217,10 +2217,6 @@
           <div class="split">
             <!-- 左侧菜单 -->
             <aside class="sidebar-pane">
-              <!-- 可收起的竖条 + 按钮 -->
-              <div class="side-divider" id="dividerToggle">
-                <span class="divider-btn"><</span>
-              </div>
               <div class="menu" id="routineMenu">
                 <div class="item active" data-code="2.1">1. 经营时间较短</div>
                 <div class="item" data-code="2.2">2. 社保缴纳人数较少</div>
@@ -2233,6 +2229,7 @@
                 <div class="item" data-code="2.3">9. 既是客户又是供应商，或受同一实际控制人控制</div>
               </div>
               <div class="small">说明：切换 Routine 仅刷新右侧内容。</div>
+              <div class="sidebar-collapse-btn"></div>
             </aside>
 
             <main>
@@ -3716,7 +3713,7 @@
     });
 
     const split = document.querySelector('#routineSplit');
-    const btn = document.querySelector('#dividerToggle .divider-btn');
+    const btn = document.querySelector('.sidebar-collapse-btn');
     
     btn.addEventListener('click', () => {
       split.classList.toggle('is-collapsed');
