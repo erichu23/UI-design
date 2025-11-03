@@ -1400,22 +1400,54 @@
 #pane-routine .split.is-collapsed .sidebar-pane *{ display:none !important; }
 #pane-routine .split.is-collapsed main{ flex:1 1 100%; min-width:0; }
 
-/* 顶部收起按钮（在侧栏内部顶部） */
+/* ==== 左侧菜单顶部收起按钮（美化版） ==== */
 .sidebar-topbar{
-  display:flex; justify-content:flex-end; padding:8px;
-}
-.sidebar-toggle{
-  font-size:12px; padding:4px 10px; cursor:pointer;
+  display:flex; justify-content:flex-end; 
+  padding:6px 8px;
+  border-bottom:1px solid #eef2f7;
 }
 
-/* 折叠后靠左的“展开侧栏”小按钮 */
-.edge-toggle{
-  position:absolute; left:0; top:10px; transform:translateX(-50%);
-  display:none; cursor:pointer; padding:4px 10px;
-  background:#fff; border:1px solid #ddd; border-radius:4px;
-  z-index:20; user-select:none;
+.sidebar-toggle{
+  display:flex; align-items:center; justify-content:center;
+  width:26px; height:26px;
+  background:#f8fafc;
+  border:1px solid #d1d5db;
+  border-radius:6px;
+  cursor:pointer;
+  color:#475569;
+  font-size:13px;
+  transition:0.15s;
 }
-#pane-routine .split.is-collapsed .edge-toggle{ display:block; }
+.sidebar-toggle:hover{
+  background:#e2e8f0;
+}
+
+/* ==== 折叠后的展开按钮（细竖条 + 图标） ==== */
+.edge-toggle{
+  position:absolute;
+  top:80px; left:0;
+  transform:translateX(-50%);
+  display:none;
+  cursor:pointer;
+  padding:6px 10px;
+  background:#fff;
+  border:1px solid #d1d5db;
+  border-radius:6px;
+  color:#475569;
+  font-size:13px;
+  box-shadow:0 2px 6px rgba(0,0,0,.05);
+}
+#pane-routine .split.is-collapsed .edge-toggle{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* ==== 折叠时主面板自动铺满 ==== */
+#pane-routine .split.is-collapsed main{
+  flex:1 1 100%;
+  min-width:0;
+}
 
 /* 窄屏时 KPI 降为两列 */
 @media (max-width:1280px){
@@ -2203,7 +2235,7 @@
             <!-- 左侧菜单 -->
             <aside class="sidebar-pane">
               <div class="sidebar-topbar">
-               <button class="sidebar-toggle" id="btnCollapseSidebar">收起 ◀</button>
+                <div class="sidebar-toggle">⟨</div>
               </div>
               <div class="menu" id="routineMenu">
                 <div class="item active" data-code="2.1">1. 经营时间较短</div>
@@ -2219,7 +2251,7 @@
               <div class="small">说明：切换 Routine 仅刷新右侧内容。</div>
             </aside>
 
-            <button class="edge-toggle" id="btnExpandSidebar">▶</button>
+            <div class="edge-toggle">⟩</div>
             <main>
               <!-- 顶部：标题 + 自定义四段区间过滤 -->
               <div class="card">
