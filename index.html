@@ -1284,6 +1284,61 @@
 /* 图表高度 */
 #pane-relation .chart-lg{ height:300px; }
 #pane-relation .chart-md{ height:260px; }
+
+/* ===== Routine 面板基础排版 ===== */
+#pane-routine .grid-2{
+  display:grid; grid-template-columns: 2fr 1fr; gap:16px;
+}
+#pane-routine .card{ background:#fff; border:1px solid #e5e7eb; border-radius:10px; }
+#pane-routine .card .head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; border-bottom:1px solid #eef2f7;
+}
+#pane-routine .card .title{ font-weight:600; color:#0f172a }
+#pane-routine .card .content{ padding:14px 16px; }
+
+/* 顶部筛选条 */
+#pane-routine .filters{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+#pane-routine .filters .input, 
+#pane-routine .filters .select{
+  height:32px; padding:0 10px; border:1px solid #dbe3f1; border-radius:6px; background:#fff;
+}
+#pane-routine .filters .range-sep{ color:#94a3b8; padding:0 4px }
+
+/* ===== 4 色指标卡（红/橙/蓝/绿） ===== */
+#topStrip{ display:grid; grid-template-columns: repeat(4,1fr); gap:12px; }
+.kpi-card{
+  border-radius:10px; padding:14px 16px; color:#fff;
+  background: var(--kpi-color, #2563eb);
+  box-shadow: 0 1px 0 rgba(0,0,0,.03) inset;
+}
+.kpi-title{ font-size:13px; opacity:.9; margin-bottom:6px }
+.kpi-num{ font-size:22px; font-weight:700; line-height:1.2; margin-bottom:4px }
+.kpi-sub{ font-size:12px; opacity:.9 }
+
+/* 卡片颜色：红 橙 蓝 绿（按 renderRoutineStrip 顺序）*/
+.kpi-card:nth-child(1){ --kpi-color:#ef4444; } /* 红 */
+.kpi-card:nth-child(2){ --kpi-color:#f59e0b; } /* 橙 */
+.kpi-card:nth-child(3){ --kpi-color:#2563eb; } /* 蓝 */
+.kpi-card:nth-child(4){ --kpi-color:#16a34a; } /* 绿 */
+
+/* ===== 图表容器必须有高度 ===== */
+.chart{ width:100%; height:320px; }          /* 散点默认高度 */
+#chart-box{ height:320px; }                  /* 右侧箱线图 */
+#chart-donut{ height:220px; }                /* 右侧环形图 */
+
+/* ===== Top20 表格基础样式 ===== */
+.table{ width:100%; border-collapse:collapse; }
+.table th, .table td{ padding:10px 8px; border-bottom:1px solid #eef2f7; white-space:nowrap; }
+.table thead th{ background:#f6f8fe; color:#334155; font-weight:600; position:sticky; top:0; z-index:1 }
+.color-dot{ display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:middle }
+
+/* 分页按钮 */
+.pagination{ display:flex; gap:6px; padding:10px 0 }
+.btn{ height:32px; padding:0 12px; border:1px solid #d0d7e2; background:#fff; border-radius:6px; cursor:pointer }
+.btn:hover{ background:#f8fafc }
+.btn-primary{ background:#2152ff; color:#fff; border-color:#2152ff }
+.btn.ghost{ background:#fff; color:#2152ff; border-color:#bfd1ff }
     
 </style>
 </head>
@@ -3541,6 +3596,12 @@
       // 初始进入
       renderRoutine('2.1');
     })();
+
+    window.addEventListener('resize', ()=>{
+      try{ echarts.getInstanceByDom(document.getElementById('chart-scatter'))?.resize(); }catch(e){}
+      try{ echarts.getInstanceByDom(document.getElementById('chart-box'))?.resize(); }catch(e){}
+      try{ echarts.getInstanceByDom(document.getElementById('chart-donut'))?.resize(); }catch(e){}
+    });
     
 
     /* ===== 顶部页面切换 + 刷新保持当前页 ===== */
