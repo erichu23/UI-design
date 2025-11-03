@@ -1287,11 +1287,11 @@
 
 /* ===== Routine 面板基础排版 ===== */
 #pane-routine .grid-2{
-  display: grid;
-  grid-template-columns: 2fr 1fr;
+  display:grid;
+  grid-template-columns:2fr 1fr;
   gap:16px;
 }
-#pane-routine .grid-2 > *{ min-width:0; }            /* 防止被内部内容撑爆 */
+#pane-routine .grid-2 > *{ min-width:0; }
 
 #pane-routine .card{
   background:#fff;
@@ -1318,18 +1318,16 @@
 
 /* ===== 4 色指标卡（红/橙/蓝/绿） ===== */
 #topStrip{
-  display:grid; grid-template-columns: repeat(4,1fr); gap:12px;
+  display:grid; grid-template-columns:repeat(4,1fr); gap:12px;
 }
 .kpi-card{
   border-radius:10px; padding:14px 16px; color:#fff;
-  background: var(--kpi-color, #2563eb);
-  box-shadow: 0 1px 0 rgba(0,0,0,.03) inset;
+  background:var(--kpi-color,#2563eb);
+  box-shadow:0 1px 0 rgba(0,0,0,.03) inset;
 }
 .kpi-title{ font-size:13px; opacity:.9; margin-bottom:6px }
 .kpi-num{ font-size:22px; font-weight:700; line-height:1.2; margin-bottom:4px }
 .kpi-sub{ font-size:12px; opacity:.9 }
-
-/* 卡片颜色顺序：红 橙 蓝 绿 */
 .kpi-card:nth-child(1){ --kpi-color:#ef4444; }
 .kpi-card:nth-child(2){ --kpi-color:#f59e0b; }
 .kpi-card:nth-child(3){ --kpi-color:#2563eb; }
@@ -1354,10 +1352,8 @@
   margin-right:6px; vertical-align:middle;
 }
 
-/* 分页按钮 */
+/* 分页按钮 & 通用按钮 */
 .pagination{ display:flex; gap:6px; padding:10px 0 }
-
-/* 统一按钮样式（避免重复定义冲突） */
 .btn{
   height:32px; padding:0 12px; border:1px solid #d1d5db;
   background:#fff; border-radius:6px; cursor:pointer;
@@ -1378,20 +1374,17 @@
 .routine-toolbar .rt-title{ font-size:16px; font-weight:600; color:#111827; }
 
 /* 主体分栏 */
-#pane-routine .split{
-  position:relative; display:flex; gap:16px;
-}
+#pane-routine .split{ position:relative; display:flex; gap:16px; }
 
 /* 侧栏（默认） */
 #pane-routine .sidebar-pane{
-  width:260px; min-width:260px; transition:0.2s;
+  position:relative;
+  width:260px; min-width:260px; transition:.2s;
   border-right:1px solid #eef2f7;
 }
 
-/* 右侧主内容必须可收缩&铺满 */
-#pane-routine main{
-  flex:1 1 auto; min-width:0;
-}
+/* 右侧主内容 */
+#pane-routine main{ flex:1 1 auto; min-width:0; }
 
 /* 折叠状态 */
 #pane-routine .split.is-collapsed .sidebar-pane{
@@ -1400,58 +1393,40 @@
 #pane-routine .split.is-collapsed .sidebar-pane *{ display:none !important; }
 #pane-routine .split.is-collapsed main{ flex:1 1 100%; min-width:0; }
 
-/* ==== 左侧菜单顶部收起按钮（美化版） ==== */
-.sidebar-topbar{
-  display:flex; justify-content:flex-end; 
-  padding:6px 8px;
-  border-bottom:1px solid #eef2f7;
+/* ==== 漂亮的“悬浮圆”收起按钮 + 护栏展开按钮 ==== */
+/* 圆形悬浮（收起） */
+.sbar-fab{
+  position:absolute; top:12px; right:-13px;
+  width:26px; height:26px; border-radius:50%;
+  border:1px solid #d5dbe5; background:#fff;
+  box-shadow:0 4px 10px rgba(17,24,39,.08);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:transform .15s ease, box-shadow .15s ease, right .15s ease;
 }
+.sbar-fab:hover{ box-shadow:0 6px 14px rgba(17,24,39,.12); transform:translateX(1px); }
+.sbar-fab::before{ content:'⟨'; font-size:14px; line-height:1; color:#475569; }
 
-.sidebar-toggle{
-  display:flex; align-items:center; justify-content:center;
-  width:26px; height:26px;
-  background:#f8fafc;
-  border:1px solid #d1d5db;
-  border-radius:6px;
-  cursor:pointer;
-  color:#475569;
-  font-size:13px;
-  transition:0.15s;
+/* 护栏展开 */
+.sbar-rail{
+  position:absolute; left:0; top:80px; transform:translateX(-50%);
+  width:26px; height:26px; border-radius:50%;
+  border:1px solid #d5dbe5; background:#fff;
+  box-shadow:0 4px 10px rgba(17,24,39,.08);
+  cursor:pointer; display:none; align-items:center; justify-content:center;
 }
-.sidebar-toggle:hover{
-  background:#e2e8f0;
-}
+.sbar-rail::before{ content:'⟩'; font-size:14px; line-height:1; color:#475569; }
 
-/* ==== 折叠后的展开按钮（细竖条 + 图标） ==== */
-.edge-toggle{
-  position:absolute;
-  top:80px; left:0;
-  transform:translateX(-50%);
-  display:none;
-  cursor:pointer;
-  padding:6px 10px;
-  background:#fff;
-  border:1px solid #d1d5db;
-  border-radius:6px;
-  color:#475569;
-  font-size:13px;
-  box-shadow:0 2px 6px rgba(0,0,0,.05);
-}
-#pane-routine .split.is-collapsed .edge-toggle{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-/* ==== 折叠时主面板自动铺满 ==== */
-#pane-routine .split.is-collapsed main{
-  flex:1 1 100%;
-  min-width:0;
-}
+#pane-routine .split.is-collapsed .sbar-rail{ display:flex; }
 
 /* 窄屏时 KPI 降为两列 */
 @media (max-width:1280px){
-  #topStrip{ grid-template-columns: repeat(2,1fr); }
+  #topStrip{ grid-template-columns:repeat(2,1fr); }
+}
+
+/* 深色（可选） */
+@media (prefers-color-scheme: dark){
+  .sbar-fab, .sbar-rail{ background:#0b1220; border-color:#1f2a44; }
+  .sbar-fab::before, .sbar-rail::before{ color:#c7d2fe; }
 }
     
 </style>
@@ -2234,9 +2209,7 @@
           <div class="split">
             <!-- 左侧菜单 -->
             <aside class="sidebar-pane">
-              <div class="sidebar-topbar">
-                <div class="sidebar-toggle">⟨</div>
-              </div>
+              <button class="sbar-fab" id="btnCollapse" aria-label="收起侧栏"></button>
               <div class="menu" id="routineMenu">
                 <div class="item active" data-code="2.1">1. 经营时间较短</div>
                 <div class="item" data-code="2.2">2. 社保缴纳人数较少</div>
@@ -2251,7 +2224,7 @@
               <div class="small">说明：切换 Routine 仅刷新右侧内容。</div>
             </aside>
 
-            <div class="edge-toggle">⟩</div>
+            <button class="sbar-rail" id="btnExpand" aria-label="展开侧栏"></button>
             <main>
               <!-- 顶部：标题 + 自定义四段区间过滤 -->
               <div class="card">
@@ -3732,13 +3705,9 @@
       try{ echarts.getInstanceByDom(document.getElementById('chart-donut'))?.resize(); }catch(e){}
     });
 
-    const split = document.querySelector('#pane-routine .split');
-    document.getElementById('btnCollapseSidebar').onclick = ()=>{
-      split.classList.add('is-collapsed');
-    };
-    document.getElementById('btnExpandSidebar').onclick = ()=>{
-      split.classList.remove('is-collapsed');
-    };
+    const splitEl = document.querySelector('#pane-routine .split');
+    document.getElementById('btnCollapse')?.addEventListener('click', ()=> splitEl.classList.add('is-collapsed'));
+    document.getElementById('btnExpand')?.addEventListener('click',   ()=> splitEl.classList.remove('is-collapsed'));
 
     /* ===== 顶部页面切换 + 刷新保持当前页 ===== */
     /* ===== 顶部页面切换 + 刷新保持当前页 ===== */
