@@ -3153,6 +3153,394 @@
 
     
     /* =============== Routine 区域 =============== */
+    (function(){
+      "use strict";
+    
+      /* ---------- 防护垫片（若全局已有则复用） ---------- */
+      // 金额万单位格式化
+      window.fmtWan = window.fmtWan || (n => {
+        const v = Number(n)||0;
+        // 你的数据里 total 已是“万”就直接格式化；若是“元”，这里可改成 v/1e4
+        return v.toLocaleString('zh-CN');
+      });
+    
+      // 分页
+      window.paginate = window.paginate || function(arr, page, size){
+        const ps = Number(size)||10;
+        const p  = Math.max(1, Number(page)||1);
+        return (arr||[]).slice((p-1)*ps, p*ps);
+      };
+    
+      // 分页按钮渲染
+      window.renderPagination = window.renderPagination || function(eleId, total, current, handler){
+        const ps = 10;
+        const pages = Math.max(1, Math.ceil((total||0)/ps));
+        const host = document.getElementById(eleId);
+        if(!host) return;
+        let html = '';
+        for(let i=1;i<=pages;i++){
+          html += `<button class="btn ${i===current?'btn-primary':''}" onclick="${handler}(${i})">${i}</button>`;
+        }
+        host.innerHTML = html;
+      };
+    
+      // ECharts 便捷渲染
+      window.ez = window.ez || function(domId,opt){
+        if (typeof echarts === 'undefined') {
+          console.error('[Routine] echarts 未加载');
+          return null;
+        }
+        const el = document.getElementById(domId);
+        if(!el) return null;
+        const inst = echarts.getInstanceByDom(el) || echarts.init(el, null, {renderer:'canvas', useDirtyRect:true});
+        inst.setOption(opt, {notMerge:true, lazyUpdate:true});
+        return inst;
+      };
+    
+      /* ---------- 默认区间（系统定义） ---------- */
+      const ROUTINE_DEFAULTS = {
+        '2.1': { years: [1, 3, 5], labels: ['1年内','1-3年','3-5年','5年以上'] },
+        '2.2': { breaks:[50,100,200], labels: ['<50','50-99','100-199','≥200'] }
+      };
+    
+      /* ---------- 全局状态 ---------- */
+      const routineState = {
+        code: '2.1',
+        labels: [],
+        breaks: [],
+        list: (window.companies||[]).slice()
+      };
+    
+      /* ---------- 工具 ---------- */
+      function daysSince(dateStr){
+        if (!dateStr) return 0;
+        const d = new Date(String(dateStr).replace(/-/g,'/'));
+        if (isNaN(d)) return 0;
+        return Math.max(0, Math.floor((Date.now()-d.getTime())/86400000));
+      }
+      function mapRecord(raw){
+        return {
+          id: raw.id,
+          name: raw.name,
+          ctype: raw.ctype,
+          relation: raw.relation,
+          sales: raw.sales,
+          purchase: raw.purchase,
+          job: raw.job,
+          industry: raw.industry,
+          capital: raw.capital,
+          foundedDate: raw.foundedDate || raw.startDate || '',
+          employees: Number(raw.employees)||0,
+          type: raw.type,
+          txCnt: Number(raw.txCnt)||0,
+          inflow: Number(raw.inflow)||0,
+          outflow: Number(raw.outflow)||0,
+          total: Number(raw.total)||0,
+          foundedDays: raw.foundedDays ?? daysSince(raw.startDate || raw.foundedDate)
+        };
+      }
+    
+      /* ---------- 过滤区（仅自定义四段 + 恢复默认） ---------- */
+      function renderSimpleFilters(code){
+        const rf = document.getElementById('routineFilters');
+        if (!rf) return;
+    
+        if (code==='2.1'){
+          const def = ROUTINE_DEFAULTS['2.1'];
+          rf.innerHTML = `
+            <label>自定义区间（单位：年）</label>
+            <input class="input" id="b1" type="number" step="0.1" value="${def.years[0]}">
+            <span class="range-sep">/</span>
+            <input class="input" id="b2" type="number" step="0.1" value="${def.years[1]}">
+            <span class="range-sep">/</span>
+            <input class="input" id="b3" type="number" step="0.1" value="${def.years[2]}">
+            <button class="btn" id="btnApplyRoutine">应用</button>
+            <button class="btn ghost" id="btnResetDefault">恢复默认</button>`;
+        } else if (code==='2.2'){
+          const def = ROUTINE_DEFAULTS['2.2'];
+          rf.innerHTML = `
+            <label>自定义区间（单位：人）</label>
+            <input class="input" id="b1" type="number" step="1" value="${def.breaks[0]}">
+            <span class="range-sep">/</span>
+            <input class="input" id="b2" type="number" step="1" value="${def.breaks[1]}">
+            <span class="range-sep">/</span>
+            <input class="input" id="b3" type="number" step="1" value="${def.breaks[2]}">
+            <button class="btn" id="btnApplyRoutine">应用</button>
+            <button class="btn ghost" id="btnResetDefault">恢复默认</button>`;
+        } else {
+          rf.innerHTML = `<span class="small">该项暂不提供区间自定义。</span>`;
+        }
+    
+        rf.onclick = (e)=>{
+          const id = e.target && e.target.id;
+          if (id==='btnApplyRoutine') applyCustomBreaks();
+          if (id==='btnResetDefault') resetToDefault();
+        };
+      }
+    
+      function applyCustomBreaks(){
+        const code = routineState.code;
+        const b1El = document.getElementById('b1');
+        const b2El = document.getElementById('b2');
+        const b3El = document.getElementById('b3');
+        if (!b1El || !b2El || !b3El) return;
+    
+        const b1 = Number(b1El.value), b2 = Number(b2El.value), b3 = Number(b3El.value);
+        if (![b1,b2,b3].every(v=>Number.isFinite(v))) return;
+    
+        if (code==='2.1'){
+          routineState.breaks = [b1*365, b2*365, b3*365].sort((a,b)=>a-b);
+          routineState.labels = ROUTINE_DEFAULTS['2.1'].labels.slice();
+        } else if (code==='2.2'){
+          routineState.breaks = [b1,b2,b3].sort((a,b)=>a-b);
+          routineState.labels = ROUTINE_DEFAULTS['2.2'].labels.slice();
+        }
+        filterByBreaksAndRefresh();
+      }
+    
+      function resetToDefault(){
+        const code = routineState.code;
+        if (code==='2.1'){
+          const def = ROUTINE_DEFAULTS['2.1'];
+          routineState.breaks = def.years.map(x=>x*365);
+          routineState.labels = def.labels.slice();
+          if (document.getElementById('b1')) {
+            document.getElementById('b1').value = def.years[0];
+            document.getElementById('b2').value = def.years[1];
+            document.getElementById('b3').value = def.years[2];
+          }
+        } else if (code==='2.2'){
+          const def = ROUTINE_DEFAULTS['2.2'];
+          routineState.breaks = def.breaks.slice();
+          routineState.labels = def.labels.slice();
+          if (document.getElementById('b1')) {
+            document.getElementById('b1').value = def.breaks[0];
+            document.getElementById('b2').value = def.breaks[1];
+            document.getElementById('b3').value = def.breaks[2];
+          }
+        }
+        filterByBreaksAndRefresh();
+      }
+    
+      function filterByBreaksAndRefresh(){
+        // 不剔除任何段，只根据 breaks 做分组展示
+        routineState.list = (window.companies||[]).map(mapRecord);
+        updateAllRoutineViews();
+      }
+    
+      /* ---------- 四色 KPI 条 ---------- */
+      function renderRoutineStrip(){
+        const list = (routineState.list||[]).slice();
+        const b = routineState.breaks;
+        const lab = routineState.labels;
+        const colors = ['#ef4444','#f59e0b','#2563eb','#16a34a'];
+        const groups = [[],[],[],[]];
+    
+        for(const r of list){
+          const x = (routineState.code==='2.1') ? r.foundedDays : (routineState.code==='2.2' ? r.employees : 0);
+          const idx = (x < b[0]) ? 0 : (x < b[1]) ? 1 : (x < b[2]) ? 2 : 3;
+          groups[idx].push(r);
+        }
+    
+        const html = groups.map((g,i)=>{
+          const inSum = g.reduce((s,x)=>s+x.inflow,0);
+          const outSum= g.reduce((s,x)=>s+x.outflow,0);
+          const tot = inSum + outSum;
+          return `
+            <div class="kpi-card" style="--kpi-color:${colors[i]}">
+              <div class="kpi-title">${lab[i]||('区间'+(i+1))}</div>
+              <div class="kpi-num">${g.length}</div>
+              <div class="kpi-sub">交易额合计：${fmtWan(tot)} 万</div>
+            </div>`;
+        }).join('');
+    
+        const host = document.getElementById('topStrip');
+        if (host) host.innerHTML = html;
+      }
+    
+      /* ---------- 散点 + 箱线 ---------- */
+      function gaussianLine(values){
+        const n = values.length||1;
+        const mean = values.reduce((s,x)=>s+x,0)/n;
+        const sd = Math.sqrt(values.reduce((s,x)=>s+(x-mean)*(x-mean),0)/n) || 1;
+        const min = Math.max(0, Math.min(...values, 0));
+        const max = Math.max(...values, 1);
+        const xs = Array.from({length:60},(_,i)=>min+(max-min)*i/59);
+        const ys = xs.map(x=> 1/(sd*Math.sqrt(2*Math.PI)) * Math.exp(-0.5*((x-mean)/sd)**2));
+        const maxY = Math.max(...ys)||1;
+        return {xs, ys: ys.map(y=> y/maxY * (max*0.6))};
+      }
+      function quartiles(arr){
+        const a = arr.slice().sort((x,y)=>x-y);
+        if (!a.length) return [0,0,0,0,0];
+        const q = p => {
+          const pos = (a.length-1)*p, lo=Math.floor(pos), hi=Math.ceil(pos);
+          return (a[lo]*(hi-pos) + a[hi]*(pos-lo));
+        };
+        return [a[0], q(0.25), q(0.5), q(0.75), a[a.length-1]];
+      }
+      function renderScatterAndBox(){
+        const list = (routineState.list||[]).slice();
+        const code = routineState.code;
+        const xName = (code==='2.1') ? '经营天数' : (code==='2.2' ? '缴纳人数' : '主体编号');
+    
+        const points = list.map((r,idx)=>{
+          const x = (code==='2.1') ? r.foundedDays : (code==='2.2' ? r.employees : idx+1);
+          const y = r.total;
+          return {name:r.name, value:[x,y], symbolSize: Math.max(6, Math.sqrt(Math.max(0,y))), extra:r};
+        });
+        const fit = gaussianLine(list.map(r=>r.total));
+    
+        ez('chart-scatter',{
+          tooltip:{formatter:(p)=>{
+            const d=p.data.extra;
+            const xVal = (code==='2.1')? `${d.foundedDays} 天` : (code==='2.2'? `${d.employees} 人` : `#${p.dataIndex+1}`);
+            return `${d.name}<br/>X：${xVal}<br/>流入：${fmtWan(d.inflow)} 万<br/>流出：${fmtWan(d.outflow)} 万<br/>交易额：<b>${fmtWan(d.total)} 万</b><br/>交易笔数：${d.txCnt}`;
+          }},
+          xAxis:{name:xName,type:'value',axisLine:{onZero:false}},
+          yAxis:{name:'交易金额(万)',type:'value'},
+          series:[
+            {type:'scatter',data:points,emphasis:{scale:1.15}},
+            {type:'line',name:'正态拟合',data:fit.xs.map((x,i)=>[x,fit.ys[i]]),smooth:true,showSymbol:false,areaStyle:{opacity:.08}}
+          ]
+        });
+    
+        const vals = list.map(r=>r.total);
+        const box = quartiles(vals);
+        const boxEl = document.getElementById('chart-box');
+        if (boxEl){
+          const inst = echarts.getInstanceByDom(boxEl) || echarts.init(boxEl);
+          inst.setOption({
+            tooltip:{trigger:'item'},
+            xAxis:{type:'category',data:['金额分布'],axisTick:{show:false}},
+            yAxis:{type:'value',name:'万'},
+            series:[{type:'boxplot',data:[box]}] // 直接传 [min,Q1,median,Q3,max]
+          }, true);
+        }
+      }
+    
+      /* ---------- Top20 + 环形 ---------- */
+      function renderTop20(){
+        const list = (routineState.list||[]).slice();
+        const top20 = list.slice().sort((a,b)=>b.total-a.total).slice(0,20);
+        const totalTop = top20.reduce((s,x)=>s+x.total,0);
+        const colors=['#f59e0b','#f97316','#ef4444','#22c55e','#3b82f6','#8b5cf6','#06b6d4','#14b8a6','#eab308','#a855f7'];
+    
+        const rankTotal = document.getElementById('rankTotal');
+        if (rankTotal) rankTotal.textContent = fmtWan(totalTop)+' 万';
+    
+        const tbody = document.querySelector('#tblTop20 tbody');
+        if (tbody){
+          tbody.innerHTML = top20.map((r,i)=>`
+            <tr>
+              <td><span class="color-dot" style="background:${colors[i%colors.length]}"></span>${i+1}</td>
+              <td>${r.name||'-'}</td>
+              <td><b>${fmtWan(r.total)}</b></td>
+              <td style="color:#2563eb">${fmtWan(r.inflow)}</td>
+              <td style="color:#ef4444">${fmtWan(r.outflow)}</td>
+              <td>${r.txCnt||'-'}</td>
+              <td>${r.ctype||'-'}</td>
+              <td>${r.relation||'-'}</td>
+              <td>${r.industry||'-'}</td>
+              <td>${r.capital||'-'}</td>
+              <td>${r.foundedDate||'-'}</td>
+            </tr>`).join('');
+        }
+    
+        ez('chart-donut',{
+          tooltip:{trigger:'item'},
+          series:[{
+            type:'pie', radius:['55%','75%'], label:{show:true,formatter:'{d}%'},
+            data: top20.map((r,i)=>({name:r.name, value:r.total, itemStyle:{color:colors[i%colors.length]}}))
+          }]
+        });
+      }
+    
+      /* ---------- 对手方表格（仅此视图） ---------- */
+      let currentRoutinePage = 1;
+      window.gotoRoutine = function(p){ currentRoutinePage = p; renderRoutineTable(); };
+    
+      function renderRoutineTable(){
+        const list = (routineState.list||[]).slice();
+        const pageItems = paginate(list, currentRoutinePage, 10);
+        const thead = document.querySelector('#tblRoutineDetail thead');
+        const tbody = document.querySelector('#tblRoutineDetail tbody');
+        if (!thead || !tbody) return;
+    
+        thead.innerHTML = `
+          <tr>
+            <th>对手方名称</th><th>流入总额</th><th>流出总额</th><th>交易总额</th>
+            <th>异常交易总额</th><th>占比1</th><th>占比2</th>
+            <th>异常交易笔数</th><th>交易次数</th><th>对手方类型</th>
+            <th>关联关系</th><th>销售类别</th><th>采购类别</th>
+            <th>职位</th><th>所属集团</th>
+          </tr>`;
+    
+        tbody.innerHTML = pageItems.map(d=>`
+          <tr>
+            <td>${d.name||'-'}</td>
+            <td style="color:#2563eb">${fmtWan(d.inflow)}</td>
+            <td style="color:#ef4444">${fmtWan(d.outflow)}</td>
+            <td><b>${fmtWan(d.total)}</b></td>
+            <td>${fmtWan(d.outflow*0.15)}</td>
+            <td>${(Math.random()*10).toFixed(2)}%</td>
+            <td>${(Math.random()*5).toFixed(2)}%</td>
+            <td>${Math.floor((d.txCnt||0)*0.1)}</td>
+            <td>${d.txCnt||0}</td><td>${d.ctype||'-'}</td><td>${d.relation||'-'}</td>
+            <td>${d.sales||'-'}</td><td>${d.purchase||'-'}</td><td>${d.job||'-'}</td>
+            <td>集团${(d.id||0)%5+1}</td>
+          </tr>`).join('');
+    
+        renderPagination('pagination-routine', list.length, currentRoutinePage, 'gotoRoutine');
+      }
+    
+      /* ---------- 一键刷新 ---------- */
+      function updateAllRoutineViews(){
+        routineState.list = (routineState.list||[]).map(mapRecord);
+        renderRoutineStrip();
+        renderScatterAndBox();
+        renderTop20();
+        renderRoutineTable();
+      }
+    
+      /* ---------- 左侧菜单切换 ---------- */
+      const routineMenu = document.getElementById('routineMenu');
+      routineMenu && routineMenu.addEventListener('click', e=>{
+        const it = e.target.closest('.item'); if (!it) return;
+        [...routineMenu.children].forEach(m=>m.classList.remove('active'));
+        it.classList.add('active');
+        renderRoutine(it.dataset.code);
+      });
+    
+      function renderRoutine(code='2.1'){
+        routineState.code = code;
+    
+        if (code==='2.1'){
+          routineState.breaks = ROUTINE_DEFAULTS['2.1'].years.map(x=>x*365);
+          routineState.labels = ROUTINE_DEFAULTS['2.1'].labels.slice();
+          const t1 = document.getElementById('rTitle'); if(t1) t1.textContent = '1. 经营时间较短 · 结果';
+          const st = document.getElementById('scatterTitle'); if(st) st.textContent = '经营天数 vs 交易金额（散点 + 箱线）';
+        } else if (code==='2.2'){
+          routineState.breaks = ROUTINE_DEFAULTS['2.2'].breaks.slice();
+          routineState.labels = ROUTINE_DEFAULTS['2.2'].labels.slice();
+          const t1 = document.getElementById('rTitle'); if(t1) t1.textContent = '2. 社保缴纳人数较少 · 结果';
+          const st = document.getElementById('scatterTitle'); if(st) st.textContent = '缴纳人数 vs 交易金额（散点 + 箱线）';
+        } else {
+          // 2.3 仍使用经营时间的默认标签作为占位（不做区间）
+          routineState.breaks = ROUTINE_DEFAULTS['2.1'].years.map(x=>x*365);
+          routineState.labels = ROUTINE_DEFAULTS['2.1'].labels.slice();
+          const t1 = document.getElementById('rTitle'); if(t1) t1.textContent = '3. 为个人或个体工商户 · 结果';
+          const st = document.getElementById('scatterTitle'); if(st) st.textContent = '主体编号 vs 交易金额（散点 + 箱线）';
+        }
+    
+        renderSimpleFilters(code);
+        routineState.list = (window.companies||[]).slice();
+        updateAllRoutineViews();
+      }
+    
+      // 初始进入
+      renderRoutine('2.1');
+    })();
     
 
     /* ===== 顶部页面切换 + 刷新保持当前页 ===== */
