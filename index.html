@@ -1376,54 +1376,56 @@
 /* 主体分栏 */
 #pane-routine .split{ position:relative; display:flex; gap:16px; }
 
-/* 侧栏（默认） */
+/* —— 侧栏右侧竖线 —— */
 #pane-routine .sidebar-pane{
   position:relative;
-  width:260px; min-width:260px; transition:.2s;
-  border-right:1px solid #eef2f7;
+  width:260px; min-width:260px;
+  transition:width .2s ease;
+  border-right:2px solid #1e40af;     /* 蓝色竖条 */
 }
 
-/* 右侧主内容 */
+/* 右侧主内容保持自适应 */
 #pane-routine main{ flex:1 1 auto; min-width:0; }
 
-/* 左侧栏内部右侧竖线收起按钮 */
-#pane-routine .sidebar-pane{
-  position:relative;
+/* —— 内贴式“无边框”中置箭头 —— */
+.sbar-toggle-inset{
+  position:absolute;
+  top:50%; right:2px;                  /* 挨着竖线，放在内部 */
+  transform:translateY(-50%);
+  width:18px; height:38px;             /* 窄而高，点击更好点 */
+  background:transparent;              /* 无底、无边框 */
+  border:none;
+  cursor:pointer;
+  color:#64748b;                       /* 箭头颜色 */
+  line-height:38px;                    /* 垂直居中 */
+  padding:0;
+}
+.sbar-toggle-inset::before{
+  content:'❮';                         /* 展开态：向左 = 收起 */
+  display:block; text-align:center; font-size:16px;
+}
+.sbar-toggle-inset:hover{ color:#1e40af; }
+
+/* —— 折叠状态 —— */
+/* 保留 12px 导轨，让箭头仍在内部可见 */
+#pane-routine .split.is-collapsed .sidebar-pane{
+  width:12px; min-width:12px;
+  overflow:hidden;
   border-right:2px solid #1e40af;
 }
-
-/* 内贴式箭头小按钮 */
-.sidebar-collapse-btn{
-  position:absolute;
-  top:12px;
-  right:-10px;       /* 让箭头正好贴在竖线右侧 */
-  width:20px;
-  height:20px;
-  border-radius:4px;
-  background:#fff;
-  border:1px solid #d1d5db;
-  box-shadow:0 2px 6px rgba(0,0,0,.06);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  font-size:12px;
-  color:#475569;
+/* 折叠时隐藏侧栏内容，但保留按钮 */
+#pane-routine .split.is-collapsed .sidebar-pane > *{ display:none; }
+#pane-routine .split.is-collapsed .sbar-toggle-inset{
+  display:block !important;
+  position:absolute; top:50%; right:0; transform:translateY(-50%);
+  width:12px; height:38px; line-height:38px;
 }
-.sidebar-collapse-btn::before{
-  content:'◀';  /* 收起状态箭头 */
+#pane-routine .split.is-collapsed .sbar-toggle-inset::before{
+  content:'❯';                         /* 折叠态：向右 = 展开 */
 }
 
-/* 折叠状态外观变化 */
-#pane-routine .split.is-collapsed .sidebar-pane{
-  width:0; min-width:0; padding:0; overflow:hidden; border:none;
-}
-#pane-routine .split.is-collapsed .sidebar-collapse-btn{
-  right:-10px;
-}
-#pane-routine .split.is-collapsed .sidebar-collapse-btn::before{
-  content:'▶';  /* 展开状态箭头 */
-}
+/* 折叠时主面板铺满 */
+#pane-routine .split.is-collapsed main{ flex:1 1 100%; min-width:0; }
 
 
 /* 窄屏时 KPI 降为两列 */
@@ -2229,7 +2231,7 @@
                 <div class="item" data-code="2.3">9. 既是客户又是供应商，或受同一实际控制人控制</div>
               </div>
               <div class="small">说明：切换 Routine 仅刷新右侧内容。</div>
-              <div class="sidebar-collapse-btn"></div>
+              <button class="sbar-toggle-inset" type="button" aria-label="收起侧栏"></button>
             </aside>
 
             <main>
@@ -3712,12 +3714,16 @@
       try{ echarts.getInstanceByDom(document.getElementById('chart-donut'))?.resize(); }catch(e){}
     });
 
-    const split = document.querySelector('#routineSplit');
-    const btn = document.querySelector('.sidebar-collapse-btn');
-    
-    btn.addEventListener('click', () => {
-      split.classList.toggle('is-collapsed');
-    });
+    (function(){
+      const split = document.getElementById('routineSplit');
+      const btn   = split?.querySelector('.sbar-toggle-inset');
+      if(!split || !btn) return;
+  
+      btn.addEventListener('click', () => {
+        const collapsed = split.classList.toggle('is-collapsed');
+        btn.setAttribute('aria-label', collapsed ? '展开侧栏' : '收起侧栏');
+      });
+    })();
     
     /* ===== 顶部页面切换 + 刷新保持当前页 ===== */
     /* ===== 顶部页面切换 + 刷新保持当前页 ===== */
