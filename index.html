@@ -1441,6 +1441,26 @@
   .sbar-fab, .sbar-rail{ background:#0b1220; border-color:#1f2a44; }
   .sbar-fab::before, .sbar-rail::before{ color:#c7d2fe; }
 }
+
+/* 固定底部 footer（独立，不依赖额外容器） */
+#app-footer{
+  position: fixed;      /* 如果不想固定，改成 position: static; 并去掉 body 的 padding-bottom */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:#fff;
+  border-top:1px solid #eaecef;
+  padding: 6px 12px;
+  font-size:12px;
+  line-height:1.4;
+  z-index:1000;                 /* 防止被表格/分页浮层盖住 */
+  box-shadow:0 -2px 8px rgba(0,0,0,.04);
+  padding-bottom: calc(6px + env(safe-area-inset-bottom, 0));
+}
+#app-footer p{ margin:0; user-select:text; }
+
+/* 给页面内容留出和 footer 同高的空间，避免被挡住 */
+body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按需微调 */
     
 </style>
 </head>
@@ -2319,15 +2339,19 @@
                 </div>
               </div>
             </main>
-          </div>
-        </div>
-      </section>
-          <!-- ====== 你的“银行流水分析 · 完整版”内容结束 ====== -->
-      </div>
-    </div>
-    <footer style="padding:6px 10px;background:#fff;border-top:1px solid #eaecef;font-size:12px"><P>KPMG Audit Compass V3.4.0(2025.2)</P></P>© 2025 毕马威科技服务(香港)有限公司 — 香港特别行政区有限责任公司，是与英国私营担保有限公司 — 毕马威国际有限公司相关联的独立成员所全球性组织中的成员。版权所有，不得转载。 毕马威的名称和标识均为毕马威全球性组织中的独立成员所经许可后使用的商标</P></footer>
-  </section>
-  </div>
+            </div>
+            </div>
+            
+            </section>
+            <!-- ====== 你的“银行流水分析 · 完整版”内容结束 ====== -->
+            </div>
+            </div>
+            
+            <!-- ✅ 修正后的 Footer（独立、可固定） -->
+            <footer id="app-footer">
+              <p>Audit V3.4.0 (2025.2)</p >
+              <p>© 2025 科技服务（香港有限公司相关联的独立成员所全球性组织中的成员）。版权所有，不得转载。</p >
+            </footer>
 
 
   <!-- ====== 页面脚本：完整功能逻辑保持不变 ====== -->
