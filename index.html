@@ -1376,52 +1376,55 @@
 /* 主体分栏 */
 #pane-routine .split{ position:relative; display:flex; gap:16px; }
 
-/* —— 侧栏右侧竖线 —— */
+/* —— 侧栏：右侧蓝色竖线，允许设置箭头纵向偏移 —— */
 #pane-routine .sidebar-pane{
   position:relative;
   width:260px; min-width:260px;
   transition:width .2s ease;
-  border-right:2px solid #1e40af;     /* 蓝色竖条 */
+  border-right:2px solid #1e40af;
+  --sbar-toggle-offset: 84px;   /* ← 想再高一点就把 84 改大/小 */
 }
 
 /* 右侧主内容保持自适应 */
 #pane-routine main{ flex:1 1 auto; min-width:0; }
 
-/* —— 内贴式“无边框”中置箭头 —— */
+/* —— “内贴式”无边框箭头，放在蓝色竖线内部靠上 —— */
 .sbar-toggle-inset{
   position:absolute;
-  top:50%; right:2px;                  /* 挨着竖线，放在内部 */
-  transform:translateY(-50%);
-  width:18px; height:38px;             /* 窄而高，点击更好点 */
-  background:transparent;              /* 无底、无边框 */
+  top:var(--sbar-toggle-offset);
+  right:0;                     /* 贴着竖线内侧 */
+  transform:translateY(-50%);  /* 微调到按钮中心对准该高度 */
+  width:12px; height:36px;
+  background:transparent;
   border:none;
   cursor:pointer;
-  color:#64748b;                       /* 箭头颜色 */
-  line-height:38px;                    /* 垂直居中 */
+  color:#64748b;
+  line-height:36px;
   padding:0;
+  z-index:2;                   /* 保证不被右侧内容盖住 */
 }
 .sbar-toggle-inset::before{
-  content:'❮';                         /* 展开态：向左 = 收起 */
+  content:'❮';                 /* 展开态：向左表示“收起” */
   display:block; text-align:center; font-size:16px;
 }
 .sbar-toggle-inset:hover{ color:#1e40af; }
 
-/* —— 折叠状态 —— */
-/* 保留 12px 导轨，让箭头仍在内部可见 */
+/* —— 折叠：保留 12px 导轨，按钮仍在内部可点 —— */
 #pane-routine .split.is-collapsed .sidebar-pane{
   width:12px; min-width:12px;
   overflow:hidden;
   border-right:2px solid #1e40af;
 }
-/* 折叠时隐藏侧栏内容，但保留按钮 */
+
+/* 折叠时隐藏侧栏内容，但保留按钮（加 !important 兜底） */
 #pane-routine .split.is-collapsed .sidebar-pane > *{ display:none; }
-#pane-routine .split.is-collapsed .sbar-toggle-inset{
+#pane-routine .split.is-collapsed .sidebar-pane > .sbar-toggle-inset{
   display:block !important;
-  position:absolute; top:50%; right:0; transform:translateY(-50%);
-  width:12px; height:38px; line-height:38px;
 }
+
+/* 折叠时箭头方向改为向右（表示“展开”） */
 #pane-routine .split.is-collapsed .sbar-toggle-inset::before{
-  content:'❯';                         /* 折叠态：向右 = 展开 */
+  content:'❯';
 }
 
 /* 折叠时主面板铺满 */
@@ -3714,15 +3717,20 @@
       try{ echarts.getInstanceByDom(document.getElementById('chart-donut'))?.resize(); }catch(e){}
     });
 
+    // 让“内贴式箭头”真正切换侧栏宽度
     (function(){
-      const split = document.getElementById('routineSplit');
-      const btn   = split?.querySelector('.sbar-toggle-inset');
-      if(!split || !btn) return;
+      // 同一页面可能不止一个 split，这里做事件委托更稳
+      document.addEventListener('click', function(ev){
+        const btn = ev.target.closest('.sbar-toggle-inset');
+        if(!btn) return;
   
-      btn.addEventListener('click', () => {
-        const collapsed = split.classList.toggle('is-collapsed');
-        btn.setAttribute('aria-label', collapsed ? '展开侧栏' : '收起侧栏');
-      });
+        // 找到它所属的 split 容器（就是左右两栏的那个）
+        const split = btn.closest('.split');
+        if(!split) return;
+  
+        split.classList.toggle('is-collapsed'); // 切换收起/展开
+        // 无需改箭头，CSS 已根据 .is-collapsed 自动切换 ❮ / ❯
+      }, {passive:true});
     })();
     
     /* ===== 顶部页面切换 + 刷新保持当前页 ===== */
