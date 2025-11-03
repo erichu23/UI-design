@@ -2224,6 +2224,125 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
       
         </div>
       </section>
+
+       <!-- ===================== 特定交易查询  ===================== -->
+      <section class="tab-pane" id="pane-transaction">
+        <div class="tab-scroll">
+          <div class="routine-toolbar">
+            <div class="toolbar-left">
+              <span class="rt-title">特定交易查询筛选条件</span>
+              <button class="btn" id="btnAccountLogic">业务逻辑</button>
+              <button class="btn" id="btnAccountTips">操作提示</button>
+            </div>
+            <div class="toolbar-right">
+              <button class="btn primary" id="btnGenReport">生成报告及流水</button>
+            </div>
+          </div>
+          <div class="split">
+            <!-- 左侧菜单 -->
+            <aside class="sidebar-pane">
+              <div class="menu" id="routineMenu">
+                <div class="item active" data-code="2.1">1. 特定日期[前后多长时间]发生的资金收支</div>
+                <div class="item" data-code="2.2">2. [X位]整数金额的转进、转出(借贷方)发生额</div>
+                <div class="item" data-code="2.3">3. 特定期间内收支交易日期靠近的对手方</div>
+                <div class="item" data-code="2.3">4. 与不在供应商清单或客户清单中的对方单位的往来</div>
+                <div class="item" data-code="2.3">5. 对同一交易对方的往来同时存在收款、付款</div>
+                <div class="item" data-code="2.3">6. 对同一交易对方的往来仅发生[X]次，与业务实质不符</div>
+                <div class="item" data-code="2.3">7. 对同一交易对方的小额频繁交易</div>
+                <div class="item" data-code="2.3">8. 供应商清单或客户清单中未发生往来的对手方</div>
+                <div class="item" data-code="2.3">9. 	导出包含交易信息和工商信息的对手方清单</div>
+                <div class="item" data-code="2.3">10. 	导出特定企业列表的工商信息清单</div>
+              </div>
+              <div class="small">说明：切换 Routine 仅刷新右侧内容。</div>
+              <button class="sbar-toggle-inset" type="button" aria-label="收起侧栏"></button>
+            </aside>
+
+            <main>
+              <!-- 顶部：标题 + 自定义四段区间过滤 -->
+              <div class="card">
+                <div class="head">
+                  <div class="title" id="rTitle">1. 经营时间较短 · 结果</div>
+                  <!-- 仅保留自定义四段区间 + 恢复默认（JS 会注入表单） -->
+                  <div class="filters" id="routineFilters"></div>
+                </div>
+                <div class="content">
+                  <!-- 四色 KPI 条（红/橙/蓝/绿），JS 填充 -->
+                  <div class="top-strip" id="topStrip"></div>
+                </div>
+              </div>
+      
+              <!-- 中段：散点图 + 箱线图（同排） -->
+              <div class="grid-2">
+                <div class="card">
+                  <div class="head">
+                    <div class="title" id="scatterTitle">经营天数 vs 交易金额（散点 + 箱线）</div>
+                  </div>
+                  <div class="content">
+                    <div id="chart-scatter" class="chart"></div>
+                  </div>
+                </div>
+      
+                <div class="card">
+                  <div class="head"><div class="title">交易金额分布（箱线）</div></div>
+                  <div class="content">
+                    <!-- 新增：箱线图容器（与 JS 对应） -->
+                    <div id="chart-box" class="chart" style="height: 320px"></div>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- Top20：左表 + 右侧小环图 -->
+              <div class="card">
+                <div class="head"><div class="title">Top20 交易额总览</div></div>
+                <div class="content" style="display:flex;gap:20px;align-items:flex-start;">
+                  <!-- 左边：Top20 表格 -->
+                  <div style="flex:3;overflow:auto;">
+                    <div class="small">Top20 交易额总额：<b id="rankTotal">—</b></div>
+                    <table class="table" id="tblTop20">
+                      <thead>
+                        <tr>
+                          <th>排名</th>
+                          <th>对手方名称</th>
+                          <th>交易总额</th>
+                          <th>流入总额</th>
+                          <th>流出总额</th>
+                          <th>交易笔数</th>
+                          <th>类型</th>
+                          <th>关联关系</th>
+                          <th>行业</th>
+                          <th>注册资本</th>
+                          <th>成立日期</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+      
+                  <!-- 右边：小环形图 -->
+                  <div style="flex:1;min-width:220px;max-width:260px;">
+                    <div id="chart-donut" class="chart" style="height:220px"></div>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- 明细：仅“对手方视图”（去掉流水视图切换） -->
+              <div class="card">
+                <div class="head">
+                  <div class="title">对手方明细表</div>
+                </div>
+                <div class="content" style="overflow:auto;max-height:520px">
+                  <table class="table" id="tblRoutineDetail">
+                    <thead></thead>
+                    <tbody></tbody>
+                  </table>
+                  <div id="pagination-routine" class="pagination"></div>
+                </div>
+              </div>
+            </main>
+            </div>
+            </div>
+            
+            </section>
     
       <!-- ===================== 特定工商查询 面板 ===================== -->
       <!-- ===================== 特定工商查询 面板（已对齐“自定义四段 + 箱线 + 仅对手方视图”） ===================== -->
