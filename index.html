@@ -1386,37 +1386,45 @@
 /* 右侧主内容 */
 #pane-routine main{ flex:1 1 auto; min-width:0; }
 
+/* ===== 可收起侧栏的竖条 bar ===== */
+.side-divider{
+  width:6px;
+  cursor:pointer;
+  background:#dbeafe; /* 淡蓝 */
+  position:relative;
+  transition:0.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.side-divider:hover{
+  background:#bfdbfe;
+}
+
+/* 按钮样式 */
+.divider-btn{
+  position:absolute;
+  right:-12px;
+  width:22px; height:22px;
+  border-radius:4px;
+  background:#fff;
+  border:1px solid #cbd5e1;
+  box-shadow:0 1px 4px rgba(0,0,0,.07);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; color:#475569;
+  cursor:pointer;
+}
+
 /* 折叠状态 */
 #pane-routine .split.is-collapsed .sidebar-pane{
-  width:0; min-width:0; padding:0; overflow:hidden; border:none;
+  width:0; min-width:0; padding:0; overflow:hidden;
+  border:none;
 }
-#pane-routine .split.is-collapsed .sidebar-pane *{ display:none !important; }
-#pane-routine .split.is-collapsed main{ flex:1 1 100%; min-width:0; }
-
-/* ==== 漂亮的“悬浮圆”收起按钮 + 护栏展开按钮 ==== */
-/* 圆形悬浮（收起） */
-.sbar-fab{
-  position:absolute; top:12px; right:-13px;
-  width:26px; height:26px; border-radius:50%;
-  border:1px solid #d5dbe5; background:#fff;
-  box-shadow:0 4px 10px rgba(17,24,39,.08);
-  cursor:pointer; display:flex; align-items:center; justify-content:center;
-  transition:transform .15s ease, box-shadow .15s ease, right .15s ease;
+#pane-routine .split.is-collapsed .side-divider .divider-btn{
+  transform:rotate(180deg);
 }
-.sbar-fab:hover{ box-shadow:0 6px 14px rgba(17,24,39,.12); transform:translateX(1px); }
-.sbar-fab::before{ content:'⟨'; font-size:14px; line-height:1; color:#475569; }
 
-/* 护栏展开 */
-.sbar-rail{
-  position:absolute; left:0; top:80px; transform:translateX(-50%);
-  width:26px; height:26px; border-radius:50%;
-  border:1px solid #d5dbe5; background:#fff;
-  box-shadow:0 4px 10px rgba(17,24,39,.08);
-  cursor:pointer; display:none; align-items:center; justify-content:center;
-}
-.sbar-rail::before{ content:'⟩'; font-size:14px; line-height:1; color:#475569; }
 
-#pane-routine .split.is-collapsed .sbar-rail{ display:flex; }
 
 /* 窄屏时 KPI 降为两列 */
 @media (max-width:1280px){
@@ -2209,7 +2217,10 @@
           <div class="split">
             <!-- 左侧菜单 -->
             <aside class="sidebar-pane">
-              <button class="sbar-fab" id="btnCollapse" aria-label="收起侧栏"></button>
+              <!-- 可收起的竖条 + 按钮 -->
+              <div class="side-divider" id="dividerToggle">
+                <span class="divider-btn"><</span>
+              </div>
               <div class="menu" id="routineMenu">
                 <div class="item active" data-code="2.1">1. 经营时间较短</div>
                 <div class="item" data-code="2.2">2. 社保缴纳人数较少</div>
@@ -2224,7 +2235,6 @@
               <div class="small">说明：切换 Routine 仅刷新右侧内容。</div>
             </aside>
 
-            <button class="sbar-rail" id="btnExpand" aria-label="展开侧栏"></button>
             <main>
               <!-- 顶部：标题 + 自定义四段区间过滤 -->
               <div class="card">
@@ -3705,10 +3715,13 @@
       try{ echarts.getInstanceByDom(document.getElementById('chart-donut'))?.resize(); }catch(e){}
     });
 
-    const splitEl = document.querySelector('#pane-routine .split');
-    document.getElementById('btnCollapse')?.addEventListener('click', ()=> splitEl.classList.add('is-collapsed'));
-    document.getElementById('btnExpand')?.addEventListener('click',   ()=> splitEl.classList.remove('is-collapsed'));
-
+    const split = document.querySelector('#routineSplit');
+    const btn = document.querySelector('#dividerToggle .divider-btn');
+    
+    btn.addEventListener('click', () => {
+      split.classList.toggle('is-collapsed');
+    });
+    
     /* ===== 顶部页面切换 + 刷新保持当前页 ===== */
     /* ===== 顶部页面切换 + 刷新保持当前页 ===== */
     const TAB_KEY   = 'topTabs.active';
