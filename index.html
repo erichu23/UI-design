@@ -1339,6 +1339,23 @@
 .btn:hover{ background:#f8fafc }
 .btn-primary{ background:#2152ff; color:#fff; border-color:#2152ff }
 .btn.ghost{ background:#fff; color:#2152ff; border-color:#bfd1ff }
+
+.routine-toolbar{
+  display:flex; justify-content:space-between; align-items:center;
+  background:#fff; border:1px solid #e5e7eb; border-radius:8px;
+  padding:10px 14px; margin:8px 0 14px;   /* 顶部整栏留出间距 */
+}
+
+/* 如需吸顶，取消下一行注释 */
+.routine-toolbar{ position:sticky; top:0; z-index:6; background:#fff; }
+
+.routine-toolbar .toolbar-left{ display:flex; align-items:center; gap:10px; }
+.routine-toolbar .rt-title{ font-size:16px; font-weight:600; color:#111827; }
+
+.btn{ cursor:pointer; padding:6px 12px; border-radius:6px; border:1px solid #d1d5db; }
+.btn.ghost{ background:#f8fafc; }
+.btn.primary{ background:#2152ff; color:#fff; border-color:#2152ff; }
+.btn:active{ transform:translateY(1px); }
     
 </style>
 </head>
@@ -2106,6 +2123,16 @@
       <!-- ===================== 特定工商查询 面板（已对齐“自定义四段 + 箱线 + 仅对手方视图”） ===================== -->
       <section class="tab-pane" id="pane-routine">
         <div class="tab-scroll">
+          <div class="routine-toolbar">
+            <div class="toolbar-left">
+              <span class="rt-title">特定工商查询</span>
+              <button class="btn ghost" id="btnBizLogic">业务逻辑</button>
+              <button class="btn ghost" id="btnOpsHint">操作提示</button>
+            </div>
+            <div class="toolbar-right">
+              <button class="btn primary" id="btnGenReport">生成报告及流水</button>
+            </div>
+          </div>
           <div class="split">
             <!-- 左侧菜单 -->
             <aside class="sidebar-pane">
