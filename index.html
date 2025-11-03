@@ -1461,6 +1461,53 @@
 
 /* 给页面内容留出和 footer 同高的空间，避免被挡住 */
 body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按需微调 */
+
+* ===== 特定交易查询 ===== */
+.btn{padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;background:#fff;cursor:pointer}
+.btn.primary{background:#1e49e2;border-color:#1e49e2;color:#fff}
+.small{font-size:12px;color:#667085}
+
+/* 卡片内筛选器 */
+#txFilters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+#txFilters .field{display:flex;flex-direction:column;gap:6px}
+#txFilters label{font-size:12px;color:#667085}
+#txFilters input{height:32px;padding:0 8px;border:1px solid #d0d5dd;border-radius:6px}
+#txFilters .actions{display:flex;gap:8px;margin-left:auto}
+
+/* 汇总 KPI（6宫格） */
+#txTopStrip{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+#txTopStrip .kpi{background:#fff;border:1px solid #eaecef;border-radius:8px;padding:10px 12px}
+#txTopStrip .k{font-size:12px;color:#667085;margin-bottom:6px}
+#txTopStrip .v{font-size:18px;font-weight:700}
+
+/* 图表容器 */
+.chart{width:100%}
+
+/* Top20 容器：左表 + 右侧纵向列表 */
+.tx-top20{display:flex;gap:20px;align-items:flex-start}
+.tx-top20-left{flex:3;overflow:auto;min-width:0}
+.tx-top20-right{flex:1;min-width:240px;max-width:320px}
+.tx-top20-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.tx-top20-list li{
+  display:flex;justify-content:space-between;align-items:center;
+  border:1px solid #eaecef;border-radius:8px;padding:8px 10px;background:#fff
+}
+.tx-top20-list .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%}
+.tx-top20-list .val{font-weight:700}
+
+/* 表格 + 表头吸顶 */
+.table{width:100%;border-collapse:collapse;font-size:13px}
+.table th,.table td{border-bottom:1px solid #f0f2f5;padding:8px;white-space:nowrap;text-align:left}
+.table thead th{background:#f6f8fe;position:sticky;top:0;z-index:1}
+
+/* 分页 */
+.pagination{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:10px}
+.pagination button{padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;background:#fff;cursor:pointer}
+.pagination button[disabled]{opacity:.5;cursor:not-allowed}
+
+/* 响应式 */
+@media (max-width:1200px){ #txTopStrip{grid-template-columns:repeat(3,1fr)} }
+@media (max-width:640px){  #txTopStrip{grid-template-columns:repeat(2,1fr)} .tx-top20{flex-direction:column} }
     
 </style>
 </head>
@@ -2226,8 +2273,9 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
       </section>
 
        <!-- ===================== 特定交易查询  ===================== -->
-      <section class="tab-pane" id="pane-transaction">
+       <section class="tab-pane active" id="pane-transaction">
         <div class="tab-scroll">
+          <!-- 顶部工具条（保留原样） -->
           <div class="routine-toolbar">
             <div class="toolbar-left">
               <span class="rt-title">特定交易查询筛选条件</span>
@@ -2238,67 +2286,56 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
               <button class="btn primary" id="btnGenReport">生成报告及流水</button>
             </div>
           </div>
+      
           <div class="split">
-            <!-- 左侧菜单 -->
+            <!-- 左侧菜单（保留结构，仅改 id 为 txMenu，避免与其它 pane 冲突） -->
             <aside class="sidebar-pane">
-              <div class="menu" id="routineMenu">
+              <div class="menu" id="txMenu">
                 <div class="item active" data-code="2.1">1. 特定日期[前后多长时间]发生的资金收支</div>
                 <div class="item" data-code="2.2">2. [X位]整数金额的转进、转出(借贷方)发生额</div>
                 <div class="item" data-code="2.3">3. 特定期间内收支交易日期靠近的对手方</div>
-                <div class="item" data-code="2.3">4. 与不在供应商清单或客户清单中的对方单位的往来</div>
-                <div class="item" data-code="2.3">5. 对同一交易对方的往来同时存在收款、付款</div>
-                <div class="item" data-code="2.3">6. 对同一交易对方的往来仅发生[X]次，与业务实质不符</div>
-                <div class="item" data-code="2.3">7. 对同一交易对方的小额频繁交易</div>
-                <div class="item" data-code="2.3">8. 供应商清单或客户清单中未发生往来的对手方</div>
-                <div class="item" data-code="2.3">9. 	导出包含交易信息和工商信息的对手方清单</div>
-                <div class="item" data-code="2.3">10. 	导出特定企业列表的工商信息清单</div>
+                <div class="item" data-code="2.4">4. 与不在供应商清单或客户清单中的对方单位的往来</div>
+                <div class="item" data-code="2.5">5. 同一对手方同时存在收款、付款</div>
+                <div class="item" data-code="2.6">6. 同一对手方仅发生[X]次，与业务实质不符</div>
+                <div class="item" data-code="2.7">7. 小额频繁交易</div>
+                <div class="item" data-code="2.8">8. 名单内未发生往来的对手方</div>
+                <div class="item" data-code="2.9">9. 导出含交易+工商的对手方清单</div>
+                <div class="item" data-code="2.10">10. 导出特定企业列表的工商清单</div>
               </div>
               <div class="small">说明：切换 Routine 仅刷新右侧内容。</div>
               <button class="sbar-toggle-inset" type="button" aria-label="收起侧栏"></button>
             </aside>
-
+      
+            <!-- 右侧主区 -->
             <main>
-              <!-- 顶部：标题 + 自定义四段区间过滤 -->
+              <!-- 卡片1：标题 + 筛选器 + 汇总指标 -->
               <div class="card">
                 <div class="head">
-                  <div class="title" id="rTitle">1. 经营时间较短 · 结果</div>
-                  <!-- 仅保留自定义四段区间 + 恢复默认（JS 会注入表单） -->
-                  <div class="filters" id="routineFilters"></div>
+                  <div class="title" id="txTitle">1. 特定日期 · 结果</div>
+                  <!-- 卡片内筛选器 -->
+                  <div class="filters" id="txFilters"></div>
                 </div>
                 <div class="content">
-                  <!-- 四色 KPI 条（红/橙/蓝/绿），JS 填充 -->
-                  <div class="top-strip" id="topStrip"></div>
+                  <!-- 汇总指标（6块） -->
+                  <div class="top-strip" id="txTopStrip"></div>
                 </div>
               </div>
       
-              <!-- 中段：散点图 + 箱线图（同排） -->
-              <div class="grid-2">
-                <div class="card">
-                  <div class="head">
-                    <div class="title" id="scatterTitle">经营天数 vs 交易金额（散点 + 箱线）</div>
-                  </div>
-                  <div class="content">
-                    <div id="chart-scatter" class="chart"></div>
-                  </div>
-                </div>
-      
-                <div class="card">
-                  <div class="head"><div class="title">交易金额分布（箱线）</div></div>
-                  <div class="content">
-                    <!-- 新增：箱线图容器（与 JS 对应） -->
-                    <div id="chart-box" class="chart" style="height: 320px"></div>
-                  </div>
-                </div>
-              </div>
-      
-              <!-- Top20：左表 + 右侧小环图 -->
+              <!-- 卡片2：柱状图 -->
               <div class="card">
-                <div class="head"><div class="title">Top20 交易额总览</div></div>
-                <div class="content" style="display:flex;gap:20px;align-items:flex-start;">
-                  <!-- 左边：Top20 表格 -->
-                  <div style="flex:3;overflow:auto;">
-                    <div class="small">Top20 交易额总额：<b id="rankTotal">—</b></div>
-                    <table class="table" id="tblTop20">
+                <div class="head"><div class="title">交易金额时间分布（柱状）</div></div>
+                <div class="content">
+                  <div id="txBar" class="chart" style="height:360px"></div>
+                </div>
+              </div>
+      
+              <!-- 卡片3：Top20 列表（紧跟在柱状图下面） -->
+              <div class="card">
+                <div class="head"><div class="title">Top20 交易额</div></div>
+                <div class="content tx-top20">
+                  <div class="tx-top20-left">
+                    <div class="small">Top20 交易额总额：<b id="txTop20Total">—</b></div>
+                    <table class="table" id="txTop20Tbl">
                       <thead>
                         <tr>
                           <th>排名</th>
@@ -2307,42 +2344,49 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                           <th>流入总额</th>
                           <th>流出总额</th>
                           <th>交易笔数</th>
-                          <th>类型</th>
-                          <th>关联关系</th>
-                          <th>行业</th>
-                          <th>注册资本</th>
-                          <th>成立日期</th>
                         </tr>
                       </thead>
                       <tbody></tbody>
                     </table>
                   </div>
       
-                  <!-- 右边：小环形图 -->
-                  <div style="flex:1;min-width:220px;max-width:260px;">
-                    <div id="chart-donut" class="chart" style="height:220px"></div>
+                  <div class="tx-top20-right">
+                    <ul class="tx-top20-list" id="txTop20List">
+                      <!-- 右侧纵向 Top20 列表（名称 + 金额），JS 注入 -->
+                    </ul>
                   </div>
                 </div>
               </div>
       
-              <!-- 明细：仅“对手方视图”（去掉流水视图切换） -->
+              <!-- 卡片4：对手方汇总表 + 分页 -->
               <div class="card">
-                <div class="head">
-                  <div class="title">对手方明细表</div>
-                </div>
+                <div class="head"><div class="title">对手方交易汇总</div></div>
                 <div class="content" style="overflow:auto;max-height:520px">
-                  <table class="table" id="tblRoutineDetail">
-                    <thead></thead>
+                  <table class="table" id="txTbl">
+                    <thead>
+                      <tr>
+                        <th>对手方名称</th>
+                        <th>流入总额</th>
+                        <th>流出总额</th>
+                        <th>交易总额</th>
+                        <th>异常交易总额</th>
+                        <th>占比(总额)</th>
+                        <th>占比(笔数)</th>
+                        <th>异常交易笔数</th>
+                        <th>交易次数</th>
+                        <th>对手方类型</th>
+                      </tr>
+                    </thead>
                     <tbody></tbody>
                   </table>
                   <div id="pagination-transaction" class="pagination"></div>
                 </div>
               </div>
             </main>
-            </div>
-            </div>
-            
-            </section>
+          </div>
+        </div>
+      </section>
+      
     
       <!-- ===================== 特定工商查询 面板 ===================== -->
       <!-- ===================== 特定工商查询 面板（已对齐“自定义四段 + 箱线 + 仅对手方视图”） ===================== -->
@@ -3464,7 +3508,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
 
 
     
-    /* =============== Routine 区域 =============== */
+    /* =============== 特定工商查询Routine 区域 =============== */
     (function(){
       "use strict";
     
@@ -3874,6 +3918,251 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
         split.classList.toggle('is-collapsed'); // 切换收起/展开
         // 无需改箭头，CSS 已根据 .is-collapsed 自动切换 ❮ / ❯
       }, {passive:true});
+    })();
+
+    /* ==================== 特定交易查询TransactionPane：仅作用于 #pane-transaction ==================== */
+    (function(){
+      document.addEventListener('DOMContentLoaded', () => {
+        const pane = document.getElementById('pane-transaction');
+        if (!pane) return;
+    
+        const el = {
+          // 顶部按钮
+          btnReport: pane.querySelector('#btnGenReport'),
+          btnLogic:  pane.querySelector('#btnAccountLogic'),
+          btnTips:   pane.querySelector('#btnAccountTips'),
+    
+          // 左侧菜单
+          menu: pane.querySelector('#txMenu'),
+          title: pane.querySelector('#txTitle'),
+    
+          // 筛选器 / KPI
+          filtersWrap: pane.querySelector('#txFilters'),
+          kpis: pane.querySelector('#txTopStrip'),
+    
+          // 柱状图
+          bar: pane.querySelector('#txBar'),
+    
+          // Top20
+          top20Total: pane.querySelector('#txTop20Total'),
+          top20TblBody: pane.querySelector('#txTop20Tbl tbody'),
+          top20List: pane.querySelector('#txTop20List'),
+    
+          // 汇总表 + 分页
+          tblBody: pane.querySelector('#txTbl tbody'),
+          pager: pane.querySelector('#pagination-transaction')
+        };
+    
+        const state = {
+          code: '2.1',
+          filters: { begin: '', end: '', window: 10, minAmt: '' },
+          page: 1,
+          pageSize: 50,
+          total: 0,
+          charts: { bar: null }
+        };
+    
+        /* --------- 1) 渲染筛选器 --------- */
+        function renderFilters(){
+          el.filtersWrap.innerHTML = `
+            <div class="field">
+              <label>开始日期</label>
+              <input type="date" id="txBegin" value="">
+            </div>
+            <div class="field">
+              <label>结束日期</label>
+              <input type="date" id="txEnd" value="">
+            </div>
+            <div class="field">
+              <label>前后天数</label>
+              <input type="number" id="txWindow" min="0" value="${state.filters.window}">
+            </div>
+            <div class="field">
+              <label>交易金额大于</label>
+              <input type="number" id="txMinAmt" min="0" step="1000" placeholder="元">
+            </div>
+            <div class="actions">
+              <button class="btn primary" id="txExec">执行筛选</button>
+              <button class="btn" id="txReset">重置</button>
+            </div>
+          `;
+          el.filtersWrap.querySelector('#txExec').onclick = () => {
+            state.filters.begin = el.filtersWrap.querySelector('#txBegin').value || '';
+            state.filters.end   = el.filtersWrap.querySelector('#txEnd').value   || '';
+            state.filters.window= Number(el.filtersWrap.querySelector('#txWindow').value || 0);
+            state.filters.minAmt= el.filtersWrap.querySelector('#txMinAmt').value || '';
+            state.page = 1;
+            refreshAll();
+          };
+          el.filtersWrap.querySelector('#txReset').onclick = () => {
+            state.filters = { begin:'', end:'', window:10, minAmt:'' };
+            renderFilters(); // 重画输入框
+            state.page = 1;
+            refreshAll();
+          };
+        }
+    
+        /* --------- 2) 汇总 KPI --------- */
+        async function apiSummary(params){
+          // TODO: 替换为真实接口
+          return { oppCnt:39, txnCnt:28, totalAmt:52907470, outAmt:11887410, inAmt:41020060, top20Ratio:0.6752 };
+        }
+        async function renderKPI(){
+          const s = await apiSummary({ code:state.code, ...state.filters });
+          el.kpis.innerHTML = `
+            <div class="kpi"><div class="k">识别对手方数(家)</div><div class="v">${s.oppCnt.toLocaleString()}</div></div>
+            <div class="kpi"><div class="k">识别交易总笔数(笔)</div><div class="v">${s.txnCnt.toLocaleString()}</div></div>
+            <div class="kpi"><div class="k">识别交易总金额(元)</div><div class="v">${s.totalAmt.toLocaleString()}</div></div>
+            <div class="kpi"><div class="k">识别流出总额(元)</div><div class="v">${s.outAmt.toLocaleString()}</div></div>
+            <div class="kpi"><div class="k">识别流入总额(元)</div><div class="v">${s.inAmt.toLocaleString()}</div></div>
+            <div class="kpi"><div class="k">Top20交易总额占比</div><div class="v">${(s.top20Ratio*100).toFixed(2)}%</div></div>
+          `;
+        }
+    
+        /* --------- 3) 柱状图 --------- */
+        async function apiBarSeries(params){
+          // TODO: 替换为真实接口；返回 {x:[], y:[]}
+          const x = ['2022-01','2022-10','2023-01','2023-04','2024-01','2024-04','2025-07','2025-10'];
+          const y = x.map(()=> Math.floor(Math.random()*5e7));
+          return { x, y };
+        }
+        async function renderBar(){
+          if (!window.echarts) return;            // 未引入 ECharts 则跳过
+          if (!state.charts.bar) state.charts.bar = echarts.init(el.bar);
+          const { x, y } = await apiBarSeries({ code:state.code, ...state.filters });
+          state.charts.bar.setOption({
+            tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+            grid:{left:50,right:20,top:30,bottom:50},
+            xAxis:{type:'category',data:x,axisLabel:{rotate:-30}},
+            yAxis:{type:'value'},
+            series:[{type:'bar',data:y}]
+          });
+          window.addEventListener('resize', ()=> state.charts.bar && state.charts.bar.resize(), { once:true });
+        }
+    
+        /* --------- 4) Top20（表 + 右侧纵向列表） --------- */
+        async function apiTop20(params){
+          // TODO: 替换为真实接口
+          const rows = Array.from({length:20}).map((_,i)=>({
+            rank:i+1,
+            name:'对手方 '+(i+1),
+            amount: +(Math.random()*2e7).toFixed(2),
+            inAmt:  +(Math.random()*1.2e7).toFixed(2),
+            outAmt: +(Math.random()*0.8e7).toFixed(2),
+            cnt: Math.floor(Math.random()*20)+1
+          }));
+          const total = rows.reduce((s,r)=>s+r.amount,0);
+          return { rows, total };
+        }
+        async function renderTop20(){
+          const { rows, total } = await apiTop20({ code:state.code, ...state.filters });
+          el.top20Total.textContent = total.toLocaleString();
+          // 左表
+          el.top20TblBody.innerHTML = rows.map(r => `
+            <tr>
+              <td>${r.rank}</td>
+              <td>${r.name}</td>
+              <td>${r.amount.toLocaleString()}</td>
+              <td>${r.inAmt.toLocaleString()}</td>
+              <td>${r.outAmt.toLocaleString()}</td>
+              <td>${r.cnt}</td>
+            </tr>
+          `).join('');
+          // 右侧纵向列表（名称 + 金额）
+          el.top20List.innerHTML = rows.slice(0,10).map(r => `
+            <li>
+              <span class="name">${r.rank}. ${r.name}</span>
+              <span class="val">${r.amount.toLocaleString()}</span>
+            </li>
+          `).join('');
+        }
+    
+        /* --------- 5) 汇总表 + 分页 --------- */
+        async function apiOppTable(params, page, pageSize){
+          // TODO: 替换为真实接口
+          const total = 230;
+          const rows = Array.from({length: Math.min(pageSize, total-(page-1)*pageSize)}).map((_,i)=>({
+            name: '对手方 ' + ((page-1)*pageSize+i+1),
+            inAmt: +(Math.random()*4e6).toFixed(2),
+            outAmt:+(Math.random()*3e6).toFixed(2),
+            exAmt: +(Math.random()*8e5).toFixed(2),
+            cnt:   Math.floor(Math.random()*20)+1,
+            abnCnt:Math.floor(Math.random()*5),
+            type:  Math.random()>0.5?'客户':'供应商'
+          }));
+          rows.forEach(r=> r.total = r.inAmt + r.outAmt);
+          return { total, rows };
+        }
+        function renderPager(){
+          const pages = Math.max(1, Math.ceil(state.total/state.pageSize));
+          el.pager.innerHTML = `
+            <button ${state.page<=1?'disabled':''} data-p="${state.page-1}">上一页</button>
+            <span>${state.page} / ${pages}</span>
+            <button ${state.page>=pages?'disabled':''} data-p="${state.page+1}">下一页</button>
+          `;
+          el.pager.onclick = (ev)=>{
+            const btn = ev.target.closest('button[data-p]');
+            if (!btn) return;
+            const p = +btn.getAttribute('data-p');
+            if (Number.isFinite(p)) { state.page = p; renderOppTable(); }
+          };
+        }
+        async function renderOppTable(){
+          const { total, rows } = await apiOppTable({ code:state.code, ...state.filters }, state.page, state.pageSize);
+          state.total = total;
+          // 这里页内占比简单用“本页合计”计算；真实项目建议接口返回“全量总额”用于占比
+          const pageTotalAmt = rows.reduce((s,r)=>s+r.total,0) || 1;
+          el.tblBody.innerHTML = rows.map(r => `
+            <tr>
+              <td>${r.name}</td>
+              <td>${r.inAmt.toLocaleString()}</td>
+              <td>${r.outAmt.toLocaleString()}</td>
+              <td>${r.total.toLocaleString()}</td>
+              <td>${r.exAmt.toLocaleString()}</td>
+              <td>${((r.total/pageTotalAmt)*100).toFixed(2)}%</td>
+              <td>${((r.cnt/(rows.reduce((s,x)=>s+x.cnt,0)||1))*100).toFixed(2)}%</td>
+              <td>${r.abnCnt}</td>
+              <td>${r.cnt}</td>
+              <td>${r.type}</td>
+            </tr>
+          `).join('');
+          renderPager();
+        }
+    
+        /* --------- 6) 左侧菜单/顶部按钮事件 --------- */
+        function bindMenu(){
+          el.menu.addEventListener('click', (e)=>{
+            const item = e.target.closest('.item');
+            if (!item) return;
+            if (item.classList.contains('active')) return;
+            el.menu.querySelectorAll('.item').forEach(i=>i.classList.remove('active'));
+            item.classList.add('active');
+            state.code = item.getAttribute('data-code');
+            el.title.textContent = item.textContent.replace(/^\d+\.\s*/, '') + ' · 结果';
+            state.page = 1;
+            refreshAll();
+          });
+        }
+        el.btnReport.onclick = ()=> console.log('[TX] 生成报告及流水', state);
+        el.btnLogic.onclick  = ()=> alert('这里展示“业务逻辑”说明（替换为你的弹窗内容）。');
+        el.btnTips.onclick   = ()=> alert('这里展示“操作提示”（替换为你的弹窗内容）。');
+    
+        /* --------- 7) 刷新总入口 --------- */
+        async function refreshAll(){
+          await renderKPI();
+          await renderBar();
+          await renderTop20();
+          await renderOppTable();
+        }
+    
+        /* --------- 初始化 --------- */
+        function init(){
+          renderFilters();
+          bindMenu();
+          refreshAll();
+        }
+        init();
+      });
     })();
     
     /* ===== 顶部页面切换 + 刷新保持当前页 ===== */
