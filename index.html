@@ -8,10 +8,16 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  
   <!-- ECharts -->
   <script src="https://unpkg.com/echarts@5/dist/echarts.min.js"></script>
+  <script src="/static/echarts/map/js/china.js"></script>
+  <script src="/static/js/audit-routine.js"></script>
 
-  <!-- ====== 平台基础样式（按你提供的变量/色板裁剪保留） ====== -->
+  
+
+  <!-- ====== 平台基础样式CSS ====== -->
   <style>
   html,body{width:100%;height:100%}
   *,*:before,*:after{box-sizing:border-box}
@@ -47,7 +53,7 @@
   .content-scroll{flex:1;overflow:auto}
   .content-wrap{margin:var(--base-space)}
 
-  /* ====== 内容页（沿用你“完整版本”的风格） ====== */
+  /* ====== 内容页 ====== */
   .container{max-width:1480px;margin:auto}
   .header{display:flex;align-items:center;gap:12px}
   .header .breadcrumb{font-size:13px;color:var(--muted)}
@@ -119,7 +125,146 @@
     border-radius:50%;
     margin-right:4px;
   }
-  /* === Sidebar: final, deduped === */
+ 
+/* 右上整条导航区域：靠右对齐 */
+.layout-header-nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #fff;
+}
+
+/* 通用按钮样式（文字 / 图标按钮统一基准） */
+.nav-btn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.nav-btn:hover {
+  background: rgba(255,255,255,0.20);
+}
+
+/* 带文字 + 图标（Eric） */
+.nav-btn-with-icon {
+  gap: 6px;
+}
+
+/* 纯图标按钮（打印 / 反馈 / 设置） */
+.nav-icon-btn {
+  width: 32px;
+  padding: 0;
+}
+
+/* 图标（统一大小 & 颜色跟随 currentColor） */
+.icon svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+/* ============ 单位 / 小数位 下拉 ============ */
+
+.header-dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+}
+
+.header-btn {
+  background: rgba(255,255,255,0.18);
+}
+
+.header-btn:hover {
+  background: rgba(255,255,255,0.28);
+}
+
+/* 下拉列表 */
+.dropdown-menu {
+  position: absolute;
+  top: 36px;
+  left: 0;
+  min-width: 120px;
+  background: #fff;
+  border: 1px solid #d0d7e2;
+  border-radius: 4px;
+  padding: 6px 0;
+  margin: 0;
+  list-style: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  display: none;
+  z-index: 2000;
+}
+
+.dropdown-menu li {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+  background: #eef3ff;
+  color: #1657b5;
+}
+
+/* hover 展开 */
+.header-dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+/* ============ 中 / EN 分段按钮 ============ */
+/* 语言区域整体 */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;              /* 中 和 EN 之间的间距，就跟你图里一样 */
+}
+
+/* 语言按钮：基于 nav-btn 再细调 */
+.lang-btn {
+  padding: 0 8px;
+  min-width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* hover 只做轻微高亮 */
+.lang-btn:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+/* 当前语言：深色小方块（你截图里的“中”样式） */
+.lang-btn.lang-active {
+  background: rgba(0, 0, 0, 0.25);  /* 比顶部蓝再深一点 */
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset;
+}
+
+/* 当前语言 hover 再稍微亮一点就行 */
+.lang-btn.lang-active:hover {
+  background: rgba(0, 0, 0, 0.32);
+}
+
+
+/* === Sidebar: final, deduped copyright=== */
 .layout-main{display:flex;height:calc(100vh - 48px);}
 .sidebar{flex:0 0 230px;background:#f8f8f8;border-right:1px solid #ddd;padding:10px 16px;}
 .main-right{flex:1;min-width:0;display:flex;flex-direction:column;}
@@ -179,30 +324,44 @@
   color: #999 !important;
 }
 .main-right { flex:1; display:flex; flex-direction:column; }
+
+/* ===============================
+   Breadcrumb 面包屑导航
+   =============================== */
+/* 返回按钮：蓝色 */
 .breadcrumb-bar {
   background:#fff;
   border-bottom:1px solid #e6edf5;
   padding:12px 20px;
   font-size:14px;
-  color:#334155;
+  color:#94a3b8;   /* 默认浅灰，作为路径基色 */
 }
+
+/* 左侧“返回项目列表”——深蓝、强调 */
 .breadcrumb-bar .back-link {
   color:#003366;
-  text-decoration:none;
   font-weight:600;
+  text-decoration:none;
   margin-right:4px;
 }
-.breadcrumb-bar .sep { margin:0 6px; color:#94a3b8; }
-.breadcrumb-bar b { color:#003366; }
 
-.content-scroll { flex:1; overflow:auto; }
-.content-wrap { padding:16px 20px 32px; }
+/* 分隔符（更浅一点的灰） */
+.breadcrumb-bar .sep {
+  margin:0 6px;
+  color:#cbd5e1;   /* 分隔符比文字再浅一级 */
+}
 
-/* 面包屑 */
-.breadcrumb-bar{background:#fff;border-bottom:1px solid #e6edf5;padding:12px 20px;font-size:14px;color:#334155}
-.breadcrumb-bar .back-link{color:#003366;text-decoration:none;font-weight:600;margin-right:4px}
-.breadcrumb-bar .sep{margin:0 6px;color:#94a3b8}
-.breadcrumb-bar b{color:#003366}
+/* 路径文字（Test / audit compass …） */
+.breadcrumb-bar span {
+  color:#94a3b8;   /* 浅灰 */
+}
+
+/* 当前页面（银行流水分析）：深灰，但不黑、不加粗 */
+.breadcrumb-bar b {
+  color:#475569;   /* 深灰，比前面更突出 */
+  font-weight:500;
+}
+
 
 /* 顶部整体：左 KPI + 右 问题分析 */
 .kpi-and-issue{
@@ -319,8 +478,8 @@
   background:#fffdf7;
   border:1px solid #ffe6b3;
   border-radius:8px;
-  padding:10px 12px 30px;         /* 预留底部空间给固定按钮 */
-  height:calc(60px * 2 + 10px);   /* 保持与左侧两行KPI等高 */
+  padding:10px 16px 30px;         /* 预留底部空间给固定按钮 */
+  height:calc(60px * 2 + 16px);   /* 保持与左侧两行KPI等高 */
   display:flex;
   flex-direction:column;
   justify-content:flex-start;
@@ -411,12 +570,15 @@
 }
 .issue-body-simple::-webkit-scrollbar-track{ background:transparent; }
 
+
+
+
 /* ===== Tab 容器：强制撑满整行，与 KPI 左对齐 ===== */
 .tab-container{
   background:#fff;
   border:1px solid #e6edf5;
   border-radius:8px;
-  margin:10px 16px 0;      /* 和 .chart-card 一样用外边距对齐 */
+  margin:10px px 0;      /* 和 .chart-card 一样用外边距对齐 */
   padding:0;
   box-shadow:0 1px 3px rgba(0,0,0,.04);
   box-sizing:border-box;
@@ -495,23 +657,18 @@
 .tab-container .ti-title{ font-weight:600; margin-right:6px; }
 
 /* ===== 图表卡片对齐 KPI ===== */
-.chart-card{
-  background:#fff;
-  border:1px solid #e6edf5;
-  border-radius:8px;
-  padding:16px;
-  margin:10px 16px;
-  box-shadow:0 1px 3px rgba(0,0,0,0.03);
-}
 
-/* ================== 经营实质滚动容器（功能 + 美化） ================== */
+
+
+
+/* ================== 经营实质================== */
 :root{
   --page-gutter: 16px;     /* 与上方KPI左右留白一致 */
   --tabs-offset: 270px;    /* (视口高度 - 这个值) = 白板可视高度，可按页面微调 */
 }
 
 /* 顶部 tabs 与 KPI 对齐 */
-.tabbar{ margin: 8px var(--page-gutter) 0; }
+.tabbar{ margin: var(--page-gutter) 0; }
 
 /* ★ 保险补丁：即使 tabbar/tab-stage 被写进 .kpi-and-issue 的 grid，也强制跨整行 */
 .kpi-and-issue .tabbar,
@@ -525,12 +682,12 @@
 /* 统一“白板舞台”容器：固定高度，内部滚动，两个面板共用 */
 .tab-stage{
   /* 尺寸与位置 */
-  margin: 10px var(--page-gutter) 0;
+  margin: 10px  0;
   width: 100%;
   min-width: 0;                 /* ★ 关键：在 flex/grid 父容器里避免被横向压瘦 */
   flex: 1 1 auto;               /* ★ 父级是 flex 时可正常伸展 */
   position: relative;
-  height: calc(100vh - var(--tabs-offset)); /* 固定白板高度，内部滚动 */
+  height: calc(100vh - var(--tabs-offset));   /* 固定白板高度，内部滚动 */
   overflow: hidden;
 
   /* 视觉 */
@@ -543,16 +700,7 @@
   contain: layout paint;         /* 降低重绘“鬼影”概率 */
 }
 
-/* 两个面板重叠铺满白板，只显示 active */
-.tab-pane{
-  position:absolute; inset:0;
-  display:none;
-  overflow:hidden;
-}
-.tab-pane.active{ display:block; }
-
-.tab-pane.hide { display: none !important; }   
-
+  
 /* 真正滚动的区域：把筛选/图表/表格都放进来 */
 .tab-scroll{
   position:absolute; inset:0;
@@ -566,8 +714,8 @@
   border:1px solid #e9eef6 !important;
   border-radius:10px !important;
   background:#fff !important;
-  box-shadow:0 2px 10px rgba(17,24,39,.04) !important;
-  margin:12px 0 !important;
+  box-shadow:0 2px 10px rgba(17,24,39,.04)  !important;
+  margin:12px 16px !important;
   overflow:visible;
 }
 
@@ -581,10 +729,7 @@
 .tab-scroll .card .head .title{
   font-weight:600; color:#0f172a; position:relative; padding-left:10px;
 }
-.tab-scroll .card .head .title::before{
-  content:""; position:absolute; left:0; top:50%; transform:translateY(-50%);
-  width:3px; height:16px; border-radius:2px; background:#1e49e2; opacity:.9;
-}
+
 .tab-scroll .card .content{ padding:14px 16px 16px; overflow:hidden; }
 
 /* 图表统一高度（可按需调） */
@@ -609,7 +754,6 @@
 /* Routine 右侧的双列布局间距 */
 .grid-2{ display:grid; grid-template-columns: 2fr 1.2fr; gap: 16px; }
 
-/* 窄屏时把 offset 调小一些，避免白板过矮 */
 @media (max-width: 1366px){
   :root{ --tabs-offset: 300px; }
 }
@@ -620,14 +764,14 @@
   .issue-card{ order:2 }
 }
 
-/* ===== 筛选区：label 普通，筛选框才是胶囊 ===== */
-/* ===== 筛选区：label 普通，筛选框才是胶囊 ===== */
+
+/* ===== 经营实质筛选区===== */
 .filter-card {
   background: #fff;
   border: 1px solid #e6edf5;
   border-radius: 10px;
-  padding: 18px 24px;
-  margin: 10px 16px 12px;
+  padding: 10px 20px 8px;
+  margin: 10px 16px;
   max-width: calc(100% - 32px);
   box-shadow: 0 2px 8px rgba(17,24,39,0.05);
 }
@@ -703,7 +847,7 @@
 .negate input:checked{ border-color:#1e49e2; }
 .negate input:checked::after{ content:""; position:absolute; inset:2px; border-radius:50%; background:#1e49e2; }
 
-/* ====== 经营实质面板（左侧蓝条 + 头部淡蓝条） ====== */
+/* ====== 经营实质面板 ====== */
 #pane-biz .panel{
   position:relative;
   background:#fff;
@@ -718,7 +862,7 @@
   position:absolute;
   left:10px; top:12px; bottom:12px;
   width:4px; border-radius:4px;
-  background:#1e49e2;
+  background:#dadbe0;
 }
 
 /* 面板头部 */
@@ -1239,7 +1383,9 @@
   content: none !important;
 }
 
-    /* ====== 已知关联方面板（左侧蓝条 + 头部淡蓝条） ====== */
+
+
+/* ====== 已知关联方面板（左侧蓝条 + 头部淡蓝条） ====== */
 #pane-relation .panel{
   position:relative;
   background:#fff;
@@ -1462,7 +1608,11 @@
 /* 给页面内容留出和 footer 同高的空间，避免被挡住 */
 body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按需微调 */
 
-* ===== 特定交易查询 ===== */
+
+
+
+
+/* ===== 特定交易查询 ===== */
 .btn{padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;background:#fff;cursor:pointer}
 .btn.primary{background:#1e49e2;border-color:#1e49e2;color:#fff}
 .small{font-size:12px;color:#667085}
@@ -1508,8 +1658,71 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
 /* 响应式 */
 @media (max-width:1200px){ #txTopStrip{grid-template-columns:repeat(3,1fr)} }
 @media (max-width:640px){  #txTopStrip{grid-template-columns:repeat(2,1fr)} .tx-top20{flex-direction:column} }
+
+
+
+/* ===== 特定工商查询Routine7 地址接近 专用样式 ===== */
+.addr-layout .addr-kpi-strip{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+
+.addr-grid .card .content{
+  padding:14px 16px;
+}
+
+/* 右侧级别切换 */
+.addr-level-tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:12px;
+}
+.addr-level-btn{
+  padding:6px 12px;
+  border-radius:999px;
+  border:1px solid #d1d5db;
+  background:#fff;
+  font-size:13px;
+  cursor:pointer;
+}
+.addr-level-btn.active{
+  background:#1d4ed8;
+  border-color:#1d4ed8;
+  color:#fff;
+}
+.addr-level-summary{
+  margin-top:4px;
+}
+.addr-level-title{
+  font-weight:600;
+  margin-bottom:6px;
+}
+.addr-level-meta{
+  list-style:none;
+  padding:0;
+  margin:0 0 6px 0;
+  font-size:13px;
+}
+.addr-level-meta li{
+  margin-bottom:2px;
+}
+.text-muted{
+  color:#6b7280;
+  font-size:12px;
+}
+
+/* 窄屏时 KPI 变两列 */
+@media (max-width:1280px){
+  .addr-layout .addr-kpi-strip{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+
     
-</style>
+  </style>
 </head>
 
 <body>
@@ -1518,9 +1731,80 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
     <div _ngcontent-ng-c2218024402="" class="header-menu-control" style="position: relative;"><svg _ngcontent-ng-c2218024402="" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: var(--responsive-size-16); height: var(--responsive-size-16);"><path _ngcontent-ng-c2218024402="" fill-rule="evenodd" clip-rule="evenodd" d="M1.40003 2.79995C1.40003 2.46858 1.66866 2.19995 2.00003 2.19995L14.8 2.19995C15.1314 2.19995 15.4 2.46858 15.4 2.79995C15.4 3.13132 15.1314 3.39995 14.8 3.39995L2.00003 3.39995C1.66866 3.39995 1.40003 3.13132 1.40003 2.79995ZM15.0909 5.47515C15.2816 5.58088 15.4 5.7818 15.4 5.9999L15.4003 9.9999C15.4004 10.218 15.282 10.419 15.0912 10.5247C14.9005 10.6305 14.6673 10.6244 14.4824 10.5088L11.2821 8.50876C11.1066 8.39913 11 8.20684 11 7.99996C11 7.79309 11.1066 7.6008 11.282 7.49115L14.482 5.49115C14.667 5.37556 14.9001 5.36943 15.0909 5.47515ZM12.7321 7.99993L14.2003 8.91741L14.2001 7.08245L12.7321 7.99993ZM1.40003 6.26662C1.40003 5.93524 1.66865 5.66662 2.00002 5.66662L8.40003 5.66662C8.7314 5.66662 9.00003 5.93525 9.00003 6.26662C9.00003 6.59799 8.7314 6.86662 8.40003 6.86662L2.00002 6.86662C1.66865 6.86662 1.40002 6.59799 1.40003 6.26662ZM1.40002 9.73328C1.40002 9.40191 1.66865 9.13328 2.00002 9.13328H8.40003C8.7314 9.13328 9.00003 9.40191 9.00003 9.73328C9.00003 10.0647 8.7314 10.3333 8.40003 10.3333H2.00002C1.66865 10.3333 1.40002 10.0647 1.40002 9.73328ZM1.40002 13.1999C1.40002 12.8686 1.66865 12.5999 2.00002 12.5999L14.8 12.6C15.1314 12.6 15.4 12.8686 15.4 13.2C15.4 13.5313 15.1314 13.8 14.8 13.8L2.00002 13.7999C1.66865 13.7999 1.40002 13.5313 1.40002 13.1999Z" fill="white"></path></svg><!----><!----></div>
     <div _ngcontent-ng-c2218024402="" class="layout-header-name">KPMG Audit Compass <span _ngcontent-ng-c2218024402="" class="layout-header-project ng-star-inserted">Test2 20251022</span><!----></div>
     <nav class="layout-header-nav">
-      <span>中/EN</span>
-      <span>Eric</span>
-      <span>设置</span>
+
+      <!-- 单位切换 -->
+      <div class="header-dropdown">
+        <button class="nav-btn header-btn">
+          千元/K ▾
+        </button>
+        <ul class="dropdown-menu">
+          <li data-value="yuan">元</li>
+          <li data-value="k">千元/K</li>
+          <li data-value="w">万元/W</li>
+          <li data-value="m">百万/M</li>
+          <li data-value="b">亿元/B</li>
+        </ul>
+      </div>
+
+      <!-- 小数位切换 -->
+      <div class="header-dropdown">
+        <button class="nav-btn header-btn">
+          0 ▾
+        </button>
+        <ul class="dropdown-menu">
+          <li data-value="0">0</li>
+          <li data-value="1">0.0</li>
+          <li data-value="2">0.00</li>
+          <li data-value="3">0.000</li>
+          <li data-value="4">0.0000</li>
+        </ul>
+      </div>
+
+      <!-- 中 / EN 语言切换：一个框里两个按钮 -->
+      <!-- 语言切换 -->
+      <div class="lang-switch">
+        <button class="nav-btn lang-btn lang-active" data-lang="zh">中</button>
+        <button class="nav-btn lang-btn" data-lang="en">EN</button>
+      </div>
+
+      <!-- 用户：图标 + 名字 -->
+      <button class="nav-btn nav-btn-with-icon">
+        <span class="icon">
+          <!-- 用户图标 -->
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M8 1.5a3 3 0 0 0-3 3v1a3 3 0 1 0 6 0v-1a3 3 0 0 0-3-3Zm0 8A4.5 4.5 0 0 0 3.5 14v.75c0 .414.336.75.75.75h7.5a.75.75 0 0 0 .75-.75V14A4.5 4.5 0 0 0 8 9.5Z"/>
+          </svg>
+        </span>
+        <span>Hu, Eric H.Y. (SH/AQPP)</span>
+      </button>
+
+      <!-- 打印按钮 -->
+      <button class="nav-btn nav-icon-btn" title="打印">
+        <span class="icon">
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M4 2.5A1.5 1.5 0 0 1 5.5 1h5A1.5 1.5 0 0 1 12 2.5V4H4V2.5ZM4 5.5h8v2h1a1 1 0 0 1 1 1v4.25a.75.75 0 0 1-.75.75H12v-3H4v3H2.75A.75.75 0 0 1 2 12.75V8.5a1 1 0 0 1 1-1h1v-2Zm1 5h6v3H5v-3Zm7-6.5h1a1 1 0 1 1 0 2h-1v-2Z"/>
+          </svg>
+        </span>
+      </button>
+
+      <!-- 发送反馈按钮 -->
+      <button class="nav-btn nav-icon-btn" title="发送反馈">
+        <span class="icon">
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v5A1.5 1.5 0 0 0 2.5 10H4v3.25a.75.75 0 0 0 1.28.53L8.06 10h5.44A1.5 1.5 0 0 0 15 8.5v-5A1.5 1.5 0 0 0 13.5 2h-11Z"/>
+          </svg>
+        </span>
+      </button>
+
+      <!-- 设置按钮 -->
+      <button class="nav-btn nav-icon-btn" title="设置">
+        <span class="icon">
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M8.93 1.5a.75.75 0 0 0-1.86 0l-.26.78a4.5 4.5 0 0 0-1.23.71l-.8-.31a.75.75 0 0 0-.95.95l.31.8a4.5 4.5 0 0 0-.71 1.23l-.78.26a.75.75 0 0 0 0 1.86l.78.26c.16.45.4.87.71 1.23l-.31.8a.75.75 0 0 0 .95.95l.8-.31c.36.31.78.55 1.23.71l.26.78a.75.75 0 0 0 1.86 0l.26-.78a4.5 4.5 0 0 0 1.23-.71l.8.31a.75.75 0 0 0 .95-.95l-.31-.8c.31-.36.55-.78.71-1.23l.78-.26a.75.75 0 0 0 0-1.86l-.78-.26a4.5 4.5 0 0 0-.71-1.23l.31-.8a.75.75 0 0 0-.95-.95l-.8.31a4.5 4.5 0 0 0-1.23-.71L8.93 1.5ZM8 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z"/>
+          </svg>
+        </span>
+      </button>
+
     </nav>
   </header>
 
@@ -1565,10 +1849,13 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
   <!-- 右侧（必须与 aside 同级，且共同包在 layout-main 内） -->
   <section class="main-right">
     <div class="breadcrumb-bar">
-      <a href=" " class="back-link">← 返回项目列表</a >
-      <span class="sep">/</span> <span>Test2</span>
-      <span class="sep">/</span> <span>20251022</span>
-      <span class="sep">/</span> <b>银行流水分析</b>
+      <a href="" class="back-link">← 返回项目列表</a >
+      <span class="sep">/</span>
+      <span class="crumb">Test2</span>
+      <span class="sep">/</span>
+      <span class="crumb">20251022</span>
+      <span class="sep">/</span>
+      <b class="crumb">银行流水分析</b>
     </div>
     
     <!-- 2) KPI + 数据问题分析（整块） -->
@@ -1666,9 +1953,10 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
       <!-- ✅ 说明条放在同一个框内 -->
       <div class="tab-intro" id="tabIntro"></div>
      </div>
-    
-    <!-- 统一白板舞台：两个面板共用同一块“白板” -->
-    <div class="tab-stage">
+
+     <!-- 统一白板舞台：两个面板共用同一块“白板” -->
+     <div class="tab-stage" style="top: -9.99999px; left: 2.00002px;">
+
     
       <!-- ===================== 经营实质 面板 ===================== -->
       <section class="tab-pane" id="pane-biz">
@@ -1680,35 +1968,35 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
               <label>被审计单位公司：</label>
               <span class="select-wrap">
                 <select class="select" id="fCompany"></select>
-                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
               </span>
               <label class="negate"><input type="checkbox" id="negCompany">不包含</label>
       
               <label>银行账户：</label>
               <span class="select-wrap">
                 <select class="select" id="fBank"></select>
-                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
               </span>
               <label class="negate"><input type="checkbox" id="negBank">不包含</label>
       
               <label>公司职能：</label>
               <span class="select-wrap">
                 <select class="select" id="fFunc"></select>
-                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
               </span>
               <label class="negate"><input type="checkbox" id="negFunc">不包含</label>
       
               <label>分析时间：</label>
-              <input type="date" id="beginDate" />
+              <input type="date" id="beginDate">
               <span class="range-sep">至</span>
-              <input type="date" id="endDate" />
+              <input type="date" id="endDate">
       
               <label>对手方类型：</label>
               <span class="select-wrap">
                 <select class="select" id="fType">
                   <option value="all">全部</option><option>客户</option><option>供应商</option><option>员工</option>
                 </select>
-                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
               </span>
       
               <button class="query" id="btnQueryBiz">查询</button>
@@ -1726,13 +2014,13 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
               </div>
               <div class="ph-right">
                 <span class="note-link"><i class="icon">
-                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
                 </i><u>备注说明</u></span>
                 <span class="pill-wrap">
                   <select id="yearBalance" class="pill-select">
                     <option>2023-2024</option><option>2023</option><option>2024</option>
                   </select>
-                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
                 </span>
               </div>
             </div>
@@ -1751,21 +2039,21 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
               </div>
               <div class="ph-right">
                 <span class="note-link"><i class="icon">
-                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
                 </i><u>备注说明</u></span>
       
                 <span class="pill-wrap">
                   <select id="yearIO" class="pill-select">
                     <option>2023-2024</option><option>2023</option><option>2024</option>
                   </select>
-                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
                 </span>
       
                 <span class="pill-wrap">
                   <select id="ctypeIO" class="pill-select">
                     <option value="all">全部类型</option><option>供应商</option><option>客户</option><option>员工</option><option>其他</option><option>个人</option>
                   </select>
-                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
                 </span>
               </div>
             </div>
@@ -1790,7 +2078,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
               </div>
               <div class="ph-right">
                 <span class="note-link"><i class="icon">
-                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
                 </i><u>备注说明</u></span>
               </div>
             </div>
@@ -1805,7 +2093,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
       
             <div class="grid-2">
               <div id="chart-comp-monthly" class="chart-md"></div>
-              <div id="chart-comp-top20"  class="chart-md"></div>
+              <div id="chart-comp-top20" class="chart-md"></div>
             </div>
       
             <!-- 工具栏：左侧切换 / 右侧按钮组 -->
@@ -1925,7 +2213,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                           <div class="check-head">
                             <button class="arrow-btn" id="btnToggleCheck" title="展开/收起2023年">
                               <svg viewBox="0 0 16 16" aria-hidden="true">
-                                <path d="M6.2 3.5l5 4.5-5 4.5V3.5z" />
+                                <path d="M6.2 3.5l5 4.5-5 4.5V3.5z"></path>
                               </svg>
                             </button>
                             <span>校验情况：</span>
@@ -1942,7 +2230,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                       <!-- 合计行 -->
                       <tr class="sum-row">
                         <td><strong>合计</strong></td><td></td><td></td>
-                        <td style="color:#2563eb"><strong>846,223,016</strongb></td><td style="color:#ef4444"><strong>693,427,537</strong></td><td><strong>1,539,650,553</strong></td>
+                        <td style="color:#2563eb"><strong>846,223,016</strong></td><td style="color:#ef4444"><strong>693,427,537</strong></td><td><strong>1,539,650,553</strong></td>
                         <td><strong>100.00%</strong></td><td><strong>2,442</strong></td><td><strong>401</strong></td><td></td><td></td>
                         <td class="check-col">
                           <div class="months-grid">
@@ -1976,8 +2264,8 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                         <td>401</td>
                         <td>1</td>
                         <td class="actions">
-                        <a href=" " title="账号详情"><i class="fa-solid fa-eye"></i></a >
-                        <a href="#" title="文件详情"><i class="fa-regular fa-file-lines"></i></a >
+                        <a href=" " title="账号详情"><i class="fa-solid fa-eye"></i></a>
+                        <a href="#" title="文件详情"><i class="fa-regular fa-file-lines"></i></a>
                         </td>
                         <td class="check-col">
                           <div class="months-grid check-row">
@@ -2092,7 +2380,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                       <td></td>
                       <td></td>
                       <td class="actions">
-                      <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a >
+                      <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
                       </td>
                     </tr>
               
@@ -2108,7 +2396,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                       <td></td>
                       <td></td>
                       <td class="actions">
-                      <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a >
+                      <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
                       </td>
                     </tr>
               
@@ -2124,7 +2412,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                       <td></td>
                       <td></td>
                       <td class="actions">
-                      <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a >
+                      <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
                       </td>
                     </tr>
                   </tbody>
@@ -2132,7 +2420,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
               </div>
       
         </div>
-      </section>
+      </div></div></section>
 
       <!-- =====================已知关联交易 面板 ===================== -->
       <section class="tab-pane" id="pane-relation">
@@ -2144,35 +2432,35 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
               <label>被审计单位公司：</label>
               <span class="select-wrap">
                 <select class="select" id="fCompany"></select>
-                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
               </span>
               <label class="negate"><input type="checkbox" id="negCompany">不包含</label>
       
               <label>银行账户：</label>
               <span class="select-wrap">
                 <select class="select" id="fBank"></select>
-                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
               </span>
               <label class="negate"><input type="checkbox" id="negBank">不包含</label>
       
               <label>公司职能：</label>
               <span class="select-wrap">
                 <select class="select" id="fFunc"></select>
-                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
               </span>
               <label class="negate"><input type="checkbox" id="negFunc">不包含</label>
       
               <label>分析时间：</label>
-              <input type="date" id="beginDate" />
+              <input type="date" id="beginDate">
               <span class="range-sep">至</span>
-              <input type="date" id="endDate" />
+              <input type="date" id="endDate">
       
               <label>对手方类型：</label>
               <span class="select-wrap">
                 <select class="select" id="fType">
                   <option value="all">全部</option><option>客户</option><option>供应商</option><option>员工</option>
                 </select>
-                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></svg></i>
+                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
               </span>
       
               <button class="query" id="btnQueryBiz">查询</button>
@@ -2191,7 +2479,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
               </div>
               <div class="ph-right">
                 <span class="note-link"><i class="icon">
-                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
                 </i><u>备注说明</u></span>
               </div>
             </div>
@@ -2206,7 +2494,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
       
             <div class="grid-2">
               <div id="chart-comp-monthly" class="chart-md"></div>
-              <div id="chart-comp-top20"  class="chart-md"></div>
+              <div id="chart-comp-top20" class="chart-md"></div>
             </div>
       
             <!-- 工具栏：左侧切换 / 右侧按钮组 -->
@@ -2329,34 +2617,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                 </div>
               </div>
       
-              <!-- 卡片3：Top20 列表（紧跟在柱状图下面） -->
-              <div class="card">
-                <div class="head"><div class="title">Top20 交易额</div></div>
-                <div class="content tx-top20">
-                  <div class="tx-top20-left">
-                    <div class="small">Top20 交易额总额：<b id="txTop20Total">—</b></div>
-                    <table class="table" id="txTop20Tbl">
-                      <thead>
-                        <tr>
-                          <th>排名</th>
-                          <th>对手方名称</th>
-                          <th>交易总额</th>
-                          <th>流入总额</th>
-                          <th>流出总额</th>
-                          <th>交易笔数</th>
-                        </tr>
-                      </thead>
-                      <tbody></tbody>
-                    </table>
-                  </div>
-      
-                  <div class="tx-top20-right">
-                    <ul class="tx-top20-list" id="txTop20List">
-                      <!-- 右侧纵向 Top20 列表（名称 + 金额），JS 注入 -->
-                    </ul>
-                  </div>
-                </div>
-              </div>
+              
       
               <!-- 卡片4：对手方汇总表 + 分页 -->
               <div class="card">
@@ -2391,76 +2652,174 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
       <!-- ===================== 特定工商查询 面板 ===================== -->
       <!-- ===================== 特定工商查询 面板（已对齐“自定义四段 + 箱线 + 仅对手方视图”） ===================== -->
       <section class="tab-pane" id="pane-routine">
-        <div class="tab-scroll">
-          <div class="split">
-            <!-- 左侧菜单 -->
-            <aside class="sidebar-pane">
-              <div class="menu" id="routineMenu">
-                <div class="item active" data-code="2.1">1. 经营时间较短</div>
-                <div class="item" data-code="2.2">2. 社保缴纳人数较少</div>
-                <div class="item" data-code="2.3">3. 为个人或个体工商户</div>
-                <div class="item" data-code="2.3">4. 注册资本与交易规模不匹配</div>
-                <div class="item" data-code="2.3">5. 交易规模与第三方所处行业状况不匹配</div>
-                <div class="item" data-code="2.3">6. 经营范围与交易性质不匹配</div>
-                <div class="item" data-code="2.3">7. 注册地址与被审计单位地址较为接近</div>
-                <div class="item" data-code="2.3">8. 不同第三方的工商登记信息相同或相近</div>
-                <div class="item" data-code="2.3">9. 既是客户又是供应商，或受同一实际控制人控制</div>
-              </div>
-              <div class="small">说明：切换 Routine 仅刷新右侧内容。</div>
-              <button class="sbar-toggle-inset" type="button" aria-label="收起侧栏"></button>
-            </aside>
+            <div class="tab-scroll">
+                <div class="split">
+                <!-- 左侧菜单 -->
+                <aside class="sidebar-pane">
+                    <div class="menu" id="routineMenu">
+                    <div class="item active" data-code="2.1">1. 经营时间较短</div>
+                    <div class="item" data-code="2.2">2. 社保缴纳人数较少</div>
+                    <div class="item" data-code="2.3">3. 为个人或个体工商户</div>
+                    <div class="item" data-code="2.3">4. 注册资本与交易规模不匹配</div>
+                    <div class="item" data-code="2.3">5. 交易规模与第三方所处行业状况不匹配</div>
+                    <div class="item" data-code="2.3">6. 经营范围与交易性质不匹配</div>
+                    <div class="item" data-code="2.3">7. 注册地址与被审计单位地址较为接近</div>
+                    <div class="item" data-code="2.3">8. 不同第三方的工商登记信息相同或相近</div>
+                    <div class="item" data-code="2.3">9. 既是客户又是供应商，或受同一实际控制人控制</div>
+                    </div>
+                    <div class="small">说明：切换 Routine 仅刷新右侧内容。</div>
+                    <button class="sbar-toggle-inset" type="button" aria-label="收起侧栏"></button>
+                </aside>
 
-            <main>
-              <!-- 顶部：标题 + 自定义四段区间过滤 -->
-              <div class="card">
-                <div class="head">
-                  <div class="title" id="rTitle">1. 经营时间较短 · 结果</div>
+                <main>
+                    <!-- ========= 通用 Routine 布局（1,2,3,4,5,6,8,9 仍然用这套） ========= -->
+                    <div class="routine-common-block">
+                    <!-- 顶部：标题 + 四段 KPI -->
+                    <div class="card">
+                        <div class="head">
+                        <div class="title" id="rTitle">1. 经营时间较短 · 结果</div>
+                        </div>
+                        <div class="content">
+                        <!-- 四色 KPI 条（红/橙/蓝/绿），JS 填充 -->
+                        <div class="top-strip" id="topStrip"></div>
+                        </div>
+                    </div>
+
+                    <!-- 中段：散点图 + 箱线图（同排） -->
+                    <div class="grid-2">
+                        <div class="card">
+                        <div class="head">
+                            <div class="title" id="scatterTitle">经营天数 vs 交易金额（散点 + 箱线）</div>
+                        </div>
+                        <div class="content">
+                            <div id="chart-scatter" class="chart"></div>
+                        </div>
+                        </div>
+
+                    </div>
+
+                    <!-- 明细：交易明细表 -->
+                    <div class="card">
+                        <div class="head">
+                        <div class="title">交易明细表</div>
+                        </div>
+                        <div class="content" style="overflow:auto;max-height:520px">
+                        <table class="table" id="tblRoutineDetail">
+                            <thead></thead>
+                            <tbody></tbody>
+                        </table>
+                        <div id="pagination-routine" class="pagination"></div>
+                        </div>
+                    </div>
+                    </div>
+                    <!-- ========= /通用 Routine 布局 ========= -->
+
+                    <!-- ========= Routine 7：注册地址接近 · 地图专用布局 ========= -->
+                    <div class="addr-layout" id="addrLayout" style="display:none;">
+                    <!-- 顶部：标题 + 4 段 KPI -->
+                    <div class="card">
+                        <div class="head">
+                        <div class="title">7. 注册地址与被审计单位地址较为接近 · 结果</div>
+                        </div>
+                        <div class="content">
+                        <div class="addr-kpi-strip">
+                            <div class="kpi-card">
+                            <div class="kpi-title">同市对手方</div>
+                            <div class="kpi-num" id="addrCityCnt">0</div>
+                            <div class="kpi-sub">交易总额：<span id="addrCityAmt">0 万</span></div>
+                            </div>
+                            <div class="kpi-card">
+                            <div class="kpi-title">同区 / 县对手方</div>
+                            <div class="kpi-num" id="addrDistrictCnt">0</div>
+                            <div class="kpi-sub">交易总额：<span id="addrDistrictAmt">0 万</span></div>
+                            </div>
+                            <div class="kpi-card">
+                            <div class="kpi-title">同街道对手方</div>
+                            <div class="kpi-num" id="addrStreetCnt">0</div>
+                            <div class="kpi-sub">交易总额：<span id="addrStreetAmt">0 万</span></div>
+                            </div>
+                            <div class="kpi-card">
+                            <div class="kpi-title">距离 &lt; 1km 对手方</div>
+                            <div class="kpi-num" id="addrNearCnt">0</div>
+                            <div class="kpi-sub">交易总额：<span id="addrNearAmt">0 万</span></div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <!-- 中段：左侧地图 + 右侧维度切换 -->
+                    <div class="grid-2 addr-grid">
+                        <!-- 左：地图热力图 -->
+                        <div class="card">
+                        <div class="head">
+                            <div class="title">对手方地址热力分布（按接近程度）</div>
+                        </div>
+                        <div class="content">
+                            <div id="chart-addr-map" class="chart" style="height:360px;"></div>
+                        </div>
+                        </div>
+
+                        <!-- 右：级别切换 + 当前级别汇总 -->
+                        <div class="card">
+                        <div class="head">
+                            <div class="title">接近程度维度切换</div>
+                        </div>
+                        <div class="content">
+                            <div class="addr-level-tabs" id="addrLevelTabs">
+                            <button class="addr-level-btn active" data-level="city">同市</button>
+                            <button class="addr-level-btn" data-level="district">同区 / 县</button>
+                            <button class="addr-level-btn" data-level="street">同街道</button>
+                            <button class="addr-level-btn" data-level="near">距离 &lt; 1km</button>
+                            </div>
+
+                            <div class="addr-level-summary">
+                            <div class="addr-level-title" id="addrLevelTitle">当前维度：同市</div>
+                            <ul class="addr-level-meta">
+                                <li>对手方数量：<span id="addrLevelCpCnt">0</span> 家</li>
+                                <li>交易总额：<span id="addrLevelAmt">0 万</span></li>
+                                <li>占全部对手方比例：<span id="addrLevelRatio">0%</span></li>
+                            </ul>
+                            <div class="small text-muted">
+                                提示：点击地图上的热点，可在下方表格中查看对应对手方明细。
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <!-- 底部：当前维度对手方明细表 -->
+                    <div class="card">
+                        <div class="head">
+                        <div class="title">当前维度对手方明细</div>
+                        </div>
+                        <div class="content">
+                        <div class="small">当前维度：<span id="addrTableLevelLabel">同市</span></div>
+                        <div style="overflow:auto; max-height:360px;">
+                            <table class="table" id="tblAddrDetail">
+                            <thead>
+                                <tr>
+                                <th>对手方名称</th>
+                                <th>统一社会信用代码</th>
+                                <th>地址</th>
+                                <th>接近层级</th>
+                                <th>城市</th>
+                                <th>区 / 县</th>
+                                <th>街道 / 镇</th>
+                                <th>距离被审计单位 (km)</th>
+                                <th>交易总额 (万)</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            </table>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                    <!-- ========= /Routine 7 布局 ========= -->
+
+                </main>
                 </div>
-                <div class="content">
-                  <!-- 四色 KPI 条（红/橙/蓝/绿），JS 填充 -->
-                  <div class="top-strip" id="topStrip"></div>
-                </div>
-              </div>
-      
-              <!-- 中段：散点图 + 箱线图（同排） -->
-              <div class="grid-2">
-                <div class="card">
-                  <div class="head">
-                    <div class="title" id="scatterTitle">经营天数 vs 交易金额（散点 + 箱线）</div>
-                  </div>
-                  <div class="content">
-                    <div id="chart-scatter" class="chart"></div>
-                  </div>
-                </div>
-      
-                <div class="card">
-                  <div class="head"><div class="title">交易金额分布（箱线）</div></div>
-                  <div class="content">
-                    <!-- 新增：箱线图容器（与 JS 对应） -->
-                    <div id="chart-box" class="chart" style="height: 320px"></div>
-                  </div>
-                </div>
-              </div>
-      
-              
-      
-              <!-- 明细：仅“对手方视图”（去掉流水视图切换） -->
-              <div class="card">
-                <div class="head">
-                  <div class="title">交易明细表</div>
-                </div>
-                <div class="content" style="overflow:auto;max-height:520px">
-                  <table class="table" id="tblRoutineDetail">
-                    <thead></thead>
-                    <tbody></tbody>
-                  </table>
-                  <div id="pagination-routine" class="pagination"></div>
-                </div>
-              </div>
-            </main>
             </div>
-            </div>
-            
             </section>
             <!-- ====== 你的“银行流水分析 · 完整版”内容结束 ====== -->
             </div>
@@ -3875,6 +4234,308 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
         // 无需改箭头，CSS 已根据 .is-collapsed 自动切换 ❮ / ❯
       }, {passive:true});
     })();
+
+    /* ============================================================
+    *  Routine 7：注册地址与被审计单位地址较为接近 · 地图专用逻辑
+    *  说明：
+    *    1）上线时把 addrHeatData 换成后端真实数据
+    *    2）Routine 菜单中第 7 条 data-code 必须是 "2.7"
+    *       <div class="item" data-code="2.7">7. 注册地址与被审计单位地址较为接近</div>
+    * ============================================================ */
+
+    const routineCommonBlock = document.querySelector('.routine-common-block');
+    const addrLayout         = document.getElementById('addrLayout');
+
+    routineMenu.addEventListener('click', e => {
+      const it = e.target.closest('.item');
+      if (!it) return;
+
+      [...routineMenu.children].forEach(el => el.classList.remove('active'));
+      it.classList.add('active');
+
+      const code = it.dataset.code;
+
+      if (code === '2.7') {
+        // 显示地图 Routine7
+        if (routineCommonBlock) routineCommonBlock.style.display = 'none';
+        if (addrLayout)         addrLayout.style.display = 'block';
+        setTimeout(() => initAddrRoutine(), 50);
+      } else {
+        // 回到通用 Routine 布局
+        if (addrLayout)         addrLayout.style.display = 'none';
+        if (routineCommonBlock) routineCommonBlock.style.display = 'block';
+
+        // ✳️ 这里仍然调用你原来根据 code 刷新散点/箱线/明细的函数
+        if (typeof renderRoutine === 'function') {
+          renderRoutine(code);   // 比如你原来的入口函数叫 renderRoutine
+        }
+      }
+    });
+
+    /** 示例数据：上线时用后端真实数据替换这个数组 */
+    const addrHeatData = [
+      // 每一条代表一个“聚合点 / 热点”
+      // level: 'city' | 'district' | 'street' | 'near'
+      {
+        name: '同市-样例',
+        level: 'city',
+        lng: 116.40,
+        lat: 39.90,
+        cp_cnt: 5,            // 该热点下对手方数量
+        total_amt: 120,       // 交易总额（万）
+        ratio: 0.2,           // 对所有对手方数量的占比
+        cp_name: '北京恒信科技有限公司',
+        credit_code: '91110108012345678A',
+        address: '北京市朝阳区某某路 88 号',
+        city_name: '北京市',
+        district_name: '朝阳区',
+        street_name: '三里屯街道',
+        distance_km: 2.35
+      },
+      {
+        name: '同区-样例',
+        level: 'district',
+        lng: 116.38,
+        lat: 39.92,
+        cp_cnt: 3,
+        total_amt: 80,
+        ratio: 0.1,
+        cp_name: '北京弘业实业有限公司',
+        credit_code: '91110108098765432B',
+        address: '北京市朝阳区某某路 66 号',
+        city_name: '北京市',
+        district_name: '朝阳区',
+        street_name: '望京街道',
+        distance_km: 1.20
+      },
+      {
+        name: '同街道-样例',
+        level: 'street',
+        lng: 116.37,
+        lat: 39.94,
+        cp_cnt: 2,
+        total_amt: 50,
+        ratio: 0.06,
+        cp_name: '北京星宇贸易有限公司',
+        credit_code: '91110108000000000X',
+        address: '北京市朝阳区某路 10 号',
+        city_name: '北京市',
+        district_name: '朝阳区',
+        street_name: '望京街道',
+        distance_km: 0.65
+      },
+      {
+        name: '近距离-样例',
+        level: 'near',
+        lng: 116.41,
+        lat: 39.91,
+        cp_cnt: 1,
+        total_amt: 30,
+        ratio: 0.04,
+        cp_name: '北京远景智能科技有限公司',
+        credit_code: '91110108011111111Y',
+        address: '北京市朝阳区某巷 3 号',
+        city_name: '北京市',
+        district_name: '朝阳区',
+        street_name: '望京街道',
+        distance_km: 0.35
+      }
+    ];
+
+    /* ---------- 1. 顶部 4 张 KPI 卡统计 ---------- */
+    function refreshAddrKpi() {
+      const city     = addrHeatData.filter(d => d.level === 'city');
+      const district = addrHeatData.filter(d => d.level === 'district');
+      const street   = addrHeatData.filter(d => d.level === 'street');
+      const near     = addrHeatData.filter(d => d.level === 'near');
+
+      const sumAmt = list => list.reduce((s, d) => s + (d.total_amt || 0), 0);
+      const sumCnt = list => list.reduce((s, d) => s + (d.cp_cnt || 0), 0);
+
+      const cityCntDom     = document.getElementById('addrCityCnt');
+      const districtCntDom = document.getElementById('addrDistrictCnt');
+      const streetCntDom   = document.getElementById('addrStreetCnt');
+      const nearCntDom     = document.getElementById('addrNearCnt');
+
+      const cityAmtDom     = document.getElementById('addrCityAmt');
+      const districtAmtDom = document.getElementById('addrDistrictAmt');
+      const streetAmtDom   = document.getElementById('addrStreetAmt');
+      const nearAmtDom     = document.getElementById('addrNearAmt');
+
+      if (!cityCntDom) return; // 防御性判断
+
+      cityCntDom.innerText     = sumCnt(city);
+      districtCntDom.innerText = sumCnt(district);
+      streetCntDom.innerText   = sumCnt(street);
+      nearCntDom.innerText     = sumCnt(near);
+
+      cityAmtDom.innerText     = sumAmt(city).toFixed(2) + ' 万';
+      districtAmtDom.innerText = sumAmt(district).toFixed(2) + ' 万';
+      streetAmtDom.innerText   = sumAmt(street).toFixed(2) + ' 万';
+      nearAmtDom.innerText     = sumAmt(near).toFixed(2) + ' 万';
+    }
+
+    /* ---------- 2. 右侧维度汇总 + 底部表格 ---------- */
+    function refreshAddrLevel(level) {
+      const all      = addrHeatData;
+      const filtered = all.filter(d => d.level === level);
+
+      const totalCpCnt = filtered.reduce((s, d) => s + (d.cp_cnt || 0), 0);
+      const totalAmt   = filtered.reduce((s, d) => s + (d.total_amt || 0), 0);
+      const totalCpAll = all.reduce((s, d) => s + (d.cp_cnt || 0), 0) || 1;
+      const ratio      = (totalCpCnt / totalCpAll * 100).toFixed(1) + '%';
+
+      const levelNameMap = {
+        city:    '同市',
+        district:'同区 / 县',
+        street:  '同街道',
+        near:    '距离 < 1km'
+      };
+
+      const titleDom       = document.getElementById('addrLevelTitle');
+      const cpCntDom       = document.getElementById('addrLevelCpCnt');
+      const amtDom         = document.getElementById('addrLevelAmt');
+      const ratioDom       = document.getElementById('addrLevelRatio');
+      const tableLevelDom  = document.getElementById('addrTableLevelLabel');
+      const tbody          = document.querySelector('#tblAddrDetail tbody');
+
+      if (!titleDom || !tbody) return;
+
+      titleDom.innerText      = '当前维度：' + (levelNameMap[level] || '');
+      cpCntDom.innerText      = totalCpCnt;
+      amtDom.innerText        = totalAmt.toFixed(2) + ' 万';
+      ratioDom.innerText      = ratio;
+      tableLevelDom.innerText = levelNameMap[level] || '';
+
+      tbody.innerHTML = '';
+      filtered.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${d.cp_name    || d.name || ''}</td>
+          <td>${d.credit_code || ''}</td>
+          <td>${d.address     || ''}</td>
+          <td>${levelNameMap[level] || ''}</td>
+          <td>${d.city_name     || ''}</td>
+          <td>${d.district_name || ''}</td>
+          <td>${d.street_name   || ''}</td>
+          <td>${d.distance_km != null ? d.distance_km.toFixed(2) : ''}</td>
+          <td>${d.total_amt   != null ? d.total_amt.toFixed(2)   : ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* ---------- 3. 地图渲染 ---------- */
+    let addrMapChart = null;
+
+    function renderAddrMap(level) {
+      const dom = document.getElementById('chart-addr-map');
+      if (!dom) return;
+
+      // ★ 容器刚从 display:none 变成 block 时，需要 init 一次
+      if (!addrMapChart) {
+        addrMapChart = echarts.init(dom);
+      }
+
+      const data = addrHeatData
+        .filter(d => d.level === level)
+        .map(d => [d.lng, d.lat, d.total_amt || d.cp_cnt || 0, d.name]);
+
+      const maxVal = data.length ? Math.max(...data.map(d => d[2])) : 1;
+
+      const option = {
+        tooltip: {
+          trigger: 'item',
+          formatter: p => {
+            const v = p.value;
+            return `${v[3] || ''}<br/>指标值：${v[2]}`;
+          }
+        },
+        visualMap: {
+          min: 0,
+          max: maxVal,
+          left: 'left',
+          bottom: 10,
+          text: ['高','低'],
+          calculable: true,
+          inRange: {
+            color: ['#e0f2fe','#60a5fa','#1d4ed8','#172554']
+          }
+        },
+        geo: {
+          map: 'china',      // ★ 如果以后要换成某个省级地图，在这里改 map 名
+          roam: true,
+          label: { show: false },
+          itemStyle: {
+            areaColor: '#f9fafb',
+            borderColor: '#e5e7eb'
+          },
+          emphasis: {
+            itemStyle: {
+              areaColor: '#dbeafe'
+            }
+          }
+        },
+        series: [{
+          type: 'heatmap',
+          coordinateSystem: 'geo',
+          data: data
+        }]
+      };
+
+      addrMapChart.setOption(option);
+      // 延迟 resize 一下，避免容器刚显示时宽高为 0
+      setTimeout(() => addrMapChart.resize(), 80);
+    }
+
+    /* ---------- 4. 右侧维度切换按钮 ---------- */
+    function initAddrLevelTabs() {
+      const tabs = document.querySelectorAll('#addrLevelTabs .addr-level-btn');
+      if (!tabs.length) return;
+
+      tabs.forEach(btn => {
+        btn.addEventListener('click', function(){
+          tabs.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+
+          const level = this.getAttribute('data-level');
+          renderAddrMap(level);
+          refreshAddrLevel(level);
+        });
+      });
+    }
+
+    /* ---------- 5. Routine7 总初始化：只做一次 ---------- */
+    let addrInited = false;
+
+    function initAddrRoutine() {
+      if (addrInited) return;
+
+      // 1) 顶部四张卡
+      refreshAddrKpi();
+
+      // 2) 右侧 tabs 绑定
+      initAddrLevelTabs();
+
+      // 3) 默认维度：同市
+      renderAddrMap('city');
+      refreshAddrLevel('city');
+
+      addrInited = true;
+    }
+
+    /* ============================================================
+    *  使用方式：
+    *   1）菜单点击到 data-code="2.7" 时：
+    *        - 显示 #addrLayout
+    *        - 隐藏 .routine-common-block
+    *        - 然后调用 initAddrRoutine()
+    *
+    *   2）其它 Routine（2.1, 2.2, 2.3...）：
+    *        - 隐藏 #addrLayout
+    *        - 显示 .routine-common-block
+    *        - 调你现有的渲染函数（散点、箱线、明细表）
+    * ============================================================ */
 
     /* ==================== 特定交易查询TransactionPane：仅作用于 #pane-transaction ==================== */
     (function(){
