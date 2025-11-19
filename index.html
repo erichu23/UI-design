@@ -71,6 +71,9 @@
   .card .head::before{content:"";position:absolute;left:0;top:0;width:4px;height:100%;background:var(--primary)}
   .card .title{font-weight:600;margin-left:8px}
   .card .content{padding:14px 16px}
+  
+
+   
   .filters{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
   .filters label{font-size:12px;color:var(--text)}
   .select{padding:4px 8px;font-size:12px;color:var(--text);background:#fff;border:1px solid var(--border);
@@ -573,6 +576,13 @@
 
 
 
+
+
+
+
+
+
+
 /* ===== Tab 容器：强制撑满整行，与 KPI 左对齐 ===== */
 .tab-container{
   background:#fff;
@@ -656,449 +666,61 @@
 .tab-container .ti-icon{ width:14px; height:14px; margin-top:2px; color:#1e40af;flex-shrink:0; }
 .tab-container .ti-title{ font-weight:600; margin-right:6px; }
 
-/* ===== 图表卡片对齐 KPI ===== */
+/* 让 Tabs 和 每个 Tab 页的内容，用同一条“内容宽度” */
 
-
-
-
-/* ================== 经营实质================== */
-:root{
-  --page-gutter: 16px;     /* 与上方KPI左右留白一致 */
-  --tabs-offset: 270px;    /* (视口高度 - 这个值) = 白板可视高度，可按页面微调 */
-}
-
-/* 顶部 tabs 与 KPI 对齐 */
-.tabbar{ margin: var(--page-gutter) 0; }
-
-/* ★ 保险补丁：即使 tabbar/tab-stage 被写进 .kpi-and-issue 的 grid，也强制跨整行 */
-.kpi-and-issue .tabbar,
-.kpi-and-issue .tab-stage{
-  grid-column: 1 / -1 !important;  /* 占满两列 */
-  width: 100% !important;
-  min-width: 0 !important;
-  float: none !important;
-}
-
-/* 统一“白板舞台”容器：固定高度，内部滚动，两个面板共用 */
-.tab-stage{
-  /* 尺寸与位置 */
-  margin: 10px  0;
-  width: 100%;
-  min-width: 0;                 /* ★ 关键：在 flex/grid 父容器里避免被横向压瘦 */
-  flex: 1 1 auto;               /* ★ 父级是 flex 时可正常伸展 */
-  position: relative;
-  height: calc(100vh - var(--tabs-offset));   /* 固定白板高度，内部滚动 */
-  overflow: hidden;
-
-  /* 视觉 */
-  background:#fff;
-  border:1px solid #e8edf5;
-  border-radius:10px;
-  box-shadow:0 2px 10px rgba(17,24,39,.04);
-
-  /* 性能 */
-  contain: layout paint;         /* 降低重绘“鬼影”概率 */
-}
-
-  
-/* 真正滚动的区域：把筛选/图表/表格都放进来 */
-.tab-scroll{
-  position:absolute; inset:0;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  padding:12px 14px 16px;
-}
-
-/* 白板里卡片：统一风格 */
-.tab-scroll > .card{
-  border:1px solid #e9eef6 !important;
-  border-radius:10px !important;
-  background:#fff !important;
-  box-shadow:0 2px 10px rgba(17,24,39,.04)  !important;
-  margin:12px 16px !important;
-  overflow:visible;
-}
-
-/* 卡片标题：左侧细竖条强调；禁止 sticky 以免叠影 */
-.tab-scroll .card .head{
-  position:static !important;    /* ★ 防止“吸顶”导致的叠影 */
-  background:#fbfdff;
-  border-bottom:1px solid #eef2f7;
-  padding:10px 14px;
-}
-.tab-scroll .card .head .title{
-  font-weight:600; color:#0f172a; position:relative; padding-left:10px;
-}
-
-.tab-scroll .card .content{ padding:14px 16px 16px; overflow:hidden; }
-
-/* 图表统一高度（可按需调） */
-.tab-scroll .chart{ height:260px; max-height:38vh; min-height:220px; }
-
-/* 表格细化 */
-.tab-scroll .table{ width:100%; border-collapse:collapse; font-size:13px; }
-.tab-scroll .table th,.tab-scroll .table td{
-  border:1px solid #eef2f7; padding:8px 10px; text-align:center; white-space:nowrap;
-}
-.tab-scroll .table th{ background:#f7faff; color:#334155; font-weight:600; }
-.tab-scroll .table tr:hover td{ background:#f8fbff; }
-
-/* 滚动条美化（可选） */
-.tab-scroll::-webkit-scrollbar{ width:6px }
-.tab-scroll::-webkit-scrollbar-thumb{ background:rgba(15,23,42,.18); border-radius:4px }
-.tab-scroll::-webkit-scrollbar-track{ background:transparent }
-
-/* 保险：外层可伸展容器取消最小宽度限制，避免被压瘦成右侧细缝 */
-.main-right, .content-scroll, .content-wrap, .tabbar{ min-width: 0; }
-
-/* Routine 右侧的双列布局间距 */
-.grid-2{ display:grid; grid-template-columns: 2fr 1.2fr; gap: 16px; }
-
-@media (max-width: 1366px){
-  :root{ --tabs-offset: 300px; }
-}
-
-/* 响应式：窄屏堆叠（保留原逻辑） */
-@media (max-width:1200px){
-  .kpi-and-issue{ grid-template-columns: 1fr; }
-  .issue-card{ order:2 }
-}
-
-
-/* ===== 经营实质筛选区===== */
-.filter-card {
-  background: #fff;
-  border: 1px solid #e6edf5;
-  border-radius: 10px;
-  padding: 10px 20px 8px;
-  margin: 10px 16px;
-  max-width: calc(100% - 32px);
-  box-shadow: 0 2px 8px rgba(17,24,39,0.05);
-}
-.filter-area {
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  justify-content:flex-start;
-  gap:12px 16px;
-  padding:10px 0 14px;
-}
-.filter-area label {
-  font-size:14px; color:#334155; font-weight:600;
-  line-height:36px; margin-right:6px;
-}
-/* 胶囊输入/下拉 */
-.filter-area select,
-.filter-area input[type="text"],
-.filter-area input[type="date"] {
-  font-size:14px; height:36px; line-height:36px;
-  padding:0 14px; min-width:160px;
-  border:1px solid #cfd9e5; border-radius:50px;
-  background:#fff; box-shadow:0 1px 2px rgba(0,0,0,0.04);
-  transition:all .2s ease;
-}
-.filter-area select:hover,
-.filter-area input[type="text"]:hover,
-.filter-area input[type="date"]:hover {
-  border-color:#1e49e2; box-shadow:0 0 0 3px rgba(30,73,226,0.08);
-}
-.filter-area select:focus,
-.filter-area input[type="text"]:focus,
-.filter-area input[type="date"]:focus {
-  outline:none; border-color:#0d3bc4; box-shadow:0 0 0 3px rgba(13,59,196,0.12);
-}
-.filter-area .range-sep {
-  margin:0 6px; color:#64748b; font-size:13px; line-height:36px; user-select:none;
-}
-.filter-area button {
-  height:36px; font-size:14px; padding:0 18px; border-radius:50px;
-  border:none; cursor:pointer; transition:0.2s;
-}
-.filter-area .query { background:#1e49e2; color:#fff; }
-.filter-area .query:hover { background:#0d3bc4; }
-.filter-area .reset { background:#eef3fb; color:#334155; }
-.filter-area .reset:hover { background:#e6eefc; color:#1e293b; }
-@media (max-width:1200px){
-  .filter-area{ justify-content:center; gap:10px 12px; }
-  .filter-area select,.filter-area input{ min-width:130px; }
-}
-
-/* —— 下拉小箭头（美观） —— */
-.select-wrap{ position:relative; display:inline-block; }
-.select-wrap select{
-  appearance:none; -webkit-appearance:none; -moz-appearance:none;
-  padding-right:36px; background:#fff;
-}
-.select-wrap .chev{
-  position:absolute; right:12px; top:50%; transform:translateY(-50%);
-  width:18px; height:18px; pointer-events:none; opacity:.75;
-}
-.select-wrap .chev svg{ width:100%; height:100%; display:block; }
-
-/* —— “不包含” 圆圈按钮 —— */
-.negate{
-  display:inline-flex; align-items:center; gap:6px; margin-left:8px;
-  font-size:13px; color:#5b6b7e; user-select:none;
-}
-.negate input{
-  appearance:none; width:14px; height:14px; border:2px solid #7788a0;
-  border-radius:50%; position:relative; cursor:pointer; outline:0;
-}
-.negate input:checked{ border-color:#1e49e2; }
-.negate input:checked::after{ content:""; position:absolute; inset:2px; border-radius:50%; background:#1e49e2; }
-
-/* ====== 经营实质面板 ====== */
-#pane-biz .panel{
-  position:relative;
-  background:#fff;
+.tab-pane{
   border:1px solid #e6edf5;
-  border-radius:10px;
-  margin:12px 16px;
-  padding:12px 16px 16px 28px; /* 左侧留空间 */
-  box-shadow:0 2px 8px rgba(17,24,39,.04);
-}
-#pane-biz .panel::before{
-  content:"";
-  position:absolute;
-  left:10px; top:12px; bottom:12px;
-  width:4px; border-radius:4px;
-  background:#dadbe0;
-}
-
-/* 面板头部 */
-#pane-biz .panel-head{
-  display:flex; align-items:center; justify-content:space-between;
-  background:#f8fbff;
-  border:1px solid #e8f0ff;
   border-radius:8px;
-  padding:8px 12px;
-  margin:-4px 0 10px;
-}
-.ph-left{ display:flex; align-items:center; gap:10px; }
-.ph-title{ font-size:15px; font-weight:700; color:#0f172a; }
+  margin:10px px 0;      /* 和 .chart-card 一样用外边距对齐 */
+  padding:0;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+  box-sizing:border-box;
 
-/* 右侧按钮 */
-.btn-ghost{
-  height:26px; padding:0 10px; border:1px solid #d8e1ee; border-radius:14px;
-  background:#fff; color:#334155; font-size:12px; cursor:pointer;
-}
-.btn-ghost:hover{ background:#eef3ff; border-color:#c7d4f4; }
-.ph-right{ display:flex; align-items:center; gap:10px; }
-.note-link{ display:inline-flex; align-items:center; gap:6px; color:#1e49e2; cursor:pointer; }
-.note-link .icon{ width:14px; height:14px; }
-.note-link u{ text-underline-offset:3px; }
+  /* ⛔ 删掉 calc，避免再次被父容器“缩一遍” */
+  width:auto;              /* 让父容器决定宽度 */
+  min-width:0;
+  max-width:none;
 
-/* 标题右侧胶囊下拉 */
-.pill-wrap{ position:relative; display:inline-block; }
-.pill-select{
-  appearance:none; -webkit-appearance:none; -moz-appearance:none;
-  height:30px; line-height:30px;
-  border-radius:20px; border:1px solid #cfd9e5;
-  padding:0 30px 0 12px; font-size:13px; background:#fff; cursor:pointer;
-}
-.pill-wrap .chev{
-  position:absolute; right:10px; top:50%; transform:translateY(-50%);
-  width:16px; height:16px; pointer-events:none; color:#64748b;
+  /* 无论父级是 grid 还是 flex，都强制跨整行并拉满 */
+  grid-column: 1 / -1;     /* Grid: 跨全列 */
+  justify-self: stretch;   /* Grid: 拉满 */
+  align-self: stretch;     /* Flex/Grid: 拉满 */
+  flex: 1 1 auto;          /* Flex: 可伸展 */
+
 }
 
-/* KPI 统一 */
-#pane-biz .kpi-row{
-  display:grid; grid-template-columns:repeat(4,1fr);
-  gap:10px; margin:8px 0 4px;
-}
-#pane-biz .kpi{
-  background:#f8fafc; border:1px solid #eef2f7;
-  border-radius:10px; padding:10px 12px;
-}
-#pane-biz .kpi .k{ font-size:12px; color:#64748b; margin-bottom:2px; }
-#pane-biz .kpi .v{ font-weight:700; color:#0f172a; }
-
-/* 图表高度 */
-#pane-biz .chart-lg{ height:300px; }
-#pane-biz .chart-md{ height:260px; }
-
-/* ===== 构成区域样式（与你现有风格一致） ===== */
-.tabs-mini{display:inline-flex;gap:6px;background:#f8fafc;border:1px solid #e6edf5;border-radius:20px;padding:3px;margin:6px 0 10px}
-.tabs-mini .tab{padding:6px 12px;border-radius:14px;font-size:12px;cursor:pointer;color:#334155;user-select:none}
-.tabs-mini .tab.active{background:#eef3ff;color:#2152ff;border:1px solid #d6e4ff}
-
-.seven-cats{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin:6px 0 2px}
-.seven-cats .cat{background:#f8fafc;border:1px solid #e6edf5;border-radius:10px;padding:10px 8px;text-align:center}
-.seven-cats .name{font-size:12px;color:#475569;margin-bottom:6px}
-.seven-cats .pct{font-weight:700;color:#0f172a}
-
-.grid-2{display:grid;grid-template-columns:1.2fr .95fr;gap:14px;margin-top:10px}
-.chart-md{width:100%;height:320px;min-height:300px;background:#fff;border:1px solid #e6edf5;border-radius:10px;padding:8px}
-
-/* —— Top20 列表卡 —— */
-/* ===== Top20：标题在上 + 右侧总额，列表自适应剩余高度（无需改JS） ===== */
-.top20-card{
-  background:#fff;
-  border:1px solid #e6edf5;
-  border-radius:10px;
-  padding:10px 12px;
-
-  /* 关键：改为弹性布局并占满容器高度 */
-  display:flex;
-  flex-direction:column;
-  height:100%;
-  overflow:hidden;   /* 防止阴影/内容溢出 */
-  min-height:0;     /* 关键：允许在父容器中被压缩 */
+/* 每个 Tab 页里的卡片：占满当前内容宽度 */
+.tab-pane .card{
+  width:auto;              /* 让父容器决定宽度 */
+  min-width:0;
+  max-width:none;
+  box-sizing: border-box;
 }
 
-/* 头部：左标题 + 右总额 */
-.top20-head{
-  display:flex;
-  align-items:baseline;
-  justify-content:space-between;
-  margin-bottom:8px;
-  flex:0 0 auto;    /* 固定高度区域 */
-}
-.top20-title{ font-size:14px; font-weight:800; color:#0f172a; }
-.top20-total{ font-weight:800; color:#2152ff; font-variant-numeric:tabular-nums; }
-.top20-sub{ font-size:12px; color:#64748b; margin-left:8px; }
+/* 让每个 Tab 页下面的内容自己滚动 */
+/* ========= 让 tab-scroll 自己滚 ========= */
+.tab-scroll{
+  /* 占满整行，让滚动条在最右边 */
+  width: 100%;
+  margin: 0;
+  padding-right: 8px;      /* 预留一点，滚动条不会压住内容 */
+  box-sizing: border-box;
 
-/* 列表区域：占满剩余空间 + 可滚动（核心改动） */
-.top20-list{
-  flex:1 1 auto;    /* 吃掉剩余高度 */
-  min-height:0;     /* 关键：不写这句会把父容器撑破导致“框外” */
-  overflow:auto;
-  padding-right:4px;
-}
+  /* 内部滚动：高度 = 视口高度 - 上面固定区 */
+  max-height: calc(100vh - 280px);  /* 280 可按需要改成 260/300 等 */
+  overflow-y: auto;
+  overflow-x: hidden;
 
-/* 行：排行 + 名称 + 金额 */
-.top20-row{
-  display:grid;
-  grid-template-columns:26px 1fr 120px;
-  align-items:center;
-  padding:6px 0;
-  border-bottom:1px dashed #eef2f7;
-}
-.top20-row:last-child{ border-bottom:none; }
-
-/* 排名徽章：前三（金/银/铜），其余蓝描边 */
-.rank-badge{
-  width:22px; height:22px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  font-size:12px; font-weight:700;
-  color:#2152ff; background:#eef3ff; border:1px solid #d6e4ff;
-}
-.rank-badge.top1{ background:#fddc7a; color:#7a5900; border-color:#f4cc50; } /* 金 */
-.rank-badge.top2{ background:#e8edf5; color:#364152; border-color:#cfd8e3; } /* 银 */
-.rank-badge.top3{ background:#f4e1cf; color:#6b3f23; border-color:#edc8a9; } /* 铜 */
-
-.cp-name{
-  color:#0f172a; font-size:13px;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.cp-amt{
-  text-align:right; color:#0f172a; font-weight:700;
-  font-variant-numeric:tabular-nums;
-}
-
-/* 滚动条美化 */
-.top20-list::-webkit-scrollbar{ width:6px }
-.top20-list::-webkit-scrollbar-thumb{ background:#e6edf5; border-radius:99px }
-.top20-list::-webkit-scrollbar-thumb:hover{ background:#d5dfef }
-
-/* —— 表格上方提示行 —— */
-.table-announce{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:12px; padding:6px 2px 8px; margin:8px 0 6px;
-  font-size:13px; line-height:1.7; color:#334155;
-  /* 跟卡片/表格对齐：容器宽度由父级决定 */
-  width:100%; box-sizing:border-box;
-}
-.table-announce .left-msg{ flex:1 1 auto; min-width:0; }
-.table-announce .right-msg{ flex:0 0 auto; white-space:nowrap; color:#64748b; }
-
-/* 文件名高亮（蓝色） */
-.table-announce .file-link{
-  color:#2152ff; text-decoration:underline; cursor:pointer;
-}
-.table-announce .file-link:hover{ text-decoration:none; }
-
-/* 小屏时自动换行，右侧提示下移靠右 */
-@media (max-width: 1200px){
-  .table-announce{ flex-direction:column; align-items:flex-start; }
-  .table-announce .right-msg{ align-self:flex-end; }
+  /* 滚动条美化（保持你原来的风格） */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15,23,42,.18) transparent;
 }
 
 
-/* 响应式：窄屏把总额卡堆到上面 */
-@media (max-width: 1280px){
-  .top20-panel{ grid-template-columns: 1fr }
-  .top20-left{ height: 96px }
-  .top20-list{ max-height: 212px }
-}
-    
-/* 让 ECharts 容器更高级一些（圆角+阴影与面板统一） */
-.chart-lg, .chart-md {
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(17,24,39,.04) inset;
-}
-/* tooltip 卡片 */
-.tip-card{
-  padding:8px 10px;border:1px solid #e6edf5;border-radius:8px;background:#fff;
-  box-shadow:0 6px 24px rgba(15,23,42,.08);font-size:12px;color:#0f172a
-}
-.tip-card .t{font-weight:700;margin-bottom:6px;color:#334155}
-.tip-row{display:flex;justify-content:space-between;gap:16px;line-height:18px}
-.tip-k{color:#64748b}
-.tip-v{font-variant-numeric:tabular-nums}
 
-/* 窄屏适配 */
-@media (max-width:1200px){
-  .filter-area{
-    justify-content:center;
-    gap:10px 12px;
-  }
-  .filter-area select,
-  .filter-area input{
-    min-width:130px;
-  }
-}
 
-/* 工具栏行：左右分布，自动换行 */
-.table-toolbar{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:12px; margin:10px 0 8px;
-}
 
-/* 两段式切换（Segmented Control） */
-.seg{
-  display:inline-flex; gap:0; background:#f8fafc;
-  border:1px solid #e6edf5; border-radius:22px; padding:3px;
-}
-.seg .opt{
-  min-width:86px; padding:6px 14px; border:0; cursor:pointer;
-  background:transparent; color:#334155; font-size:13px; border-radius:16px;
-  transition:all .18s ease; outline:none;
-}
-.seg .opt:hover{ color:#1e40af; }
-.seg .opt.active{
-  background:#eef3ff; color:#2152ff; border:1px solid #d6e4ff;
-}
-
-/* 右侧按钮组（与你现有风格协调） */
-.btn-bar{ display:flex; gap:8px; flex-wrap:wrap; }
-.btn{
-  padding:6px 12px; border-radius:8px; font-size:13px; line-height:1;
-  border:1px solid #e6edf5; background:#fff; color:#0f172a; cursor:pointer;
-  transition:all .15s ease;
-}
-.btn:hover{ background:#f6f9ff; border-color:#d6e4ff; }
-.btn.ghost{ color:#2152ff; border-color:#d6e4ff; background:#fff; }
-.btn.ghost:hover{ background:#eef3ff; }
-.btn.primary{ color:#fff; background:#2152ff; border-color:#2152ff; }
-.btn.primary:hover{ filter:brightness(.96); }
-
-/* 收窄屏处理：按钮换行，切换始终在最左 */
-@media (max-width: 1200px){
-  .table-toolbar{ flex-direction:column; align-items:stretch; }
-  .btn-bar{ justify-content:flex-end; }
-}
+/* Tab 1 账户总览 */
 
 /* 图例 */
 .legend{display:flex;gap:14px;justify-content:flex-end;margin:6px 0 10px}
@@ -1385,8 +1007,154 @@
 
 
 
-/* ====== 已知关联方面板（左侧蓝条 + 头部淡蓝条） ====== */
-#pane-relation .panel{
+
+
+/* Tab 2 经营实质 */
+.biz-filter-bar {
+  background:#fff;
+  padding: 4px 12px 10px;
+  border-left:1px solid #e5edf5;
+  border-right:1px solid #e5edf5;
+  border-bottom:1px solid #e5edf5;
+}
+
+/* 取消外层 card（你要求的） */
+.biz-filter-bar .filter-card {
+  background:transparent;
+  border:none;
+  box-shadow:none;
+  padding:0;
+  margin:0;
+}
+
+/* 整体筛选区域紧凑布局 */
+.biz-filter-bar .filter-area {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px 14px;
+  padding:6px 0 4px;
+}
+
+/* 小字体、紧凑行高 */
+.biz-filter-bar .filter-area label {
+  font-size:12px;
+  color:#334155;
+  font-weight:600;
+  line-height:28px;
+  margin-right:4px;
+}
+
+/* 胶囊输入框/下拉框（整体缩小） */
+.biz-filter-bar select,
+.biz-filter-bar input[type="text"],
+.biz-filter-bar input[type="date"] {
+  font-size:12px;
+  height:30px;
+  line-height:30px;
+  padding:0 12px;
+  min-width:130px;
+  border:1px solid #cfd9e5;
+  border-radius:50px;
+  background:#fff;
+  transition:.2s;
+}
+
+/* Hover + Focus 效果保留 */
+.biz-filter-bar select:hover,
+.biz-filter-bar input:hover {
+  border-color:#1e49e2;
+  box-shadow:0 0 0 2px rgba(30,73,226,.1);
+}
+.biz-filter-bar select:focus,
+.biz-filter-bar input:focus {
+  outline:none;
+  border-color:#0d3bc4;
+  box-shadow:0 0 0 2px rgba(13,59,196,.15);
+}
+
+/* “至” */
+.biz-filter-bar .range-sep {
+  margin:0 4px;
+  color:#64748b;
+  font-size:12px;
+  line-height:30px;
+}
+
+/* 按钮也缩小 */
+.biz-filter-bar button {
+  height:30px;
+  font-size:12px;
+  padding:0 14px;
+  border-radius:50px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+/* 主色按钮 */
+.biz-filter-bar .query { background:#1e49e2; color:#fff; }
+.biz-filter-bar .query:hover { background:#0d3bc4; }
+
+/* 重置按钮 */
+.biz-filter-bar .reset { background:#eef3fb; color:#334155; }
+.biz-filter-bar .reset:hover { background:#e6eefc; }
+
+/* 下拉箭头 */
+.biz-filter-bar .select-wrap {
+  position:relative;
+  display:inline-block;
+}
+.biz-filter-bar .select-wrap select {
+  appearance:none;
+  padding-right:30px;
+}
+.biz-filter-bar .select-wrap .chev {
+  position:absolute;
+  right:10px;
+  top:50%;
+  width:15px;
+  height:15px;
+  transform:translateY(-50%);
+  opacity:.7;
+}
+
+/* “不包含” 小圆点 */
+.biz-filter-bar .negate {
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:12px;
+  color:#5b6b7e;
+}
+.biz-filter-bar .negate input {
+  appearance:none;
+  width:12px;
+  height:12px;
+  border:2px solid #7788a0;
+  border-radius:50%;
+}
+.biz-filter-bar .negate input:checked {
+  border-color:#1e49e2;
+}
+.biz-filter-bar .negate input:checked::after {
+  content:"";
+  position:absolute;
+  inset:2px;
+  border-radius:50%;
+  background:#1e49e2;
+}
+
+/* 经营实质下面的内容继续内部滚动（如果你要内部滚动的话）*/
+#page-biz .tab-scroll {
+  max-height: calc(100vh - 260px);  /* 260 可以按屏幕再微调，越大可见区域越多 */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 16px;
+  box-sizing: border-box;
+}
+
+/* ====== 经营实质面板 ====== */
+#pane-biz .panel{
   position:relative;
   background:#fff;
   border:1px solid #e6edf5;
@@ -1395,16 +1163,16 @@
   padding:12px 16px 16px 28px; /* 左侧留空间 */
   box-shadow:0 2px 8px rgba(17,24,39,.04);
 }
-#pane-relation .panel::before{
+#pane-biz .panel::before{
   content:"";
   position:absolute;
   left:10px; top:12px; bottom:12px;
   width:4px; border-radius:4px;
-  background:#1e49e2;
+  background:#dadbe0;
 }
 
 /* 面板头部 */
-#pane-relation .panel-head{
+#pane-biz .panel-head{
   display:flex; align-items:center; justify-content:space-between;
   background:#f8fbff;
   border:1px solid #e8f0ff;
@@ -1415,114 +1183,246 @@
 .ph-left{ display:flex; align-items:center; gap:10px; }
 .ph-title{ font-size:15px; font-weight:700; color:#0f172a; }
 
+/* 右侧按钮 */
+.btn-ghost{
+  height:26px; padding:0 10px; border:1px solid #d8e1ee; border-radius:14px;
+  background:#fff; color:#334155; font-size:12px; cursor:pointer;
+}
+.btn-ghost:hover{ background:#eef3ff; border-color:#c7d4f4; }
+.ph-right{ display:flex; align-items:center; gap:10px; }
+.note-link{ display:inline-flex; align-items:center; gap:6px; color:#1e49e2; cursor:pointer; }
+.note-link .icon{ width:14px; height:14px; }
+.note-link u{ text-underline-offset:3px; }
+
+/* 标题右侧胶囊下拉 */
+.pill-wrap{ position:relative; display:inline-block; }
+.pill-select{
+  appearance:none; -webkit-appearance:none; -moz-appearance:none;
+  height:30px; line-height:30px;
+  border-radius:20px; border:1px solid #cfd9e5;
+  padding:0 30px 0 12px; font-size:13px; background:#fff; cursor:pointer;
+}
+.pill-wrap .chev{
+  position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  width:16px; height:16px; pointer-events:none; color:#64748b;
+}
+
 /* KPI 统一 */
-#pane-relation .kpi-row{
+#pane-biz .kpi-row{
   display:grid; grid-template-columns:repeat(4,1fr);
   gap:10px; margin:8px 0 4px;
 }
-#pane-relation .kpi{
+#pane-biz .kpi{
   background:#f8fafc; border:1px solid #eef2f7;
   border-radius:10px; padding:10px 12px;
 }
-#pane-relation .kpi .k{ font-size:12px; color:#64748b; margin-bottom:2px; }
-#pane-relation .kpi .v{ font-weight:700; color:#0f172a; }
+#pane-biz .kpi .k{ font-size:12px; color:#64748b; margin-bottom:2px; }
+#pane-biz .kpi .v{ font-weight:700; color:#0f172a; }
 
 /* 图表高度 */
-#pane-relation .chart-lg{ height:300px; }
-#pane-relation .chart-md{ height:260px; }
+#pane-biz .chart-lg{ height:300px; }
+#pane-biz .chart-md{ height:260px; }
 
-/* ===== Routine 面板基础排版 ===== */
-#pane-routine .grid-2{
+/* ===== 构成区域样式（与你现有风格一致） ===== */
+/* 一、还原“交易总额 / 流入方 / 流出方”这行 mini Tab 的样式 */
+/* 保证它不被全局 .tab 覆盖 */
+/* ===== 构成区域样式（与你现有风格一致） ===== */
+.tabs-mini{display:inline-flex;gap:6px;background:#f8fafc;border:1px solid #e6edf5;border-radius:20px;padding:3px;margin:6px 0 10px}
+.tabs-mini .tab{padding:6px 12px;border-radius:14px;font-size:12px;cursor:pointer;color:#334155;user-select:none}
+.tabs-mini .tab.active{background:#eef3ff;color:#2152ff;border:1px solid #d6e4ff}
+
+.seven-cats{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin:6px 0 2px}
+.seven-cats .cat{background:#f8fafc;border:1px solid #e6edf5;border-radius:10px;padding:10px 8px;text-align:center}
+.seven-cats .name{font-size:12px;color:#475569;margin-bottom:6px}
+.seven-cats .pct{font-weight:700;color:#0f172a}
+
+.grid-2{display:grid;grid-template-columns:1.2fr .95fr;gap:14px;margin-top:10px}
+.chart-md{width:100%;height:320px;min-height:300px;background:#fff;border:1px solid #e6edf5;border-radius:10px;padding:8px}
+
+/* —— Top20 列表卡 —— */
+/* ===== Top20：标题在上 + 右侧总额，列表自适应剩余高度（无需改JS） ===== */
+.top20-card{
+  background:#fff;
+  border:1px solid #e6edf5;
+  border-radius:10px;
+  padding:10px 12px;
+
+  /* 关键：改为弹性布局并占满容器高度 */
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  overflow:hidden;   /* 防止阴影/内容溢出 */
+  min-height:0;     /* 关键：允许在父容器中被压缩 */
+}
+
+/* 头部：左标题 + 右总额 */
+.top20-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  margin-bottom:8px;
+  flex:0 0 auto;    /* 固定高度区域 */
+}
+.top20-title{ font-size:14px; font-weight:800; color:#0f172a; }
+.top20-total{ font-weight:800; color:#2152ff; font-variant-numeric:tabular-nums; }
+.top20-sub{ font-size:12px; color:#64748b; margin-left:8px; }
+
+/* 列表区域：占满剩余空间 + 可滚动（核心改动） */
+.top20-list{
+  flex:1 1 auto;    /* 吃掉剩余高度 */
+  min-height:0;     /* 关键：不写这句会把父容器撑破导致“框外” */
+  overflow:auto;
+  padding-right:4px;
+}
+
+/* 行：排行 + 名称 + 金额 */
+.top20-row{
   display:grid;
-  grid-template-columns:2fr 1fr;
+  grid-template-columns:26px 1fr 120px;
+  align-items:center;
+  padding:6px 0;
+  border-bottom:1px dashed #eef2f7;
+}
+.top20-row:last-child{ border-bottom:none; }
+
+/* 排名徽章：前三（金/银/铜），其余蓝描边 */
+.rank-badge{
+  width:22px; height:22px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700;
+  color:#2152ff; background:#eef3ff; border:1px solid #d6e4ff;
+}
+.rank-badge.top1{ background:#fddc7a; color:#7a5900; border-color:#f4cc50; } /* 金 */
+.rank-badge.top2{ background:#e8edf5; color:#364152; border-color:#cfd8e3; } /* 银 */
+.rank-badge.top3{ background:#f4e1cf; color:#6b3f23; border-color:#edc8a9; } /* 铜 */
+
+.cp-name{
+  color:#0f172a; font-size:13px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.cp-amt{
+  text-align:right; color:#0f172a; font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+
+/* 滚动条美化 */
+.top20-list::-webkit-scrollbar{ width:6px }
+.top20-list::-webkit-scrollbar-thumb{ background:#e6edf5; border-radius:99px }
+.top20-list::-webkit-scrollbar-thumb:hover{ background:#d5dfef }
+
+/* —— 表格上方提示行 —— */
+.table-announce{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; padding:6px 2px 8px; margin:8px 0 6px;
+  font-size:13px; line-height:1.7; color:#334155;
+  /* 跟卡片/表格对齐：容器宽度由父级决定 */
+  width:100%; box-sizing:border-box;
+}
+.table-announce .left-msg{ flex:1 1 auto; min-width:0; }
+.table-announce .right-msg{ flex:0 0 auto; white-space:nowrap; color:#64748b; }
+
+/* 文件名高亮（蓝色） */
+.table-announce .file-link{
+  color:#2152ff; text-decoration:underline; cursor:pointer;
+}
+.table-announce .file-link:hover{ text-decoration:none; }
+
+/* 小屏时自动换行，右侧提示下移靠右 */
+@media (max-width: 1200px){
+  .table-announce{ flex-direction:column; align-items:flex-start; }
+  .table-announce .right-msg{ align-self:flex-end; }
+}
+
+
+/* 响应式：窄屏把总额卡堆到上面 */
+@media (max-width: 1280px){
+  .top20-panel{ grid-template-columns: 1fr }
+  .top20-left{ height: 96px }
+  .top20-list{ max-height: 212px }
+}
+    
+/* 让 ECharts 容器更高级一些（圆角+阴影与面板统一） */
+.chart-lg, .chart-md {
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(17,24,39,.04) inset;
+}
+/* tooltip 卡片 */
+.tip-card{
+  padding:8px 10px;border:1px solid #e6edf5;border-radius:8px;background:#fff;
+  box-shadow:0 6px 24px rgba(15,23,42,.08);font-size:12px;color:#0f172a
+}
+.tip-card .t{font-weight:700;margin-bottom:6px;color:#334155}
+.tip-row{display:flex;justify-content:space-between;gap:16px;line-height:18px}
+.tip-k{color:#64748b}
+.tip-v{font-variant-numeric:tabular-nums}
+
+/* 窄屏适配 */
+@media (max-width:1200px){
+  .filter-area{
+    justify-content:center;
+    gap:10px 12px;
+  }
+  .filter-area select,
+  .filter-area input{
+    min-width:130px;
+  }
+}
+
+/* 工具栏行：左右分布，自动换行 */
+.table-toolbar{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; margin:10px 0 8px;
+}
+
+/* 两段式切换（Segmented Control） */
+.seg{
+  display:inline-flex; gap:0; background:#f8fafc;
+  border:1px solid #e6edf5; border-radius:22px; padding:3px;
+}
+.seg .opt{
+  min-width:86px; padding:6px 14px; border:0; cursor:pointer;
+  background:transparent; color:#334155; font-size:13px; border-radius:16px;
+  transition:all .18s ease; outline:none;
+}
+.seg .opt:hover{ color:#1e40af; }
+.seg .opt.active{
+  background:#eef3ff; color:#2152ff; border:1px solid #d6e4ff;
+}
+
+/* 右侧按钮组（与你现有风格协调） */
+.btn-bar{ display:flex; gap:8px; flex-wrap:wrap; }
+.btn{
+  padding:6px 12px; border-radius:8px; font-size:13px; line-height:1;
+  border:1px solid #e6edf5; background:#fff; color:#0f172a; cursor:pointer;
+  transition:all .15s ease;
+}
+.btn:hover{ background:#f6f9ff; border-color:#d6e4ff; }
+.btn.ghost{ color:#2152ff; border-color:#d6e4ff; background:#fff; }
+.btn.ghost:hover{ background:#eef3ff; }
+.btn.primary{ color:#fff; background:#2152ff; border-color:#2152ff; }
+.btn.primary:hover{ filter:brightness(.96); }
+
+/* 收窄屏处理：按钮换行，切换始终在最左 */
+@media (max-width: 1200px){
+  .table-toolbar{ flex-direction:column; align-items:stretch; }
+  .btn-bar{ justify-content:flex-end; }
+}
+
+
+
+/* ===== Tab 6 特定工商查询 ===== */
+
+
+
+/* 主体分栏：左侧菜单 + 右侧内容 */
+#pane-routine .split{
+  position:relative;
+  display:flex;
   gap:16px;
 }
-#pane-routine .grid-2 > *{ min-width:0; }
 
-#pane-routine .card{
-  background:#fff;
-  border:1px solid #e5e7eb;
-  border-radius:10px;
-}
-#pane-routine .card .head{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:12px 16px; border-bottom:1px solid #eef2f7;
-}
-#pane-routine .card .title{ font-weight:600; color:#0f172a }
-#pane-routine .card .content{ padding:14px 16px; }
-
-/* 顶部筛选条 */
-#pane-routine .filters{
-  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
-}
-#pane-routine .filters .input,
-#pane-routine .filters .select{
-  height:32px; padding:0 10px;
-  border:1px solid #dbe3f1; border-radius:6px; background:#fff;
-}
-#pane-routine .filters .range-sep{ color:#94a3b8; padding:0 4px }
-
-/* ===== 4 色指标卡（红/橙/蓝/绿） ===== */
-#topStrip{
-  display:grid; grid-template-columns:repeat(4,1fr); gap:12px;
-}
-.kpi-card{
-  border-radius:10px; padding:14px 16px; color:#fff;
-  background:var(--kpi-color,#2563eb);
-  box-shadow:0 1px 0 rgba(0,0,0,.03) inset;
-}
-.kpi-title{ font-size:13px; opacity:.9; margin-bottom:6px }
-.kpi-num{ font-size:22px; font-weight:700; line-height:1.2; margin-bottom:4px }
-.kpi-sub{ font-size:12px; opacity:.9 }
-.kpi-card:nth-child(1){ --kpi-color:#ef4444; }
-.kpi-card:nth-child(2){ --kpi-color:#f59e0b; }
-.kpi-card:nth-child(3){ --kpi-color:#2563eb; }
-.kpi-card:nth-child(4){ --kpi-color:#16a34a; }
-
-/* ===== 图表容器必须有高度 ===== */
-.chart{ width:100%; height:320px; }
-#chart-box{ height:320px; }
-#chart-donut{ height:220px; }
-
-/* ===== Top20 表格基础样式 ===== */
-.table{ width:100%; border-collapse:collapse; }
-.table th, .table td{
-  padding:10px 8px; border-bottom:1px solid #eef2f7; white-space:nowrap;
-}
-.table thead th{
-  background:#f6f8fe; color:#334155; font-weight:600;
-  position:sticky; top:0; z-index:1;
-}
-.color-dot{
-  display:inline-block; width:10px; height:10px; border-radius:50%;
-  margin-right:6px; vertical-align:middle;
-}
-
-/* 分页按钮 & 通用按钮 */
-.pagination{ display:flex; gap:6px; padding:10px 0 }
-.btn{
-  height:32px; padding:0 12px; border:1px solid #d1d5db;
-  background:#fff; border-radius:6px; cursor:pointer;
-}
-.btn:hover{ background:#f8fafc }
-.btn.primary{ background:#2152ff; color:#fff; border-color:#2152ff }
-.btn.ghost{ background:#fff; color:#2152ff; border-color:#bfd1ff }
-.btn:active{ transform:translateY(1px); }
-
-/* 顶部工具条 */
-.routine-toolbar{
-  display:flex; justify-content:space-between; align-items:center;
-  background:#fff; border:1px solid #e5e7eb; border-radius:8px;
-  padding:10px 14px; margin:8px 0 14px;
-  position:sticky; top:0; z-index:6;
-}
-.routine-toolbar .toolbar-left{ display:flex; align-items:center; gap:10px; }
-.routine-toolbar .rt-title{ font-size:16px; font-weight:600; color:#111827; }
-
-/* 主体分栏 */
-#pane-routine .split{ position:relative; display:flex; gap:16px; }
-
-/* —— 侧栏：右侧蓝色竖线，允许设置箭头纵向偏移 —— */
+/* 侧栏，带右侧蓝色竖线和内贴式折叠按钮 */
 #pane-routine .sidebar-pane{
   position:relative;
   width:260px; min-width:260px;
@@ -1531,62 +1431,130 @@
   --sbar-toggle-offset: 84px;   /* ← 想再高一点就把 84 改大/小 */
 }
 
-/* 右侧主内容保持自适应 */
-#pane-routine main{ flex:1 1 auto; min-width:0; }
+#pane-routine main{
+  flex:1 1 auto;
+  min-width:0;
+}
 
-/* —— “内贴式”无边框箭头，放在蓝色竖线内部靠上 —— */
+/* 内贴式折叠按钮 */
 .sbar-toggle-inset{
   position:absolute;
   top:var(--sbar-toggle-offset);
-  right:0;                     /* 贴着竖线内侧 */
-  transform:translateY(-50%);  /* 微调到按钮中心对准该高度 */
-  width:12px; height:36px;
+  right:0;
+  transform:translateY(-50%);
+  width:12px;
+  height:36px;
   background:transparent;
   border:none;
   cursor:pointer;
   color:#64748b;
   line-height:36px;
   padding:0;
-  z-index:2;                   /* 保证不被右侧内容盖住 */
+  z-index:2;
 }
 .sbar-toggle-inset::before{
-  content:'❮';                 /* 展开态：向左表示“收起” */
-  display:block; text-align:center; font-size:16px;
+  content:'❮';
+  display:block;
+  text-align:center;
+  font-size:16px;
 }
 .sbar-toggle-inset:hover{ color:#1e40af; }
 
-/* —— 折叠：保留 12px 导轨，按钮仍在内部可点 —— */
+/* 折叠态：只保留 12px 导轨和按钮 */
 #pane-routine .split.is-collapsed .sidebar-pane{
-  width:12px; min-width:12px;
+  width:12px;
+  min-width:12px;
   overflow:hidden;
   border-right:2px solid #1e40af;
 }
-
-/* 折叠时隐藏侧栏内容，但保留按钮（加 !important 兜底） */
-#pane-routine .split.is-collapsed .sidebar-pane > *{ display:none; }
+#pane-routine .split.is-collapsed .sidebar-pane > *{
+  display:none;
+}
 #pane-routine .split.is-collapsed .sidebar-pane > .sbar-toggle-inset{
   display:block !important;
 }
-
-/* 折叠时箭头方向改为向右（表示“展开”） */
 #pane-routine .split.is-collapsed .sbar-toggle-inset::before{
   content:'❯';
 }
-
-/* 折叠时主面板铺满 */
-#pane-routine .split.is-collapsed main{ flex:1 1 100%; min-width:0; }
-
-
-/* 窄屏时 KPI 降为两列 */
-@media (max-width:1280px){
-  #topStrip{ grid-template-columns:repeat(2,1fr); }
+#pane-routine .split.is-collapsed main{
+  flex:1 1 100%;
+  min-width:0;
 }
 
-/* 深色（可选） */
-@media (prefers-color-scheme: dark){
-  .sbar-fab, .sbar-rail{ background:#0b1220; border-color:#1f2a44; }
-  .sbar-fab::before, .sbar-rail::before{ color:#c7d2fe; }
+/* ===== 通用 Routine 主卡片：左 田字格 + 右散点图 ===== */
+
+/* 左右两列，保持一侧田字格、一侧散点图，不再中小屏换行 */
+/* 左 4 卡 + 右侧气泡图：两列等宽，确保对齐 */
+.routine-main {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* ← 等宽 */
+  gap: 18px;
+  align-items: stretch;
 }
+
+/* 左侧 KPI 区域标题 */
+.routine-kpi-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.routine-kpi-panel .kpi-panel-title,
+.routine-scatter .scatter-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;          /* 两边标题间距统一 */
+}
+
+/* 田字格 2×2 */
+.routine-card .top-strip {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* 卡片 + 右侧小箱线图 */
+.kpi-box-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 90px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.04);
+  background: #ffffff;
+  column-gap: 8px;
+}
+
+/* 彩色背景 */
+.kpi-box-card.kpi-red    { background:#ef4444; color:#ffffff; }
+.kpi-box-card.kpi-orange { background:#f59e0b; color:#ffffff; }
+.kpi-box-card.kpi-blue   { background:#2563eb; color:#ffffff; }
+.kpi-box-card.kpi-green  { background:#16a34a; color:#ffffff; }
+
+.kpi-boxplot .boxplot-chart {
+  width: 80px;
+  height: 60px;
+}
+
+/* 右侧气泡图区：去掉外框，只留背景透明 */
+.routine-scatter {
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* 图表区域高度 */
+.routine-scatter .chart {
+  width: 100%;
+  height: 320px;
+  min-height: 280px;
+}
+
+
 
 /* 固定底部 footer（独立，不依赖额外容器） */
 #app-footer{
@@ -1609,119 +1577,6 @@
 body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按需微调 */
 
 
-
-
-
-/* ===== 特定交易查询 ===== */
-.btn{padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;background:#fff;cursor:pointer}
-.btn.primary{background:#1e49e2;border-color:#1e49e2;color:#fff}
-.small{font-size:12px;color:#667085}
-
-/* 卡片内筛选器 */
-#txFilters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
-#txFilters .field{display:flex;flex-direction:column;gap:6px}
-#txFilters label{font-size:12px;color:#667085}
-#txFilters input{height:32px;padding:0 8px;border:1px solid #d0d5dd;border-radius:6px}
-#txFilters .actions{display:flex;gap:8px;margin-left:auto}
-
-/* 汇总 KPI（6宫格） */
-#txTopStrip{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
-#txTopStrip .kpi{background:#fff;border:1px solid #eaecef;border-radius:8px;padding:10px 12px}
-#txTopStrip .k{font-size:12px;color:#667085;margin-bottom:6px}
-#txTopStrip .v{font-size:18px;font-weight:700}
-
-/* 图表容器 */
-.chart{width:100%}
-
-/* Top20 容器：左表 + 右侧纵向列表 */
-.tx-top20{display:flex;gap:20px;align-items:flex-start}
-.tx-top20-left{flex:3;overflow:auto;min-width:0}
-.tx-top20-right{flex:1;min-width:240px;max-width:320px}
-.tx-top20-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
-.tx-top20-list li{
-  display:flex;justify-content:space-between;align-items:center;
-  border:1px solid #eaecef;border-radius:8px;padding:8px 10px;background:#fff
-}
-.tx-top20-list .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%}
-.tx-top20-list .val{font-weight:700}
-
-/* 表格 + 表头吸顶 */
-.table{width:100%;border-collapse:collapse;font-size:13px}
-.table th,.table td{border-bottom:1px solid #f0f2f5;padding:8px;white-space:nowrap;text-align:left}
-.table thead th{background:#f6f8fe;position:sticky;top:0;z-index:1}
-
-/* 分页 */
-.pagination{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:10px}
-.pagination button{padding:6px 10px;border:1px solid #d0d5dd;border-radius:6px;background:#fff;cursor:pointer}
-.pagination button[disabled]{opacity:.5;cursor:not-allowed}
-
-/* 响应式 */
-@media (max-width:1200px){ #txTopStrip{grid-template-columns:repeat(3,1fr)} }
-@media (max-width:640px){  #txTopStrip{grid-template-columns:repeat(2,1fr)} .tx-top20{flex-direction:column} }
-
-
-
-/* ===== 特定工商查询Routine7 地址接近 专用样式 ===== */
-.addr-layout .addr-kpi-strip{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
-}
-
-.addr-grid .card .content{
-  padding:14px 16px;
-}
-
-/* 右侧级别切换 */
-.addr-level-tabs{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-bottom:12px;
-}
-.addr-level-btn{
-  padding:6px 12px;
-  border-radius:999px;
-  border:1px solid #d1d5db;
-  background:#fff;
-  font-size:13px;
-  cursor:pointer;
-}
-.addr-level-btn.active{
-  background:#1d4ed8;
-  border-color:#1d4ed8;
-  color:#fff;
-}
-.addr-level-summary{
-  margin-top:4px;
-}
-.addr-level-title{
-  font-weight:600;
-  margin-bottom:6px;
-}
-.addr-level-meta{
-  list-style:none;
-  padding:0;
-  margin:0 0 6px 0;
-  font-size:13px;
-}
-.addr-level-meta li{
-  margin-bottom:2px;
-}
-.text-muted{
-  color:#6b7280;
-  font-size:12px;
-}
-
-/* 窄屏时 KPI 变两列 */
-@media (max-width:1280px){
-  .addr-layout .addr-kpi-strip{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-
-    
   </style>
 </head>
 
@@ -1896,9 +1751,6 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
       <!-- 右侧：数据问题分析 -->
       <!-- 数据问题分析卡 -->
       <aside class="issue-card">
-        <div class="issue-head">
-          <span class="issue-title">数据问题分析</span>
-        </div>
         <!-- 滚动内容区 -->
         <div class="issue-body-simple">
           <p class="issue-note">
@@ -1951,214 +1803,59 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
       </div>
     
       <!-- ✅ 说明条放在同一个框内 -->
-      <div class="tab-intro" id="tabIntro"></div>
-     </div>
-
-     <!-- 统一白板舞台：两个面板共用同一块“白板” -->
-     <div class="tab-stage" style="top: -9.99999px; left: 2.00002px;">
-
-    
-      <!-- ===================== 经营实质 面板 ===================== -->
-      <section class="tab-pane" id="pane-biz">
-        <div class="tab-scroll">
       
-          <!-- 1) 筛选区 -->
+      <div class="biz-filter-bar hide" id="bizFilterBar">
           <div class="filter-card">
             <div class="filter-area">
+
               <label>被审计单位公司：</label>
               <span class="select-wrap">
                 <select class="select" id="fCompany"></select>
                 <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
               </span>
               <label class="negate"><input type="checkbox" id="negCompany">不包含</label>
-      
+
               <label>银行账户：</label>
               <span class="select-wrap">
                 <select class="select" id="fBank"></select>
                 <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
               </span>
               <label class="negate"><input type="checkbox" id="negBank">不包含</label>
-      
+
               <label>公司职能：</label>
               <span class="select-wrap">
                 <select class="select" id="fFunc"></select>
                 <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
               </span>
               <label class="negate"><input type="checkbox" id="negFunc">不包含</label>
-      
+
               <label>分析时间：</label>
               <input type="date" id="beginDate">
               <span class="range-sep">至</span>
               <input type="date" id="endDate">
-      
+
               <label>对手方类型：</label>
               <span class="select-wrap">
                 <select class="select" id="fType">
-                  <option value="all">全部</option><option>客户</option><option>供应商</option><option>员工</option>
+                  <option value="all">全部</option>
+                  <option>客户</option>
+                  <option>供应商</option>
+                  <option>员工</option>
                 </select>
                 <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
               </span>
-      
+
               <button class="query" id="btnQueryBiz">查询</button>
               <button class="reset" id="btnResetBiz">重置</button>
-            </div>
-          </div>
-      
-          <!-- 2) 资金流水金额 -->
-          <div class="panel">
-            <div class="panel-head">
-              <div class="ph-left">
-                <div class="ph-title">资金流水金额</div>
-                <button class="btn" id="btnAccountLogic">业务逻辑</button>
-                <button class="btn" id="btnAccountTips">操作提示</button>
-              </div>
-              <div class="ph-right">
-                <span class="note-link"><i class="icon">
-                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
-                </i><u>备注说明</u></span>
-                <span class="pill-wrap">
-                  <select id="yearBalance" class="pill-select">
-                    <option>2023-2024</option><option>2023</option><option>2024</option>
-                  </select>
-                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
-                </span>
-              </div>
-            </div>
-      
-      
-            <div id="chart-balance" class="chart-lg"></div>
-          </div>
-      
-          <!-- 3) 流入流出趋势 -->
-          <div class="panel">
-            <div class="panel-head">
-              <div class="ph-left">
-                <div class="ph-title">流入流出趋势</div>
-                <button class="btn" id="btnAccountLogic">业务逻辑</button>
-                <button class="btn" id="btnAccountTips">操作提示</button>
-              </div>
-              <div class="ph-right">
-                <span class="note-link"><i class="icon">
-                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
-                </i><u>备注说明</u></span>
-      
-                <span class="pill-wrap">
-                  <select id="yearIO" class="pill-select">
-                    <option>2023-2024</option><option>2023</option><option>2024</option>
-                  </select>
-                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
-                </span>
-      
-                <span class="pill-wrap">
-                  <select id="ctypeIO" class="pill-select">
-                    <option value="all">全部类型</option><option>供应商</option><option>客户</option><option>员工</option><option>其他</option><option>个人</option>
-                  </select>
-                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
-                </span>
-              </div>
-            </div>
-      
-            <div class="kpi-row" id="kpi-io">
-              <div class="kpi"><div class="k">流入金额</div><div class="v" id="io_in_sum">—</div></div>
-              <div class="kpi"><div class="k">月均流入</div><div class="v" id="io_in_avg">—</div></div>
-              <div class="kpi"><div class="k">流出总额</div><div class="v" id="io_out_sum">—</div></div>
-              <div class="kpi"><div class="k">月均流出</div><div class="v" id="io_out_avg">—</div></div>
-            </div>
-      
-            <div id="chart-io" class="chart-md"></div>
-          </div>
-      
-          <!-- 4) 流入流出构成（标题 + Tab + 7占比 + 左右两图） -->
-          <div class="panel">
-            <div class="panel-head">
-              <div class="ph-left">
-                <div class="ph-title">流入流出构成</div>
-                <button class="btn" id="btnAccountLogic">业务逻辑</button>
-                <button class="btn" id="btnAccountTips">操作提示</button>
-              </div>
-              <div class="ph-right">
-                <span class="note-link"><i class="icon">
-                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
-                </i><u>备注说明</u></span>
-              </div>
-            </div>
-      
-            <div class="tabs-mini" id="compTabs">
-              <div class="tab active" data-mode="total">交易总额</div>
-              <div class="tab" data-mode="in">流入方</div>
-              <div class="tab" data-mode="out">流出方</div>
-            </div>
-      
-            <div class="seven-cats" id="compCats"></div>
-      
-            <div class="grid-2">
-              <div id="chart-comp-monthly" class="chart-md"></div>
-              <div id="chart-comp-top20" class="chart-md"></div>
-            </div>
-      
-            <!-- 工具栏：左侧切换 / 右侧按钮组 -->
-            <div class="table-toolbar">
-              <!-- 左：两段式切换 -->
-              <div class="seg" id="tblSwitcher" role="tablist" aria-label="明细视图切换">
-                <button class="opt active" role="tab" aria-selected="true" data-view="deal">交易明细</button>
-                <button class="opt" role="tab" aria-selected="false" data-view="corp">工商信息</button>
-              </div>
-            
-              <!-- 右：功能按钮 -->
-              <div class="btn-bar">
-                <button class="btn ghost" id="btnQuick">快速查看勾选结果</button>
-                <button class="btn ghost" id="btnReset">重置筛选</button>
-                <button class="btn ghost" id="btnHead">自定义表头</button>
-                <button class="btn ghost" id="btnDist">流入流出分布</button>
-                <button class="btn primary" id="btnAnalyze">生成分析结果</button>
-                <button class="btn primary" id="btnFlow">生成流水</button>
-              </div>
-            </div>
 
-            <!-- 表格上方提示行：左侧 + 右侧各一条 -->
-            <div class="table-announce" id="tableAnnounce">
-              <div class="left-msg">
-                当前工作簿下总计有
-                <strong id="fraudCount" style="font-weight:700;">0</strong>
-                个对手方存在配合造假行为，请关注！
-                （AQPP-Audit 提供的全量配合造假清单见
-                <span class="file-link" id="fraudListFile">第三方配合造假名单.xlsx</span>）
-              </div>
-              <div class="right-msg">不勾选即默认基于全部记录导出</div>
-            </div>
-      
-            <div id="tbl-deal-wrap">
-              <table class="table" id="tblDeal">
-                <thead>
-                <tr>
-                  <th>对手方名称</th><th>对手方类型</th><th>关联关系</th><th>黑名单</th>
-                  <th>流入总额</th><th>流出总额</th><th>交易总额</th><th>交易总额占比</th><th>交易笔数</th>
-                  <th>销售类别</th><th>采购类别</th><th>职位</th><th>备注说明</th><th>操作</th>
-                </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-              <div id="pagination-deal" class="pagination"></div>
-            </div>
-      
-            <div id="tbl-corp-wrap" class="hide">
-              <table class="table" id="tblCorp">
-                <thead>
-                <tr>
-                  <th>对手方名称</th><th>交易总额</th><th>成立日期</th><th>经营开始时间</th>
-                  <th>经营结束时间</th><th>营业期限</th><th>经营状态</th><th>注册资本</th>
-                  <th>行业</th><th>经营范围</th><th>注册地址</th><th>企业联系方式</th><th>董监高</th>
-                </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-              <div id="pagination-corp" class="pagination"></div>
             </div>
           </div>
-      
         </div>
-      </section>
+        <div class="tab-intro" id="tabIntro"></div>
+     </div>
 
+     
+     
       <!-- ===================== 账户总览页 ===================== -->
       <section class="tab-pane active" id="pane-account">
         <div class="tab-scroll">
@@ -2422,58 +2119,82 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
         </div>
       </div></div></section>
 
-      <!-- =====================已知关联交易 面板 ===================== -->
-      <section class="tab-pane" id="pane-relation">
+      <!-- ===================== 经营实质 面板 ===================== -->
+      <section class="tab-pane" id="pane-biz">
         <div class="tab-scroll">
       
           <!-- 1) 筛选区 -->
-          <div class="filter-card">
-            <div class="filter-area">
-              <label>被审计单位公司：</label>
-              <span class="select-wrap">
-                <select class="select" id="fCompany"></select>
-                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
-              </span>
-              <label class="negate"><input type="checkbox" id="negCompany">不包含</label>
+          
       
-              <label>银行账户：</label>
-              <span class="select-wrap">
-                <select class="select" id="fBank"></select>
-                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
-              </span>
-              <label class="negate"><input type="checkbox" id="negBank">不包含</label>
-      
-              <label>公司职能：</label>
-              <span class="select-wrap">
-                <select class="select" id="fFunc"></select>
-                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
-              </span>
-              <label class="negate"><input type="checkbox" id="negFunc">不包含</label>
-      
-              <label>分析时间：</label>
-              <input type="date" id="beginDate">
-              <span class="range-sep">至</span>
-              <input type="date" id="endDate">
-      
-              <label>对手方类型：</label>
-              <span class="select-wrap">
-                <select class="select" id="fType">
-                  <option value="all">全部</option><option>客户</option><option>供应商</option><option>员工</option>
-                </select>
-                <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
-              </span>
-      
-              <button class="query" id="btnQueryBiz">查询</button>
-              <button class="reset" id="btnResetBiz">重置</button>
+          <!-- 2) 资金流水金额 -->
+          <div class="card">
+            <div class="head">
+              <div class="ph-left">
+                <div class="title">资金流水金额</div>
+                <button class="btn" id="btnAccountLogic">业务逻辑</button>
+                <button class="btn" id="btnAccountTips">操作提示</button>
+              </div>
+              <div class="ph-right">
+                <span class="note-link"><i class="icon">
+                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
+                </i><u>备注说明</u></span>
+                <span class="pill-wrap">
+                  <select id="yearBalance" class="pill-select">
+                    <option>2023-2024</option><option>2023</option><option>2024</option>
+                  </select>
+                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
+                </span>
+              </div>
             </div>
+      
+      
+            <div id="chart-balance" class="chart-lg"></div>
           </div>
-               
+      
+          <!-- 3) 流入流出趋势 -->
+          <div class="card">
+            <div class="head">
+              <div class="ph-left">
+                <div class="title">流入流出趋势</div>
+                <button class="btn" id="btnAccountLogic">业务逻辑</button>
+                <button class="btn" id="btnAccountTips">操作提示</button>
+              </div>
+              <div class="ph-right">
+                <span class="note-link"><i class="icon">
+                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
+                </i><u>备注说明</u></span>
+      
+                <span class="pill-wrap">
+                  <select id="yearIO" class="pill-select">
+                    <option>2023-2024</option><option>2023</option><option>2024</option>
+                  </select>
+                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
+                </span>
+      
+                <span class="pill-wrap">
+                  <select id="ctypeIO" class="pill-select">
+                    <option value="all">全部类型</option><option>供应商</option><option>客户</option><option>员工</option><option>其他</option><option>个人</option>
+                  </select>
+                  <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
+                </span>
+              </div>
+            </div>
+      
+            <div class="kpi-row" id="kpi-io">
+              <div class="kpi"><div class="k">流入金额</div><div class="v" id="io_in_sum">—</div></div>
+              <div class="kpi"><div class="k">月均流入</div><div class="v" id="io_in_avg">—</div></div>
+              <div class="kpi"><div class="k">流出总额</div><div class="v" id="io_out_sum">—</div></div>
+              <div class="kpi"><div class="k">月均流出</div><div class="v" id="io_out_avg">—</div></div>
+            </div>
+      
+            <div id="chart-io" class="chart-md"></div>
+          </div>
       
           <!-- 4) 流入流出构成（标题 + Tab + 7占比 + 左右两图） -->
-          <div class="panel">
-            <div class="panel-head">
+          <div class="card">
+            <div class="head">
               <div class="ph-left">
-                <div class="ph-title">流入流出构成</div>
+                <div class="title">流入流出构成</div>
                 <button class="btn" id="btnAccountLogic">业务逻辑</button>
                 <button class="btn" id="btnAccountTips">操作提示</button>
               </div>
@@ -2560,267 +2281,278 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
         </div>
       </section>
 
-       <!-- ===================== 特定交易查询  ===================== -->
-       <section class="tab-pane active" id="pane-transaction">
+      <!-- =====================已知关联交易 面板 ===================== -->
+      <section class="tab-pane" id="pane-relation">
         <div class="tab-scroll">
-          <!-- 顶部工具条（保留原样） -->
-          <div class="routine-toolbar">
-            <div class="toolbar-left">
-              <span class="rt-title">特定交易查询筛选条件</span>
-              <button class="btn" id="btnAccountLogic">业务逻辑</button>
-              <button class="btn" id="btnAccountTips">操作提示</button>
+
+           <!-- 4) 流入流出构成（标题 + Tab + 7占比 + 左右两图） -->
+          <div class="card">
+            <div class="head">
+              <div class="ph-left">
+                <div class="title">流入流出构成</div>
+                <button class="btn" id="btnAccountLogic">业务逻辑</button>
+                <button class="btn" id="btnAccountTips">操作提示</button>
+              </div>
+              <div class="ph-right">
+                <span class="note-link"><i class="icon">
+                  <svg viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
+                </i><u>备注说明</u></span>
+              </div>
             </div>
-            <div class="toolbar-right">
-              <button class="btn primary" id="btnGenReport">生成报告及流水</button>
+      
+            <div class="tabs-mini" id="compTabs">
+              <div class="tab active" data-mode="total">交易总额</div>
+              <div class="tab" data-mode="in">流入方</div>
+              <div class="tab" data-mode="out">流出方</div>
+            </div>
+      
+            <div class="seven-cats" id="compCats"></div>
+      
+            <div class="grid-2">
+              <div id="chart-comp-monthly" class="chart-md"></div>
+              <div id="chart-comp-top20" class="chart-md"></div>
+            </div>
+      
+            <!-- 工具栏：左侧切换 / 右侧按钮组 -->
+            <div class="table-toolbar">
+              <!-- 左：两段式切换 -->
+              <div class="seg" id="tblSwitcher" role="tablist" aria-label="明细视图切换">
+                <button class="opt active" role="tab" aria-selected="true" data-view="deal">交易明细</button>
+                <button class="opt" role="tab" aria-selected="false" data-view="corp">工商信息</button>
+              </div>
+            
+              <!-- 右：功能按钮 -->
+              <div class="btn-bar">
+                <button class="btn ghost" id="btnQuick">快速查看勾选结果</button>
+                <button class="btn ghost" id="btnReset">重置筛选</button>
+                <button class="btn ghost" id="btnHead">自定义表头</button>
+                <button class="btn ghost" id="btnDist">流入流出分布</button>
+                <button class="btn primary" id="btnAnalyze">生成分析结果</button>
+                <button class="btn primary" id="btnFlow">生成流水</button>
+              </div>
+            </div>
+
+            <!-- 表格上方提示行：左侧 + 右侧各一条 -->
+            <div class="table-announce" id="tableAnnounce">
+              <div class="left-msg">
+                当前工作簿下总计有
+                <strong id="fraudCount" style="font-weight:700;">0</strong>
+                个对手方存在配合造假行为，请关注！
+                （AQPP-Audit 提供的全量配合造假清单见
+                <span class="file-link" id="fraudListFile">第三方配合造假名单.xlsx</span>）
+              </div>
+              <div class="right-msg">不勾选即默认基于全部记录导出</div>
+            </div>
+      
+            <div id="tbl-deal-wrap">
+              <table class="table" id="tblDeal">
+                <thead>
+                <tr>
+                  <th>对手方名称</th><th>对手方类型</th><th>关联关系</th><th>黑名单</th>
+                  <th>流入总额</th><th>流出总额</th><th>交易总额</th><th>交易总额占比</th><th>交易笔数</th>
+                  <th>销售类别</th><th>采购类别</th><th>职位</th><th>备注说明</th><th>操作</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+              <div id="pagination-deal" class="pagination"></div>
+            </div>
+      
+            <div id="tbl-corp-wrap" class="hide">
+              <table class="table" id="tblCorp">
+                <thead>
+                <tr>
+                  <th>对手方名称</th><th>交易总额</th><th>成立日期</th><th>经营开始时间</th>
+                  <th>经营结束时间</th><th>营业期限</th><th>经营状态</th><th>注册资本</th>
+                  <th>行业</th><th>经营范围</th><th>注册地址</th><th>企业联系方式</th><th>董监高</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+              <div id="pagination-corp" class="pagination"></div>
             </div>
           </div>
       
+        </div>
+      </section>
+
+      <!-- ===================== 特定工商查询  ===================== -->
+      <section class="tab-pane" id="pane-routine">
+        <div class="tab-scroll">
           <div class="split">
-            <!-- 左侧菜单（保留结构，仅改 id 为 txMenu，避免与其它 pane 冲突） -->
+            <!-- 左侧菜单 -->
             <aside class="sidebar-pane">
-              <div class="menu" id="txMenu">
-                <div class="item active" data-code="2.1">1. 特定日期[前后多长时间]发生的资金收支</div>
-                <div class="item" data-code="2.2">2. [X位]整数金额的转进、转出(借贷方)发生额</div>
-                <div class="item" data-code="2.3">3. 特定期间内收支交易日期靠近的对手方</div>
-                <div class="item" data-code="2.4">4. 与不在供应商清单或客户清单中的对方单位的往来</div>
-                <div class="item" data-code="2.5">5. 同一对手方同时存在收款、付款</div>
-                <div class="item" data-code="2.6">6. 同一对手方仅发生[X]次，与业务实质不符</div>
-                <div class="item" data-code="2.7">7. 小额频繁交易</div>
-                <div class="item" data-code="2.8">8. 名单内未发生往来的对手方</div>
-                <div class="item" data-code="2.9">9. 导出含交易+工商的对手方清单</div>
-                <div class="item" data-code="2.10">10. 导出特定企业列表的工商清单</div>
+              <div class="menu" id="routineMenu">
+                <div class="item active" data-code="2.1">1. 经营时间较短</div>
+                <div class="item" data-code="2.2">2. 社保缴纳人数较少</div>
+                <div class="item" data-code="2.3">3. 为个人或个体工商户</div>
+                <div class="item" data-code="2.4">4. 注册资本与交易规模不匹配</div>
+                <div class="item" data-code="2.5">5. 交易规模与第三方所处行业状况不匹配</div>
+                <div class="item" data-code="2.6">6. 经营范围与交易性质不匹配</div>
+                <div class="item" data-code="2.7">7. 注册地址与被审计单位地址较为接近</div>
+                <div class="item" data-code="2.8">8. 不同第三方的工商登记信息相同或相近</div>
+                <div class="item" data-code="2.9">9. 既是客户又是供应商，或受同一实际控制人控制</div>
               </div>
               <div class="small">说明：切换 Routine 仅刷新右侧内容。</div>
               <button class="sbar-toggle-inset" type="button" aria-label="收起侧栏"></button>
             </aside>
-      
-            <!-- 右侧主区 -->
+
             <main>
-              <!-- 卡片1：标题 + 筛选器 + 汇总指标 -->
-              <div class="card">
-                <div class="head">
-                  <div class="title" id="txTitle">1. 特定日期 · 结果</div>
-                  <!-- 卡片内筛选器 -->
-                  <div class="filters" id="txFilters"></div>
+              <!-- ========= 通用 Routine 布局（1,2,3,4,5,6,8,9 共用） ========= -->
+              <div class="routine-common-block" id="routineCommon">
+                <!-- 顶部：标题 + 主卡片（左田字格 + 右散点图） -->
+                <div class="card routine-card">
+                  <div class="head">
+                    <div class="title" id="rTitle">经营时间汇总指标</div>
+                  </div>
+                  <div class="content">
+                    <div class="routine-main">
+                      <!-- 左：2×2 田字格 + 每格右侧小箱线图 -->
+                      <section class="routine-kpi-panel">
+                        <div class="kpi-panel-title">经营时间分段整体情况</div>
+                        <div class="top-strip" id="topStrip">
+                          <!-- JS 动态插入 .kpi-box-card -->
+                        </div>
+                      </section>
+
+                      <!-- 右：散点图 -->
+                      <section class="routine-scatter">
+                        <div class="scatter-title" id="scatterTitle">
+                          经营时间分布表
+                        </div>
+                        <div id="chart-scatter" class="chart"></div>
+                      </section>
+                    </div>
+                  </div>
                 </div>
-                <div class="content">
-                  <!-- 汇总指标（6块） -->
-                  <div class="top-strip" id="txTopStrip"></div>
-                </div>
-              </div>
-      
-              <!-- 卡片2：柱状图 -->
-              <div class="card">
-                <div class="head"><div class="title">交易金额时间分布（柱状）</div></div>
-                <div class="content">
-                  <div id="txBar" class="chart" style="height:360px"></div>
-                </div>
-              </div>
-      
-              
-      
-              <!-- 卡片4：对手方汇总表 + 分页 -->
-              <div class="card">
-                <div class="head"><div class="title">对手方交易汇总</div></div>
-                <div class="content" style="overflow:auto;max-height:520px">
-                  <table class="table" id="txTbl">
-                    <thead>
-                      <tr>
-                        <th>对手方名称</th>
-                        <th>流入总额</th>
-                        <th>流出总额</th>
-                        <th>交易总额</th>
-                        <th>异常交易总额</th>
-                        <th>占比(总额)</th>
-                        <th>占比(笔数)</th>
-                        <th>异常交易笔数</th>
-                        <th>交易次数</th>
-                        <th>对手方类型</th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
-                  <div id="pagination-transaction" class="pagination"></div>
+
+                <!-- 明细：交易明细表 -->
+                <div class="card">
+                  <div class="head">
+                    <div class="title">交易明细表</div>
+                  </div>
+                  <div class="content" style="overflow:auto;max-height:520px">
+                    <table class="table" id="tblRoutineDetail">
+                      <thead></thead>
+                      <tbody></tbody>
+                    </table>
+                    <div id="pagination-routine" class="pagination"></div>
+                  </div>
                 </div>
               </div>
+              <!-- ========= /通用 Routine 布局 ========= -->
+
+              <!-- ========= Routine 7：注册地址接近 · 地图专用布局 ========= -->
+              <div class="addr-layout" id="addrLayout" style="display:none;">
+                <!-- 顶部：标题 + 4 段 KPI -->
+                <div class="card">
+                  <div class="head">
+                    <div class="title">7. 注册地址与被审计单位地址较为接近 · 结果</div>
+                  </div>
+                  <div class="content">
+                    <div class="addr-kpi-strip">
+                      <div class="kpi-card">
+                        <div class="kpi-title">同市对手方</div>
+                        <div class="kpi-num" id="addrCityCnt">0</div>
+                        <div class="kpi-sub">交易总额：<span id="addrCityAmt">0 万</span></div>
+                      </div>
+                      <div class="kpi-card">
+                        <div class="kpi-title">同区 / 县对手方</div>
+                        <div class="kpi-num" id="addrDistrictCnt">0</div>
+                        <div class="kpi-sub">交易总额：<span id="addrDistrictAmt">0 万</span></div>
+                      </div>
+                      <div class="kpi-card">
+                        <div class="kpi-title">同街道对手方</div>
+                        <div class="kpi-num" id="addrStreetCnt">0</div>
+                        <div class="kpi-sub">交易总额：<span id="addrStreetAmt">0 万</span></div>
+                      </div>
+                      <div class="kpi-card">
+                        <div class="kpi-title">距离 < 1km 对手方</div>
+                        <div class="kpi-num" id="addrNearCnt">0</div>
+                        <div class="kpi-sub">交易总额：<span id="addrNearAmt">0 万</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 中段：左侧地图 + 右侧维度切换 -->
+                <div class="grid-2 addr-grid">
+                  <!-- 左：地图热力图 -->
+                  <div class="card">
+                    <div class="head">
+                      <div class="title">对手方地址热力分布（按接近程度）</div>
+                    </div>
+                    <div class="content">
+                      <div id="chart-addr-map" class="chart" style="height:360px;"></div>
+                    </div>
+                  </div>
+
+                  <!-- 右：级别切换 + 当前级别汇总 -->
+                  <div class="card">
+                    <div class="head">
+                      <div class="title">接近程度维度切换</div>
+                    </div>
+                    <div class="content">
+                      <div class="addr-level-tabs" id="addrLevelTabs">
+                        <button class="addr-level-btn active" data-level="city">同市</button>
+                        <button class="addr-level-btn" data-level="district">同区 / 县</button>
+                        <button class="addr-level-btn" data-level="street">同街道</button>
+                        <button class="addr-level-btn" data-level="near">距离 < 1km</button>
+                      </div>
+
+                      <div class="addr-level-summary">
+                        <div class="addr-level-title" id="addrLevelTitle">当前维度：同市</div>
+                        <ul class="addr-level-meta">
+                          <li>对手方数量：<span id="addrLevelCpCnt">0</span> 家</li>
+                          <li>交易总额：<span id="addrLevelAmt">0 万</span></li>
+                          <li>占全部对手方比例：<span id="addrLevelRatio">0%</span></li>
+                        </ul>
+                        <div class="small text-muted">
+                          提示：点击地图上的热点，可在下方表格中查看对应对手方明细。
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 底部：当前维度对手方明细表 -->
+                <div class="card">
+                  <div class="head">
+                    <div class="title">当前维度对手方明细</div>
+                  </div>
+                  <div class="content">
+                    <div class="small">当前维度：<span id="addrTableLevelLabel">同市</span></div>
+                    <div style="overflow:auto; max-height:360px;">
+                      <table class="table" id="tblAddrDetail">
+                        <thead>
+                          <tr>
+                            <th>对手方名称</th>
+                            <th>统一社会信用代码</th>
+                            <th>地址</th>
+                            <th>接近层级</th>
+                            <th>城市</th>
+                            <th>区 / 县</th>
+                            <th>街道 / 镇</th>
+                            <th>距离被审计单位 (km)</th>
+                            <th>交易总额 (万)</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- ========= /Routine 7 布局 ========= -->
             </main>
           </div>
         </div>
       </section>
+
       
-    
-      <!-- ===================== 特定工商查询 面板 ===================== -->
-      <!-- ===================== 特定工商查询 面板（已对齐“自定义四段 + 箱线 + 仅对手方视图”） ===================== -->
-      <section class="tab-pane" id="pane-routine">
-            <div class="tab-scroll">
-                <div class="split">
-                <!-- 左侧菜单 -->
-                <aside class="sidebar-pane">
-                    <div class="menu" id="routineMenu">
-                    <div class="item active" data-code="2.1">1. 经营时间较短</div>
-                    <div class="item" data-code="2.2">2. 社保缴纳人数较少</div>
-                    <div class="item" data-code="2.3">3. 为个人或个体工商户</div>
-                    <div class="item" data-code="2.3">4. 注册资本与交易规模不匹配</div>
-                    <div class="item" data-code="2.3">5. 交易规模与第三方所处行业状况不匹配</div>
-                    <div class="item" data-code="2.3">6. 经营范围与交易性质不匹配</div>
-                    <div class="item" data-code="2.3">7. 注册地址与被审计单位地址较为接近</div>
-                    <div class="item" data-code="2.3">8. 不同第三方的工商登记信息相同或相近</div>
-                    <div class="item" data-code="2.3">9. 既是客户又是供应商，或受同一实际控制人控制</div>
-                    </div>
-                    <div class="small">说明：切换 Routine 仅刷新右侧内容。</div>
-                    <button class="sbar-toggle-inset" type="button" aria-label="收起侧栏"></button>
-                </aside>
 
-                <main>
-                    <!-- ========= 通用 Routine 布局（1,2,3,4,5,6,8,9 仍然用这套） ========= -->
-                    <div class="routine-common-block">
-                    <!-- 顶部：标题 + 四段 KPI -->
-                    <div class="card">
-                        <div class="head">
-                        <div class="title" id="rTitle">1. 经营时间较短 · 结果</div>
-                        </div>
-                        <div class="content">
-                        <!-- 四色 KPI 条（红/橙/蓝/绿），JS 填充 -->
-                        <div class="top-strip" id="topStrip"></div>
-                        </div>
-                    </div>
 
-                    <!-- 中段：散点图 + 箱线图（同排） -->
-                    <div class="grid-2">
-                        <div class="card">
-                        <div class="head">
-                            <div class="title" id="scatterTitle">经营天数 vs 交易金额（散点 + 箱线）</div>
-                        </div>
-                        <div class="content">
-                            <div id="chart-scatter" class="chart"></div>
-                        </div>
-                        </div>
-
-                    </div>
-
-                    <!-- 明细：交易明细表 -->
-                    <div class="card">
-                        <div class="head">
-                        <div class="title">交易明细表</div>
-                        </div>
-                        <div class="content" style="overflow:auto;max-height:520px">
-                        <table class="table" id="tblRoutineDetail">
-                            <thead></thead>
-                            <tbody></tbody>
-                        </table>
-                        <div id="pagination-routine" class="pagination"></div>
-                        </div>
-                    </div>
-                    </div>
-                    <!-- ========= /通用 Routine 布局 ========= -->
-
-                    <!-- ========= Routine 7：注册地址接近 · 地图专用布局 ========= -->
-                    <div class="addr-layout" id="addrLayout" style="display:none;">
-                    <!-- 顶部：标题 + 4 段 KPI -->
-                    <div class="card">
-                        <div class="head">
-                        <div class="title">7. 注册地址与被审计单位地址较为接近 · 结果</div>
-                        </div>
-                        <div class="content">
-                        <div class="addr-kpi-strip">
-                            <div class="kpi-card">
-                            <div class="kpi-title">同市对手方</div>
-                            <div class="kpi-num" id="addrCityCnt">0</div>
-                            <div class="kpi-sub">交易总额：<span id="addrCityAmt">0 万</span></div>
-                            </div>
-                            <div class="kpi-card">
-                            <div class="kpi-title">同区 / 县对手方</div>
-                            <div class="kpi-num" id="addrDistrictCnt">0</div>
-                            <div class="kpi-sub">交易总额：<span id="addrDistrictAmt">0 万</span></div>
-                            </div>
-                            <div class="kpi-card">
-                            <div class="kpi-title">同街道对手方</div>
-                            <div class="kpi-num" id="addrStreetCnt">0</div>
-                            <div class="kpi-sub">交易总额：<span id="addrStreetAmt">0 万</span></div>
-                            </div>
-                            <div class="kpi-card">
-                            <div class="kpi-title">距离 &lt; 1km 对手方</div>
-                            <div class="kpi-num" id="addrNearCnt">0</div>
-                            <div class="kpi-sub">交易总额：<span id="addrNearAmt">0 万</span></div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-
-                    <!-- 中段：左侧地图 + 右侧维度切换 -->
-                    <div class="grid-2 addr-grid">
-                        <!-- 左：地图热力图 -->
-                        <div class="card">
-                        <div class="head">
-                            <div class="title">对手方地址热力分布（按接近程度）</div>
-                        </div>
-                        <div class="content">
-                            <div id="chart-addr-map" class="chart" style="height:360px;"></div>
-                        </div>
-                        </div>
-
-                        <!-- 右：级别切换 + 当前级别汇总 -->
-                        <div class="card">
-                        <div class="head">
-                            <div class="title">接近程度维度切换</div>
-                        </div>
-                        <div class="content">
-                            <div class="addr-level-tabs" id="addrLevelTabs">
-                            <button class="addr-level-btn active" data-level="city">同市</button>
-                            <button class="addr-level-btn" data-level="district">同区 / 县</button>
-                            <button class="addr-level-btn" data-level="street">同街道</button>
-                            <button class="addr-level-btn" data-level="near">距离 &lt; 1km</button>
-                            </div>
-
-                            <div class="addr-level-summary">
-                            <div class="addr-level-title" id="addrLevelTitle">当前维度：同市</div>
-                            <ul class="addr-level-meta">
-                                <li>对手方数量：<span id="addrLevelCpCnt">0</span> 家</li>
-                                <li>交易总额：<span id="addrLevelAmt">0 万</span></li>
-                                <li>占全部对手方比例：<span id="addrLevelRatio">0%</span></li>
-                            </ul>
-                            <div class="small text-muted">
-                                提示：点击地图上的热点，可在下方表格中查看对应对手方明细。
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-
-                    <!-- 底部：当前维度对手方明细表 -->
-                    <div class="card">
-                        <div class="head">
-                        <div class="title">当前维度对手方明细</div>
-                        </div>
-                        <div class="content">
-                        <div class="small">当前维度：<span id="addrTableLevelLabel">同市</span></div>
-                        <div style="overflow:auto; max-height:360px;">
-                            <table class="table" id="tblAddrDetail">
-                            <thead>
-                                <tr>
-                                <th>对手方名称</th>
-                                <th>统一社会信用代码</th>
-                                <th>地址</th>
-                                <th>接近层级</th>
-                                <th>城市</th>
-                                <th>区 / 县</th>
-                                <th>街道 / 镇</th>
-                                <th>距离被审计单位 (km)</th>
-                                <th>交易总额 (万)</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                            </table>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                    <!-- ========= /Routine 7 布局 ========= -->
-
-                </main>
-                </div>
-            </div>
-            </section>
+      
             <!-- ====== 你的“银行流水分析 · 完整版”内容结束 ====== -->
             </div>
             </div>
@@ -2833,7 +2565,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
 
 
   <!-- ====== 页面脚本：完整功能逻辑保持不变 ====== -->
-  <script>
+ <script>
   /* =============== 工具 =============== */
   function ez(id,opt){const c=echarts.init(document.getElementById(id));c.setOption(opt);window.addEventListener('resize',()=>c.resize());return c;}
   function fmtWan(v){return (Math.round(v*10)/10).toLocaleString()}
@@ -3508,14 +3240,12 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
       if (!topTabs) return;
     
       function showPane(key){
-        document.getElementById('page-account')    ?.classList.toggle('hide', key !== 'account');
-        document.getElementById('page-biz')        ?.classList.toggle('hide', key !== 'biz');
-        document.getElementById('page-relation')   ?.classList.toggle('hide', key !== 'relation');
-        document.getElementById('page-transaction')?.classList.toggle('hide', key !== 'transaction');
-        document.getElementById('page-routine')    ?.classList.toggle('hide', key !== 'routine');
-        document.getElementById('page-statement')  ?.classList.toggle('hide', key !== 'statement');
-        document.getElementById('page-verify')     ?.classList.toggle('hide', key !== 'verify');
-      }
+      // 约定：tab 页的 id 统一是 pane-xxx，和 data-top="xxx" 对应
+      document.querySelectorAll('.tab-pane').forEach(pane => {
+        const paneKey = pane.id.replace(/^pane-/, ''); // 例如 pane-account -> account
+        pane.classList.toggle('hide', paneKey !== key);
+      });
+}
     
       function activateTopTab(key){
         const target = topTabs.querySelector(`.tab[data-top="${key}"]`);
@@ -3527,6 +3257,15 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
     
         // 显隐 pane
         showPane(key);
+
+        // ✅ 自定义显示筛选条
+        const FILTER_PAGES = ['biz', 'relation','personal—transaction'];
+
+        if (bizFilterBar) {
+          bizFilterBar.classList.toggle('hide', !FILTER_PAGES.includes(key));
+        }
+
+
     
         // 记忆顶层 tab & inkbar
         sessionStorage.setItem(STORAGE_KEYS.topTab, key);
@@ -3670,226 +3409,158 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
       return chart;
     }
 
-    /* ===================== 已知关联方交易：就地初始化 ===================== */
-    (function initRelationPanel(){
-      const root = document.getElementById('pane-relation');
-      if (!root) return;
-    
-      // —— 小工具：在 root 作用域内查 DOM，避免与“经营实质”冲突 —— //
-      const $  = (sel) => root.querySelector(sel);
-      const $$ = (sel) => root.querySelectorAll(sel);
-    
-      // ===== 依赖占位（若全局已有 months/dataIn/dataOut/ez 会复用） =====
-      window.months  = window.months || [
-        ...Array.from({length:12},(_,i)=>`2023-${String(i+1).padStart(2,'0')}`),
-        ...Array.from({length:12},(_,i)=>`2024-${String(i+1).padStart(2,'0')}`)
-      ];
-      window.dataIn  = window.dataIn  || months.map(()=>Math.round(2e6+Math.random()*8e6));
-      window.dataOut = window.dataOut || months.map(()=>Math.round(1.5e6+Math.random()*7e6));
-      window.ez      = window.ez      || function(domId,opt){
-        const el = document.getElementById(domId);
-        const inst = echarts.getInstanceByDom(el) || echarts.init(el);
-        inst.setOption(opt,true); return inst;
-      };
-    
-      const C_BLUE = '#2152ff', C_RED = '#E64646';
-      const yFmt = v => (v||0).toLocaleString('zh-CN');
-    
-      /* ========== 7 类占比（面板内） ========== */
-      function renderCompCats_Rel(){
-        // TODO：换成“已知关联方交易”的真实分类统计
-        const cats = ['全体对手方','已知关联方','供应商','客户','员工','其他','个人'];
-        const nums = [100,28,0,0,0,0,0];
-        const total = nums.reduce((s,x)=>s+x,0)||1;
-        const wrap = $('#compCats'); if(!wrap) return;
-        wrap.innerHTML = cats.map((n,i)=>`
-          <div class="cat"><div class="name">${n}</div>
-          <div class="pct">${(nums[i]/total*100).toFixed(2)}%</div></div>
-        `).join('');
-      }
-    
-      /* ========== 月度柱图 + Top20（仅本面板） ========== */
-      function renderCompCharts_Rel(mode='total'){
-        if (!$('#chart-comp-monthly')) return;
-    
-        let series = [];
-        if (mode==='in'){
-          series=[{name:'流入',type:'bar',barWidth:16,itemStyle:{color:C_BLUE},data:dataIn}];
-        }else if(mode==='out'){
-          series=[{name:'流出',type:'bar',barWidth:16,itemStyle:{color:C_RED}, data:dataOut}];
-        }else{
-          series=[
-            {name:'流入',type:'bar',barWidth:16,itemStyle:{color:C_BLUE},data:dataIn},
-            {name:'流出',type:'bar',barWidth:16,itemStyle:{color:C_RED}, data:dataOut}
-          ];
-        }
-    
-        // 用容器内的 DOM 渲染（避免与 Biz 共用同 id 的问题）
-        const mEl = $('#chart-comp-monthly');
-        const mChart = echarts.getInstanceByDom(mEl) || echarts.init(mEl);
-        mChart.setOption({
-          grid:{left:56,right:16,top:30,bottom:40,containLabel:true},
-          color:[C_BLUE,C_RED],
-          legend:{top:6,right:8,icon:'roundRect',itemWidth:10,itemHeight:10},
-          tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:yFmt},
-          xAxis:{type:'category',data:months,axisTick:{show:false}},
-          yAxis:{type:'value',axisTick:{show:false},splitLine:{lineStyle:{color:'#eef2f7'}},axisLabel:{formatter:yFmt}},
-          series
-        });
-    
-        // Top20 面板（右侧）
-        const box = $('#chart-comp-top20'); if(!box) return;
-        const old = echarts.getInstanceByDom(box); if (old) old.dispose();
-        const list = Array.from({length:10},(_,i)=>({
-          name: ['a****集团','b****股份','c****有限公司','d****科技','e****材料',
-                 'f****电子','g****系统','h****动力','i****贸易','j****机电'][i],
-          amount: Math.round(2e7 + Math.random()*5e8)
-        })).sort((a,b)=>b.amount-a.amount);
-        const total = list.reduce((s,x)=>s+(+x.amount||0),0);
-        box.innerHTML = `
-          <div class="top20-card">
-            <div class="top20-head">
-              <div>
-                <span class="top20-title">Top20 交易总额</span>
-                <span class="top20-sub">（关联方子集）</span>
-              </div>
-              <div class="top20-total">¥${total.toLocaleString('zh-CN')}</div>
-            </div>
-            <div class="top20-list">
-              ${list.map((r,i)=>`
-                <div class="top20-row">
-                  <div class="rank-badge ${i<3?('top'+(i+1)):""}">${i+1}</div>
-                  <div class="cp-name" title="${r.name}">${r.name}</div>
-                  <div class="cp-amt">¥${(+r.amount).toLocaleString('zh-CN')}</div>
-                </div>`).join('')}
-            </div>
-          </div>`;
-      }
-    
-      /* ========== Tabs（交易总额 / 流入方 / 流出方） ========== */
-      $('#compTabs')?.addEventListener('click', e=>{
-        const t = e.target.closest('.tab'); if(!t) return;
-        $$('#compTabs .tab').forEach(x=>x.classList.remove('active'));
-        t.classList.add('active');
-        renderCompCharts_Rel(t.dataset.mode || 'total');
-      });
-    
-      /* ========== 子表切换（交易明细 / 工商信息） ========== */
-      $('#tblSwitcher')?.addEventListener('click', e=>{
-        const btn = e.target.closest('.opt'); if(!btn) return;
-        $$('#tblSwitcher .opt').forEach(x=>{
-          const on = x===btn; x.classList.toggle('active', on);
-          x.setAttribute('aria-selected', on ? 'true' : 'false');
-        });
-        const showDeal = btn.dataset.view==='deal';
-        $('#tbl-deal-wrap')?.classList.toggle('hide', !showDeal);
-        $('#tbl-corp-wrap')?.classList.toggle('hide',  showDeal);
-        // ← 如需切换时刷新/重置筛选，可在这里接你的 fill/重置逻辑
-      });
-    
-      /* ========== 表格上方提示的两个交互 ========== */
-      (function wireTips(){
-        // 造假数量（有真实值时调用 update）
-        const updateFraudCount = (n)=>{ const el = $('#fraudCount'); if(el) el.textContent = +n||0; };
-        updateFraudCount(0);
-    
-        // 点击“第三方配合造假名单.xlsx”
-        $('#fraudListFile')?.addEventListener('click', ()=>{
-          // TODO: 替换为真实下载/预览
-          console.log('打开：第三方配合造假名单.xlsx');
-        });
-      })();
-    
-      /* ========== 面板出现时渲染（你顶部大 Tab 切换时记得调用 onRelationShown） ========== */
-      function onRelationShown(){
-        renderCompCats_Rel();
-        // 默认选中“交易总额”
-        const active = $('#compTabs .tab.active') || $('#compTabs .tab[data-mode="total"]');
-        const mode   = active ? (active.dataset.mode || 'total') : 'total';
-        renderCompCharts_Rel(mode);
-        // 如需：刷新两张表
-        // if (typeof fillBizTables === 'function') fillBizTables();
-      }
-    
-      // 暴露给外部顶层 Tab 切换时调用
-      window.__onRelationShown = onRelationShown;
-    
-      // 如果当前进入页面时“已知关联方交易”就是激活 Tab，则立即渲染一次
-      const topTabs = document.getElementById('topTabs');
-      const activeTop = topTabs?.querySelector('.tab.active')?.dataset.top;
-      if (activeTop === 'relation') onRelationShown();
-    })();
-    
+
 
 
     
-    /* =============== 特定工商查询Routine 区域 =============== */
-    (function(){
+    /* =============== 特定工商查询 Routine 区域 =============== */
+    (function () {
       "use strict";
-    
-      /* ---------- 防护垫片（若全局已有则复用） ---------- */
-      // 金额万单位格式化
+
+      /* ---------- 通用小工具（若全局已有则复用） ---------- */
+      // 金额“万”格式化
       window.fmtWan = window.fmtWan || (n => {
-        const v = Number(n)||0;
-        // 你的数据里 total 已是“万”就直接格式化；若是“元”，这里可改成 v/1e4
-        return v.toLocaleString('zh-CN');
+        const v = Number(n) || 0;
+        return v.toLocaleString("zh-CN");
       });
-    
-      // 分页
-      window.paginate = window.paginate || function(arr, page, size){
-        const ps = Number(size)||10;
-        const p  = Math.max(1, Number(page)||1);
-        return (arr||[]).slice((p-1)*ps, p*ps);
+
+      // 简单分页
+      window.paginate = window.paginate || function (arr, page, size) {
+        const ps = Number(size) || 10;
+        const p = Math.max(1, Number(page) || 1);
+        return (arr || []).slice((p - 1) * ps, p * ps);
       };
-    
+
       // 分页按钮渲染
-      window.renderPagination = window.renderPagination || function(eleId, total, current, handler){
-        const ps = 10;
-        const pages = Math.max(1, Math.ceil((total||0)/ps));
-        const host = document.getElementById(eleId);
-        if(!host) return;
-        let html = '';
-        for(let i=1;i<=pages;i++){
-          html += `<button class="btn ${i===current?'btn-primary':''}" onclick="${handler}(${i})">${i}</button>`;
-        }
-        host.innerHTML = html;
-      };
-    
+      window.renderPagination =
+        window.renderPagination ||
+        function (eleId, total, current, handler) {
+          const ps = 10;
+          const pages = Math.max(1, Math.ceil((total || 0) / ps));
+          const host = document.getElementById(eleId);
+          if (!host) return;
+          let html = "";
+          for (let i = 1; i <= pages; i++) {
+            html += `<button class="btn ${i === current ? "btn-primary" : ""}" onclick="${handler}(${i})">${i}</button>`;
+          }
+          host.innerHTML = html;
+        };
+
       // ECharts 便捷渲染
-      window.ez = window.ez || function(domId,opt){
-        if (typeof echarts === 'undefined') {
-          console.error('[Routine] echarts 未加载');
-          return null;
-        }
-        const el = document.getElementById(domId);
-        if(!el) return null;
-        const inst = echarts.getInstanceByDom(el) || echarts.init(el, null, {renderer:'canvas', useDirtyRect:true});
-        inst.setOption(opt, {notMerge:true, lazyUpdate:true});
-        return inst;
-      };
-    
-      /* ---------- 默认区间（系统定义） ---------- */
+      window.ez =
+        window.ez ||
+        function (domId, opt) {
+          if (typeof echarts === "undefined") {
+            console.error("[Routine] echarts 未加载");
+            return null;
+          }
+          const el = document.getElementById(domId);
+          if (!el) return null;
+          const inst =
+            echarts.getInstanceByDom(el) ||
+            echarts.init(el, null, {
+              renderer: "canvas",
+              useDirtyRect: true
+            });
+          inst.setOption(opt, { notMerge: true, lazyUpdate: true });
+          return inst;
+        };
+
+      /* ---------- 默认区间定义（固定，不做筛选） ---------- */
       const ROUTINE_DEFAULTS = {
-        '2.1': { years: [1, 3, 5], labels: ['1年内','1-3年','3-5年','5年以上'] },
-        '2.2': { breaks:[50,100,200], labels: ['<50','50-99','100-199','≥200'] }
+        "2.1": {
+          years: [1, 3, 5],
+          labels: ["1年内", "1-3年", "3-5年", "5年以上"]
+        },
+        "2.2": {
+          breaks: [50, 100, 500],
+          labels: ["<=50", "51-99", "100-499", "≥500"]
+        }
       };
-    
+
       /* ---------- 全局状态 ---------- */
       const routineState = {
-        code: '2.1',
+        code: "2.1",
+        raw: [],
+        list: [],
         labels: [],
-        breaks: [],
-        list: (window.companies||[]).slice()
+        breaks: []
       };
-    
-      /* ---------- 工具 ---------- */
-      function daysSince(dateStr){
-        if (!dateStr) return 0;
-        const d = new Date(String(dateStr).replace(/-/g,'/'));
-        if (isNaN(d)) return 0;
-        return Math.max(0, Math.floor((Date.now()-d.getTime())/86400000));
+
+      /* ---------- Demo 数据生成（没有真实 companies 时自动造） ---------- */
+      function generateDemoCompanies() {
+        const segments = [
+          { label: "1年内", minYear: 0, maxYear: 1 },
+          { label: "1-3年", minYear: 1, maxYear: 3 },
+          { label: "3-5年", minYear: 3, maxYear: 5 },
+          { label: "5年以上", minYear: 5, maxYear: 10 }
+        ];
+
+        const now = Date.now();
+        const oneDay = 86400000;
+        let id = 1;
+        const arr = [];
+
+        segments.forEach(seg => {
+          for (let i = 0; i < 12; i++) {
+            const years =
+              seg.minYear + Math.random() * (seg.maxYear - seg.minYear);
+            const days = Math.round(years * 365);
+            const foundedTs = now - days * oneDay;
+            const foundedDate = new Date(foundedTs)
+              .toISOString()
+              .slice(0, 10);
+
+            const inflow = Math.round(500 + Math.random() * 20000); // 万
+            const outflow = Math.round(200 + Math.random() * 15000); // 万
+            const total = inflow + outflow;
+            const employees = Math.round(5 + Math.random() * 300);
+
+            arr.push({
+              id: id,
+              name: "对手方 " + id,
+              startDate: foundedDate,
+              employees,
+              txCnt: Math.round(5 + Math.random() * 60),
+              inflow,
+              outflow,
+              total,
+              ctype: "供应商",
+              relation: "一般往来",
+              sales: "普通销售",
+              purchase: "普通采购",
+              job: "-",
+              industry: "制造业",
+              capital: Math.round(100 + Math.random() * 9000)
+            });
+            id++;
+          }
+        });
+
+        return arr;
       }
-      function mapRecord(raw){
+
+      function refreshListFromCompanies() {
+        // 若没有真实 window.companies，则用 demo 数据
+        if (!Array.isArray(window.companies) || !window.companies.length) {
+          window.companies = generateDemoCompanies();
+        }
+        routineState.raw = window.companies.slice();
+        routineState.list = routineState.raw.map(mapRecord);
+      }
+
+      /* ---------- 数据整理 ---------- */
+      function daysSince(dateStr) {
+        if (!dateStr) return 0;
+        const d = new Date(String(dateStr).replace(/-/g, "/"));
+        if (isNaN(d)) return 0;
+        return Math.max(
+          0,
+          Math.floor((Date.now() - d.getTime()) / 86400000)
+        );
+      }
+
+      function mapRecord(raw) {
         return {
           id: raw.id,
           name: raw.name,
@@ -3900,244 +3571,292 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
           job: raw.job,
           industry: raw.industry,
           capital: raw.capital,
-          foundedDate: raw.foundedDate || raw.startDate || '',
-          employees: Number(raw.employees)||0,
+          foundedDate: raw.foundedDate || raw.startDate || "",
+          employees: Number(raw.employees) || 0,
           type: raw.type,
-          txCnt: Number(raw.txCnt)||0,
-          inflow: Number(raw.inflow)||0,
-          outflow: Number(raw.outflow)||0,
-          total: Number(raw.total)||0,
-          foundedDays: raw.foundedDays ?? daysSince(raw.startDate || raw.foundedDate)
+          txCnt: Number(raw.txCnt) || 0,
+          inflow: Number(raw.inflow) || 0,
+          outflow: Number(raw.outflow) || 0,
+          total: Number(raw.total) || 0,
+          foundedDays:
+            raw.foundedDays ??
+            daysSince(raw.startDate || raw.foundedDate)
         };
       }
-    
-      /* ---------- 过滤区（仅自定义四段 + 恢复默认） ---------- */
-      function renderSimpleFilters(code){
-        const rf = document.getElementById('routineFilters');
-        if (!rf) return;
-    
-        if (code==='2.1'){
-          const def = ROUTINE_DEFAULTS['2.1'];
-          rf.innerHTML = `
-            <label>自定义区间（单位：年）</label>
-            <input class="input" id="b1" type="number" step="0.1" value="${def.years[0]}">
-            <span class="range-sep">/</span>
-            <input class="input" id="b2" type="number" step="0.1" value="${def.years[1]}">
-            <span class="range-sep">/</span>
-            <input class="input" id="b3" type="number" step="0.1" value="${def.years[2]}">
-            <button class="btn" id="btnApplyRoutine">应用</button>
-            <button class="btn ghost" id="btnResetDefault">恢复默认</button>`;
-        } else if (code==='2.2'){
-          const def = ROUTINE_DEFAULTS['2.2'];
-          rf.innerHTML = `
-            <label>自定义区间（单位：人）</label>
-            <input class="input" id="b1" type="number" step="1" value="${def.breaks[0]}">
-            <span class="range-sep">/</span>
-            <input class="input" id="b2" type="number" step="1" value="${def.breaks[1]}">
-            <span class="range-sep">/</span>
-            <input class="input" id="b3" type="number" step="1" value="${def.breaks[2]}">
-            <button class="btn" id="btnApplyRoutine">应用</button>
-            <button class="btn ghost" id="btnResetDefault">恢复默认</button>`;
-        } else {
-          rf.innerHTML = `<span class="small">该项暂不提供区间自定义。</span>`;
-        }
-    
-        rf.onclick = (e)=>{
-          const id = e.target && e.target.id;
-          if (id==='btnApplyRoutine') applyCustomBreaks();
-          if (id==='btnResetDefault') resetToDefault();
-        };
-      }
-    
-      function applyCustomBreaks(){
-        const code = routineState.code;
-        const b1El = document.getElementById('b1');
-        const b2El = document.getElementById('b2');
-        const b3El = document.getElementById('b3');
-        if (!b1El || !b2El || !b3El) return;
-    
-        const b1 = Number(b1El.value), b2 = Number(b2El.value), b3 = Number(b3El.value);
-        if (![b1,b2,b3].every(v=>Number.isFinite(v))) return;
-    
-        if (code==='2.1'){
-          routineState.breaks = [b1*365, b2*365, b3*365].sort((a,b)=>a-b);
-          routineState.labels = ROUTINE_DEFAULTS['2.1'].labels.slice();
-        } else if (code==='2.2'){
-          routineState.breaks = [b1,b2,b3].sort((a,b)=>a-b);
-          routineState.labels = ROUTINE_DEFAULTS['2.2'].labels.slice();
-        }
-        filterByBreaksAndRefresh();
-      }
-    
-      function resetToDefault(){
-        const code = routineState.code;
-        if (code==='2.1'){
-          const def = ROUTINE_DEFAULTS['2.1'];
-          routineState.breaks = def.years.map(x=>x*365);
-          routineState.labels = def.labels.slice();
-          if (document.getElementById('b1')) {
-            document.getElementById('b1').value = def.years[0];
-            document.getElementById('b2').value = def.years[1];
-            document.getElementById('b3').value = def.years[2];
-          }
-        } else if (code==='2.2'){
-          const def = ROUTINE_DEFAULTS['2.2'];
-          routineState.breaks = def.breaks.slice();
-          routineState.labels = def.labels.slice();
-          if (document.getElementById('b1')) {
-            document.getElementById('b1').value = def.breaks[0];
-            document.getElementById('b2').value = def.breaks[1];
-            document.getElementById('b3').value = def.breaks[2];
-          }
-        }
-        filterByBreaksAndRefresh();
-      }
-    
-      function filterByBreaksAndRefresh(){
-        // 不剔除任何段，只根据 breaks 做分组展示
-        routineState.list = (window.companies||[]).map(mapRecord);
-        updateAllRoutineViews();
-      }
-    
-      /* ---------- 四色 KPI 条 ---------- */
-      function renderRoutineStrip(){
-        const list = (routineState.list||[]).slice();
-        const b = routineState.breaks;
-        const lab = routineState.labels;
-        const colors = ['#ef4444','#f59e0b','#2563eb','#16a34a'];
-        const groups = [[],[],[],[]];
-    
-        for(const r of list){
-          const x = (routineState.code==='2.1') ? r.foundedDays : (routineState.code==='2.2' ? r.employees : 0);
-          const idx = (x < b[0]) ? 0 : (x < b[1]) ? 1 : (x < b[2]) ? 2 : 3;
-          groups[idx].push(r);
-        }
-    
-        const html = groups.map((g,i)=>{
-          const inSum = g.reduce((s,x)=>s+x.inflow,0);
-          const outSum= g.reduce((s,x)=>s+x.outflow,0);
-          const tot = inSum + outSum;
-          return `
-            <div class="kpi-card" style="--kpi-color:${colors[i]}">
-              <div class="kpi-title">${lab[i]||('区间'+(i+1))}</div>
-              <div class="kpi-num">${g.length}</div>
-              <div class="kpi-sub">交易额合计：${fmtWan(tot)} 万</div>
-            </div>`;
-        }).join('');
-    
-        const host = document.getElementById('topStrip');
-        if (host) host.innerHTML = html;
-      }
-    
-      /* ---------- 散点 + 箱线 ---------- */
-      function gaussianLine(values){
-        const n = values.length||1;
-        const mean = values.reduce((s,x)=>s+x,0)/n;
-        const sd = Math.sqrt(values.reduce((s,x)=>s+(x-mean)*(x-mean),0)/n) || 1;
-        const min = Math.max(0, Math.min(...values, 0));
-        const max = Math.max(...values, 1);
-        const xs = Array.from({length:60},(_,i)=>min+(max-min)*i/59);
-        const ys = xs.map(x=> 1/(sd*Math.sqrt(2*Math.PI)) * Math.exp(-0.5*((x-mean)/sd)**2));
-        const maxY = Math.max(...ys)||1;
-        return {xs, ys: ys.map(y=> y/maxY * (max*0.6))};
-      }
-      function quartiles(arr){
-        const a = arr.slice().sort((x,y)=>x-y);
-        if (!a.length) return [0,0,0,0,0];
+
+      /* ---------- 统计工具：五数概括 ---------- */
+      function quartiles(arr) {
+        const a = arr.slice().sort((x, y) => x - y);
+        if (!a.length) return [0, 0, 0, 0, 0];
         const q = p => {
-          const pos = (a.length-1)*p, lo=Math.floor(pos), hi=Math.ceil(pos);
-          return (a[lo]*(hi-pos) + a[hi]*(pos-lo));
+          const pos = (a.length - 1) * p;
+          const lo = Math.floor(pos);
+          const hi = Math.ceil(pos);
+          return a[lo] * (hi - pos) + a[hi] * (pos - lo);
         };
-        return [a[0], q(0.25), q(0.5), q(0.75), a[a.length-1]];
+        return [a[0], q(0.25), q(0.5), q(0.75), a[a.length - 1]];
       }
-      function renderScatterAndBox(){
-        const list = (routineState.list||[]).slice();
-        const code = routineState.code;
-        const xName = (code==='2.1') ? '经营天数' : (code==='2.2' ? '缴纳人数' : '主体编号');
-    
-        const points = list.map((r,idx)=>{
-          const x = (code==='2.1') ? r.foundedDays : (code==='2.2' ? r.employees : idx+1);
-          const y = r.total;
-          return {name:r.name, value:[x,y], symbolSize: Math.max(6, Math.sqrt(Math.max(0,y))), extra:r};
-        });
-        const fit = gaussianLine(list.map(r=>r.total));
-    
-        ez('chart-scatter',{
-          tooltip:{formatter:(p)=>{
-            const d=p.data.extra;
-            const xVal = (code==='2.1')? `${d.foundedDays} 天` : (code==='2.2'? `${d.employees} 人` : `#${p.dataIndex+1}`);
-            return `${d.name}<br/>X：${xVal}<br/>流入：${fmtWan(d.inflow)} 万<br/>流出：${fmtWan(d.outflow)} 万<br/>交易额：<b>${fmtWan(d.total)} 万</b><br/>交易笔数：${d.txCnt}`;
-          }},
-          xAxis:{name:xName,type:'value',axisLine:{onZero:false}},
-          yAxis:{name:'交易金额(万)',type:'value'},
-          series:[
-            {type:'scatter',data:points,emphasis:{scale:1.15}},
-            {type:'line',name:'正态拟合',data:fit.xs.map((x,i)=>[x,fit.ys[i]]),smooth:true,showSymbol:false,areaStyle:{opacity:.08}}
+
+      // K 结尾格式：如 152,790K
+      function fmtK(n) {
+        const v = Math.round(Number(n) || 0);
+        return v.toLocaleString("en-US") + "K";
+      }
+
+      /* ---------- 小箱线图：用于 KPI 卡右侧 ---------- */
+      function renderSmallBoxplot(domId, stats, label) {
+        const el = document.getElementById(domId);
+        if (!el) return;
+        const inst = echarts.getInstanceByDom(el) || echarts.init(el);
+
+        inst.setOption({
+          grid: { left: 4, right: 4, top: 4, bottom: 4 },
+          tooltip: {
+            trigger: "item",
+            formatter: params => {
+              const v = params.data || [];
+              return [
+                `<b>${label || ""}</b>`,
+                `最小值：${fmtK(v[0])}`,
+                `最大值：${fmtK(v[4])}`,
+                `中位数：${fmtK(v[2])}`,
+                `四分之一：${fmtK(v[1])}`,
+                `四分之三：${fmtK(v[3])}`
+              ].join("<br/>");
+            },
+            borderColor: "rgba(248,113,113,0.7)"
+          },
+          xAxis: {
+            type: "category",
+            data: [""],
+            axisLine: { show: false },
+            axisTick: { show: false },
+            axisLabel: { show: false }
+          },
+          yAxis: {
+            type: "value",
+            axisLine: { show: false },
+            axisTick: { show: false },
+            axisLabel: { show: false },
+            splitLine: { show: false }
+          },
+          series: [
+            {
+              name: label || "",
+              type: "boxplot",
+              itemStyle: {
+                color: "#ffffff", // 填充白色
+                borderColor: "#ffffff" // 边框也白色
+              },
+              data: [stats] // [min, Q1, median, Q3, max]
+            }
           ]
         });
-    
-        const vals = list.map(r=>r.total);
-        const box = quartiles(vals);
-        const boxEl = document.getElementById('chart-box');
-        if (boxEl){
-          const inst = echarts.getInstanceByDom(boxEl) || echarts.init(boxEl);
-          inst.setOption({
-            tooltip:{trigger:'item'},
-            xAxis:{type:'category',data:['金额分布'],axisTick:{show:false}},
-            yAxis:{type:'value',name:'万'},
-            series:[{type:'boxplot',data:[box]}] // 直接传 [min,Q1,median,Q3,max]
-          }, true);
-        }
       }
-    
-      /* ---------- Top20 + 环形 ---------- */
-      function renderTop20(){
-        const list = (routineState.list||[]).slice();
-        const top20 = list.slice().sort((a,b)=>b.total-a.total).slice(0,20);
-        const totalTop = top20.reduce((s,x)=>s+x.total,0);
-        const colors=['#f59e0b','#f97316','#ef4444','#22c55e','#3b82f6','#8b5cf6','#06b6d4','#14b8a6','#eab308','#a855f7'];
-    
-        const rankTotal = document.getElementById('rankTotal');
-        if (rankTotal) rankTotal.textContent = fmtWan(totalTop)+' 万';
-    
-        const tbody = document.querySelector('#tblTop20 tbody');
-        if (tbody){
-          tbody.innerHTML = top20.map((r,i)=>`
-            <tr>
-              <td><span class="color-dot" style="background:${colors[i%colors.length]}"></span>${i+1}</td>
-              <td>${r.name||'-'}</td>
-              <td><b>${fmtWan(r.total)}</b></td>
-              <td style="color:#2563eb">${fmtWan(r.inflow)}</td>
-              <td style="color:#ef4444">${fmtWan(r.outflow)}</td>
-              <td>${r.txCnt||'-'}</td>
-              <td>${r.ctype||'-'}</td>
-              <td>${r.relation||'-'}</td>
-              <td>${r.industry||'-'}</td>
-              <td>${r.capital||'-'}</td>
-              <td>${r.foundedDate||'-'}</td>
-            </tr>`).join('');
+
+      /* ---------- 左侧：四段 KPI 田字格 + 每格一个小箱线图 ---------- */
+      function renderRoutineStrip() {
+        const list = (routineState.list || []).slice();
+        const b = routineState.breaks;
+        const lab = routineState.labels;
+
+        const groups = [[], [], [], []];
+        for (const r of list) {
+          const x =
+            routineState.code === "2.1"
+              ? r.foundedDays
+              : routineState.code === "2.2"
+              ? r.employees
+              : 0;
+          const idx = x < b[0] ? 0 : x < b[1] ? 1 : x < b[2] ? 2 : 3;
+          groups[idx].push(r);
         }
-    
-        ez('chart-donut',{
-          tooltip:{trigger:'item'},
-          series:[{
-            type:'pie', radius:['55%','75%'], label:{show:true,formatter:'{d}%'},
-            data: top20.map((r,i)=>({name:r.name, value:r.total, itemStyle:{color:colors[i%colors.length]}}))
-          }]
+
+        const colorClass = ["kpi-red", "kpi-orange", "kpi-blue", "kpi-green"];
+        const host = document.getElementById("topStrip");
+        if (!host) return;
+
+        host.innerHTML = groups
+          .map((g, i) => {
+            const inSum = g.reduce((s, x) => s + x.inflow, 0);
+            const outSum = g.reduce((s, x) => s + x.outflow, 0);
+            const vals = g.map(x => x.total);
+            const stats = vals.length ? quartiles(vals) : [0, 0, 0, 0, 0];
+            const bpId = "kpi-bp-" + i;
+
+            return `
+              <div class="kpi-box-card ${colorClass[i]}">
+                <div class="kpi-left">
+                  <div class="kpi-title">${lab[i] || "区间" + (i + 1)}</div>
+                  <div class="kpi-item"><span>对手方数量：</span><b>${g.length}</b> 家</div>
+                  <div class="kpi-item"><span>累计流入：</span><b>${fmtWan(inSum)}</b> 万</div>
+                  <div class="kpi-item"><span>累计流出：</span><b>${fmtWan(outSum)}</b> 万</div>
+                </div>
+                <div class="kpi-boxplot">
+                  <div class="boxplot-chart" id="${bpId}"></div>
+                </div>
+              </div>`;
+          })
+          .join("");
+
+        // 渲染 4 个小箱线图（白色+tooltip）
+        groups.forEach((g, i) => {
+          const vals = g.map(x => x.total);
+          const stats = vals.length ? quartiles(vals) : [0, 0, 0, 0, 0];
+          renderSmallBoxplot(
+            "kpi-bp-" + i,
+            stats,
+            lab[i] || "区间" + (i + 1)
+          );
         });
       }
-    
-      /* ---------- 对手方表格（仅此视图） ---------- */
+
+      /* ---------- 右侧：经营天数 vs 交易金额 气泡图 ---------- */
+      function renderBubbleChart() {
+        const list = (routineState.list || []).slice();
+        const code = routineState.code;
+
+        const xName =
+          code === "2.1"
+            ? "经营天数"
+            : code === "2.2"
+            ? "缴纳人数"
+            : "主体编号";
+
+        const breaks = routineState.breaks || [];
+        const labels = routineState.labels || [];
+        const colors = ["#ef4444", "#f59e0b", "#2563eb", "#16a34a"];
+        const groups = [[], [], [], []];
+
+        list.forEach((r, idx) => {
+          const xVal =
+            code === "2.1"
+              ? r.foundedDays
+              : code === "2.2"
+              ? r.employees
+              : idx + 1;
+          const yVal = r.total;
+
+          let gi = 3;
+          if (breaks && breaks.length === 3) {
+            gi =
+              xVal < breaks[0]
+                ? 0
+                : xVal < breaks[1]
+                ? 1
+                : xVal < breaks[2]
+                ? 2
+                : 3;
+          }
+          groups[gi].push({ x: xVal, y: yVal, raw: r });
+        });
+
+        const series = groups.map((g, i) => ({
+          name: labels[i] || "区间" + (i + 1),
+          type: "scatter",
+          data: g.map(p => ({
+            name: p.raw.name,
+            value: [p.x, p.y],
+            // 气泡大小（根据金额开根号做缩放）
+            symbolSize: 8 + Math.sqrt(Math.abs(p.y || 0)) / 60,
+            itemStyle: { color: colors[i] },
+            extra: p.raw
+          })),
+          emphasis: {
+            focus: "series",
+            scale: 1.2
+          }
+        }));
+
+        ez("chart-scatter", {
+          grid: {
+            left: 48,
+            right: 20,
+            top: 28,
+            bottom: 60
+          },
+          legend: {
+            top: 4,
+            right: 10,
+            icon: "circle",
+            itemWidth: 8,
+            itemHeight: 8,
+            textStyle: { fontSize: 11 }
+          },
+          tooltip: {
+            trigger: "item",
+            formatter: p => {
+              const d = p.data.extra;
+              const seriesName = p.seriesName || "";
+              const xVal =
+                code === "2.1"
+                  ? d.foundedDays + " 天"
+                  : code === "2.2"
+                  ? d.employees + " 人"
+                  : "#" + (p.dataIndex + 1);
+
+              return [
+                `<b>${d.name}</b>`,
+                seriesName ? `所属区间：${seriesName}` : "",
+                `X：${xVal}`,
+                `流入：${fmtWan(d.inflow)} 万`,
+                `流出：${fmtWan(d.outflow)} 万`,
+                `交易额：<b>${fmtWan(d.total)} 万</b>`,
+                `交易笔数：${d.txCnt || 0}`
+              ]
+                .filter(Boolean)
+                .join("<br/>");
+            }
+          },
+          xAxis: {
+            name: xName,
+            type: "value",
+            axisLine: { onZero: false },
+            nameTextStyle: { fontSize: 12 },
+            axisLabel: { fontSize: 11 }
+          },
+          yAxis: {
+            name: "交易金额(万)",
+            type: "value",
+            nameTextStyle: { fontSize: 12 },
+            axisLabel: { fontSize: 11 }
+          },
+          // 缩放：鼠标滚轮 + 底部滑块
+          dataZoom: [
+            {
+              type: "inside",
+              xAxisIndex: 0,
+              filterMode: "none"
+            },
+            {
+              type: "slider",
+              xAxisIndex: 0,
+              height: 24,
+              bottom: 18,
+              borderColor: "#e5e7eb",
+              backgroundColor: "#f1f5f9",
+              fillerColor: "rgba(37,99,235,0.15)",
+              showDetail: false
+            }
+          ],
+          series
+        });
+      }
+
+      /* ---------- 交易明细表（一个表） ---------- */
       let currentRoutinePage = 1;
-      window.gotoRoutine = function(p){ currentRoutinePage = p; renderRoutineTable(); };
-    
-      function renderRoutineTable(){
-        const list = (routineState.list||[]).slice();
+      window.gotoRoutine = function (p) {
+        currentRoutinePage = p;
+        renderRoutineTable();
+      };
+
+      function renderRoutineTable() {
+        const list = (routineState.list || []).slice();
         const pageItems = paginate(list, currentRoutinePage, 10);
-        const thead = document.querySelector('#tblRoutineDetail thead');
-        const tbody = document.querySelector('#tblRoutineDetail tbody');
+        const thead = document.querySelector("#tblRoutineDetail thead");
+        const tbody = document.querySelector("#tblRoutineDetail tbody");
         if (!thead || !tbody) return;
-    
+
         thead.innerHTML = `
           <tr>
             <th>对手方名称</th><th>流入总额</th><th>流出总额</th><th>交易总额</th>
@@ -4146,641 +3865,132 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
             <th>关联关系</th><th>销售类别</th><th>采购类别</th>
             <th>职位</th><th>所属集团</th>
           </tr>`;
-    
-        tbody.innerHTML = pageItems.map(d=>`
+
+        tbody.innerHTML = pageItems
+          .map(
+            d => `
           <tr>
-            <td>${d.name||'-'}</td>
+            <td>${d.name || "-"}</td>
             <td style="color:#2563eb">${fmtWan(d.inflow)}</td>
             <td style="color:#ef4444">${fmtWan(d.outflow)}</td>
             <td><b>${fmtWan(d.total)}</b></td>
-            <td>${fmtWan(d.outflow*0.15)}</td>
-            <td>${(Math.random()*10).toFixed(2)}%</td>
-            <td>${(Math.random()*5).toFixed(2)}%</td>
-            <td>${Math.floor((d.txCnt||0)*0.1)}</td>
-            <td>${d.txCnt||0}</td><td>${d.ctype||'-'}</td><td>${d.relation||'-'}</td>
-            <td>${d.sales||'-'}</td><td>${d.purchase||'-'}</td><td>${d.job||'-'}</td>
-            <td>集团${(d.id||0)%5+1}</td>
-          </tr>`).join('');
-    
-        renderPagination('pagination-routine', list.length, currentRoutinePage, 'gotoRoutine');
+            <td>${fmtWan(d.outflow * 0.15)}</td>
+            <td>${(Math.random() * 10).toFixed(2)}%</td>
+            <td>${(Math.random() * 5).toFixed(2)}%</td>
+            <td>${Math.floor((d.txCnt || 0) * 0.1)}</td>
+            <td>${d.txCnt || 0}</td>
+            <td>${d.ctype || "-"}</td>
+            <td>${d.relation || "-"}</td>
+            <td>${d.sales || "-"}</td>
+            <td>${d.purchase || "-"}</td>
+            <td>${d.job || "-"}</td>
+            <td>集团${(d.id || 0) % 5 + 1}</td>
+          </tr>`
+          )
+          .join("");
+
+        renderPagination(
+          "pagination-routine",
+          list.length,
+          currentRoutinePage,
+          "gotoRoutine"
+        );
       }
-    
+
       /* ---------- 一键刷新 ---------- */
-      function updateAllRoutineViews(){
-        routineState.list = (routineState.list||[]).map(mapRecord);
+      function updateAllRoutineViews() {
+        refreshListFromCompanies();
         renderRoutineStrip();
-        renderScatterAndBox();
-        renderTop20();
+        renderBubbleChart();
         renderRoutineTable();
       }
-    
-      /* ---------- 左侧菜单切换 ---------- */
-      const routineMenu = document.getElementById('routineMenu');
-      routineMenu && routineMenu.addEventListener('click', e=>{
-        const it = e.target.closest('.item'); if (!it) return;
-        [...routineMenu.children].forEach(m=>m.classList.remove('active'));
-        it.classList.add('active');
-        renderRoutine(it.dataset.code);
-      });
-    
-      function renderRoutine(code='2.1'){
+
+      /* ---------- 左侧 Routine 菜单切换 ---------- */
+      const routineMenu = document.getElementById("routineMenu");
+      routineMenu &&
+        routineMenu.addEventListener("click", e => {
+          const it = e.target.closest(".item");
+          if (!it) return;
+          [...routineMenu.children].forEach(m =>
+            m.classList.remove("active")
+          );
+          it.classList.add("active");
+          renderRoutine(it.dataset.code);
+        });
+
+      function renderRoutine(code = "2.1") {
         routineState.code = code;
-    
-        if (code==='2.1'){
-          routineState.breaks = ROUTINE_DEFAULTS['2.1'].years.map(x=>x*365);
-          routineState.labels = ROUTINE_DEFAULTS['2.1'].labels.slice();
-          const t1 = document.getElementById('rTitle'); if(t1) t1.textContent = '1. 经营时间较短 · 结果';
-          const st = document.getElementById('scatterTitle'); if(st) st.textContent = '经营天数 vs 交易金额（散点 + 箱线）';
-        } else if (code==='2.2'){
-          routineState.breaks = ROUTINE_DEFAULTS['2.2'].breaks.slice();
-          routineState.labels = ROUTINE_DEFAULTS['2.2'].labels.slice();
-          const t1 = document.getElementById('rTitle'); if(t1) t1.textContent = '2. 社保缴纳人数较少 · 结果';
-          const st = document.getElementById('scatterTitle'); if(st) st.textContent = '缴纳人数 vs 交易金额（散点 + 箱线）';
+
+        if (code === "2.1") {
+          const def = ROUTINE_DEFAULTS["2.1"];
+          routineState.breaks = def.years.map(x => x * 365);
+          routineState.labels = def.labels.slice();
+          const t1 = document.getElementById("rTitle");
+          if (t1) t1.textContent = "经营时间汇总指标";
+          const st = document.getElementById("scatterTitle");
+          if (st)
+            st.textContent = "经营时间分布表";
+        } else if (code === "2.2") {
+          const def = ROUTINE_DEFAULTS["2.2"];
+          routineState.breaks = def.breaks.slice();
+          routineState.labels = def.labels.slice();
+          const t1 = document.getElementById("rTitle");
+          if (t1) t1.textContent = "社保缴纳人数汇总指标";
+          const st = document.getElementById("scatterTitle");
+          if (st)
+            st.textContent = "社保缴纳人数分布表";
         } else {
-          // 2.3 仍使用经营时间的默认标签作为占位（不做区间）
-          routineState.breaks = ROUTINE_DEFAULTS['2.1'].years.map(x=>x*365);
-          routineState.labels = ROUTINE_DEFAULTS['2.1'].labels.slice();
-          const t1 = document.getElementById('rTitle'); if(t1) t1.textContent = '3. 为个人或个体工商户 · 结果';
-          const st = document.getElementById('scatterTitle'); if(st) st.textContent = '主体编号 vs 交易金额（散点 + 箱线）';
+          // 其它 Routine 用经营时间的区间占位
+          const def = ROUTINE_DEFAULTS["2.1"];
+          routineState.breaks = def.years.map(x => x * 365);
+          routineState.labels = def.labels.slice();
+          const t1 = document.getElementById("rTitle");
+          if (t1)
+            t1.textContent = "主体类型汇总指标";
+          const st = document.getElementById("scatterTitle");
+          if (st)
+            st.textContent = "主体类型分布表";
         }
-    
-        renderSimpleFilters(code);
-        routineState.list = (window.companies||[]).slice();
+
         updateAllRoutineViews();
       }
-    
-      // 初始进入
-      renderRoutine('2.1');
-    })();
 
-    window.addEventListener('resize', ()=>{
-      try{ echarts.getInstanceByDom(document.getElementById('chart-scatter'))?.resize(); }catch(e){}
-      try{ echarts.getInstanceByDom(document.getElementById('chart-box'))?.resize(); }catch(e){}
-      try{ echarts.getInstanceByDom(document.getElementById('chart-donut'))?.resize(); }catch(e){}
-    });
+      // 初始进入：Routine 2.1
+      renderRoutine("2.1");
 
-    // 让“内贴式箭头”真正切换侧栏宽度
-    (function(){
-      // 同一页面可能不止一个 split，这里做事件委托更稳
-      document.addEventListener('click', function(ev){
-        const btn = ev.target.closest('.sbar-toggle-inset');
-        if(!btn) return;
-  
-        // 找到它所属的 split 容器（就是左右两栏的那个）
-        const split = btn.closest('.split');
-        if(!split) return;
-  
-        split.classList.toggle('is-collapsed'); // 切换收起/展开
-        // 无需改箭头，CSS 已根据 .is-collapsed 自动切换 ❮ / ❯
-      }, {passive:true});
-    })();
-
-    /* ============================================================
-    *  Routine 7：注册地址与被审计单位地址较为接近 · 地图专用逻辑
-    *  说明：
-    *    1）上线时把 addrHeatData 换成后端真实数据
-    *    2）Routine 菜单中第 7 条 data-code 必须是 "2.7"
-    *       <div class="item" data-code="2.7">7. 注册地址与被审计单位地址较为接近</div>
-    * ============================================================ */
-
-    const routineCommonBlock = document.querySelector('.routine-common-block');
-    const addrLayout         = document.getElementById('addrLayout');
-
-    routineMenu.addEventListener('click', e => {
-      const it = e.target.closest('.item');
-      if (!it) return;
-
-      [...routineMenu.children].forEach(el => el.classList.remove('active'));
-      it.classList.add('active');
-
-      const code = it.dataset.code;
-
-      if (code === '2.7') {
-        // 显示地图 Routine7
-        if (routineCommonBlock) routineCommonBlock.style.display = 'none';
-        if (addrLayout)         addrLayout.style.display = 'block';
-        setTimeout(() => initAddrRoutine(), 50);
-      } else {
-        // 回到通用 Routine 布局
-        if (addrLayout)         addrLayout.style.display = 'none';
-        if (routineCommonBlock) routineCommonBlock.style.display = 'block';
-
-        // ✳️ 这里仍然调用你原来根据 code 刷新散点/箱线/明细的函数
-        if (typeof renderRoutine === 'function') {
-          renderRoutine(code);   // 比如你原来的入口函数叫 renderRoutine
-        }
-      }
-    });
-
-    /** 示例数据：上线时用后端真实数据替换这个数组 */
-    const addrHeatData = [
-      // 每一条代表一个“聚合点 / 热点”
-      // level: 'city' | 'district' | 'street' | 'near'
-      {
-        name: '同市-样例',
-        level: 'city',
-        lng: 116.40,
-        lat: 39.90,
-        cp_cnt: 5,            // 该热点下对手方数量
-        total_amt: 120,       // 交易总额（万）
-        ratio: 0.2,           // 对所有对手方数量的占比
-        cp_name: '北京恒信科技有限公司',
-        credit_code: '91110108012345678A',
-        address: '北京市朝阳区某某路 88 号',
-        city_name: '北京市',
-        district_name: '朝阳区',
-        street_name: '三里屯街道',
-        distance_km: 2.35
-      },
-      {
-        name: '同区-样例',
-        level: 'district',
-        lng: 116.38,
-        lat: 39.92,
-        cp_cnt: 3,
-        total_amt: 80,
-        ratio: 0.1,
-        cp_name: '北京弘业实业有限公司',
-        credit_code: '91110108098765432B',
-        address: '北京市朝阳区某某路 66 号',
-        city_name: '北京市',
-        district_name: '朝阳区',
-        street_name: '望京街道',
-        distance_km: 1.20
-      },
-      {
-        name: '同街道-样例',
-        level: 'street',
-        lng: 116.37,
-        lat: 39.94,
-        cp_cnt: 2,
-        total_amt: 50,
-        ratio: 0.06,
-        cp_name: '北京星宇贸易有限公司',
-        credit_code: '91110108000000000X',
-        address: '北京市朝阳区某路 10 号',
-        city_name: '北京市',
-        district_name: '朝阳区',
-        street_name: '望京街道',
-        distance_km: 0.65
-      },
-      {
-        name: '近距离-样例',
-        level: 'near',
-        lng: 116.41,
-        lat: 39.91,
-        cp_cnt: 1,
-        total_amt: 30,
-        ratio: 0.04,
-        cp_name: '北京远景智能科技有限公司',
-        credit_code: '91110108011111111Y',
-        address: '北京市朝阳区某巷 3 号',
-        city_name: '北京市',
-        district_name: '朝阳区',
-        street_name: '望京街道',
-        distance_km: 0.35
-      }
-    ];
-
-    /* ---------- 1. 顶部 4 张 KPI 卡统计 ---------- */
-    function refreshAddrKpi() {
-      const city     = addrHeatData.filter(d => d.level === 'city');
-      const district = addrHeatData.filter(d => d.level === 'district');
-      const street   = addrHeatData.filter(d => d.level === 'street');
-      const near     = addrHeatData.filter(d => d.level === 'near');
-
-      const sumAmt = list => list.reduce((s, d) => s + (d.total_amt || 0), 0);
-      const sumCnt = list => list.reduce((s, d) => s + (d.cp_cnt || 0), 0);
-
-      const cityCntDom     = document.getElementById('addrCityCnt');
-      const districtCntDom = document.getElementById('addrDistrictCnt');
-      const streetCntDom   = document.getElementById('addrStreetCnt');
-      const nearCntDom     = document.getElementById('addrNearCnt');
-
-      const cityAmtDom     = document.getElementById('addrCityAmt');
-      const districtAmtDom = document.getElementById('addrDistrictAmt');
-      const streetAmtDom   = document.getElementById('addrStreetAmt');
-      const nearAmtDom     = document.getElementById('addrNearAmt');
-
-      if (!cityCntDom) return; // 防御性判断
-
-      cityCntDom.innerText     = sumCnt(city);
-      districtCntDom.innerText = sumCnt(district);
-      streetCntDom.innerText   = sumCnt(street);
-      nearCntDom.innerText     = sumCnt(near);
-
-      cityAmtDom.innerText     = sumAmt(city).toFixed(2) + ' 万';
-      districtAmtDom.innerText = sumAmt(district).toFixed(2) + ' 万';
-      streetAmtDom.innerText   = sumAmt(street).toFixed(2) + ' 万';
-      nearAmtDom.innerText     = sumAmt(near).toFixed(2) + ' 万';
-    }
-
-    /* ---------- 2. 右侧维度汇总 + 底部表格 ---------- */
-    function refreshAddrLevel(level) {
-      const all      = addrHeatData;
-      const filtered = all.filter(d => d.level === level);
-
-      const totalCpCnt = filtered.reduce((s, d) => s + (d.cp_cnt || 0), 0);
-      const totalAmt   = filtered.reduce((s, d) => s + (d.total_amt || 0), 0);
-      const totalCpAll = all.reduce((s, d) => s + (d.cp_cnt || 0), 0) || 1;
-      const ratio      = (totalCpCnt / totalCpAll * 100).toFixed(1) + '%';
-
-      const levelNameMap = {
-        city:    '同市',
-        district:'同区 / 县',
-        street:  '同街道',
-        near:    '距离 < 1km'
-      };
-
-      const titleDom       = document.getElementById('addrLevelTitle');
-      const cpCntDom       = document.getElementById('addrLevelCpCnt');
-      const amtDom         = document.getElementById('addrLevelAmt');
-      const ratioDom       = document.getElementById('addrLevelRatio');
-      const tableLevelDom  = document.getElementById('addrTableLevelLabel');
-      const tbody          = document.querySelector('#tblAddrDetail tbody');
-
-      if (!titleDom || !tbody) return;
-
-      titleDom.innerText      = '当前维度：' + (levelNameMap[level] || '');
-      cpCntDom.innerText      = totalCpCnt;
-      amtDom.innerText        = totalAmt.toFixed(2) + ' 万';
-      ratioDom.innerText      = ratio;
-      tableLevelDom.innerText = levelNameMap[level] || '';
-
-      tbody.innerHTML = '';
-      filtered.forEach(d => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${d.cp_name    || d.name || ''}</td>
-          <td>${d.credit_code || ''}</td>
-          <td>${d.address     || ''}</td>
-          <td>${levelNameMap[level] || ''}</td>
-          <td>${d.city_name     || ''}</td>
-          <td>${d.district_name || ''}</td>
-          <td>${d.street_name   || ''}</td>
-          <td>${d.distance_km != null ? d.distance_km.toFixed(2) : ''}</td>
-          <td>${d.total_amt   != null ? d.total_amt.toFixed(2)   : ''}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    /* ---------- 3. 地图渲染 ---------- */
-    let addrMapChart = null;
-
-    function renderAddrMap(level) {
-      const dom = document.getElementById('chart-addr-map');
-      if (!dom) return;
-
-      // ★ 容器刚从 display:none 变成 block 时，需要 init 一次
-      if (!addrMapChart) {
-        addrMapChart = echarts.init(dom);
-      }
-
-      const data = addrHeatData
-        .filter(d => d.level === level)
-        .map(d => [d.lng, d.lat, d.total_amt || d.cp_cnt || 0, d.name]);
-
-      const maxVal = data.length ? Math.max(...data.map(d => d[2])) : 1;
-
-      const option = {
-        tooltip: {
-          trigger: 'item',
-          formatter: p => {
-            const v = p.value;
-            return `${v[3] || ''}<br/>指标值：${v[2]}`;
-          }
-        },
-        visualMap: {
-          min: 0,
-          max: maxVal,
-          left: 'left',
-          bottom: 10,
-          text: ['高','低'],
-          calculable: true,
-          inRange: {
-            color: ['#e0f2fe','#60a5fa','#1d4ed8','#172554']
-          }
-        },
-        geo: {
-          map: 'china',      // ★ 如果以后要换成某个省级地图，在这里改 map 名
-          roam: true,
-          label: { show: false },
-          itemStyle: {
-            areaColor: '#f9fafb',
-            borderColor: '#e5e7eb'
-          },
-          emphasis: {
-            itemStyle: {
-              areaColor: '#dbeafe'
-            }
-          }
-        },
-        series: [{
-          type: 'heatmap',
-          coordinateSystem: 'geo',
-          data: data
-        }]
-      };
-
-      addrMapChart.setOption(option);
-      // 延迟 resize 一下，避免容器刚显示时宽高为 0
-      setTimeout(() => addrMapChart.resize(), 80);
-    }
-
-    /* ---------- 4. 右侧维度切换按钮 ---------- */
-    function initAddrLevelTabs() {
-      const tabs = document.querySelectorAll('#addrLevelTabs .addr-level-btn');
-      if (!tabs.length) return;
-
-      tabs.forEach(btn => {
-        btn.addEventListener('click', function(){
-          tabs.forEach(b => b.classList.remove('active'));
-          this.classList.add('active');
-
-          const level = this.getAttribute('data-level');
-          renderAddrMap(level);
-          refreshAddrLevel(level);
+      // 右侧 Routine 侧栏折叠按钮
+      (function(){
+        const split = document.querySelector('#pane-routine .split');
+        const btn   = document.querySelector('#pane-routine .sbar-toggle-inset');
+        if (!split || !btn) return;
+        btn.addEventListener('click', () => {
+          split.classList.toggle('is-collapsed');
         });
-      });
-    }
+      })();
 
-    /* ---------- 5. Routine7 总初始化：只做一次 ---------- */
-    let addrInited = false;
+      // 初始进入
+      renderRoutine("2.1");
 
-    function initAddrRoutine() {
-      if (addrInited) return;
-
-      // 1) 顶部四张卡
-      refreshAddrKpi();
-
-      // 2) 右侧 tabs 绑定
-      initAddrLevelTabs();
-
-      // 3) 默认维度：同市
-      renderAddrMap('city');
-      refreshAddrLevel('city');
-
-      addrInited = true;
-    }
-
-    /* ============================================================
-    *  使用方式：
-    *   1）菜单点击到 data-code="2.7" 时：
-    *        - 显示 #addrLayout
-    *        - 隐藏 .routine-common-block
-    *        - 然后调用 initAddrRoutine()
-    *
-    *   2）其它 Routine（2.1, 2.2, 2.3...）：
-    *        - 隐藏 #addrLayout
-    *        - 显示 .routine-common-block
-    *        - 调你现有的渲染函数（散点、箱线、明细表）
-    * ============================================================ */
-
-    /* ==================== 特定交易查询TransactionPane：仅作用于 #pane-transaction ==================== */
-    (function(){
-      document.addEventListener('DOMContentLoaded', () => {
-        const pane = document.getElementById('pane-transaction');
-        if (!pane) return;
-    
-        const el = {
-          // 顶部按钮
-          btnReport: pane.querySelector('#btnGenReport'),
-          btnLogic:  pane.querySelector('#btnAccountLogic'),
-          btnTips:   pane.querySelector('#btnAccountTips'),
-    
-          // 左侧菜单
-          menu: pane.querySelector('#txMenu'),
-          title: pane.querySelector('#txTitle'),
-    
-          // 筛选器 / KPI
-          filtersWrap: pane.querySelector('#txFilters'),
-          kpis: pane.querySelector('#txTopStrip'),
-    
-          // 柱状图
-          bar: pane.querySelector('#txBar'),
-    
-          // Top20
-          top20Total: pane.querySelector('#txTop20Total'),
-          top20TblBody: pane.querySelector('#txTop20Tbl tbody'),
-          top20List: pane.querySelector('#txTop20List'),
-    
-          // 汇总表 + 分页
-          tblBody: pane.querySelector('#txTbl tbody'),
-          pager: pane.querySelector('#pagination-transaction')
-        };
-    
-        const state = {
-          code: '2.1',
-          filters: { begin: '', end: '', window: 10, minAmt: '' },
-          page: 1,
-          pageSize: 50,
-          total: 0,
-          charts: { bar: null }
-        };
-    
-        /* --------- 1) 渲染筛选器 --------- */
-        function renderFilters(){
-          el.filtersWrap.innerHTML = `
-            <div class="field">
-              <label>开始日期</label>
-              <input type="date" id="txBegin" value="">
-            </div>
-            <div class="field">
-              <label>结束日期</label>
-              <input type="date" id="txEnd" value="">
-            </div>
-            <div class="field">
-              <label>前后天数</label>
-              <input type="number" id="txWindow" min="0" value="${state.filters.window}">
-            </div>
-            <div class="field">
-              <label>交易金额大于</label>
-              <input type="number" id="txMinAmt" min="0" step="1000" placeholder="元">
-            </div>
-            <div class="actions">
-              <button class="btn primary" id="txExec">执行筛选</button>
-              <button class="btn" id="txReset">重置</button>
-            </div>
-          `;
-          el.filtersWrap.querySelector('#txExec').onclick = () => {
-            state.filters.begin = el.filtersWrap.querySelector('#txBegin').value || '';
-            state.filters.end   = el.filtersWrap.querySelector('#txEnd').value   || '';
-            state.filters.window= Number(el.filtersWrap.querySelector('#txWindow').value || 0);
-            state.filters.minAmt= el.filtersWrap.querySelector('#txMinAmt').value || '';
-            state.page = 1;
-            refreshAll();
-          };
-          el.filtersWrap.querySelector('#txReset').onclick = () => {
-            state.filters = { begin:'', end:'', window:10, minAmt:'' };
-            renderFilters(); // 重画输入框
-            state.page = 1;
-            refreshAll();
-          };
+      // 响应式：窗口变化时同步调整图表尺寸
+      window.addEventListener("resize", () => {
+        const sc = document.getElementById("chart-scatter");
+        if (sc) {
+          const inst = echarts.getInstanceByDom(sc);
+          inst && inst.resize();
         }
-    
-        /* --------- 2) 汇总 KPI --------- */
-        async function apiSummary(params){
-          // TODO: 替换为真实接口
-          return { oppCnt:39, txnCnt:28, totalAmt:52907470, outAmt:11887410, inAmt:41020060, top20Ratio:0.6752 };
+        for (let i = 0; i < 4; i++) {
+          const bp = document.getElementById("kpi-bp-" + i);
+          if (!bp) continue;
+          const inst = echarts.getInstanceByDom(bp);
+          inst && inst.resize();
         }
-        async function renderKPI(){
-          const s = await apiSummary({ code:state.code, ...state.filters });
-          el.kpis.innerHTML = `
-            <div class="kpi"><div class="k">识别对手方数(家)</div><div class="v">${s.oppCnt.toLocaleString()}</div></div>
-            <div class="kpi"><div class="k">识别交易总笔数(笔)</div><div class="v">${s.txnCnt.toLocaleString()}</div></div>
-            <div class="kpi"><div class="k">识别交易总金额(元)</div><div class="v">${s.totalAmt.toLocaleString()}</div></div>
-            <div class="kpi"><div class="k">识别流出总额(元)</div><div class="v">${s.outAmt.toLocaleString()}</div></div>
-            <div class="kpi"><div class="k">识别流入总额(元)</div><div class="v">${s.inAmt.toLocaleString()}</div></div>
-            <div class="kpi"><div class="k">Top20交易总额占比</div><div class="v">${(s.top20Ratio*100).toFixed(2)}%</div></div>
-          `;
-        }
-    
-        /* --------- 3) 柱状图 --------- */
-        async function apiBarSeries(params){
-          // TODO: 替换为真实接口；返回 {x:[], y:[]}
-          const x = ['2022-01','2022-10','2023-01','2023-04','2024-01','2024-04','2025-07','2025-10'];
-          const y = x.map(()=> Math.floor(Math.random()*5e7));
-          return { x, y };
-        }
-        async function renderBar(){
-          if (!window.echarts) return;            // 未引入 ECharts 则跳过
-          if (!state.charts.bar) state.charts.bar = echarts.init(el.bar);
-          const { x, y } = await apiBarSeries({ code:state.code, ...state.filters });
-          state.charts.bar.setOption({
-            tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
-            grid:{left:50,right:20,top:30,bottom:50},
-            xAxis:{type:'category',data:x,axisLabel:{rotate:-30}},
-            yAxis:{type:'value'},
-            series:[{type:'bar',data:y}]
-          });
-          window.addEventListener('resize', ()=> state.charts.bar && state.charts.bar.resize(), { once:true });
-        }
-    
-        /* --------- 4) Top20（表 + 右侧纵向列表） --------- */
-        async function apiTop20(params){
-          // TODO: 替换为真实接口
-          const rows = Array.from({length:20}).map((_,i)=>({
-            rank:i+1,
-            name:'对手方 '+(i+1),
-            amount: +(Math.random()*2e7).toFixed(2),
-            inAmt:  +(Math.random()*1.2e7).toFixed(2),
-            outAmt: +(Math.random()*0.8e7).toFixed(2),
-            cnt: Math.floor(Math.random()*20)+1
-          }));
-          const total = rows.reduce((s,r)=>s+r.amount,0);
-          return { rows, total };
-        }
-        async function renderTop20(){
-          const { rows, total } = await apiTop20({ code:state.code, ...state.filters });
-          el.top20Total.textContent = total.toLocaleString();
-          // 左表
-          el.top20TblBody.innerHTML = rows.map(r => `
-            <tr>
-              <td>${r.rank}</td>
-              <td>${r.name}</td>
-              <td>${r.amount.toLocaleString()}</td>
-              <td>${r.inAmt.toLocaleString()}</td>
-              <td>${r.outAmt.toLocaleString()}</td>
-              <td>${r.cnt}</td>
-            </tr>
-          `).join('');
-          // 右侧纵向列表（名称 + 金额）
-          el.top20List.innerHTML = rows.slice(0,10).map(r => `
-            <li>
-              <span class="name">${r.rank}. ${r.name}</span>
-              <span class="val">${r.amount.toLocaleString()}</span>
-            </li>
-          `).join('');
-        }
-    
-        /* --------- 5) 汇总表 + 分页 --------- */
-        async function apiOppTable(params, page, pageSize){
-          // TODO: 替换为真实接口
-          const total = 230;
-          const rows = Array.from({length: Math.min(pageSize, total-(page-1)*pageSize)}).map((_,i)=>({
-            name: '对手方 ' + ((page-1)*pageSize+i+1),
-            inAmt: +(Math.random()*4e6).toFixed(2),
-            outAmt:+(Math.random()*3e6).toFixed(2),
-            exAmt: +(Math.random()*8e5).toFixed(2),
-            cnt:   Math.floor(Math.random()*20)+1,
-            abnCnt:Math.floor(Math.random()*5),
-            type:  Math.random()>0.5?'客户':'供应商'
-          }));
-          rows.forEach(r=> r.total = r.inAmt + r.outAmt);
-          return { total, rows };
-        }
-        function renderPager(){
-          const pages = Math.max(1, Math.ceil(state.total/state.pageSize));
-          el.pager.innerHTML = `
-            <button ${state.page<=1?'disabled':''} data-p="${state.page-1}">上一页</button>
-            <span>${state.page} / ${pages}</span>
-            <button ${state.page>=pages?'disabled':''} data-p="${state.page+1}">下一页</button>
-          `;
-          el.pager.onclick = (ev)=>{
-            const btn = ev.target.closest('button[data-p]');
-            if (!btn) return;
-            const p = +btn.getAttribute('data-p');
-            if (Number.isFinite(p)) { state.page = p; renderOppTable(); }
-          };
-        }
-        async function renderOppTable(){
-          const { total, rows } = await apiOppTable({ code:state.code, ...state.filters }, state.page, state.pageSize);
-          state.total = total;
-          // 这里页内占比简单用“本页合计”计算；真实项目建议接口返回“全量总额”用于占比
-          const pageTotalAmt = rows.reduce((s,r)=>s+r.total,0) || 1;
-          el.tblBody.innerHTML = rows.map(r => `
-            <tr>
-              <td>${r.name}</td>
-              <td>${r.inAmt.toLocaleString()}</td>
-              <td>${r.outAmt.toLocaleString()}</td>
-              <td>${r.total.toLocaleString()}</td>
-              <td>${r.exAmt.toLocaleString()}</td>
-              <td>${((r.total/pageTotalAmt)*100).toFixed(2)}%</td>
-              <td>${((r.cnt/(rows.reduce((s,x)=>s+x.cnt,0)||1))*100).toFixed(2)}%</td>
-              <td>${r.abnCnt}</td>
-              <td>${r.cnt}</td>
-              <td>${r.type}</td>
-            </tr>
-          `).join('');
-          renderPager();
-        }
-    
-        /* --------- 6) 左侧菜单/顶部按钮事件 --------- */
-        function bindMenu(){
-          el.menu.addEventListener('click', (e)=>{
-            const item = e.target.closest('.item');
-            if (!item) return;
-            if (item.classList.contains('active')) return;
-            el.menu.querySelectorAll('.item').forEach(i=>i.classList.remove('active'));
-            item.classList.add('active');
-            state.code = item.getAttribute('data-code');
-            el.title.textContent = item.textContent.replace(/^\d+\.\s*/, '') + ' · 结果';
-            state.page = 1;
-            refreshAll();
-          });
-        }
-        el.btnReport.onclick = ()=> console.log('[TX] 生成报告及流水', state);
-        el.btnLogic.onclick  = ()=> alert('这里展示“业务逻辑”说明（替换为你的弹窗内容）。');
-        el.btnTips.onclick   = ()=> alert('这里展示“操作提示”（替换为你的弹窗内容）。');
-    
-        /* --------- 7) 刷新总入口 --------- */
-        async function refreshAll(){
-          await renderKPI();
-          await renderBar();
-          await renderTop20();
-          await renderOppTable();
-        }
-    
-        /* --------- 初始化 --------- */
-        function init(){
-          renderFilters();
-          bindMenu();
-          refreshAll();
-        }
-        init();
       });
     })();
+
+
+
+
+    
     
     /* ===== 顶部页面切换 + 刷新保持当前页 ===== */
     /* ===== 顶部页面切换 + 刷新保持当前页 ===== */
