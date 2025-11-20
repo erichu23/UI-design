@@ -1458,14 +1458,14 @@
   text-align:center;
   font-size:16px;
 }
-.sbar-toggle-inset:hover{ color:#1e40af; }
+.sbar-toggle-inset:hover{ color:#0e3bd1; }
 
 /* 折叠态：只保留 12px 导轨和按钮 */
 #pane-routine .split.is-collapsed .sidebar-pane{
   width:12px;
   min-width:12px;
   overflow:hidden;
-  border-right:2px solid #1e40af;
+  border-right:2px solid #464850;
 }
 #pane-routine .split.is-collapsed .sidebar-pane > *{
   display:none;
@@ -1553,7 +1553,53 @@
   height: 360px;          /* 你需要的高度 */
 }
 
+/* Routine4 筛选条 */
+.filters-bar{
+  display:flex; flex-wrap:wrap; align-items:center; gap:12px 16px;
+  margin: 6px 0 12px 0;
+}
+.filters-bar .field{ display:flex; align-items:center; gap:8px; }
+.filters-bar label{ color:#334155; font-size:13px; white-space:nowrap; }
+.filters-bar .breaks input{
+  width:88px; padding:6px 8px; border:1px solid #e5e7eb; border-radius:6px; font-size:13px;
+}
+.filters-bar .breaks .sep{ color:#94a3b8; }
 
+.filters-bar .btn.primary{
+  padding:6px 12px; border-radius:8px; border:1px solid #2066c9; background:#2066c9;
+  color:#fff; font-size:13px; cursor:pointer;
+}
+
+/* 多选下拉 */
+.multi{ position:relative; }
+.multi-toggle{
+  min-width:160px; padding:6px 10px; border:1px solid #e5e7eb; border-radius:8px;
+  background:#fff; color:#334155; font-size:13px; display:flex; justify-content:space-between; align-items:center;
+}
+.multi .chev{ margin-left:8px; font-size:12px; color:#64748b; }
+.multi-menu{
+  position:absolute; top:36px; left:0; z-index:30; width:220px; max-height:240px; overflow:auto;
+  background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 10px 30px rgba(15,23,42,.08);
+  padding:8px; display:none;
+}
+.multi-menu .row{ display:flex; align-items:center; gap:8px; padding:6px 4px; border-radius:6px; }
+.multi-menu .row:hover{ background:#f8fafc; }
+.multi-menu input[type="checkbox"]{ width:14px; height:14px; }
+.multi-menu .search{
+  display:flex; align-items:center; gap:6px; padding:4px 6px; border:1px solid #e5e7eb; border-radius:8px; margin:4px 4px 8px;
+}
+.multi-menu .search input{ flex:1; border:none; outline:none; font-size:13px; }
+.multi.open .multi-menu{ display:block; }
+
+/* 默认隐藏 */
+#pane-routine #r4Filters { display: none !important; }
+
+/* 在 2.1 / 2.2 / 2.4 显示 */
+#pane-routine[data-routine="2.1"] #r4Filters,
+#pane-routine[data-routine="2.2"] #r4Filters,
+#pane-routine[data-routine="2.4"] #r4Filters {
+  display: flex !important;
+}
 
 /* 固定底部 footer（独立，不依赖额外容器） */
 #app-footer{
@@ -2408,7 +2454,32 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                     <div class="routine-main">
                       <!-- 左：2×2 田字格 + 每格右侧小箱线图 -->
                       <section class="routine-kpi-panel">
-                        <div class="kpi-panel-title">经营时间分段整体情况</div>
+                        <div class="kpi-panel-title">分段整体情况</div>
+                          <!-- Routine4 专用筛选条：仅在 2.4 显示 -->
+                          <div class="filters-bar" id="r4Filters">
+                            <!-- 对手方类型多选 -->
+                            <div class="field">
+                              <label>对手方类型：</label>
+                              <div class="multi" id="r4TypeBox">
+                                <button type="button" class="multi-toggle" id="r4TypeBtn">
+                                  <span id="r4TypeText">全部</span>
+                                  <i class="chev">▾</i>
+                                </button>
+                                <div class="multi-menu" id="r4TypeMenu"></div>
+                              </div>
+                            </div>
+
+                            <!-- 自定义） -->
+                            <div class="field breaks">
+                              <label>分段阈值 ：</label>
+                              <input type="number" step="0.01" id="r4b0" value="" />
+                              <span class="sep">/</span>
+                              <input type="number" step="0.01" id="r4b1" value="" />
+                              <span class="sep">/</span>
+                              <input type="number" step="0.01" id="r4b2" value="" />
+                              <button class="btn primary" id="r4Apply">筛选</button>
+                            </div>
+                          </div>
                         <div class="top-strip" id="topStrip">
                           <!-- JS 动态插入 .kpi-box-card -->
                         </div>
@@ -3412,7 +3483,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
 
 
     
-    /* =============== 特定工商查询 Routine 区域 =============== */
+
     /* =============== 特定工商查询 Routine 区域 =============== */
     (function(){
       "use strict";
@@ -3460,15 +3531,19 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
 
       // 若外面没定义 Top20，给个空函数防报错
       window.renderTop20 = window.renderTop20 || function(){};
-
+      
+      
       /* ---------- Routine 默认配置（1 & 2） ---------- */
       const ROUTINE_DEFAULTS = {
         // 1. 经营时间较短
         '2.1': { years: [1, 3, 5], labels: ['1年内','1-3年','3-5年','5年以上'] },
         // 2. 社保缴纳人数较少
-        '2.2': { breaks:[50,100,500], labels: ['<=50','51-99','100-499','≥500'] }
+        '2.2': { breaks:[50,100,500], labels: ['<=50','51-99','100-499','≥500'] },
+        '2.4': { breaks:[0.5,2,10], labels: ['<=0.5','0.5-2','2-10','≥10'] }
 
       };
+
+      
 
       /* ---------- Routine3 类型定义：6 个卡片 ---------- */
       const ROUTINE3_TYPES = [
@@ -3896,33 +3971,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
         }
       };
 
-      // A. 如果是 a[href="#pane-routine"] 这种导航
-      const tabRoutineA = document.querySelector('a[href="#pane-routine"], [data-target="#pane-routine"]');
-      tabRoutineA && tabRoutineA.addEventListener('click', ()=>{
-        // 等 class 切换/布局稳定再刷新
-        setTimeout(()=> flushChartsInPane('#pane-routine'), 60);
-      });
-
-      // B. 如果是你左侧菜单点进来的（已有 routineMenu 的话）
-      const paneRoutine = document.getElementById('pane-routine');
-      paneRoutine && new MutationObserver(()=>{
-        // 监听 active/样式变化，显示时刷新
-        if (paneRoutine.offsetParent !== null) setTimeout(()=> flushChartsInPane('#pane-routine'), 30);
-      }).observe(paneRoutine, {attributes:true, attributeFilter:['class','style']});
-
-      // C. 兜底：窗口大小变化时也自适应
-      window.addEventListener('resize', ()=> flushChartsInPane('#pane-routine'));
-
-      function updateAllRoutineViews(){
-        refreshListFromCompanies();
-        renderRoutineStrip();
-        renderScatterAndBox();
-        renderTop20();
-        renderRoutineTable();
-        // ——新增：渲染后尝试刷新一次（若此时 pane 可见会立即生效）
-        setTimeout(()=> flushChartsInPane('#pane-routine'), 0);
-      }
-
+ 
       /* ---------- 交易明细表（一个表，共用） ---------- */
       let currentRoutinePage = 1;
       window.gotoRoutine = function(p){ currentRoutinePage = p; renderRoutineTable(); };
@@ -3983,9 +4032,11 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
         renderRoutine(it.dataset.code);
       });
 
-      /* ---------- 切换 Routine 1 / 2 / 3 ---------- */
+      /* ---------- 切换 Routine 1 / 2 / 3 / 4 ---------- */
       function renderRoutine(code){
         routineState.code = code;
+
+        document.getElementById('pane-routine').setAttribute('data-routine', code);
 
         if (code==='2.1'){
           routineState.breaks = ROUTINE_DEFAULTS['2.1'].years.map(x=>x*365);
@@ -4003,7 +4054,12 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
           routineState.labels = ROUTINE3_TYPES.map(x=>x.key);
           const t1 = document.getElementById('rTitle'); if(t1) t1.textContent = '主体类型汇总指标';
           const st = document.getElementById('scatterTitle'); if(st) st.textContent = '主体类型分布表';
-        }
+        } else if (code==='2.4'){
+          routineState.breaks = ROUTINE_DEFAULTS['2.4'].breaks.slice();
+          routineState.labels = ROUTINE_DEFAULTS['2.4'].labels.slice();
+          const t1 = document.getElementById('rTitle'); if(t1) t1.textContent = '交易总额/注册资本 汇总指标';
+          const st = document.getElementById('scatterTitle'); if(st) st.textContent = '交易规模分布表';
+        } 
 
         currentRoutinePage = 1;
         updateAllRoutineViews();
@@ -4013,34 +4069,34 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
       renderRoutine('2.1');
     })();
 
-      // 右侧 Routine 侧栏折叠按钮
-      (function(){
-        const split = document.querySelector('#pane-routine .split');
-        const btn   = document.querySelector('#pane-routine .sbar-toggle-inset');
-        if (!split || !btn) return;
-        btn.addEventListener('click', () => {
-          split.classList.toggle('is-collapsed');
-        });
-      })();
-
-      // 初始进入
-      renderRoutine("2.1");
-
-      // 响应式：窗口变化时同步调整图表尺寸
-      window.addEventListener("resize", () => {
-        const sc = document.getElementById("chart-scatter");
-        if (sc) {
-          const inst = echarts.getInstanceByDom(sc);
-          inst && inst.resize();
-        }
-        for (let i = 0; i < 4; i++) {
-          const bp = document.getElementById("kpi-bp-" + i);
-          if (!bp) continue;
-          const inst = echarts.getInstanceByDom(bp);
-          inst && inst.resize();
-        }
+    // 右侧 Routine 侧栏折叠按钮
+    (function(){
+      const split = document.querySelector('#pane-routine .split');
+      const btn   = document.querySelector('#pane-routine .sbar-toggle-inset');
+      if (!split || !btn) return;
+      btn.addEventListener('click', () => {
+        split.classList.toggle('is-collapsed');
       });
-    
+    })();
+
+    // 初始进入
+    renderRoutine("2.1");
+
+    // 响应式：窗口变化时同步调整图表尺寸
+    window.addEventListener("resize", () => {
+      const sc = document.getElementById("chart-scatter");
+      if (sc) {
+        const inst = echarts.getInstanceByDom(sc);
+        inst && inst.resize();
+      }
+      for (let i = 0; i < 4; i++) {
+        const bp = document.getElementById("kpi-bp-" + i);
+        if (!bp) continue;
+        const inst = echarts.getInstanceByDom(bp);
+        inst && inst.resize();
+      }
+    });
+
 
 
 
