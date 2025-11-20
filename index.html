@@ -1538,20 +1538,19 @@
   height: 60px;
 }
 
-/* 右侧气泡图区：去掉外框，只留背景透明 */
-.routine-scatter {
-  display: flex;
-  flex-direction: column;
-  background: transparent;
-  border: none;
+/* 右侧气泡图区容器：不要负外边距，只让它正常占满 */
+.routine-scatter{
   padding: 0;
+  margin: 0;              /* ← 删掉 -20px */
+  
+  min-width: 0;           /* 防止被左右区域挤压导致内部 canvas 计算错误 */
+  overflow: visible;      /* 保险：就算没开 containLabel 也不裁切轴标签 */
 }
 
-/* 图表区域高度 */
-.routine-scatter .chart {
+/* 图表区域固定高度，保证有空间画轴和滑块 */
+.routine-scatter .chart{
   width: 100%;
-  height: 320px;
-  min-height: 280px;
+  height: 360px;          /* 你需要的高度 */
 }
 
 
@@ -3414,153 +3413,126 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
 
     
     /* =============== 特定工商查询 Routine 区域 =============== */
-    (function () {
+    /* =============== 特定工商查询 Routine 区域 =============== */
+    (function(){
       "use strict";
 
-      /* ---------- 通用小工具（若全局已有则复用） ---------- */
-      // 金额“万”格式化
+      /* ---------- 通用小工具 ---------- */
+
+      // 金额：单位“万”的格式化
       window.fmtWan = window.fmtWan || (n => {
         const v = Number(n) || 0;
-        return v.toLocaleString("zh-CN");
+        return v.toLocaleString('zh-CN');
       });
 
       // 简单分页
-      window.paginate = window.paginate || function (arr, page, size) {
+      window.paginate = window.paginate || function(arr, page, size){
         const ps = Number(size) || 10;
-        const p = Math.max(1, Number(page) || 1);
-        return (arr || []).slice((p - 1) * ps, p * ps);
+        const p  = Math.max(1, Number(page) || 1);
+        return (arr || []).slice((p-1)*ps, p*ps);
       };
 
-      // 分页按钮渲染
-      window.renderPagination =
-        window.renderPagination ||
-        function (eleId, total, current, handler) {
-          const ps = 10;
-          const pages = Math.max(1, Math.ceil((total || 0) / ps));
-          const host = document.getElementById(eleId);
-          if (!host) return;
-          let html = "";
-          for (let i = 1; i <= pages; i++) {
-            html += `<button class="btn ${i === current ? "btn-primary" : ""}" onclick="${handler}(${i})">${i}</button>`;
-          }
-          host.innerHTML = html;
-        };
-
-      // ECharts 便捷渲染
-      window.ez =
-        window.ez ||
-        function (domId, opt) {
-          if (typeof echarts === "undefined") {
-            console.error("[Routine] echarts 未加载");
-            return null;
-          }
-          const el = document.getElementById(domId);
-          if (!el) return null;
-          const inst =
-            echarts.getInstanceByDom(el) ||
-            echarts.init(el, null, {
-              renderer: "canvas",
-              useDirtyRect: true
-            });
-          inst.setOption(opt, { notMerge: true, lazyUpdate: true });
-          return inst;
-        };
-
-      /* ---------- 默认区间定义（固定，不做筛选） ---------- */
-      const ROUTINE_DEFAULTS = {
-        "2.1": {
-          years: [1, 3, 5],
-          labels: ["1年内", "1-3年", "3-5年", "5年以上"]
-        },
-        "2.2": {
-          breaks: [50, 100, 500],
-          labels: ["<=50", "51-99", "100-499", "≥500"]
+      // 分页按钮
+      window.renderPagination = window.renderPagination || function(eleId, total, current, handler){
+        const ps    = 10;
+        const pages = Math.max(1, Math.ceil((total||0)/ps));
+        const host  = document.getElementById(eleId);
+        if (!host) return;
+        let html = '';
+        for (let i = 1; i <= pages; i++){
+          html += `<button class="btn ${i===current?'btn-primary':''}" onclick="${handler}(${i})">${i}</button>`;
         }
+        host.innerHTML = html;
       };
+
+      // echarts 快捷渲染
+      window.ez = window.ez || function(domId,opt){
+        if (typeof echarts === 'undefined') {
+          console.error('[Routine] echarts 未加载');
+          return null;
+        }
+        const el = document.getElementById(domId);
+        if(!el) return null;
+        const inst = echarts.getInstanceByDom(el) || echarts.init(el, null, {renderer:'canvas', useDirtyRect:true});
+        inst.setOption(opt, {notMerge:true, lazyUpdate:true});
+        return inst;
+      };
+
+      // 若外面没定义 Top20，给个空函数防报错
+      window.renderTop20 = window.renderTop20 || function(){};
+
+      /* ---------- Routine 默认配置（1 & 2） ---------- */
+      const ROUTINE_DEFAULTS = {
+        // 1. 经营时间较短
+        '2.1': { years: [1, 3, 5], labels: ['1年内','1-3年','3-5年','5年以上'] },
+        // 2. 社保缴纳人数较少
+        '2.2': { breaks:[50,100,500], labels: ['<=50','51-99','100-499','≥500'] }
+
+      };
+
+      /* ---------- Routine3 类型定义：6 个卡片 ---------- */
+      const ROUTINE3_TYPES = [
+        { key:'个体工商户',  class:'kpi-red',    color:'#ef4444' }, // 红
+        { key:'个人独资企业', class:'kpi-orange', color:'#f59e0b' }, // 黄
+        { key:'合伙企业',    class:'kpi-blue',   color:'#2563eb' }, // 蓝
+        { key:'有限责任公司', class:'kpi-blue',   color:'#2563eb' }, // 蓝
+        { key:'股份有限公司', class:'kpi-blue',   color:'#2563eb' }, // 蓝
+        { key:'其他',        class:'kpi-blue',   color:'#2563eb' }  // 蓝
+      ];
 
       /* ---------- 全局状态 ---------- */
       const routineState = {
-        code: "2.1",
-        raw: [],
-        list: [],
+        code: '2.1',       // '2.1' | '2.2' | '2.3'
         labels: [],
-        breaks: []
+        breaks: [],
+        raw: [],
+        list: []
       };
 
-      /* ---------- Demo 数据生成（没有真实 companies 时自动造） ---------- */
-      function generateDemoCompanies() {
-        const segments = [
-          { label: "1年内", minYear: 0, maxYear: 1 },
-          { label: "1-3年", minYear: 1, maxYear: 3 },
-          { label: "3-5年", minYear: 3, maxYear: 5 },
-          { label: "5年以上", minYear: 5, maxYear: 10 }
-        ];
-
-        const now = Date.now();
-        const oneDay = 86400000;
-        let id = 1;
+      /* ---------- demo 数据（没传 companies 就造一批） ---------- */
+      function generateDemoCompanies(){
+        const types = ['个体工商户','个人独资企业','合伙企业','有限责任公司','股份有限公司','其他'];
         const arr = [];
+        for(let i=1;i<=80;i++){
+          const ctype = types[Math.floor(Math.random()*types.length)];
+          const txCnt  = Math.floor(Math.random()*200)+1;          // 1~200 笔
+          const total  = Math.floor((Math.random()*40000)+2000);   // 2,000~42,000 万
+          const inflow = total * (0.5 + Math.random()*0.4);
+          const outflow= total - inflow;
+          const employees = Math.floor(Math.random()*300);
+          const days = Math.floor(Math.random()*365*8); // 8年内
 
-        segments.forEach(seg => {
-          for (let i = 0; i < 12; i++) {
-            const years =
-              seg.minYear + Math.random() * (seg.maxYear - seg.minYear);
-            const days = Math.round(years * 365);
-            const foundedTs = now - days * oneDay;
-            const foundedDate = new Date(foundedTs)
-              .toISOString()
-              .slice(0, 10);
-
-            const inflow = Math.round(500 + Math.random() * 20000); // 万
-            const outflow = Math.round(200 + Math.random() * 15000); // 万
-            const total = inflow + outflow;
-            const employees = Math.round(5 + Math.random() * 300);
-
-            arr.push({
-              id: id,
-              name: "对手方 " + id,
-              startDate: foundedDate,
-              employees,
-              txCnt: Math.round(5 + Math.random() * 60),
-              inflow,
-              outflow,
-              total,
-              ctype: "供应商",
-              relation: "一般往来",
-              sales: "普通销售",
-              purchase: "普通采购",
-              job: "-",
-              industry: "制造业",
-              capital: Math.round(100 + Math.random() * 9000)
-            });
-            id++;
-          }
-        });
-
+          arr.push({
+            id: i,
+            name: '对手方'+i,
+            ctype,
+            relation: (Math.random()<0.2?'关联':'非关联'),
+            sales: '销售类别'+((i%4)+1),
+            purchase: '采购类别'+((i%4)+1),
+            job: '岗位'+((i%5)+1),
+            industry: '行业'+((i%6)+1),
+            capital: (Math.random()*5000).toFixed(0),
+            foundedDate: null,
+            employees,
+            type: '',
+            txCnt,
+            inflow,
+            outflow,
+            total,
+            foundedDays: days
+          });
+        }
         return arr;
       }
 
-      function refreshListFromCompanies() {
-        // 若没有真实 window.companies，则用 demo 数据
-        if (!Array.isArray(window.companies) || !window.companies.length) {
-          window.companies = generateDemoCompanies();
-        }
-        routineState.raw = window.companies.slice();
-        routineState.list = routineState.raw.map(mapRecord);
-      }
-
-      /* ---------- 数据整理 ---------- */
-      function daysSince(dateStr) {
+      function daysSince(dateStr){
         if (!dateStr) return 0;
-        const d = new Date(String(dateStr).replace(/-/g, "/"));
+        const d = new Date(String(dateStr).replace(/-/g,'/'));
         if (isNaN(d)) return 0;
-        return Math.max(
-          0,
-          Math.floor((Date.now() - d.getTime()) / 86400000)
-        );
+        return Math.max(0, Math.floor((Date.now()-d.getTime())/86400000));
       }
 
-      function mapRecord(raw) {
+      function mapRecord(raw){
         return {
           id: raw.id,
           name: raw.name,
@@ -3571,218 +3543,248 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
           job: raw.job,
           industry: raw.industry,
           capital: raw.capital,
-          foundedDate: raw.foundedDate || raw.startDate || "",
-          employees: Number(raw.employees) || 0,
+          foundedDate: raw.foundedDate || raw.startDate || '',
+          employees: Number(raw.employees)||0,
           type: raw.type,
-          txCnt: Number(raw.txCnt) || 0,
-          inflow: Number(raw.inflow) || 0,
-          outflow: Number(raw.outflow) || 0,
-          total: Number(raw.total) || 0,
-          foundedDays:
-            raw.foundedDays ??
-            daysSince(raw.startDate || raw.foundedDate)
+          txCnt: Number(raw.txCnt)||0,
+          inflow: Number(raw.inflow)||0,
+          outflow: Number(raw.outflow)||0,
+          total: Number(raw.total)||0,
+          foundedDays: raw.foundedDays ?? daysSince(raw.startDate || raw.foundedDate)
         };
       }
 
-      /* ---------- 统计工具：五数概括 ---------- */
-      function quartiles(arr) {
-        const a = arr.slice().sort((x, y) => x - y);
-        if (!a.length) return [0, 0, 0, 0, 0];
+      // 把当前 window.companies 刷到 routineState.list
+      function refreshListFromCompanies(){
+        if (!Array.isArray(window.companies) || !window.companies.length){
+          window.companies = generateDemoCompanies();
+        }
+        routineState.raw  = window.companies;
+        routineState.list = routineState.raw.map(mapRecord);
+      }
+
+      /* ---------- 箱线图统计 ---------- */
+      function quartiles(arr){
+        const a = arr.slice().sort((x,y)=>x-y);
+        if (!a.length) return [0,0,0,0,0];
         const q = p => {
           const pos = (a.length - 1) * p;
-          const lo = Math.floor(pos);
-          const hi = Math.ceil(pos);
-          return a[lo] * (hi - pos) + a[hi] * (pos - lo);
+          const lo  = Math.floor(pos);
+          const hi  = Math.ceil(pos);
+          return a[lo]*(hi-pos) + a[hi]*(pos-lo);
         };
-        return [a[0], q(0.25), q(0.5), q(0.75), a[a.length - 1]];
+        return [a[0], q(0.25), q(0.5), q(0.75), a[a.length-1]];
       }
 
-      // K 结尾格式：如 152,790K
-      function fmtK(n) {
-        const v = Math.round(Number(n) || 0);
-        return v.toLocaleString("en-US") + "K";
-      }
-
-      /* ---------- 小箱线图：用于 KPI 卡右侧 ---------- */
-      function renderSmallBoxplot(domId, stats, label) {
+      // 小箱线：白色 + tooltip 显示 min/max/median/Q1/Q3
+      function renderSmallBoxplot(domId, stats, title){
         const el = document.getElementById(domId);
         if (!el) return;
         const inst = echarts.getInstanceByDom(el) || echarts.init(el);
-
         inst.setOption({
-          grid: { left: 4, right: 4, top: 4, bottom: 4 },
-          tooltip: {
-            trigger: "item",
-            formatter: params => {
-              const v = params.data || [];
+          grid:{left:0,right:0,top:0,bottom:0},
+          xAxis:{ type:'category', data:[' '], show:false },
+          yAxis:{ type:'value', show:false },
+          tooltip:{
+            confine:true,
+            formatter: () => {
+              const [min,q1,med,q3,max] = stats;
               return [
-                `<b>${label || ""}</b>`,
-                `最小值：${fmtK(v[0])}`,
-                `最大值：${fmtK(v[4])}`,
-                `中位数：${fmtK(v[2])}`,
-                `四分之一：${fmtK(v[1])}`,
-                `四分之三：${fmtK(v[3])}`
-              ].join("<br/>");
-            },
-            borderColor: "rgba(248,113,113,0.7)"
-          },
-          xAxis: {
-            type: "category",
-            data: [""],
-            axisLine: { show: false },
-            axisTick: { show: false },
-            axisLabel: { show: false }
-          },
-          yAxis: {
-            type: "value",
-            axisLine: { show: false },
-            axisTick: { show: false },
-            axisLabel: { show: false },
-            splitLine: { show: false }
-          },
-          series: [
-            {
-              name: label || "",
-              type: "boxplot",
-              itemStyle: {
-                color: "#ffffff", // 填充白色
-                borderColor: "#ffffff" // 边框也白色
-              },
-              data: [stats] // [min, Q1, median, Q3, max]
+                `<b>${title||''}</b>`,
+                `最小值：${fmtWan(min)} 万`,
+                `最大值：${fmtWan(max)} 万`,
+                `中位数：${fmtWan(med)} 万`,
+                `四分之一位：${fmtWan(q1)} 万`,
+                `四分之三位：${fmtWan(q3)} 万`
+              ].join('<br/>');
             }
-          ]
+          },
+          series:[{
+            type:'boxplot',
+            itemStyle:{
+              color:'rgba(225,225,225,0)',
+              borderColor:'#ffffff'
+              
+            },
+            data:[stats]
+          }]
         });
       }
 
-      /* ---------- 左侧：四段 KPI 田字格 + 每格一个小箱线图 ---------- */
-      function renderRoutineStrip() {
-        const list = (routineState.list || []).slice();
-        const b = routineState.breaks;
-        const lab = routineState.labels;
-
-        const groups = [[], [], [], []];
-        for (const r of list) {
-          const x =
-            routineState.code === "2.1"
-              ? r.foundedDays
-              : routineState.code === "2.2"
-              ? r.employees
-              : 0;
-          const idx = x < b[0] ? 0 : x < b[1] ? 1 : x < b[2] ? 2 : 3;
+      /* ---------- Routine1/2 分组：按 breaks 分 4 段 ---------- */
+      function groupByBreaks(list){
+        const b = routineState.breaks || [];
+        const code = routineState.code;
+        const groups = [[],[],[],[]];
+        list.forEach(r=>{
+          const x = (code==='2.1') ? r.foundedDays : r.employees;
+          let idx = 3;
+          if (b && b.length===3){
+            idx = (x < b[0]) ? 0 : (x < b[1]) ? 1 : (x < b[2]) ? 2 : 3;
+          }
           groups[idx].push(r);
+        });
+        return groups;
+      }
+
+      /* ---------- Routine3 分组：按企业类型 6 组 ---------- */
+      function groupForRoutine3(list){
+        const groups = [[],[],[],[],[],[]];
+        list.forEach(r=>{
+          const t = (r.ctype || '').trim();
+          let idx = 5; // 默认“其他”
+          if (t === '个体工商户') idx = 0;
+          else if (t === '个人独资企业') idx = 1;
+          else if (t === '合伙企业') idx = 2;
+          else if (t === '有限责任公司') idx = 3;
+          else if (t === '股份有限公司') idx = 4;
+          groups[idx].push(r);
+        });
+        return groups;
+      }
+
+      /* ---------- 顶部 4/6 卡片 ---------- */
+      function renderRoutineStrip(){
+      const list = (routineState.list||[]).slice();
+      const code = routineState.code;
+      const host = document.getElementById('topStrip');
+      if (!host) return;
+
+      let html = '';
+
+      if (code === '2.3'){
+        // Routine3：6 个卡片
+        const groups = groupForRoutine3(list);
+        html = groups.map((g,i)=>{
+          const tp = ROUTINE3_TYPES[i];
+          const inSum  = g.reduce((s,x)=>s+x.inflow,0);
+          const outSum = g.reduce((s,x)=>s+x.outflow,0);
+          const vals   = g.map(x=>x.total);
+          const stats  = vals.length ? quartiles(vals) : [0,0,0,0,0];
+          const bpId   = `kpi-bp-3-${i}`;
+
+          return `
+            <div class="kpi-box-card ${tp.class}">
+              <div class="kpi-left">
+                <div class="kpi-title">${tp.key}</div>
+                <div class="kpi-item"><span>对手方数量：</span><b>${g.length}</b> 家</div>
+                <div class="kpi-item"><span>累计流入：</span><b>${fmtWan(inSum)}</b> 万</div>
+                <div class="kpi-item"><span>累计流出：</span><b>${fmtWan(outSum)}</b> 万</div>
+              </div>
+              <div class="kpi-boxplot">
+                <div class="boxplot-chart" id="${bpId}"></div>
+              </div>
+            </div>`;
+        }).join('');
+
+        host.innerHTML = html;
+
+        // 用上面同一个 groups 画 6 个箱线图，不要再 const groups 了
+        groups.forEach((g,i)=>{
+          const vals  = g.map(x=>x.total);
+          const stats = vals.length ? quartiles(vals) : [0,0,0,0,0];
+          renderSmallBoxplot(`kpi-bp-3-${i}`, stats, ROUTINE3_TYPES[i].key);
+        });
+
+      } else {
+        // Routine1 / Routine2 原来的分段逻辑保持不变
+        const groups = groupByBreaks(list);
+        const lab  = routineState.labels || [];
+        const colorClass = ['kpi-red','kpi-orange','kpi-blue','kpi-blue'];
+
+        html = groups.map((g,i)=>{
+          const inSum  = g.reduce((s,x)=>s+x.inflow,0);
+          const outSum = g.reduce((s,x)=>s+x.outflow,0);
+          const vals   = g.map(x=>x.total);
+          const stats  = vals.length ? quartiles(vals) : [0,0,0,0,0];
+          const bpId   = `kpi-bp-${i}`;
+          return `
+            <div class="kpi-box-card ${colorClass[i]}">
+              <div class="kpi-left">
+                <div class="kpi-title">${lab[i] || ('区间'+(i+1))}</div>
+                <div class="kpi-item"><span>对手方数量：</span><b>${g.length}</b> 家</div>
+                <div class="kpi-item"><span>累计流入：</span><b>${fmtWan(inSum)}</b> 万</div>
+                <div class="kpi-item"><span>累计流出：</span><b>${fmtWan(outSum)}</b> 万</div>
+              </div>
+              <div class="kpi-boxplot">
+                <div class="boxplot-chart" id="${bpId}"></div>
+              </div>
+            </div>`;
+        }).join('');
+
+        host.innerHTML = html;
+
+        const groups2 = groupByBreaks(list);
+        groups2.forEach((g,i)=>{
+          const vals  = g.map(x=>x.total);
+          const stats = vals.length ? quartiles(vals) : [0,0,0,0,0];
+          renderSmallBoxplot(`kpi-bp-${i}`, stats, routineState.labels[i]);
+        });
+      }
+    }
+
+      /* ---------- 气泡图 / 散点图 ---------- */
+      function renderScatterAndBox(){
+        const list  = (routineState.list || []).slice();
+        const code  = routineState.code;
+
+        let xName = 'X';
+        if (code === '2.1') xName = '经营天数';
+        else if (code === '2.2') xName = '缴纳人数';
+        else if (code === '2.3') xName = '交易笔数';
+
+        let groups, series;
+
+        if (code === '2.3'){
+          // Routine3：按 6 类型分组，X=txCnt, Y=total
+          groups = groupForRoutine3(list);
+          series = groups.map((g,i)=>({
+            name: ROUTINE3_TYPES[i].key,
+            type:'scatter',
+            data: g.map(r=>({
+              name: r.name,
+              value: [r.txCnt, r.total],
+              symbolSize: Math.max(10, Math.sqrt(Math.abs(r.total||0))/40 + 8),
+              itemStyle:{ color: ROUTINE3_TYPES[i].color },
+              extra: r
+            })),
+            emphasis:{ focus:'series', scale:1.15 }
+          }));
+        } else {
+          // Routine1/2：按 breaks 分 4 组，X=days or employees, Y=total
+          groups = groupByBreaks(list);
+          const colors = ['#ef4444','#f59e0b','#2563eb','#2563eb'];
+          series = groups.map((g,i)=>({
+            name: routineState.labels[i] || ('区间'+(i+1)),
+            type:'scatter',
+            data: g.map(r=>{
+              const xVal = (code==='2.1') ? r.foundedDays : r.employees;
+              return {
+                name: r.name,
+                value: [xVal, r.total],
+                symbolSize: Math.max(10, Math.sqrt(Math.abs(r.total||0))/40 + 8),
+                itemStyle:{ color: colors[i] },
+                extra: r
+              };
+            }),
+            emphasis:{ focus:'series', scale:1.15 }
+          }));
         }
 
-        const colorClass = ["kpi-red", "kpi-orange", "kpi-blue", "kpi-green"];
-        const host = document.getElementById("topStrip");
-        if (!host) return;
+        // === 专为“左下留足空间”定的常量 ===
+        const SLIDER_H   = 20;   // 底部滑块高度
+        const GAP        = 5;   // 轴标签与滑块的间距
+        const X_LABEL_H  = 5;   // x轴刻度与名称所需高度
+        const GRID_LEFT  = 15;   // 左侧给y轴刻度留的空间
+        const GRID_right  = 56;
+        const GRID_TOP   = 44;   // 仅把“绘图区”向下移，标题不动
+        const GRID_BOTTOM= SLIDER_H + GAP + X_LABEL_H;
 
-        host.innerHTML = groups
-          .map((g, i) => {
-            const inSum = g.reduce((s, x) => s + x.inflow, 0);
-            const outSum = g.reduce((s, x) => s + x.outflow, 0);
-            const vals = g.map(x => x.total);
-            const stats = vals.length ? quartiles(vals) : [0, 0, 0, 0, 0];
-            const bpId = "kpi-bp-" + i;
+        ez('chart-scatter',{
+          grid:{ left: GRID_LEFT, GRID_right, top: GRID_TOP, bottom: GRID_BOTTOM, containLabel: true },
 
-            return `
-              <div class="kpi-box-card ${colorClass[i]}">
-                <div class="kpi-left">
-                  <div class="kpi-title">${lab[i] || "区间" + (i + 1)}</div>
-                  <div class="kpi-item"><span>对手方数量：</span><b>${g.length}</b> 家</div>
-                  <div class="kpi-item"><span>累计流入：</span><b>${fmtWan(inSum)}</b> 万</div>
-                  <div class="kpi-item"><span>累计流出：</span><b>${fmtWan(outSum)}</b> 万</div>
-                </div>
-                <div class="kpi-boxplot">
-                  <div class="boxplot-chart" id="${bpId}"></div>
-                </div>
-              </div>`;
-          })
-          .join("");
+          legend:{ top: 6, right: 10, icon:'circle', itemWidth:8, itemHeight:8, textStyle:{ fontSize:11 }},
 
-        // 渲染 4 个小箱线图（白色+tooltip）
-        groups.forEach((g, i) => {
-          const vals = g.map(x => x.total);
-          const stats = vals.length ? quartiles(vals) : [0, 0, 0, 0, 0];
-          renderSmallBoxplot(
-            "kpi-bp-" + i,
-            stats,
-            lab[i] || "区间" + (i + 1)
-          );
-        });
-      }
-
-      /* ---------- 右侧：经营天数 vs 交易金额 气泡图 ---------- */
-      function renderBubbleChart() {
-        const list = (routineState.list || []).slice();
-        const code = routineState.code;
-
-        const xName =
-          code === "2.1"
-            ? "经营天数"
-            : code === "2.2"
-            ? "缴纳人数"
-            : "主体编号";
-
-        const breaks = routineState.breaks || [];
-        const labels = routineState.labels || [];
-        const colors = ["#ef4444", "#f59e0b", "#2563eb", "#16a34a"];
-        const groups = [[], [], [], []];
-
-        list.forEach((r, idx) => {
-          const xVal =
-            code === "2.1"
-              ? r.foundedDays
-              : code === "2.2"
-              ? r.employees
-              : idx + 1;
-          const yVal = r.total;
-
-          let gi = 3;
-          if (breaks && breaks.length === 3) {
-            gi =
-              xVal < breaks[0]
-                ? 0
-                : xVal < breaks[1]
-                ? 1
-                : xVal < breaks[2]
-                ? 2
-                : 3;
-          }
-          groups[gi].push({ x: xVal, y: yVal, raw: r });
-        });
-
-        const series = groups.map((g, i) => ({
-          name: labels[i] || "区间" + (i + 1),
-          type: "scatter",
-          data: g.map(p => ({
-            name: p.raw.name,
-            value: [p.x, p.y],
-            // 气泡大小（根据金额开根号做缩放）
-            symbolSize: 8 + Math.sqrt(Math.abs(p.y || 0)) / 60,
-            itemStyle: { color: colors[i] },
-            extra: p.raw
-          })),
-          emphasis: {
-            focus: "series",
-            scale: 1.2
-          }
-        }));
-
-        ez("chart-scatter", {
-          grid: {
-            left: 48,
-            right: 20,
-            top: 28,
-            bottom: 60
-          },
-          legend: {
-            top: 4,
-            right: 10,
-            icon: "circle",
-            itemWidth: 8,
-            itemHeight: 8,
-            textStyle: { fontSize: 11 }
-          },
           tooltip: {
             trigger: "item",
             formatter: p => {
@@ -3808,53 +3810,128 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                 .join("<br/>");
             }
           },
-          xAxis: {
+
+          xAxis:{
             name: xName,
-            type: "value",
-            axisLine: { onZero: false },
-            nameTextStyle: { fontSize: 12 },
-            axisLabel: { fontSize: 11 }
+            type:'value',
+            axisLine:{ onZero:false },
+            axisLabel:{ fontSize:11, margin: 16 },  // 与滑块拉开
+            nameTextStyle:{ fontSize:12 },
+            nameGap: 20
           },
-          yAxis: {
-            name: "交易金额(万)",
-            type: "value",
-            nameTextStyle: { fontSize: 12 },
-            axisLabel: { fontSize: 11 }
+          yAxis:{
+            name:'交易金额(万)',
+            type:'value',
+            axisLabel:{ fontSize:11, margin: 10 },
+            nameTextStyle:{ fontSize:12 },
+            nameGap: 18
           },
-          // 缩放：鼠标滚轮 + 底部滑块
-          dataZoom: [
+
+          dataZoom:[
+            { type:'inside', xAxisIndex:0, filterMode:'none' },
             {
-              type: "inside",
-              xAxisIndex: 0,
-              filterMode: "none"
-            },
-            {
-              type: "slider",
-              xAxisIndex: 0,
-              height: 24,
-              bottom: 18,
-              borderColor: "#e5e7eb",
-              backgroundColor: "#f1f5f9",
-              fillerColor: "rgba(37,99,235,0.15)",
-              showDetail: false
+              type:'slider',
+              xAxisIndex:0,
+              height: SLIDER_H,
+              bottom: 6,                           // 滑块再往下 6px 缓冲
+              borderColor:'#e5e7eb',
+              backgroundColor:'#f1f5f9',
+              fillerColor:'rgba(37,99,235,0.18)',
+              showDetail:false
             }
           ],
-          series
+
+          series   // ← 保持你现有的 series
         });
+        // 放在上面那段 ez(...) 调用的后面紧跟着
+        setTimeout(()=>{
+          const el = document.getElementById('chart-scatter');
+          const inst = el && echarts.getInstanceByDom(el);
+          inst && inst.resize();
+        }, 0);
+
+        // 全局监听窗口尺寸变化（若没有的话可以加上）
+        window.addEventListener('resize', ()=>{
+          const el = document.getElementById('chart-scatter');
+          const inst = el && echarts.getInstanceByDom(el);
+          inst && inst.resize();
+        });
+        const __pendingCharts = new Map();  // domId -> option
+
+        window.ez = function(domId, opt){
+          if (typeof echarts === 'undefined') {
+            console.error('[Routine] echarts 未加载'); return null;
+          }
+          const el = document.getElementById(domId);
+          if (!el) return null;
+
+          // 若容器不可见或宽高为 0，先缓存，等显示后再渲染
+          const invisible = (el.offsetParent === null) || (el.clientWidth === 0) || (el.clientHeight === 0);
+          if (invisible) { __pendingCharts.set(domId, opt); return null; }
+
+          let inst = echarts.getInstanceByDom(el);
+          if (!inst) inst = echarts.init(el, null, {renderer:'canvas', useDirtyRect:true});
+          inst.setOption(opt, {notMerge:true, lazyUpdate:true});
+          return inst;
+        };
       }
 
-      /* ---------- 交易明细表（一个表） ---------- */
-      let currentRoutinePage = 1;
-      window.gotoRoutine = function (p) {
-        currentRoutinePage = p;
-        renderRoutineTable();
+      // 刷新暂存的图 + 对 pane 内所有图 resize
+      window.flushChartsInPane = function(paneSel){
+        // 先补渲染 pending
+        __pendingCharts.forEach((opt, id)=>{
+          const el = document.getElementById(id);
+          if (el && el.clientWidth > 0 && el.clientHeight > 0 && (!paneSel || el.closest(paneSel))){
+            __pendingCharts.delete(id);
+            window.ez(id, opt);
+          }
+        });
+        // 再统一 resize 已有实例
+        if (paneSel){
+          document.querySelectorAll(`${paneSel} .boxplot-chart, ${paneSel} [id^="chart-"], ${paneSel} #chart-scatter`)
+            .forEach(el=>{
+              const inst = echarts.getInstanceByDom(el);
+              if (inst) inst.resize();
+            });
+        }
       };
 
-      function renderRoutineTable() {
-        const list = (routineState.list || []).slice();
+      // A. 如果是 a[href="#pane-routine"] 这种导航
+      const tabRoutineA = document.querySelector('a[href="#pane-routine"], [data-target="#pane-routine"]');
+      tabRoutineA && tabRoutineA.addEventListener('click', ()=>{
+        // 等 class 切换/布局稳定再刷新
+        setTimeout(()=> flushChartsInPane('#pane-routine'), 60);
+      });
+
+      // B. 如果是你左侧菜单点进来的（已有 routineMenu 的话）
+      const paneRoutine = document.getElementById('pane-routine');
+      paneRoutine && new MutationObserver(()=>{
+        // 监听 active/样式变化，显示时刷新
+        if (paneRoutine.offsetParent !== null) setTimeout(()=> flushChartsInPane('#pane-routine'), 30);
+      }).observe(paneRoutine, {attributes:true, attributeFilter:['class','style']});
+
+      // C. 兜底：窗口大小变化时也自适应
+      window.addEventListener('resize', ()=> flushChartsInPane('#pane-routine'));
+
+      function updateAllRoutineViews(){
+        refreshListFromCompanies();
+        renderRoutineStrip();
+        renderScatterAndBox();
+        renderTop20();
+        renderRoutineTable();
+        // ——新增：渲染后尝试刷新一次（若此时 pane 可见会立即生效）
+        setTimeout(()=> flushChartsInPane('#pane-routine'), 0);
+      }
+
+      /* ---------- 交易明细表（一个表，共用） ---------- */
+      let currentRoutinePage = 1;
+      window.gotoRoutine = function(p){ currentRoutinePage = p; renderRoutineTable(); };
+
+      function renderRoutineTable(){
+        const list = (routineState.list||[]).slice();
         const pageItems = paginate(list, currentRoutinePage, 10);
-        const thead = document.querySelector("#tblRoutineDetail thead");
-        const tbody = document.querySelector("#tblRoutineDetail tbody");
+        const thead = document.querySelector('#tblRoutineDetail thead');
+        const tbody = document.querySelector('#tblRoutineDetail tbody');
         if (!thead || !tbody) return;
 
         thead.innerHTML = `
@@ -3866,97 +3943,75 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
             <th>职位</th><th>所属集团</th>
           </tr>`;
 
-        tbody.innerHTML = pageItems
-          .map(
-            d => `
+        tbody.innerHTML = pageItems.map(d=>`
           <tr>
-            <td>${d.name || "-"}</td>
+            <td>${d.name||'-'}</td>
             <td style="color:#2563eb">${fmtWan(d.inflow)}</td>
             <td style="color:#ef4444">${fmtWan(d.outflow)}</td>
             <td><b>${fmtWan(d.total)}</b></td>
-            <td>${fmtWan(d.outflow * 0.15)}</td>
-            <td>${(Math.random() * 10).toFixed(2)}%</td>
-            <td>${(Math.random() * 5).toFixed(2)}%</td>
-            <td>${Math.floor((d.txCnt || 0) * 0.1)}</td>
-            <td>${d.txCnt || 0}</td>
-            <td>${d.ctype || "-"}</td>
-            <td>${d.relation || "-"}</td>
-            <td>${d.sales || "-"}</td>
-            <td>${d.purchase || "-"}</td>
-            <td>${d.job || "-"}</td>
-            <td>集团${(d.id || 0) % 5 + 1}</td>
-          </tr>`
-          )
-          .join("");
+            <td>${fmtWan(d.outflow*0.15)}</td>
+            <td>${(Math.random()*10).toFixed(2)}%</td>
+            <td>${(Math.random()*5).toFixed(2)}%</td>
+            <td>${Math.floor((d.txCnt||0)*0.1)}</td>
+            <td>${d.txCnt||0}</td>
+            <td>${d.ctype||'-'}</td>
+            <td>${d.relation||'-'}</td>
+            <td>${d.sales||'-'}</td>
+            <td>${d.purchase||'-'}</td>
+            <td>${d.job||'-'}</td>
+            <td>集团${(d.id||0)%5+1}</td>
+          </tr>`).join('');
 
-        renderPagination(
-          "pagination-routine",
-          list.length,
-          currentRoutinePage,
-          "gotoRoutine"
-        );
+        renderPagination('pagination-routine', list.length, currentRoutinePage, 'gotoRoutine');
       }
 
       /* ---------- 一键刷新 ---------- */
-      function updateAllRoutineViews() {
-        refreshListFromCompanies();
+      function updateAllRoutineViews(){
+        refreshListFromCompanies();       // 先保证 list 有数据
         renderRoutineStrip();
-        renderBubbleChart();
+        renderScatterAndBox();
+        renderTop20();
         renderRoutineTable();
       }
 
-      /* ---------- 左侧 Routine 菜单切换 ---------- */
-      const routineMenu = document.getElementById("routineMenu");
-      routineMenu &&
-        routineMenu.addEventListener("click", e => {
-          const it = e.target.closest(".item");
-          if (!it) return;
-          [...routineMenu.children].forEach(m =>
-            m.classList.remove("active")
-          );
-          it.classList.add("active");
-          renderRoutine(it.dataset.code);
-        });
+      /* ---------- 左侧菜单切换 ---------- */
+      const routineMenu = document.getElementById('routineMenu');
+      routineMenu && routineMenu.addEventListener('click', e=>{
+        const it = e.target.closest('.item'); if (!it) return;
+        [...routineMenu.children].forEach(m=>m.classList.remove('active'));
+        it.classList.add('active');
+        renderRoutine(it.dataset.code);
+      });
 
-      function renderRoutine(code = "2.1") {
+      /* ---------- 切换 Routine 1 / 2 / 3 ---------- */
+      function renderRoutine(code){
         routineState.code = code;
 
-        if (code === "2.1") {
-          const def = ROUTINE_DEFAULTS["2.1"];
-          routineState.breaks = def.years.map(x => x * 365);
-          routineState.labels = def.labels.slice();
-          const t1 = document.getElementById("rTitle");
-          if (t1) t1.textContent = "经营时间汇总指标";
-          const st = document.getElementById("scatterTitle");
-          if (st)
-            st.textContent = "经营时间分布表";
-        } else if (code === "2.2") {
-          const def = ROUTINE_DEFAULTS["2.2"];
-          routineState.breaks = def.breaks.slice();
-          routineState.labels = def.labels.slice();
-          const t1 = document.getElementById("rTitle");
-          if (t1) t1.textContent = "社保缴纳人数汇总指标";
-          const st = document.getElementById("scatterTitle");
-          if (st)
-            st.textContent = "社保缴纳人数分布表";
-        } else {
-          // 其它 Routine 用经营时间的区间占位
-          const def = ROUTINE_DEFAULTS["2.1"];
-          routineState.breaks = def.years.map(x => x * 365);
-          routineState.labels = def.labels.slice();
-          const t1 = document.getElementById("rTitle");
-          if (t1)
-            t1.textContent = "主体类型汇总指标";
-          const st = document.getElementById("scatterTitle");
-          if (st)
-            st.textContent = "主体类型分布表";
+        if (code==='2.1'){
+          routineState.breaks = ROUTINE_DEFAULTS['2.1'].years.map(x=>x*365);
+          routineState.labels = ROUTINE_DEFAULTS['2.1'].labels.slice();
+          const t1 = document.getElementById('rTitle'); if(t1) t1.textContent = '经营时间汇总指标';
+          const st = document.getElementById('scatterTitle'); if(st) st.textContent = '经营时间分布表';
+        } else if (code==='2.2'){
+          routineState.breaks = ROUTINE_DEFAULTS['2.2'].breaks.slice();
+          routineState.labels = ROUTINE_DEFAULTS['2.2'].labels.slice();
+          const t1 = document.getElementById('rTitle'); if(t1) t1.textContent = '社保缴纳人数汇总指标';
+          const st = document.getElementById('scatterTitle'); if(st) st.textContent = '社保缴纳人数分布表';
+        } else if (code==='2.3'){
+          // 为个人或个体工商户：不使用 breaks，直接按 6 类型
+          routineState.breaks = [];
+          routineState.labels = ROUTINE3_TYPES.map(x=>x.key);
+          const t1 = document.getElementById('rTitle'); if(t1) t1.textContent = '主体类型汇总指标';
+          const st = document.getElementById('scatterTitle'); if(st) st.textContent = '主体类型分布表';
         }
 
+        currentRoutinePage = 1;
         updateAllRoutineViews();
       }
 
-      // 初始进入：Routine 2.1
-      renderRoutine("2.1");
+      // 初始进入：Routine1
+      renderRoutine('2.1');
+    })();
 
       // 右侧 Routine 侧栏折叠按钮
       (function(){
@@ -3985,8 +4040,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
           inst && inst.resize();
         }
       });
-    })();
-
+    
 
 
 
