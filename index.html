@@ -8,12 +8,14 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
   
   <!-- ECharts -->
   <script src="https://unpkg.com/echarts@5/dist/echarts.min.js"></script>
   <script src="/static/echarts/map/js/china.js"></script>
   <script src="/static/js/audit-routine.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   
 
@@ -1458,14 +1460,14 @@
   text-align:center;
   font-size:16px;
 }
-.sbar-toggle-inset:hover{ color:#0e3bd1; }
+.sbar-toggle-inset:hover{ color:#1e40af; }
 
 /* 折叠态：只保留 12px 导轨和按钮 */
 #pane-routine .split.is-collapsed .sidebar-pane{
   width:12px;
   min-width:12px;
   overflow:hidden;
-  border-right:2px solid #464850;
+  border-right:2px solid #1e40af;
 }
 #pane-routine .split.is-collapsed .sidebar-pane > *{
   display:none;
@@ -1600,6 +1602,167 @@
 #pane-routine[data-routine="2.4"] #r4Filters {
   display: flex !important;
 }
+
+/* 布局 */
+/* ===== Routine7 样式（作用于 #r7x 作用域） ===== */
+#r7x .r7x-layout{
+  display:grid; grid-template-columns: 380px 1fr; gap:16px; align-items:start;
+}
+
+#r7x .r7x-left{ display:flex; flex-direction:column; gap:12px; }
+
+/* 顶部筛选条 */
+#r7x .r7x-filters{
+  display:flex; align-items:center; flex-wrap:wrap; gap:10px;
+  background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:10px 12px;
+}
+#r7x .r7x-filters .lbl{ color:#334155; font-size:13px; }
+#r7x .r7x-filters .chk{ font-size:13px; color:#334155; margin-right:6px; }
+#r7x .r7x-filters .sep{ width:1px; height:18px; background:#e5e7eb; margin:0 8px; display:inline-block; }
+
+/* 2×2 田字格 KPI */
+#r7x .r7x-kpi-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+#r7x .r7x-kpi{
+  border-radius:10px; padding:12px 14px; color:#fff; box-shadow:0 6px 18px rgba(0,0,0,.06);
+  min-height:110px; display:flex; flex-direction:column; justify-content:center;
+}
+#r7x .kpi-title{ font-weight:600; margin-bottom:4px; opacity:.95; }
+#r7x .kpi-num{ font-size:28px; font-weight:800; line-height:1.1; margin:6px 0 8px; }
+#r7x .kpi-sub{ font-size:13px; opacity:.95; }
+
+#r7x .kpi-blue{ background:#2563eb; }
+#r7x .kpi-green{ background:#16a34a; }
+#r7x .kpi-orange{ background:#f59e0b; }
+#r7x .kpi-red{ background:#ef4444; }
+
+/* 锚点信息占满两列 */
+#r7x .r7x-anchor{
+  grid-column: 1 / span 2;
+  padding:10px 12px; border:1px dashed #e5e7eb; border-radius:8px; background:#fff;
+}
+#r7x .anchor-xy{ font-family: ui-monospace,Menlo,monospace; color:#334155; }
+
+/* 地图 */
+#r7x .r7x-map-wrap{ position:relative; min-height:520px; }
+#r7x #r7xMap{ width:100%; height:520px; border-radius:10px; border:1px solid #e5e7eb; }
+#r7x .r7x-legend{
+  position:absolute; right:8px; bottom:8px; background:rgba(255,255,255,.92);
+  border:1px solid #e5e7eb; border-radius:8px; padding:6px 8px; display:flex; gap:8px; font-size:12px; color:#334155;
+}
+#r7x .r7x-legend i{ display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:4px; vertical-align:-2px; }
+
+/* 窄屏自适应 */
+@media (max-width: 1280px){
+  #r7x .r7x-layout{ grid-template-columns: 320px 1fr; }
+}
+@media (max-width: 1024px){
+  #r7x .r7x-layout{ grid-template-columns: 1fr; }
+  #r7x #r7xMap{ height:420px; }
+}
+
+
+/* 底稿导出信息条 */
+  .wp-info-bar{background:#fff;border-bottom:1px solid #e6edf5;padding:12px 16px;display:flex;gap:16px 24px;align-items:center;flex-wrap:wrap}
+  .wp-info-bar .kv{color:#64748b}
+  .wp-info-bar .kv b{color:#0f172a}
+  .wp-info-bar .edit{margin-left:6px;cursor:pointer;color:#1e49e2;border-radius:6px;padding:2px 6px}
+  .wp-info-bar .edit:hover{background:#e9efff}
+
+  /* 卡片主体 */
+  .wp-card{position:relative}
+  .op-flow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:6px}
+  .op-step{border:1px solid #e6edf5;border-radius:12px;background:#fff}
+  .op-step .op-hd{display:flex;align-items:center;gap:8px;border-bottom:1px solid #eef3ff;padding:8px 12px}
+  .op-step .idx{width:22px;height:22px;border-radius:999px;background:#1e49e2;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+  .op-step .t{font-weight:600;color:#0f172a}
+  .op-step .state{margin-left:auto;color:#64748b}
+  .op-step .op-bd{padding:10px 12px}
+  .op-flow.small .op-hd{padding:6px 10px;font-size:12px}
+  .op-flow.small .op-bd{padding:8px 10px}
+  .op-flow.small .idx{width:18px;height:18px;font-size:11px}
+  .row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .muted{color:#64748b}
+
+  /* 工具栏 + 表格 */
+  .table-toolbar{display:flex;align-items:center;gap:12px;justify-content:space-between;margin:8px 0}
+  .table-toolbar .tt-right{display:flex;gap:8px}
+  .wp-table-wrap{overflow:auto}
+  .table{width:100%;border-collapse:collapse}
+  .table th,.table td{padding:10px 12px;border-bottom:1px solid #e6edf5;vertical-align:middle}
+  .table thead th{background:#fafbff;font-weight:600;color:#334155}
+  .num{text-align:right}
+  .table .sample-edit{cursor:pointer;border-bottom:1px dashed transparent}
+  .table .sample-edit:hover{border-bottom-color:#cbd5e1}
+  select,input[type="text"],input[type="number"]{border:1px solid #e6edf5;border-radius:8px;padding:6px 8px;background:#fff;outline:none;font-size:13px}
+
+  /* 仅遮“信息测试”卡片 */
+  .card-mask{position:absolute;inset:0;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;z-index:10}
+  .card-mask .note{background:#fff;border:1px dashed #cbd5e1;border-radius:10px;padding:14px 18px;color:#334155}
+
+  /* 弹窗 */
+  .modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:1000}
+  .dialog{width:min(520px,92vw);background:#fff;border:1px solid #e6edf5;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,.18)}
+  .dialog .hd{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #e6edf5;font-weight:600}
+  .dialog .bd{padding:16px}
+  .dialog .ft{padding:12px 16px;border-top:1px solid #e6edf5;display:flex;justify-content:flex-end;gap:8px}
+  .x{cursor:pointer;color:#94a3b8}
+  .x:hover{color:#0f172a}
+
+  .btn{padding:6px 10px;border:1px solid #e6edf5;border-radius:8px;background:#fff;cursor:pointer;font-size:13px}
+  .btn.primary{background:#1e49e2;color:#fff;border-color:#1e49e2}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* 信息测试 Step 状态徽标（已完成=绿，可用=蓝，未完成/不可用=灰） */
+.op-step .state{
+  padding: 0 8px;
+  line-height: 20px;
+  font-size: 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  display: inline-block;
+}
+
+/* 绿色：已完成 */
+.op-step .state.st-green{
+  color:#047857;
+  background:rgba(16,185,129,.12);
+  border-color:#10b981;
+}
+
+/* 蓝色：可用 */
+.op-step .state.st-blue{
+  color:#1e40af;
+  background:rgba(59,130,246,.12);
+  border-color:#3b82f6;
+}
+
+/* 灰色： / 不可用 */
+.op-step .state.st-gray{
+  color:#475569;
+  background:rgba(148,163,184,.15);
+  border-color:#cbd5e1;
+}
+
+/* 红色：未完成 */
+.op-step .state.st-red{
+  color:#dc2626;
+  background:rgba(239,68,68,.12);
+  border-color:#fca5a5;
+}
+
+/* 表头小圆圈编号 */
+.th-pill{display:inline-flex;align-items:center;gap:6px;vertical-align:middle}
+.th-pill .pill{
+  width:18px;height:18px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;line-height:18px;
+  background:#1e49e2;color:#fff;
+}
+.table thead th .pill{position:relative;top:-1px}
+
+/* 只影响表头，让数值列的表头仍然靠左显示图标+文字 */
+.table thead th.num{ text-align:left; }
+
 
 /* 固定底部 footer（独立，不依赖额外容器） */
 #app-footer{
@@ -1844,6 +2007,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
         <div class="tab" data-top="routine">特定工商查询</div>
         <div class="tab" data-top="statement">流水查询</div>
         <div class="tab" data-top="verify">总账核对</div>
+        <div class="tab" data-top="workingpaper">资金流水核查底稿导出</div>
         <i class="inkbar" id="inkbar"></i>
       </div>
     
@@ -2512,99 +2676,102 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
               </div>
               <!-- ========= /通用 Routine 布局 ========= -->
 
-              <!-- ========= Routine 7：注册地址接近 · 地图专用布局 ========= -->
-              <div class="addr-layout" id="addrLayout" style="display:none;">
-                <!-- 顶部：标题 + 4 段 KPI -->
+              <!-- ========= Routine7：注册地址接近 · 地图（独立模块 r7x） ========= -->
+              <section id="r7x" style="display:none;">
                 <div class="card">
                   <div class="head">
-                    <div class="title">7. 注册地址与被审计单位地址较为接近 · 结果</div>
+                    <div class="title">7. 注册地址与被审计单位地址接近 · 地图</div>
                   </div>
+
                   <div class="content">
-                    <div class="addr-kpi-strip">
-                      <div class="kpi-card">
-                        <div class="kpi-title">同市对手方</div>
-                        <div class="kpi-num" id="addrCityCnt">0</div>
-                        <div class="kpi-sub">交易总额：<span id="addrCityAmt">0 万</span></div>
-                      </div>
-                      <div class="kpi-card">
-                        <div class="kpi-title">同区 / 县对手方</div>
-                        <div class="kpi-num" id="addrDistrictCnt">0</div>
-                        <div class="kpi-sub">交易总额：<span id="addrDistrictAmt">0 万</span></div>
-                      </div>
-                      <div class="kpi-card">
-                        <div class="kpi-title">同街道对手方</div>
-                        <div class="kpi-num" id="addrStreetCnt">0</div>
-                        <div class="kpi-sub">交易总额：<span id="addrStreetAmt">0 万</span></div>
-                      </div>
-                      <div class="kpi-card">
-                        <div class="kpi-title">距离 < 1km 对手方</div>
-                        <div class="kpi-num" id="addrNearCnt">0</div>
-                        <div class="kpi-sub">交易总额：<span id="addrNearAmt">0 万</span></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                    <div class="r7x-layout">
+                      <!-- 左列：筛选 + 2×2 KPI -->
+                      <aside class="r7x-left">
+                        <!-- 顶部筛选条 -->
+                        <div class="r7x-filters">
+                          <label class="lbl">被审计单位：</label>
+                          <select id="r7xAuditSel" class="pill-select"></select>
 
-                <!-- 中段：左侧地图 + 右侧维度切换 -->
-                <div class="grid-2 addr-grid">
-                  <!-- 左：地图热力图 -->
-                  <div class="card">
-                    <div class="head">
-                      <div class="title">对手方地址热力分布（按接近程度）</div>
-                    </div>
-                    <div class="content">
-                      <div id="chart-addr-map" class="chart" style="height:360px;"></div>
-                    </div>
-                  </div>
+                          <span class="sep"></span>
 
-                  <!-- 右：级别切换 + 当前级别汇总 -->
-                  <div class="card">
-                    <div class="head">
-                      <div class="title">接近程度维度切换</div>
-                    </div>
-                    <div class="content">
-                      <div class="addr-level-tabs" id="addrLevelTabs">
-                        <button class="addr-level-btn active" data-level="city">同市</button>
-                        <button class="addr-level-btn" data-level="district">同区 / 县</button>
-                        <button class="addr-level-btn" data-level="street">同街道</button>
-                        <button class="addr-level-btn" data-level="near">距离 < 1km</button>
-                      </div>
-
-                      <div class="addr-level-summary">
-                        <div class="addr-level-title" id="addrLevelTitle">当前维度：同市</div>
-                        <ul class="addr-level-meta">
-                          <li>对手方数量：<span id="addrLevelCpCnt">0</span> 家</li>
-                          <li>交易总额：<span id="addrLevelAmt">0 万</span></li>
-                          <li>占全部对手方比例：<span id="addrLevelRatio">0%</span></li>
-                        </ul>
-                        <div class="small text-muted">
-                          提示：点击地图上的热点，可在下方表格中查看对应对手方明细。
+                          <label class="lbl">显示级别：</label>
+                          <label class="chk"><input type="checkbox" value="city"     checked> 同市</label>
+                          <label class="chk"><input type="checkbox" value="district" checked> 同区/县</label>
+                          <label class="chk"><input type="checkbox" value="street"   checked> 同街道</label>
+                          <label class="chk"><input type="checkbox" value="near"     checked> 距离&lt;1km</label>
                         </div>
-                      </div>
+
+                        <!-- 2×2 田字格 KPI -->
+                        <div class="r7x-kpi-grid">
+                          <div class="r7x-kpi kpi-blue">
+                            <div class="kpi-title">同市</div>
+                            <div class="kpi-num" id="r7xCityCnt">0</div>
+                            <div class="kpi-sub">累计流入：<b id="r7xCityIn">0 万</b></div>
+                            <div class="kpi-sub">累计流出：<b id="r7xCityOut">0 万</b></div>
+                          </div>
+
+                          <div class="r7x-kpi kpi-green">
+                            <div class="kpi-title">同区/县</div>
+                            <div class="kpi-num" id="r7xDistrictCnt">0</div>
+                            <div class="kpi-sub">累计流入：<b id="r7xDistrictIn">0 万</b></div>
+                            <div class="kpi-sub">累计流出：<b id="r7xDistrictOut">0 万</b></div>
+                          </div>
+
+                          <div class="r7x-kpi kpi-orange">
+                            <div class="kpi-title">同街道</div>
+                            <div class="kpi-num" id="r7xStreetCnt">0</div>
+                            <div class="kpi-sub">累计流入：<b id="r7xStreetIn">0 万</b></div>
+                            <div class="kpi-sub">累计流出：<b id="r7xStreetOut">0 万</b></div>
+                          </div>
+
+                          <div class="r7x-kpi kpi-red">
+                            <div class="kpi-title">距离 &lt; 1km</div>
+                            <div class="kpi-num" id="r7xNearCnt">0</div>
+                            <div class="kpi-sub">累计流入：<b id="r7xNearIn">0 万</b></div>
+                            <div class="kpi-sub">累计流出：<b id="r7xNearOut">0 万</b></div>
+                          </div>
+
+                          <div class="r7x-anchor">
+                            <div class="small text-muted">被审计单位坐标：</div>
+                            <div class="anchor-xy" id="r7xAnchorXY">—</div>
+                          </div>
+                        </div>
+                      </aside>
+
+                      <!-- 右列：地图 -->
+                      <section class="r7x-map-wrap">
+                        <div id="r7xMap" aria-label="地图"></div>
+                        <div class="r7x-legend">
+                          <span><i style="background:#2563eb;"></i>同市</span>
+                          <span><i style="background:#16a34a;"></i>同区/县</span>
+                          <span><i style="background:#f59e0b;"></i>同街道</span>
+                          <span><i style="background:#ef4444;"></i>距离&lt;1km</span>
+                          <span><i style="background:#334155;opacity:.6;"></i>其他</span>
+                        </div>
+                      </section>
                     </div>
                   </div>
                 </div>
 
-                <!-- 底部：当前维度对手方明细表 -->
+                <!-- 下：明细表 -->
                 <div class="card">
-                  <div class="head">
-                    <div class="title">当前维度对手方明细</div>
-                  </div>
+                  <div class="head"><div class="title">当前地图点 · 对手方明细</div></div>
                   <div class="content">
-                    <div class="small">当前维度：<span id="addrTableLevelLabel">同市</span></div>
-                    <div style="overflow:auto; max-height:360px;">
-                      <table class="table" id="tblAddrDetail">
+                    <div style="overflow:auto;max-height:360px">
+                      <table class="table" id="r7xTable">
                         <thead>
                           <tr>
                             <th>对手方名称</th>
-                            <th>统一社会信用代码</th>
-                            <th>地址</th>
-                            <th>接近层级</th>
+                            <th>接近级别</th>
+                            <th>距离(km)</th>
                             <th>城市</th>
-                            <th>区 / 县</th>
-                            <th>街道 / 镇</th>
-                            <th>距离被审计单位 (km)</th>
-                            <th>交易总额 (万)</th>
+                            <th>区/县</th>
+                            <th>街道</th>
+                            <th>经度</th>
+                            <th>纬度</th>
+                            <th>累计流入(万)</th>
+                            <th>累计流出(万)</th>
+                            <th>交易总额(万)</th>
                           </tr>
                         </thead>
                         <tbody></tbody>
@@ -2612,12 +2779,186 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                     </div>
                   </div>
                 </div>
-              </div>
-              <!-- ========= /Routine 7 布局 ========= -->
+              </section>
+              <!-- ========= /Routine7 ========= -->
             </main>
           </div>
         </div>
       </section>
+
+      <!-- ===================== 资金流水核查底稿导出 ===================== -->
+      <!-- ===================== 资金流水核查底稿导出 ===================== -->
+      <section class="tab-pane" id="pane-workingpaper">
+        <div class="tab-scroll">
+
+          <!-- 顶部信息条（小条条） -->
+          <div class="wp-info-bar">
+            <div class="kv">项目编号/名称：<b id="wpProj">2025-AC-0001 / Test2</b></div>
+            <div class="kv">工作簿名称：<b id="wpBook">Audit Compass Dev</b></div>
+            <div class="kv">工作簿类型：<b id="wpKind">IPO</b></div>
+            <div class="kv">资本市场：
+              <b id="wpMarket">A</b>
+              <span class="edit" id="wpEditMarket" title="编辑">✎</span>
+            </div>
+          </div>
+
+          <!-- 信息测试（横向步骤流，仅该卡片需要遮罩） -->
+          <div class="card wp-card" id="wpInfoCard">
+            <div class="head">
+              <div class="title">信息测试（Step1 → Step2 → Step3）</div>
+            </div>
+
+            <div class="content">
+              <!-- 横向操作流（更紧凑） -->
+              <div class="op-flow small">
+                <!-- Step1 -->
+                <div class="op-step" id="opStep1">
+                  <div class="op-hd">
+                    <span class="idx">1</span>
+                    <span class="t">数据获取方式</span>
+                    <span class="state" id="s1State">未完成</span>
+                  </div>
+                  <div class="op-bd">
+                    <div class="row">
+                      <button class="btn primary" id="s1Save" disabled>保存 Step1</button>
+                      <button class="btn" id="s1Modify" style="display:none;">修改 Step1</button>
+                    </div>
+                    <div class="muted">在下表“数据获取方式（说明）”列逐行选择完成后，方可保存。</div>
+                  </div>
+                </div>
+
+                <!-- Step2 -->
+                <div class="op-step" id="opStep2">
+                  <div class="op-hd">
+                    <span class="idx">2</span>
+                    <span class="t">Direct Test</span>
+                    <span class="state" id="s2State">不可用</span>
+                  </div>
+                  <div class="op-bd">
+                    <div class="row">
+                      <label><input type="radio" name="wpDT" value="Y" checked disabled> 是</label>
+                      <label><input type="radio" name="wpDT" value="N" disabled> 否</label>
+                    </div>
+                    <div class="muted" id="s2Hint">请先完成并保存 Step1</div>
+                  </div>
+                </div>
+
+                <!-- Step3 -->
+                <div class="op-step" id="opStep3">
+                  <div class="op-hd">
+                    <span class="idx">3</span>
+                    <span class="t">风险等级 & 样本量</span>
+                    <span class="state" id="s3State">不可用</span>
+                  </div>
+                  <div class="op-bd">
+                    <div class="row">
+                      <select id="riskSel" disabled>
+                        <option value="">选择风险等级…</option>
+                        <option value="重大+">重要的+</option>
+                        <option value="重大">重要的</option>
+                        <option value="提高">提高的</option>
+                        <option value="基础">基础的</option>
+                      </select>
+                      <button class="btn" id="btnCalc" disabled>计算样本量</button>
+                    </div>
+                    <div class="muted" id="riskNote">基于风险等级：—</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 表格工具栏（右上角按钮 + 左侧提示） -->
+              <div class="table-toolbar">
+                <div class="tt-left muted">样本量会写入“最小样本量”列；点击数字可就地修改。</div>
+                <div class="tt-right">
+                  <button class="btn" id="btnCols">自定义表头</button>
+                  <button class="btn" id="btnExport">导出</button>
+                  <label class="btn">导入
+                    <input id="btnImport" type="file" accept=".xlsx,.csv" hidden>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 表格：方式列内编辑 + 最小样本量列展示/可覆盖 -->
+              <div class="wp-table-wrap">
+                <table class="table" id="wpTable">
+                  <thead>
+                    <tr>
+                      <th>被审计单位名称</th>
+                      <th>银行账号</th>
+                      <th>本方银行</th>
+                      <th class="num">交易总额</th>
+                      <th class="num">交易笔数</th>
+                      <th style="min-width:260px;">
+                      <span class="th-pill"><span class="pill">1</span><span>数据获取方式（说明）</span></span>
+                    </th>
+                    <th class="num" style="min-width:140px;">
+                      <span class="th-pill"><span class="pill">3</span><span>最小样本量</span></span>
+                    </th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+
+              <!-- 仅遮“信息测试”卡片的罩子 -->
+              <div class="card-mask" id="wpMaskInfo" style="display:none;">
+                <div class="note">当前工作簿类型为非 IPO，本功能不适用</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ✎ 编辑弹窗 -->
+      <div class="modal" id="wpModal">
+        <div class="dialog">
+          <div class="hd">
+            <span>编辑工作簿属性</span>
+            <span class="x" id="wpModalClose">✕</span>
+          </div>
+          <div class="bd">
+            <div class="row2">
+              <div class="field">
+                <label>是否 IPO</label>
+                <div class="radio">
+                  <label><input type="radio" name="wpIPO" value="Y" checked> 是</label>
+                  <label><input type="radio" name="wpIPO" value="N"> 否</label>
+                </div>
+              </div>
+              <div class="field">
+                <label>资本市场</label>
+                <select id="wpMarketSel">
+                  <option value="A">A</option>
+                  <option value="H">H</option>
+                  <option value="科创板">科创板</option>
+                  <option value="创业板">创业板</option>
+                </select>
+              </div>
+            </div>
+            <div class="row2" style="margin-top:12px;">
+              <div class="field">
+                <label>财年结束日期</label>
+                <input type="text" id="wpFyEnd" placeholder="例如：12-31" value="12-31"/>
+              </div>
+              <div class="field">
+                <label>重要性水平（Materiality）</label>
+                <input type="number" id="wpMateriality" placeholder="仅正数，支持千分位" min="0"/>
+              </div>
+            </div>
+            <div class="muted" style="margin-top:6px;">导出校验：Materiality 为空或 0 将阻止导出并提示。</div>
+          </div>
+          <div class="ft">
+            <button class="btn" id="wpModalCancel">取消</button>
+            <button class="btn primary" id="wpModalOk">提交</button>
+          </div>
+        </div>
+      </div>
+
+
+      
+
+
+      
 
       
 
@@ -2721,6 +3062,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
       routine:"聚合工商信息并与交易规模联动校验企业真实性与风险。",
       statement:"用户可对本页的多维筛选器设置筛选条件，系统将在已上传并执行分析的银行流水中选出符合筛选条件的异常交易流水，并支持流水导出，旨在帮助用户根据项目需求，全面、快速、精准地筛选出异常银行流水，协助用户进一步执行审计程序。",
       verify:"本页汇总已上传并执行分析的电子银行流水的期初金额、借方发生额、贷方发生额及期末余额，并将其与上传的银行科目总账/分账号余额表进行比对，并展示两者差异，协助用户完成银行流水的完整性测试。"
+
     };
     
     function setTabIntro(key){
@@ -2814,6 +3156,296 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
         });
       });
     });
+
+    // ===== 资金流水核查底稿导出：自检版 JS（作用域安全 + 延迟初始化） =====
+    (function initWP(){
+  // 若页面还没准备好，等 DOM 再跑
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initWP, {once:true});
+    return;
+  }
+
+  // ====== 状态 ======
+  const WP = {
+    isIPO: true,           // 弹窗里改；非 IPO 只遮“信息测试”卡片
+    market: "A",
+    fyEnd: "12-31",
+    materiality: "",
+
+    step1Saved: false,
+    directTest: "Y",
+    risk: "",
+    riskLabel: "",
+
+    accounts: [
+      { id:1, org:"恒泽科技有限公司",    bankNo:"6222001001234567890", bank:"中国银行北京分行", total:238803000, tx:500, method:"", sample:null },
+      { id:2, org:"中恒实业集团有限公司", bankNo:"6217002209876543210", bank:"建设银行上海分行", total:257803000, tx:500, method:"", sample:null },
+      { id:3, org:"中科启元技术有限公司", bankNo:"6217990011223344556", bank:"招商银行深圳分行", total:198123000, tx:360, method:"", sample:null },
+      { id:4, org:"华创数智有限公司",    bankNo:"6217009966332211008", bank:"工商银行杭州分行", total:303560000, tx:820, method:"", sample:null },
+      { id:5, org:"远航国际贸易有限公司", bankNo:"6212340099887766554", bank:"农业银行南京分行", total:126990000, tx:210, method:"", sample:null },
+      { id:6, org:"霖悦电子股份有限公司", bankNo:"6215667788990011223", bank:"浦发银行上海分行", total:335500000, tx:980, method:"", sample:null }
+    ]
+  };
+
+  const METHOD_TEXT = {
+    "1":"1. 通过邮件/U盘等提供下载记录",
+    "2":"2. 我方从银行获取",
+    "3":"3. 由SDS平台下发或邮件推送",
+    "4":"4. 远程双录获取"
+  };
+  const RISK_RATIO = { "重大+":0.25, "重大":0.15, "提高":0.10, "基础":0.05 };
+
+  // ====== 工具 ======
+  const $  = sel => document.querySelector(sel);
+  const $all = sel => Array.from(document.querySelectorAll(sel));
+  const fmt = n => (Number(n)||0).toLocaleString('zh-CN');
+  const empty = v => v===null || v===undefined || v==="";
+
+  // ====== 顶部信息/遮罩 ======
+  function applyMask(){
+    // 只遮“信息测试”卡片
+    $('#wpMaskInfo').style.display = WP.isIPO ? 'none' : 'flex';
+  }
+  function renderTopBar(){
+    $("#wpKind").textContent = WP.isIPO ? "IPO" : "非IPO";
+    $("#wpMarket").textContent = WP.market;
+    applyMask();
+  }
+
+  // 统一设置状态徽标：sel 可传选择器或元素；cls 传 'st-green' | 'st-blue' | 'st-gray'
+  function setBadge(sel, text, cls){
+  const el = (typeof sel === 'string') ? document.querySelector(sel) : sel;
+  if (!el) return;
+  el.textContent = text;
+  el.classList.remove('st-green','st-blue','st-gray','st-red');
+  el.classList.add(cls);
+}
+
+  // ====== 步骤状态 ======
+  function refreshStepStates(){
+  // S1：已完成=绿；未完成=红
+  setBadge('#s1State', WP.step1Saved ? '已完成' : '未完成',
+           WP.step1Saved ? 'st-green' : 'st-red');
+
+  // S2：完成 S1 才可用；可用=蓝；不可用=灰
+  const s2Disabled = !WP.step1Saved;
+  document.querySelectorAll('input[name="wpDT"]').forEach(r => r.disabled = s2Disabled);
+  setBadge('#s2State', s2Disabled ? '不可用' : '可用',
+           s2Disabled ? 'st-gray' : 'st-blue');
+  document.getElementById('s2Hint').textContent = s2Disabled ? '请先完成并保存 Step1' : '可选择 Yes/No';
+
+  // S3：S1 完成且 DT=Y 才可用；可用=蓝；不可用=灰
+  const s3Enable = WP.step1Saved && WP.directTest === 'Y';
+  document.getElementById('riskSel').disabled = !s3Enable;
+  document.getElementById('btnCalc').disabled = !s3Enable;
+  setBadge('#s3State', s3Enable ? '可用' : '不可用',
+           s3Enable ? 'st-blue' : 'st-gray');
+}
+
+  // 保存按钮可用性（所有行都选了方式才可保存）
+  function updateS1SaveBtn(){
+    const anyEmpty = WP.accounts.some(a=> empty(a.method));
+    $("#s1Save").disabled = anyEmpty || WP.step1Saved;
+  }
+
+  // ====== 表格渲染 ======
+  function renderTable(){
+    const tb = $("#wpTable tbody");
+    tb.innerHTML = WP.accounts.map(a=>{
+      const methodCell = WP.step1Saved
+        ? (a.method ? METHOD_TEXT[a.method] : '<span class="muted">—</span>')
+        : `<select class="mSel" data-id="${a.id}">
+             <option value="">选择方式…</option>
+             <option value="1" ${a.method==="1"?"selected":""}>${METHOD_TEXT["1"]}</option>
+             <option value="2" ${a.method==="2"?"selected":""}>${METHOD_TEXT["2"]}</option>
+             <option value="3" ${a.method==="3"?"selected":""}>${METHOD_TEXT["3"]}</option>
+             <option value="4" ${a.method==="4"?"selected":""}>${METHOD_TEXT["4"]}</option>
+           </select>`;
+
+      const sampleCell = (a.sample!=null && WP.step1Saved && WP.directTest==="Y")
+        ? `<span class="sample-edit" data-id="${a.id}" title="点击修改">${fmt(a.sample)}</span>`
+        : (a.sample!=null ? `<span>${fmt(a.sample)}</span>` : '<span class="muted">—</span>');
+
+      return `<tr>
+        <td>${a.org}</td>
+        <td>${a.bankNo}</td>
+        <td>${a.bank}</td>
+        <td class="num">${fmt(a.total)}</td>
+        <td class="num">${fmt(a.tx)}</td>
+        <td>${methodCell}</td>
+        <td class="num">${sampleCell}</td>
+      </tr>`;
+    }).join("");
+
+    // 逐行选择方式
+    if (!WP.step1Saved){
+      $all(".mSel").forEach(sel=>{
+        sel.addEventListener("change",(e)=>{
+          const id = Number(e.target.getAttribute("data-id"));
+          const row = WP.accounts.find(x=>x.id===id);
+          row.method = e.target.value;
+          updateS1SaveBtn();
+        });
+      });
+      updateS1SaveBtn();
+    }
+
+    // 样本量就地修改（仅 S1 完成 + DT=Y）
+    $all(".sample-edit").forEach(span=>{
+      span.addEventListener("click",()=>{
+        const id = Number(span.getAttribute("data-id"));
+        const row = WP.accounts.find(x=>x.id===id);
+        const cur = row.sample ?? 0;
+        span.outerHTML = `<input type="number" min="0" class="sample-input" data-id="${id}" value="${cur}" style="width:110px;">`;
+        const input = document.querySelector(`.sample-input[data-id="${id}"]`);
+        const commit = ()=>{
+          const v = Number(input.value||0);
+          row.sample = Math.max(0, Math.round(v));
+          renderTable();
+        };
+        input.addEventListener("blur", commit);
+        input.addEventListener("keydown", e=>{ if(e.key==="Enter") commit(); });
+        input.focus(); input.select();
+      });
+    });
+  }
+
+  // ====== 样本量计算 ======
+  function computeSamples(){
+    if (!WP.risk || !RISK_RATIO[WP.risk]) return;
+    const ratio = RISK_RATIO[WP.risk];
+    WP.accounts.forEach(a=> a.sample = Math.ceil(a.tx * ratio));
+    $("#riskNote").textContent = "基于风险等级：" + (WP.riskLabel || "—");
+    renderTable();
+  }
+
+  function updateStep1Buttons(){
+    const saveBtn = $("#s1Save");
+    const modBtn  = $("#s1Modify");
+    if (!saveBtn || !modBtn) return;
+    if (WP.step1Saved){
+      saveBtn.style.display = "none";
+      modBtn.style.display  = "";
+    } else {
+      saveBtn.style.display = "";
+      modBtn.style.display  = "none";
+    }
+  }
+
+  // ====== Step1 保存 / 修改 ======
+  $("#s1Save") && $("#s1Save").addEventListener("click", ()=>{
+    const anyEmpty = WP.accounts.some(a=> empty(a.method));
+    if (anyEmpty){
+      alert("仍有账号未选择“数据获取方式”。");
+      return;
+    }
+    WP.step1Saved = true;
+
+    // 保存后重置 Step2/3（Direct Test 回到 Yes；风险与样本量清空）
+    WP.directTest = "Y";
+    $all('input[name="wpDT"]').forEach(r=> r.checked = (r.value==="Y"));
+    WP.risk = ""; 
+    WP.riskLabel = "";
+    WP.accounts.forEach(x=> x.sample = null);
+    $("#riskSel").value = ""; 
+    $("#riskNote").textContent = "基于风险等级：—";
+
+    renderTable();
+    refreshStepStates();
+    updateStep1Buttons(); // ← 切到“修改 Step1”
+  });
+
+  $("#s1Modify") && $("#s1Modify").addEventListener("click", ()=>{
+    // 修改 Step1 → 回到可编辑，并重置 Step2/3
+    WP.step1Saved = false;
+    WP.directTest = "Y";
+    $all('input[name="wpDT"]').forEach(r=> r.checked = (r.value==="Y"));
+    WP.risk = ""; 
+    WP.riskLabel = "";
+    WP.accounts.forEach(x=> x.sample = null);
+    $("#riskSel").value = ""; 
+    $("#riskNote").textContent = "基于风险等级：—";
+
+    renderTable();
+    refreshStepStates();
+    updateStep1Buttons(); // ← 切回“保存 Step1”
+  });
+
+  // ====== Step2 ======
+  $all('input[name="wpDT"]').forEach(r=>{
+    r.addEventListener("change", ()=>{
+      WP.directTest = r.value;
+      if (WP.directTest==="N"){
+        WP.risk = ""; 
+        WP.riskLabel = "";
+        WP.accounts.forEach(a=> a.sample=null);
+        $("#riskSel").value = "";
+        $("#riskNote").textContent = "Direct Test = 否，本步骤不适用";
+        renderTable();
+      } else {
+        $("#riskNote").textContent = "基于风险等级：—";
+      }
+      refreshStepStates();
+    });
+  });
+
+  // ====== Step3 ======
+  $("#riskSel") && $("#riskSel").addEventListener("change",(e)=>{
+    const map = {"重大+":"重要的+","重大":"重要的","提高":"提高的","基础":"基础的"};
+    WP.risk = e.target.value;
+    WP.riskLabel = map[WP.risk] || "";
+  });
+  $("#btnCalc") && $("#btnCalc").addEventListener("click", ()=>{
+    if (!WP.risk){ alert("请先选择风险等级"); return; }
+    computeSamples();
+  });
+
+  // 可选：初始化时也同步一次按钮显隐（放在你的初始化尾部）
+  updateStep1Buttons();
+
+  // ====== 工具栏：自定义表头 / 导出 / 导入 ======
+  $("#btnCols").addEventListener("click", ()=> alert("自定义表头：占位（接你们的表头配置弹窗）"));
+  $("#btnExport").addEventListener("click", ()=>{
+    if (!WP.isIPO){ alert("当前工作簿类型为非 IPO，本功能不适用"); return; }
+    const m = Number(WP.materiality||0);
+    if (!m){ alert("请先在弹窗中填写重要性水平（Materiality）后再导出底稿。"); return; }
+    if (!WP.step1Saved){ alert("请先完成并保存 Step1。"); return; }
+    alert("校验通过：触发导出（对接后端接口）");
+  });
+  $("#btnImport").addEventListener("change", (e)=>{
+    const f = e.target.files?.[0];
+    if (!f) return;
+    alert("已选择文件：" + f.name + "（解析导入逻辑在此对接）");
+    e.target.value = "";
+  });
+
+  // ====== 顶部 ✎ 弹窗 ======
+  const modal = $("#wpModal");
+  $("#wpEditMarket").addEventListener("click", ()=>{
+    $all('input[name="wpIPO"]').forEach(r=> r.checked = (WP.isIPO ? r.value==="Y" : r.value==="N"));
+    $("#wpMarketSel").value = WP.market;
+    $("#wpFyEnd").value     = WP.fyEnd || "";
+    $("#wpMateriality").value = WP.materiality || "";
+    modal.style.display="flex";
+  });
+  $("#wpModalClose").addEventListener("click", ()=> modal.style.display="none");
+  $("#wpModalCancel").addEventListener("click", ()=> modal.style.display="none");
+  $("#wpModalOk").addEventListener("click", ()=>{
+    WP.isIPO = (document.querySelector('input[name="wpIPO"]:checked')?.value || "Y")==="Y";
+    WP.market = $("#wpMarketSel").value || "A";
+    WP.fyEnd  = $("#wpFyEnd").value.trim();
+    WP.materiality = $("#wpMateriality").value.trim();
+    renderTopBar();
+    modal.style.display="none";
+  });
+
+  // ====== 初始化 ======
+  renderTopBar();
+  renderTable();
+  refreshStepStates();
+})();
+
+    
 
       
     /* =============== 经营实质：图表 =============== */
@@ -4032,12 +4664,32 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
         renderRoutine(it.dataset.code);
       });
 
+
       /* ---------- 切换 Routine 1 / 2 / 3 / 4 ---------- */
+      /* ---------- 切换 Routine 1 / 2 / 3 / 4 / 7 ---------- */
       function renderRoutine(code){
         routineState.code = code;
-
         document.getElementById('pane-routine').setAttribute('data-routine', code);
 
+        // ★★ 2.7：只显示地图页，隐藏通用块
+        const r7xBlock = document.getElementById('r7x');
+        const commonBlock = document.getElementById('routineCommon');
+
+        if (code === '2.7') {
+          if (commonBlock) commonBlock.style.display = 'none';
+          if (r7xBlock) { r7xBlock.style.display = ''; }
+          if (window.R7X && typeof window.R7X.show === 'function') {
+            window.R7X.show();
+          }
+          return; // 不再往下跑其它 Routine 的更新逻辑
+        } else {
+          // 离开 2.7，隐藏地图块，恢复通用区
+          if (r7xBlock) r7xBlock.style.display = 'none';
+          if (window.R7X && typeof window.R7X.hide === 'function') window.R7X.hide();
+          if (commonBlock) commonBlock.style.display = '';
+        }
+
+        // 下面仍是你原有的 2.1~2.4 分支
         if (code==='2.1'){
           routineState.breaks = ROUTINE_DEFAULTS['2.1'].years.map(x=>x*365);
           routineState.labels = ROUTINE_DEFAULTS['2.1'].labels.slice();
@@ -4049,7 +4701,6 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
           const t1 = document.getElementById('rTitle'); if(t1) t1.textContent = '社保缴纳人数汇总指标';
           const st = document.getElementById('scatterTitle'); if(st) st.textContent = '社保缴纳人数分布表';
         } else if (code==='2.3'){
-          // 为个人或个体工商户：不使用 breaks，直接按 6 类型
           routineState.breaks = [];
           routineState.labels = ROUTINE3_TYPES.map(x=>x.key);
           const t1 = document.getElementById('rTitle'); if(t1) t1.textContent = '主体类型汇总指标';
@@ -4059,16 +4710,238 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
           routineState.labels = ROUTINE_DEFAULTS['2.4'].labels.slice();
           const t1 = document.getElementById('rTitle'); if(t1) t1.textContent = '交易总额/注册资本 汇总指标';
           const st = document.getElementById('scatterTitle'); if(st) st.textContent = '交易规模分布表';
-        } 
+        }
 
         currentRoutinePage = 1;
-        updateAllRoutineViews();
+        if (typeof updateAllRoutineViews === 'function') updateAllRoutineViews();
       }
 
       // 初始进入：Routine1
       renderRoutine('2.1');
     })();
 
+
+    /* ========== Routine7 模块：左指标｜右地图，含模拟数据 ========== */
+    /* ========== Routine7 常量 ========== */
+    const R7X_LEVELS = {
+      city:     { label:'同市',     color:'#2563eb' },
+      district: { label:'同区/县',  color:'#16a34a' },
+      street:   { label:'同街道',   color:'#f59e0b' },
+      near:     { label:'距离<1km', color:'#ef4444' },
+      other:    { label:'其他',     color:'#334155' }
+    };
+
+    function toRad(d){ return d*Math.PI/180; }
+    function haversine(a,b){
+      const R=6371;
+      const dLat=toRad((b.lat||0)-(a.lat||0));
+      const dLng=toRad((b.lng||0)-(a.lng||0));
+      const s1=Math.sin(dLat/2), s2=Math.sin(dLng/2);
+      return 2*R*Math.asin(Math.sqrt(s1*s1 + Math.cos(toRad(a.lat||0))*Math.cos(toRad(b.lat||0))*s2*s2));
+    }
+    function fmtWan(n){ return (Number(n)||0).toLocaleString('zh-CN'); }
+
+    /* ========== Demo 数据兜底（你有真实数据时，会被覆盖） ========== */
+    if(!window.auditUnits){
+      window.auditUnits = [
+        { id:'A', name:'被审计单位A（北京）', city:'北京市', district:'朝阳区', street:'建国路', lng:116.4736, lat:39.9146 },
+        { id:'B', name:'被审计单位B（上海）', city:'上海市', district:'浦东新区', street:'世纪大道', lng:121.5120, lat:31.2400 },
+      ];
+    }
+    if(!Array.isArray(window.companies) || !window.companies.length){
+      const genAround = (anchor, n=100) => {
+        const arr=[];
+        for(let i=0;i<n;i++){
+          const km = (Math.random()<0.75 ? (Math.random()*4 + 0.2) : (Math.random()*20 + 5));
+          const brg = Math.random()*360;
+          const dLat = (km/111) * Math.cos(toRad(brg));
+          const dLng = (km/(111*Math.cos(toRad(anchor.lat)))) * Math.sin(toRad(brg));
+          const inflow  = Math.floor(Math.random()*8000+500);
+          const outflow = Math.floor(Math.random()*6000+300);
+          arr.push({
+            id:`${anchor.id}-${i+1}`,
+            name:`对手方_${anchor.id}_${i+1}`,
+            city: anchor.city,
+            district: i%2? anchor.district : '其他区',
+            street: i%3? anchor.street : '其他街',
+            lng: anchor.lng + dLng, lat: anchor.lat + dLat,
+            inflow, outflow, total: inflow+outflow
+          });
+        }
+        return arr;
+      };
+      window.companies = [...genAround(window.auditUnits[0]), ...genAround(window.auditUnits[1])];
+    }
+
+    /* ========== Routine7 模块 ========== */
+    (function(){
+      let map, groups, anchorMarker;
+
+      function classify(cp, anchor){
+        const d = haversine(cp, anchor); // km
+        if (d < 1) return {level:'near', dist:d};
+        if (cp.street   && anchor.street   && cp.street   === anchor.street)   return {level:'street',   dist:d};
+        if (cp.district && anchor.district && cp.district === anchor.district) return {level:'district', dist:d};
+        if (cp.city     && anchor.city     && cp.city     === anchor.city)     return {level:'city',     dist:d};
+        return {level:'other', dist:d};
+      }
+
+      function ensureMap(anchor){
+        if (map) return;
+        map = L.map('r7xMap', { zoomControl:false, attributionControl:false });
+        L.control.zoom({ position:'topleft' }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19}).addTo(map);
+
+        groups = {
+          city: L.layerGroup().addTo(map),
+          district: L.layerGroup().addTo(map),
+          street: L.layerGroup().addTo(map),
+          near: L.layerGroup().addTo(map),
+          other: L.layerGroup().addTo(map),
+        };
+
+        const starSvg = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+            <path fill="#111827" d="M12 2l3 6 6 .9-4.5 4.4 1 6.3L12 17l-5.5 2.6 1-6.3L3 8.9 9 8z" opacity=".9"/>
+            <circle cx="12" cy="12" r="2" fill="#f59e0b"/>
+          </svg>`;
+        const starIcon = L.divIcon({ className:'', html:starSvg, iconSize:[28,28], iconAnchor:[14,14] });
+        anchorMarker = L.marker([anchor.lat, anchor.lng], { icon: starIcon })
+          .bindPopup(`<b>${anchor.name}</b><br>锚点（被审计单位）`)
+          .addTo(map);
+      }
+
+      function setKpi(suffix, o){
+        document.getElementById(`r7x${suffix}Cnt`).textContent = String(o.cnt||0);
+        document.getElementById(`r7x${suffix}In`).textContent  = fmtWan(o.in||0)+' 万';
+        document.getElementById(`r7x${suffix}Out`).textContent = fmtWan(o.out||0)+' 万';
+      }
+
+      function renderTable(rows){
+        const tb = document.querySelector('#r7xTable tbody'); if(!tb) return;
+        tb.innerHTML = rows.map(({cp,level,dist})=>`
+          <tr>
+            <td>${cp.name}</td>
+            <td>${R7X_LEVELS[level].label}</td>
+            <td>${dist.toFixed(2)}</td>
+            <td>${cp.city||'-'}</td>
+            <td>${cp.district||'-'}</td>
+            <td>${cp.street||'-'}</td>
+            <td>${(cp.lng||0).toFixed(5)}</td>
+            <td>${(cp.lat||0).toFixed(5)}</td>
+            <td>${fmtWan(cp.inflow)}</td>
+            <td>${fmtWan(cp.outflow)}</td>
+            <td><b>${fmtWan(cp.total)}</b></td>
+          </tr>
+        `).join('');
+      }
+
+      function levelOrder(l){ return ['near','street','district','city','other'].indexOf(l); }
+
+      function refresh(anchor, visible){
+        // 清空图层
+        Object.values(groups).forEach(g=>g.clearLayers());
+        if (anchorMarker){
+          anchorMarker.setLatLng([anchor.lat, anchor.lng]);
+          anchorMarker.setPopupContent(`<b>${anchor.name}</b><br>锚点（被审计单位）`);
+        }
+        map.setView([anchor.lat, anchor.lng], 12);
+
+        // 统计
+        const stat = {
+          city:{cnt:0,in:0,out:0}, district:{cnt:0,in:0,out:0},
+          street:{cnt:0,in:0,out:0}, near:{cnt:0,in:0,out:0}, other:{cnt:0,in:0,out:0}
+        };
+
+        const rows = [];
+        (window.companies||[]).forEach(cp=>{
+          const {level, dist} = classify(cp, anchor);
+          stat[level].cnt++; stat[level].in+=cp.inflow; stat[level].out+=cp.outflow;
+          if (visible[level]){
+            const dot = L.circleMarker([cp.lat, cp.lng], {
+              radius: Math.max(5, Math.sqrt(Math.abs(cp.total||0))/60 + 4),
+              color: R7X_LEVELS[level].color, fillColor:R7X_LEVELS[level].color, fillOpacity:.85, weight:0.8
+            }).bindPopup([
+              `<b>${cp.name}</b>`,
+              `级别：${R7X_LEVELS[level].label}`,
+              `距离：${dist.toFixed(2)} km`,
+              `流入：${fmtWan(cp.inflow)} 万`,
+              `流出：${fmtWan(cp.outflow)} 万`,
+              `交易额：<b>${fmtWan(cp.total)} 万</b>`
+            ].join('<br/>'));
+            dot.addTo(groups[level]);
+            rows.push({cp, level, dist});
+          }
+        });
+
+        // KPI
+        setKpi('City', stat.city);
+        setKpi('District', stat.district);
+        setKpi('Street', stat.street);
+        setKpi('Near', stat.near);
+        document.getElementById('r7xAnchorXY').textContent =
+          `(${anchor.lng.toFixed(5)}, ${anchor.lat.toFixed(5)})`;
+
+        // 明细表
+        rows.sort((a,b)=> a.level===b.level ? a.dist-b.dist : levelOrder(a.level)-levelOrder(b.level));
+        renderTable(rows);
+      }
+
+      function currentChecks(){
+        const ret={};
+        const nodes = document.querySelectorAll('#r7x .r7x-filters input[type="checkbox"]');
+        if (nodes.length){
+          nodes.forEach(ch => ret[ch.value] = !!ch.checked);
+        }else{
+          ret.city = ret.district = ret.street = ret.near = true;
+        }
+        return ret;
+      }
+
+      function selectedAnchor(){
+        const sel = document.getElementById('r7xAuditSel');
+        const id  = (sel && sel.value) || window.auditUnits[0].id;
+        return window.auditUnits.find(u=>u.id===id) || window.auditUnits[0];
+      }
+
+      // 对外 API：show / hide
+      window.R7X = {
+        show(){
+          const block = document.getElementById('r7x'); if(!block) return;
+          // 填充下拉（只填一次）
+          const sel = document.getElementById('r7xAuditSel');
+          if (sel && !sel.__filled){
+            sel.innerHTML = window.auditUnits.map(u=>`<option value="${u.id}">${u.name}</option>`).join('');
+            sel.__filled = true;
+          }
+          const anchor = selectedAnchor();
+
+          // 地图初始化 + 首次刷新
+          ensureMap(anchor);
+          refresh(anchor, currentChecks());
+
+          // 绑定事件（只绑一次）
+          if (sel && !sel.__bound){
+            sel.addEventListener('change', ()=> refresh(selectedAnchor(), currentChecks()));
+            sel.__bound = true;
+          }
+          const boxes = document.querySelectorAll('#r7x .r7x-filters input[type="checkbox"]');
+          if (boxes.length && !boxes[0].__bound){
+            boxes.forEach(ch=>{
+              ch.addEventListener('change', ()=> refresh(selectedAnchor(), currentChecks()));
+              ch.__bound = true;
+            });
+          }
+
+          // 尺寸校正
+          requestAnimationFrame(()=> map && map.invalidateSize());
+        },
+        hide(){
+          const block = document.getElementById('r7x');
+          if (block) block.style.display = 'none';
+        }
+      };
+    })();
     // 右侧 Routine 侧栏折叠按钮
     (function(){
       const split = document.querySelector('#pane-routine .split');
@@ -4096,6 +4969,12 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
         inst && inst.resize();
       }
     });
+
+    
+
+
+
+
 
 
 
