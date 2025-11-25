@@ -1742,6 +1742,11 @@
   margin-top: 6.5px;   /* 你可改成 16/20 视视觉效果 */
 }
 
+.blue {
+  color: #1e49e2 !important;
+  font-weight: 500;
+}
+
 
 /* ===== Footer 安全区 + 滚动不被遮挡 ===== */
 :root{ --footer-h: 56px; }               /* 兜底高度，JS 会动态覆盖 */
@@ -2895,8 +2900,8 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                       <th>本方银行</th>
                       <th>交易总额</th>
                       <th>交易笔数</th>
-                      <th style="min-width:260px;"><span class="th-pill"><span class="pill">1</span><span>数据获取方式（说明）</span></span></th>
-                      <th style="min-width:140px;"><span class="th-pill"><span class="pill">3</span><span>最小样本量</span></span></th>
+                      <th style="min-width:260px;"><span class="th-pill"><span class="pill">1</span><span>数据获取方式（<span class="blue">说明</span>）</span></span></th>
+                      <th style="min-width:140px;"><span class="th-pill"><span class="pill">3</span><span>最小样本量（<span class="blue">自动计算</span>）</span></span></th>
                     </tr>
                   </thead>
                   <tbody></tbody>
