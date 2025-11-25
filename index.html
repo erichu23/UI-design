@@ -2828,7 +2828,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                   <div class="op-bd">
                     <div class="row">
                       <button class="btn primary" id="s1Save" disabled>保存 Step1</button>
-                      <button class="btn" id="s1Modify" style="display:none;">修改 Step1</button>
+                      <button class="btn primary" id="s1Modify" style="display:none;">修改 Step1</button>
                     </div>
                     <div class="muted">在下表“数据获取方式（说明）”列逐行选择完成后，方可保存。</div>
                   </div>
@@ -2866,7 +2866,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                         <option value="提高">提高的</option>
                         <option value="基础">基础的</option>
                       </select>
-                      <button class="btn" id="btnCalc" disabled>计算样本量</button>
+                      <button class="btn primary" id="btnCalc" disabled>计算样本量</button>
                     </div>
                     <div class="muted" id="riskNote">基于风险等级：—</div>
                   </div>
@@ -2878,8 +2878,8 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                 <div class="tt-left muted">样本量会写入“最小样本量”列。</div>
                 <div class="tt-right">
                   <button class="btn" id="btnCols">自定义表头</button>
-                  <button class="btn" id="btnExport">导出</button>
-                  <label class="btn">导入
+                  <button class="btn primary" id="btnExport">导出</button>
+                  <label class="btn primary">导入
                     <input id="btnImport" type="file" accept=".xlsx,.csv" hidden>
                   </label>
                 </div>
@@ -2893,10 +2893,10 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                       <th>被审计单位名称</th>
                       <th>银行账号</th>
                       <th>本方银行</th>
-                      <th class="num">交易总额</th>
-                      <th class="num">交易笔数</th>
+                      <th>交易总额</th>
+                      <th>交易笔数</th>
                       <th style="min-width:260px;"><span class="th-pill"><span class="pill">1</span><span>数据获取方式（说明）</span></span></th>
-                      <th class="num" style="min-width:140px;"><span class="th-pill"><span class="pill">3</span><span>最小样本量</span></span></th>
+                      <th style="min-width:140px;"><span class="th-pill"><span class="pill">3</span><span>最小样本量</span></span></th>
                     </tr>
                   </thead>
                   <tbody></tbody>
@@ -3192,9 +3192,9 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
 
   const METHOD_TEXT = {
     "1":"1. 通过邮件/U盘等提供下载记录",
-    "2":"2. 我方从银行获取",
+    "2":"2. 直接从银行获取",
     "3":"3. 由SDS平台下发或邮件推送",
-    "4":"4. 远程双录获取"
+    "4":"4. 远程观察获取"
   };
   const RISK_RATIO = { "重大+":0.25, "重大":0.15, "提高":0.10, "基础":0.05 };
 
@@ -3265,9 +3265,20 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
              <option value="4" ${a.method==="4"?"selected":""}>${METHOD_TEXT["4"]}</option>
            </select>`;
 
-      const sampleCell = (a.sample!=null && WP.step1Saved && WP.directTest==="Y")
-        ? `<span class="sample-edit" data-id="${a.id}" title="点击修改">${fmt(a.sample)}</span>`
-        : (a.sample!=null ? `<span>${fmt(a.sample)}</span>` : '<span class="muted">—</span>');
+      // =========== 核心修改点：最小样本量列 ===========
+      let sampleCell;
+      if (WP.directTest === "N") {
+        // Direct Test = 否：整列强制 N/A
+        sampleCell = '<span class="muted">N/A 不执行Direct Test</span>';
+      } else {
+        // Direct Test = 是：走原来的样本量逻辑
+        sampleCell = (a.sample != null && WP.step1Saved)
+          ? `<span class="sample-edit" data-id="${a.id}" title="点击修改">${fmt(a.sample)}</span>`
+          : (a.sample != null
+              ? `<span>${fmt(a.sample)}</span>`
+              : '<span class="muted"></span>');
+      }
+        
 
       return `<tr>
         <td>${a.org}</td>
@@ -3377,20 +3388,25 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
   // ====== Step2 ======
   $all('input[name="wpDT"]').forEach(r=>{
     r.addEventListener("change", ()=>{
-      WP.directTest = r.value;
-      if (WP.directTest==="N"){
+      WP.directTest = r.value;   // "Y" 或 "N"
+
+      if (WP.directTest === "N"){
         WP.risk = ""; 
         WP.riskLabel = "";
-        WP.accounts.forEach(a=> a.sample=null);
+        WP.accounts.forEach(a=> a.sample = null);
         $("#riskSel").value = "";
         $("#riskNote").textContent = "Direct Test = 否，本步骤不适用";
-        renderTable();
+        renderTable();   // ✅ N 时重渲染（显示 N/A）
       } else {
         $("#riskNote").textContent = "基于风险等级：—";
+        renderTable();   // ✅ Y 时也要重渲染（去掉 N/A，用正常逻辑）
       }
+
       refreshStepStates();
     });
   });
+
+  
 
   // ====== Step3 ======
   $("#riskSel") && $("#riskSel").addEventListener("change",(e)=>{
@@ -3447,6 +3463,8 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
   renderTable();
   refreshStepStates();
 })();
+
+
 
     
 
