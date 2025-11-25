@@ -3263,7 +3263,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
       const methodCell = WP.step1Saved
         ? (a.method ? METHOD_TEXT[a.method] : '<span class="muted">—</span>')
         : `<select class="mSel" data-id="${a.id}">
-             <option value="">选择方式…</option>
+             <option value="" disabled selected hidden>选择方式…</option>
              <option value="1" ${a.method==="1"?"selected":""}>${METHOD_TEXT["1"]}</option>
              <option value="2" ${a.method==="2"?"selected":""}>${METHOD_TEXT["2"]}</option>
              <option value="3" ${a.method==="3"?"selected":""}>${METHOD_TEXT["3"]}</option>
