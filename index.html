@@ -1762,6 +1762,34 @@
 
 /* 只影响表头，让数值列的表头仍然靠左显示图标+文字 */
 .table thead th.num{ text-align:left; }
+    
+
+/* ===== Footer 安全区 + 滚动不被遮挡 ===== */
+:root{ --footer-h: 56px; }               /* 兜底高度，JS 会动态覆盖 */
+
+.tab-scroll{ padding-bottom: calc(var(--footer-h) + 16px) !important; }
+/* 若工作底稿页还有内部可滚区域，也同样预留 */
+#pane-workingpaper .wp-table-wrap{ padding-bottom: var(--footer-h); }
+
+/* 若你的版权条有固定类名，择一启用（任选其一或都加） */
+.copyright-bar,
+.footer-bar,
+.app-footer,
+[data-role="copyright"]{
+  position: fixed; left:0; right:0; bottom:0;
+  z-index: 50;
+  /* 让鼠标滚轮能穿透，不影响页面滚动；若需要点击链接，见下一段 */
+  pointer-events: none;
+}
+
+/* 如果版权条里有链接/按钮需要可点，把它们重新打开事件 */
+.copyright-bar a, .copyright-bar button,
+.footer-bar a,   .footer-bar button,
+.app-footer a,   .app-footer button,
+[data-role="copyright"] a,
+[data-role="copyright"] button{
+  pointer-events: auto;
+}
 
 
 /* 固定底部 footer（独立，不依赖额外容器） */
