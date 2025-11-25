@@ -68,10 +68,10 @@
   .tabbar{display:flex;gap:6px;border-bottom:2px solid var(--border);margin:10px 0 16px}
   .tab{padding:10px 14px;border-radius:8px 8px 0 0;color:var(--muted);cursor:pointer}
   .tab.active{background:#fff;border:1px solid var(--border);border-bottom:0;color:var(--primary)}
-  .card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
-  .card .head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);background:#f9fbff;position:relative}
+  .card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden;margin-bottom: 6.5px;}
+  .card .head{display:flex;align-items:center;justify-content:space-between;padding:10px 10px;border-bottom:1px solid var(--border);background:#f9fbff;position:relative}
   .card .head::before{content:"";position:absolute;left:0;top:0;width:4px;height:100%;background:var(--primary)}
-  .card .title{font-weight:600;margin-left:8px}
+  .card .title{font-weight:600;margin-left:8px;font-size: 11;}
   .card .content{padding:14px 16px}
   
 
@@ -271,7 +271,7 @@
 
 /* === Sidebar: final, deduped copyright=== */
 .layout-main{display:flex;height:calc(100vh - 48px);}
-.sidebar{flex:0 0 230px;background:#f8f8f8;border-right:1px solid #ddd;padding:10px 16px;}
+.sidebar{flex:0 0 210px;background:#f8f8f8;border-right:1px solid #ddd;}
 .main-right{flex:1;min-width:0;display:flex;flex-direction:column;}
 
 .sidebar .sidebar-menu,
@@ -286,7 +286,7 @@
 }
 .sidebar .sidebar-menu > li:not(.sb-toggle):hover{background:#eef3f8;}
 .sidebar .ico{width:16px;text-align:center;font-size:14px;color:#003366;}
-.sidebar .sb-txt{color:#003366;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sidebar .sb-txt{color:#003366;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sidebar .caret{margin-left:auto;font-size:12px;color:#8a8a8a;transition:transform .18s;}
 
 /* 可折叠项：工作簿详情（纵向容器） */
@@ -337,8 +337,8 @@
 .breadcrumb-bar {
   background:#fff;
   border-bottom:1px solid #e6edf5;
-  padding:12px 20px;
-  font-size:14px;
+  padding:10px 20px;
+  font-size:12px;
   color:#94a3b8;   /* 默认浅灰，作为路径基色 */
 }
 
@@ -369,19 +369,27 @@
 
 
 /* 顶部整体：左 KPI + 右 问题分析 */
-.kpi-and-issue{
-  display:grid;
-  grid-template-columns: minmax(520px, 1fr) 520px;
-  gap:10px;
-  padding:8px 16px 6px;
+/* ===== 顶部整体：左 KPI + 右 问题分析（紧凑版） ===== */
+:root{
+  /* 只调这两个就能整体“变矮/变高” */
+  --kpi-row: 48px;   /* 单行 KPI 高度（原 64px） */
+  --kpi-gap: 8px;    /* KPI 行/列间距（原 10px） */
 }
 
-/* 左侧 KPI：两行结构（前三列更瘦，右两列更长） */
+/* 顶部整体：左 KPI + 右 问题分析 */
+.kpi-and-issue{
+  display:grid;
+  grid-template-columns: minmax(480px, 1fr) 420px; /* 右侧卡更窄（原 520px） */
+  gap: var(--kpi-gap);
+  padding:6px 12px 4px;                             /* 更紧凑（原 8/16/6） */
+}
+
+/* 左侧 KPI：两行结构 */
 .kpi-grid{
   display:grid;
   grid-template-columns: 0.8fr 0.8fr 0.8fr 1.2fr 1.2fr;
-  grid-template-rows: 64px 64px;
-  gap:10px;
+  grid-template-rows: var(--kpi-row) var(--kpi-row); /* 原 64px 64px */
+  gap: var(--kpi-gap);
   align-items:stretch;
   grid-template-areas:
     "k1 k2 k3 k4 k5"
@@ -392,26 +400,26 @@
 .k1{ grid-area:k1; } .k2{ grid-area:k2; } .k3{ grid-area:k3; }
 .k4{ grid-area:k4; } .k5{ grid-area:k5; } .k6{ grid-area:k6; } .k7{ grid-area:k7; }
 
-/* 通用 KPI 样式 */
+/* 通用 KPI 样式（更紧凑的内边距与字号） */
 .kpi{
   background:#f8fafc;
   border:1px solid #e6edf5;
   border-radius:8px;
-  padding:6px 10px;
+  padding:4px 8px;          /* 原 6px 10px */
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:flex-start;
 }
 .kpi-label{
-  font-size:17px;
+  font-size:14px;           /* 原 14px */
   color:#334155;
   font-weight:600;
-  margin-bottom:3px;
+  margin-bottom:2px;        /* 原 3px */
   white-space:nowrap;
 }
 .kpi-value{
-  font-size:17px;
+  font-size:14px;           /* 原 14px */
   font-weight:700;
   color:#0f172a;
   line-height:1.1;
@@ -423,7 +431,7 @@
 .link-num:hover{ opacity:.85 }
 .link-num.danger{ color:#D2283E }
 
-/* ✅ 前三列（k1~k3）内容整体居中 */
+/* 前三列整体居中不变 */
 .k1, .k2, .k3 {
   display:flex !important;
   flex-direction:column !important;
@@ -432,7 +440,7 @@
   text-align:center !important;
 }
 
-/* ✅ 右侧 2×2（k4~k7）横排，数值右对齐 */
+/* 右侧 2×2 横排，数值右对齐不变 */
 .k4,.k5,.k6,.k7{
   display:flex !important;
   flex-direction:row !important;
@@ -444,63 +452,30 @@
   margin-left:auto; text-align:right;
 }
 
-/* ✅ 数据问题分析卡（与左侧KPI总高一致） */
-.issue-card{
-  background:#fffdf7;
-  border:1px solid #ffe6b3;
-  border-radius:8px;
-  padding:10px 12px;
-  height:calc(60px * 2 + 10px);  /* 跟左侧两行总高一致（2*行高 + gap） */
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-}
-.issue-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:6px;
-}
-.issue-title{color:#8a5c00;font-weight:600}
-.issue-link{
-  font-size:12px;
-  color:#8a5c00;
-  text-decoration:none;
-  border:1px solid #f5cf85;
-  padding:2px 8px;
-  border-radius:999px;
-  background:#fff7e3;
-}
-.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
-.dot-warn{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.15)}
-.issue-body{color:#8a5c00;font-size:12px;line-height:1.45;flex:1;overflow:auto}
-.issue-foot{margin-top:6px}
-.mini-link{font-size:12px;color:#8a5c00;text-decoration:underline}
-
-/* ====== 数据问题卡核心样式 ====== */
+/* ====== 数据问题分析卡（与左侧两行 KPI 等高，且更紧凑） ====== */
 .issue-card{
   position: relative;
   background:#fffdf7;
   border:1px solid #ffe6b3;
   border-radius:8px;
-  padding:10px 16px 30px;         /* 预留底部空间给固定按钮 */
-  height:calc(60px * 2 + 16px);   /* 保持与左侧两行KPI等高 */
+  padding:8px 12px 26px;                 /* 原 10/16/30 */
+  height: calc(var(--kpi-row) * 2 + var(--kpi-gap)); /* 原 calc(60*2 + 16) */
   display:flex;
   flex-direction:column;
   justify-content:flex-start;
-  overflow:hidden;                /* 防止外溢 */
+  overflow:hidden;
 }
 
-/* 顶部标题栏 */
+/* 标题栏更紧凑 */
 .issue-head{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin-bottom:6px;
+  margin-bottom:4px;                     /* 原 6px */
 }
-.issue-title{color:#8a5c00;font-weight:600;font-size:14px;}
+.issue-title{color:#8a5c00;font-weight:600;font-size:12px;} /* 原 14px */
 .issue-link{
-  font-size:12px;
+  font-size:11px;                        /* 原 12px */
   color:#8a5c00;
   text-decoration:none;
   border:1px solid #f5cf85;
@@ -510,20 +485,20 @@
 }
 .issue-link:hover{background:#ffeab5;}
 
-/* 内容区可滚动 */
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.dot-warn{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.15)}
+
+/* 正文区更紧凑并可滚动 */
 .issue-body-simple{
   font-size:12px;
   color:#8a5c00;
-  line-height:1.65;
+  line-height:1.45;                       /* 原 1.65 */
   overflow-y:auto;
-  padding-right:8px;
+  padding-right:6px;                      /* 原 8px */
   flex:1;
 }
 
-/* 第一行说明 */
-.issue-note b{ color:#8a5c00; }
-
-/* 第二行：红色警示 + 跳转链接 */
+/* 第二行：红色提示 */
 .issue-inline{
   display:flex;
   align-items:center;
@@ -538,10 +513,7 @@
   background:#dc2626;
   box-shadow:0 0 0 3px rgba(220,38,38,.12);
 }
-.issue-inline span{
-  color:#b2162a;
-  font-weight:500;
-}
+.issue-inline span{ color:#b2162a; font-weight:500; }
 .issue-inline-link{
   color:#b2162a;
   font-weight:600;
@@ -554,8 +526,8 @@
 /* 固定右下角按钮 */
 .issue-toggle{
   position:absolute;
-  right:12px;
-  bottom:8px;
+  right:10px;               /* 原 12px */
+  bottom:6px;               /* 原 8px */
   font-size:12px;
   color:#475569;
   text-decoration:underline;
@@ -567,13 +539,15 @@
 }
 .issue-toggle:hover{ color:#003366 }
 
-/* 可选：细滚动条（美化） */
+/* 细滚动条（保留） */
 .issue-body-simple::-webkit-scrollbar{ width:6px; }
 .issue-body-simple::-webkit-scrollbar-thumb{
   background:rgba(0,0,0,.15);
   border-radius:4px;
 }
 .issue-body-simple::-webkit-scrollbar-track{ background:transparent; }
+
+
 
 
 
@@ -615,7 +589,7 @@
   flex-wrap:nowrap;
   gap:10px;
 
-  padding:10px 16px 8px;   /* 与卡片内容留白一致 */
+  padding:10px 16px 1px;   /* 与卡片内容留白一致 */
   margin:0 !important;     /* 覆盖全局 `.tabbar{ margin:8px 16px }` 的干扰 */
 
   border-bottom:1px solid #e6edf5;
@@ -632,7 +606,7 @@
 /* ===== 单个 Tab：仅文字变化，不高亮整块背景 ===== */
 .tab-container .tab{
   flex:0 0 auto;
-  padding:10px 16px;
+  padding:5px 10px;
   cursor:pointer;
   color:#475569;
   border:none;
@@ -660,7 +634,7 @@
   gap:8px;
   padding:8px 16px 12px 16px;   /* ← 与 tabbar 同步为 16px */
   color:#334155;
-  font-size:13.5px;
+  font-size:11.5px;
   line-height:2;
   width:100%;
   box-sizing:border-box;
@@ -1669,7 +1643,7 @@
   .wp-info-bar .edit:hover{background:#e9efff}
 
   /* 卡片主体 */
-  .wp-card{position:relative}
+  .wp-card{position:relative;}
   .op-flow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:6px}
   .op-step{border:1px solid #e6edf5;border-radius:12px;background:#fff}
   .op-step .op-hd{display:flex;align-items:center;gap:8px;border-bottom:1px solid #eef3ff;padding:8px 12px}
@@ -1762,7 +1736,12 @@
 
 /* 只影响表头，让数值列的表头仍然靠左显示图标+文字 */
 .table thead th.num{ text-align:left; }
-    
+
+/* 让“信息测试”卡片与上方信息条留出间距 */
+#pane-workingpaper .wp-info-bar + .wp-card{
+  margin-top: 6.5px;   /* 你可改成 16/20 视视觉效果 */
+}
+
 
 /* ===== Footer 安全区 + 滚动不被遮挡 ===== */
 :root{ --footer-h: 56px; }               /* 兜底高度，JS 会动态覆盖 */
@@ -2822,7 +2801,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
           <!-- 顶部信息条（小条条） -->
           <div class="wp-info-bar">
             <div class="kv">项目编号/名称：<b id="wpProj">2025-AC-0001 / Test2</b></div>
-            <div class="kv">工作簿名称：<b id="wpBook">Audit Compass Dev</b></div>
+            <div class="kv">工作簿名称：<b id="wpBook">20251022</b></div>
             <div class="kv">工作簿类型：<b id="wpKind">IPO</b></div>
             <div class="kv">资本市场：
               <b id="wpMarket">A</b>
@@ -2916,12 +2895,8 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                       <th>本方银行</th>
                       <th class="num">交易总额</th>
                       <th class="num">交易笔数</th>
-                      <th style="min-width:260px;">
-                      <span class="th-pill"><span class="pill">1</span><span>数据获取方式（说明）</span></span>
-                    </th>
-                    <th class="num" style="min-width:140px;">
-                      <span class="th-pill"><span class="pill">3</span><span>最小样本量</span></span>
-                    </th>
+                      <th style="min-width:260px;"><span class="th-pill"><span class="pill">1</span><span>数据获取方式（说明）</span></span></th>
+                      <th class="num" style="min-width:140px;"><span class="th-pill"><span class="pill">3</span><span>最小样本量</span></span></th>
                     </tr>
                   </thead>
                   <tbody></tbody>
