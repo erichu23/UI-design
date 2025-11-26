@@ -1669,6 +1669,44 @@
   .table .sample-edit:hover{border-bottom-color:#cbd5e1}
   select,input[type="text"],input[type="number"]{border:1px solid #e6edf5;border-radius:8px;padding:6px 8px;background:#fff;outline:none;font-size:13px}
 
+  /* 表格容器本身不要下边距/内边距 */
+  #pane-workingpaper .wp-table-wrap{
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* 卡片内容把底部 padding 收紧 */
+  #pane-workingpaper .wp-card .content{
+    padding-bottom: 8px !important;   /* 需要更紧就改成 0~6 */
+  }
+
+  /* 内容区最后一个元素（通常就是表格容器）不再额外留外边距 */
+  #pane-workingpaper .wp-card .content > :last-child{
+    margin-bottom: 0 !important;
+  }
+
+  /* 表格容器本身不要下边距/内边距 */
+  #pane-workingpaper .rng-card-wrap{
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* 卡片内容把底部 padding 收紧 */
+  #pane-workingpaper .rng-card .content{
+    padding-bottom: 8px !important;   /* 需要更紧就改成 0~6 */
+  }
+
+  /* 内容区最后一个元素（通常就是表格容器）不再额外留外边距 */
+  #pane-workingpaper .rng-card .content > :last-child{
+    margin-bottom: 0 !important;
+  }
+
+  /* 若表格上方的工具栏占了下边距，这里也可以只保留上边距 */
+  #pane-workingpaper .table-toolbar{
+    margin-top: 8px;
+    margin-bottom: 0;                 /* 关键：去掉工具栏的下边距 */
+  }
+
   /* 仅遮“信息测试”卡片 */
   .card-mask{position:absolute;inset:0;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;z-index:10}
   .card-mask .note{background:#fff;border:1px dashed #cbd5e1;border-radius:10px;padding:14px 18px;color:#334155}
@@ -1746,6 +1784,93 @@
   color: #1e49e2 !important;
   font-weight: 500;
 }
+
+/* 本卡片表格：不需要边框 */
+.rng-card .table--flat th,
+.rng-card .table--flat td { border-bottom: 1; }
+
+/* 第三列浅蓝色 + 省略号，悬停展示 title */
+.rng-card .criteria { color:#4f83cc; }
+.rng-card .criteria .ellipsis{
+  display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* 绿色状态字 */
+.rng-card .st-done{ color:#16a34a; font-weight:600; }
+
+/* 小号按钮 & 颜色 */
+.btn.btn-xs{ padding:4px 8px; font-size:12px; border-radius:6px; }
+.btn.success{ background:#16a34a; border-color:#16a34a; color:#fff; }
+.btn.info{ background:#fff; color:#1e49e2; border-color:#1e49e2; }
+.btn.info:hover{ background:#e9efff; }
+
+/* 选择列：默认勾选且禁用的视觉 */
+.ck-dis input[disabled]{ accent-color:#94a3b8; }
+
+/* 理由输入框（不突兀） */
+.inp-reason{
+  width:100%; padding:6px 8px; border:1px solid #e6edf5; border-radius:8px;
+  font-size:13px; background:#fff;
+}
+
+/* 让表格按列宽计算而不是内容撐寬 */
+.rng-card .table--flat{
+  table-layout: fixed !important;
+  width: 100% !important;
+}
+
+/* 第3列固定更窄（改这里：比如 360px/420px） */
+.rng-card .table--flat thead th:nth-child(3),
+.rng-card .table--flat tbody td:nth-child(3){
+  width: 360px !important;
+  max-width: 360px !important;
+  overflow: hidden;                 /* 防止被内容继续撑开 */
+}
+
+/* 很多表格库在单元格里包 .cell，需要把它也设为可收缩 */
+.rng-card .table--flat td:nth-child(3) .cell{
+  display: block;
+  min-width: 0 !important;          /* 关键：允许变窄 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 你自己的省略号样式继续可用 */
+.rng-card .criteria{ color:#4f83cc; }
+.rng-card .criteria .ellipsis{
+  display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* 外部操作条：紧贴卡片底部靠右 */
+.rng-actions-out{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:10px;     /* 与卡片的垂直间距 */
+}
+
+/* 兼容：如果之前卡片内部也有 .rng-actions，就隐藏掉避免重复 */
+.rng-card .rng-actions{ display:none !important; }
+
+/* 让头部看起来可点击（不会影响你原有样式） */
+.card > .head{ display:flex; align-items:center; gap:8px; cursor:pointer; }
+
+/* 小圆箭头 */
+.fold-toggle{
+  margin-left:auto; width:24px; height:24px; border-radius:999px;
+  border:1px solid #e6edf5; background:#fff;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.fold-toggle::before{
+  content:""; width:8px; height:8px;
+  border-right:2px solid #64748b; border-bottom:2px solid #64748b;
+  transform:rotate(45deg); transition:transform .18s ease;
+}
+
+/* 折叠：内容隐藏 + 箭头翻转 */
+.card.is-collapsed > .content{ display:none !important; }
+.card.is-collapsed > .head .fold-toggle::before{ transform:rotate(-135deg); }
 
 
 /* ===== Footer 安全区 + 滚动不被遮挡 ===== */
@@ -2097,6 +2222,8 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                 <button class="btn" id="btnCustomizeCols">自定义表头</button>
                 <button class="btn primary" id="btnAnalyze">生成分析结果</button>
               </div>
+
+              
             </div>
       
             <div class="content">
@@ -2364,7 +2491,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                     <option>2023-2024</option><option>2023</option><option>2024</option>
                   </select>
                   <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
-                </span>
+                </span> 
               </div>
             </div>
       
@@ -2818,6 +2945,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
           <div class="card wp-card" id="wpInfoCard">
             <div class="head">
               <div class="title">信息测试（Step1 → Step2 → Step3）</div>
+              <span class="fold-toggle" title="收起/展开" aria-hidden="true"></span>
             </div>
 
             <div class="content">
@@ -2913,6 +3041,155 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                 <div class="note">当前工作簿类型为非 IPO，本功能不适用</div>
               </div>
             </div>
+          </div>
+
+          <div class="card rng-card"id="rngCard">
+            <div class="head">
+              <div class="title">确定核查范围</div>
+              <span class="fold-toggle" title="收起/展开" aria-hidden="true"></span>
+            </div>
+            <div class="content">
+              <table class="table table--flat" id="rngTable">
+                <thead>
+                  <tr>
+                    <th style="width:72px;">序号</th>
+                    <th style="width:280px;">核查程序</th>
+                    <th>筛选标准</th>
+                    <th style="width:96px;">执行状态</th>
+                    <th class="num" style="width:110px;">识别对手方数</th>
+                    <th class="num" style="width:130px;">识别交易总额</th>
+                    <th class="num" style="width:120px;">识别交易笔数</th>
+                    <th style="width:140px;">操作</th>
+                    <th style="width:80px;">选择</th>
+                    <th style="width:220px;">解释理由</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1.1</td>
+                    <td>特定日期（前后时窗）发生的资金收支</td>
+                    <td class="criteria">
+                      <span class="ellipsis" title="年度:未筛选 | 资产负债表日:=12/31 | 前天数:=10 | 后天数:=10 | 交易金额:未筛选">
+                        年度:未筛选 | 资产负债表日:=12/31 | 前天数:=10 | 后天数:=10 | 交易金额:未筛选
+                      </span>
+                    </td>
+                    <td><span class="st-done">已完成</span></td>
+                    <td class="num">39</td>
+                    <td class="num">52,907K</td>
+                    <td class="num">57</td>
+                    <td>
+                      <button class="btn success btn-xs">进入</button>
+                      <button class="btn info btn-xs">重置</button>
+                    </td>
+                    <td><label class="ck-dis"><input type="checkbox" checked disabled> </label></td>
+                    <td><input class="inp-reason" type="text" placeholder="可填写说明…" /></td>
+                  </tr>
+
+                  <tr>
+                    <td>1.2</td>
+                    <td>[X位]整数金额的转进/转出（借贷方）</td>
+                    <td class="criteria">
+                      <span class="ellipsis" title="平均每笔金额:未筛选｜金额整数位:=00000｜交易占比(%):未筛选">
+                        平均每笔金额:未筛选｜金额整数位:=00000｜交易占比(%):未筛选
+                      </span>
+                    </td>
+                    <td><span class="st-done">已完成</span></td>
+                    <td class="num">0</td>
+                    <td class="num">0K</td>
+                    <td class="num">0</td>
+                    <td>
+                      <button class="btn success btn-xs">进入</button>
+                      <button class="btn info btn-xs">重置</button>
+                    </td>
+                    <td><label class="ck-dis"><input type="checkbox" checked disabled> </label></td>
+                    <td><input class="inp-reason" type="text" placeholder="可填写说明…" /></td>
+                  </tr>
+
+                  <tr>
+                    <td>2.1</td>
+                    <td>与不在供方/客方清单中的对方单位往来</td>
+                    <td class="criteria">
+                      <span class="ellipsis" title="交易总额范围:未筛选">交易总额范围:未筛选</span>
+                    </td>
+                    <td><span class="st-done">已完成</span></td>
+                    <td class="num">98</td>
+                    <td class="num">496,496K</td>
+                    <td class="num">1,000</td>
+                    <td>
+                      <button class="btn success btn-xs">进入</button>
+                      <button class="btn info btn-xs">重置</button>
+                    </td>
+                    <td><label class="ck-dis"><input type="checkbox" checked disabled> </label></td>
+                    <td><input class="inp-reason" type="text" placeholder="可填写说明…" /></td>
+                  </tr>
+
+                  <tr>
+                    <td>2.2</td>
+                    <td>同一对方单位往来同时存在收款与付款</td>
+                    <td class="criteria">
+                      <span class="ellipsis" title="收支重合比例(%): &gt; 50｜交易总额:未筛选">
+                        收支重合比例(%): > 50｜交易总额:未筛选
+                      </span>
+                    </td>
+                    <td><span class="st-done">已完成</span></td>
+                    <td class="num">36</td>
+                    <td class="num">68,682K</td>
+                    <td class="num">539</td>
+                    <td>
+                      <button class="btn success btn-xs">进入</button>
+                      <button class="btn info btn-xs">重置</button>
+                    </td>
+                    <td><label class="ck-dis"><input type="checkbox" checked disabled> </label></td>
+                    <td><input class="inp-reason" type="text" placeholder="可填写说明…" /></td>
+                  </tr>
+
+                  <tr>
+                    <td>2.3</td>
+                    <td>同一对方单位往来仅发生[X]次，与实质不符</td>
+                    <td class="criteria">
+                      <span class="ellipsis" title="交易总额范围:未筛选｜交易次数: 1~1">
+                        交易总额范围:未筛选｜交易次数: 1~1
+                      </span>
+                    </td>
+                    <td><span class="st-done">已完成</span></td>
+                    <td class="num">9</td>
+                    <td class="num">48,306K</td>
+                    <td class="num">9</td>
+                    <td>
+                      <button class="btn success btn-xs">进入</button>
+                      <button class="btn info btn-xs">重置</button>
+                    </td>
+                    <td><label class="ck-dis"><input type="checkbox" checked disabled> </label></td>
+                    <td><input class="inp-reason" type="text" placeholder="可填写说明…" /></td>
+                  </tr>
+
+                  <tr>
+                    <td>2.4</td>
+                    <td>同一对方单位的小额频繁交易</td>
+                    <td class="criteria">
+                      <span class="ellipsis" title="交易总额范围:未筛选｜交易次数: [12, null]">
+                        交易总额范围:未筛选｜交易次数: [12, null]
+                      </span>
+                    </td>
+                    <td><span class="st-done">已完成</span></td>
+                    <td class="num">32</td>
+                    <td class="num">95,275K</td>
+                    <td class="num">637</td>
+                    <td>
+                      <button class="btn success btn-xs">进入</button>
+                      <button class="btn info btn-xs">重置</button>
+                    </td>
+                    <td><label class="ck-dis"><input type="checkbox" checked disabled> </label></td>
+                    <td><input class="inp-reason" type="text" placeholder="可填写说明…" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ✅ 外部操作条：紧贴卡片底部，靠右 -->
+          <div class="rng-actions-out">
+            <button class="btn primary" id="btnGenRisk">生成风险评估底稿</button>
           </div>
         </div>
       </section>
@@ -3469,6 +3746,85 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
   refreshStepStates();
 })();
 
+(function(){
+  const tbl = document.querySelector('.rng-card .table--flat');
+  if(!tbl) return;
+
+  // —— A. 如果没有 colgroup，就注入一个锁住第3列宽（其余列不指定保持自适应）
+  if (!tbl.querySelector('colgroup')) {
+    const cg = document.createElement('colgroup');
+    const cols = tbl.tHead ? tbl.tHead.rows[0].cells.length : (tbl.rows[0]?.cells.length || 10);
+    for (let i = 1; i <= cols; i++){
+      const col = document.createElement('col');
+      if (i === 3) col.style.width = '360px';     // ← 与上面 CSS 一致，想调就改
+      cg.appendChild(col);
+    }
+    tbl.insertBefore(cg, tbl.firstChild);
+  } else {
+    // 若已有 colgroup，直接改第3个 col 的宽
+    const c3 = tbl.querySelector('colgroup col:nth-child(3)');
+    if (c3) c3.style.width = '360px';
+  }
+
+  // —— B. 给第3列自动包一层 .ellipsis，并把全文放进 title（避免你改模板）
+  const wrapThirdCol = () => {
+    tbl.querySelectorAll('tbody tr td:nth-child(3)').forEach(td=>{
+      // 处理表格库的 .cell 或纯文本两种情况
+      const target = td.querySelector('.cell') || td;
+      if (target.querySelector('.ellipsis')) return;
+      const full = target.textContent.trim();
+      const span = document.createElement('span');
+      span.className = 'ellipsis';
+      span.title = full;
+      span.textContent = full;
+      target.textContent = '';
+      target.appendChild(span);
+    });
+  };
+  wrapThirdCol();
+
+  // 表格数据变化（分页、刷新）时自动重包
+  new MutationObserver(wrapThirdCol).observe(tbl.tBodies[0] || tbl, {
+    childList: true, subtree: true
+  });
+})();
+
+(function(){
+  function bindFold(cardId){
+    var card = document.getElementById(cardId);
+    if(!card){ console.warn('[fold] not found:', cardId); return; }
+
+    var head = card.querySelector('.head');
+    if(!head){ console.warn('[fold] no .head inside:', cardId); return; }
+
+    // 恢复记忆
+    var saved = localStorage.getItem('card.fold.'+cardId) === '1';
+    if(saved) card.classList.add('is-collapsed');
+
+    head.addEventListener('click', function(ev){
+      // 如果点到交互控件，不折叠；但点击小箭头仍然允许折叠
+      if (!ev.target.classList.contains('fold-toggle') &&
+          ev.target.closest('button, a, input, select, textarea, label')) {
+        return;
+      }
+      card.classList.toggle('is-collapsed');
+      var collapsed = card.classList.contains('is-collapsed') ? '1' : '0';
+      localStorage.setItem('card.fold.'+cardId, collapsed);
+    });
+  }
+
+  // DOM 就绪再绑定，避免“找不到元素”
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){
+      bindFold('wpInfoCard');
+      bindFold('rngCard');
+    });
+  } else {
+    bindFold('wpInfoCard');
+    bindFold('rngCard');
+  }
+})();
+  
 
 
     
