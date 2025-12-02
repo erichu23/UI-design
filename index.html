@@ -1646,15 +1646,9 @@
   /* 卡片主体 */
   .wp-card{position:relative;}
   .op-flow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:6px}
-  .op-step{border:1px solid #e6edf5;border-radius:12px;background:#fff}
-  .op-step .op-hd{display:flex;align-items:center;gap:8px;border-bottom:1px solid #eef3ff;padding:8px 12px}
-  .op-step .idx{width:22px;height:22px;border-radius:999px;background:#1e49e2;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
-  .op-step .t{font-weight:600;color:#0f172a}
-  .op-step .state{margin-left:auto;color:#64748b}
-  .op-step .op-bd{padding:10px 12px}
-  .op-flow.small .op-hd{padding:6px 10px;font-size:12px}
-  .op-flow.small .op-bd{padding:8px 10px}
-  .op-flow.small .idx{width:18px;height:18px;font-size:11px}
+  
+  
+
   .row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
   .muted{color:#64748b}
 
@@ -1873,6 +1867,97 @@
 .card.is-collapsed > .content{ display:none !important; }
 .card.is-collapsed > .head .fold-toggle::before{ transform:rotate(-135deg); }
 
+/* === 信息测试步骤条：去卡片化，变细蓝线 + 圆点 === */
+
+/* ===== 横向步骤流：蓝色连线 + 数字徽章 ===== */
+
+/* ========= 全局变量（可按需微调） ========= */
+:root{
+  --brand:#1e49e2;                         /* 品牌蓝 */
+  --step-line-color: rgba(30,73,226,.28);  /* 步骤连接线颜色(含透明度) */
+  --step-line-thick:2px;                   /* 连接线粗细 */
+  --step-line-offset:.28em;                /* 线条相对文字的细微上移 */
+  --card-pad-x:16px;                       /* 内容左右统一内边距 */
+  --grid-gap:24px;                         /* 三段之间的间距(保持可读性) */
+
+  /* 三列宽度比例：加大前两列即可把 Step3 推向更靠右的位置 */
+  --col1:1.15fr;
+  --col2:1.15fr;
+  --col3:0.70fr;     /* 上面两列越大，这列相对越小 → Step3 更靠右 */
+}
+
+/* ========= 步骤条容器（与表格同宽对齐） ========= */
+.wp-card .content{ padding-left:var(--card-pad-x); padding-right:var(--card-pad-x); }
+.op-flow{
+  display:grid !important;
+  grid-template-columns: var(--col1) var(--col2) var(--col3) !important;
+  column-gap: var(--grid-gap) !important;
+  padding-top:6px; padding-bottom:4px;
+}
+
+/* ========= 步骤头部（数字、标题、线） ========= */
+.op-step .op-hd{
+  position:relative;
+  display:flex;
+  align-items:baseline;  /* 与文字基线对齐，线能贴文字 */
+  gap:10px;
+  padding:2px 0 4px;
+}
+
+/* 数字圆点 */
+.op-step .idx{
+  flex:0 0 22px;
+  width:22px; height:22px; line-height:22px;
+  border-radius:50%;
+  background:var(--brand);
+  color:#fff; font-weight:700; font-size:13px;
+  text-align:center;
+}
+
+/* 标题 */
+.op-step .t{
+  font-weight:600; color:#0f172a; font-size:14px; white-space:nowrap;
+}
+.op-step .t .blue{ color:var(--brand); }
+
+/* 标题后的连接线（占满该列剩余空间） */
+.op-step .line{
+  flex:1 1 auto;
+  height:var(--step-line-thick);
+  background:var(--step-line-color);   /* ✅ 主线颜色含透明度，延长也一致 */
+  margin-left:12px;                    /* 文字与线之间留一点空 */
+  align-self:baseline;
+  position:relative;
+  top: calc(var(--step-line-offset) * -1);
+}
+
+/* 最后一段通常不再延伸到右侧 */
+.op-step:last-child .line{ display:none; }
+
+/* 关闭你之前若有的 ::after 整条线，避免重影 */
+.op-step .op-hd::after{ display:none !important; }
+
+/* ========= 步骤正文左缩进（让按钮/下拉与标题对齐更整洁） ========= */
+:root{ --step-body-indent: 40px; } /* 22px圆点 + 10px间距 + 少许余量 */
+.op-step .op-bd{ padding-left: var(--step-body-indent); }
+
+/* ========= 工具栏与表格左右对齐 ========= */
+.table-toolbar,
+.wp-table-wrap{ padding-left:var(--card-pad-x); padding-right:var(--card-pad-x); }
+
+.table-toolbar{
+  display:grid !important;
+  grid-template-columns: var(--col1) var(--col2) var(--col3) !important;
+  align-items:center;
+  gap:12px;
+  margin:8px 0;
+}
+.table-toolbar .tt-left{ grid-column:1; justify-self:start; }
+.table-toolbar .tt-right{ grid-column:3; justify-self:end; display:flex; gap:8px; }
+
+/* 表格本体 */
+.wp-table-wrap{ margin-top:6px; }
+.table{ width:100%; border-collapse:collapse; }
 
 /* ===== Footer 安全区 + 滚动不被遮挡 ===== */
 :root{ --footer-h: 56px; }               /* 兜底高度，JS 会动态覆盖 */
@@ -1930,6 +2015,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
   <!-- ====== 平台 Header ====== -->
   <header class="layout-header">
     <div _ngcontent-ng-c2218024402="" class="header-menu-control" style="position: relative;"><svg _ngcontent-ng-c2218024402="" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: var(--responsive-size-16); height: var(--responsive-size-16);"><path _ngcontent-ng-c2218024402="" fill-rule="evenodd" clip-rule="evenodd" d="M1.40003 2.79995C1.40003 2.46858 1.66866 2.19995 2.00003 2.19995L14.8 2.19995C15.1314 2.19995 15.4 2.46858 15.4 2.79995C15.4 3.13132 15.1314 3.39995 14.8 3.39995L2.00003 3.39995C1.66866 3.39995 1.40003 3.13132 1.40003 2.79995ZM15.0909 5.47515C15.2816 5.58088 15.4 5.7818 15.4 5.9999L15.4003 9.9999C15.4004 10.218 15.282 10.419 15.0912 10.5247C14.9005 10.6305 14.6673 10.6244 14.4824 10.5088L11.2821 8.50876C11.1066 8.39913 11 8.20684 11 7.99996C11 7.79309 11.1066 7.6008 11.282 7.49115L14.482 5.49115C14.667 5.37556 14.9001 5.36943 15.0909 5.47515ZM12.7321 7.99993L14.2003 8.91741L14.2001 7.08245L12.7321 7.99993ZM1.40003 6.26662C1.40003 5.93524 1.66865 5.66662 2.00002 5.66662L8.40003 5.66662C8.7314 5.66662 9.00003 5.93525 9.00003 6.26662C9.00003 6.59799 8.7314 6.86662 8.40003 6.86662L2.00002 6.86662C1.66865 6.86662 1.40002 6.59799 1.40003 6.26662ZM1.40002 9.73328C1.40002 9.40191 1.66865 9.13328 2.00002 9.13328H8.40003C8.7314 9.13328 9.00003 9.40191 9.00003 9.73328C9.00003 10.0647 8.7314 10.3333 8.40003 10.3333H2.00002C1.66865 10.3333 1.40002 10.0647 1.40002 9.73328ZM1.40002 13.1999C1.40002 12.8686 1.66865 12.5999 2.00002 12.5999L14.8 12.6C15.1314 12.6 15.4 12.8686 15.4 13.2C15.4 13.5313 15.1314 13.8 14.8 13.8L2.00002 13.7999C1.66865 13.7999 1.40002 13.5313 1.40002 13.1999Z" fill="white"></path></svg><!----><!----></div>
+    <img _ngcontent-ng-c1108372624="" src="logo.png" style="width: 43px; height: 20px;margin-right: 12px;" alt="KPMG Audit Compass" class="header-logo">
     <div _ngcontent-ng-c2218024402="" class="layout-header-name">KPMG Audit Compass <span _ngcontent-ng-c2218024402="" class="layout-header-project ng-star-inserted">Test2 20251022</span><!----></div>
     <nav class="layout-header-nav">
 
@@ -2971,28 +3057,29 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
             <div class="content">
               <!-- 横向操作流（更紧凑） -->
               <div class="op-flow small">
-                <!-- Step1 -->
+                <!-- Step 1 -->
                 <div class="op-step" id="opStep1">
                   <div class="op-hd">
                     <span class="idx">1</span>
                     <span class="t">Step1 数据获取方式</span>
-                    <span class="state" id="s1State">未完成</span>
+                    <span class="line" aria-hidden="true"></span>
                   </div>
                   <div class="op-bd">
                     <div class="row">
                       <button class="btn primary" id="s1Save" disabled>保存 Step1</button>
                       <button class="btn primary" id="s1Modify" style="display:none;">修改 Step1</button>
+                      
                     </div>
                     <div class="muted">请在下表“数据获取方式（说明）”选择。</div>
                   </div>
                 </div>
 
-                <!-- Step2 -->
+                <!-- Step 2 -->
                 <div class="op-step" id="opStep2">
                   <div class="op-hd">
                     <span class="idx">2</span>
-                    <span class="t">Step2 Direct Test</span>
-                    <span class="state" id="s2State">不可用</span>
+                    <span class="t">Step2 是否执行直接测试</span>
+                    <span class="line" aria-hidden="true"></span>
                   </div>
                   <div class="op-bd">
                     <div class="row">
@@ -3003,12 +3090,12 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                   </div>
                 </div>
 
-                <!-- Step3 -->
+                <!-- Step 3 -->
                 <div class="op-step" id="opStep3">
                   <div class="op-hd">
                     <span class="idx">3</span>
-                    <span class="t">Step3 风险等级 & 样本量 <span class="blue">抽样说明</span></span>
-                    <span class="state" id="s3State">不可用</span>
+                    <span class="t">Step3 风险等级 & 样本量 </span>
+                    <span class="line" aria-hidden="true"></span>
                   </div>
                   <div class="op-bd">
                     <div class="row">
@@ -3019,7 +3106,9 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
                         <option value="提高">提高的</option>
                         <option value="基础">基础的</option>
                       </select>
-                      <button class="btn primary" id="btnCalc" disabled>计算样本量</button>
+                      <span class="blue">抽样说明</span>
+                      
+
                     </div>
                     <div class="muted" id="riskNote">基于风险等级：—</div>
                   </div>
@@ -3597,7 +3686,7 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
       let sampleCell;
       if (WP.directTest === "N") {
         // Direct Test = 否：整列强制 N/A
-        sampleCell = '<span class="muted">N/A 不执行Direct Test</span>';
+        sampleCell = '<span class="muted">N/A 不执行直接测试</span>';
       } else {
         // Direct Test = 是：走原来的样本量逻辑
         sampleCell = (a.sample != null && WP.step1Saved)
@@ -3744,14 +3833,23 @@ body{ padding-bottom: 60px; }   /* 与 footer 实际高度保持一致，可按�
   
 
   // ====== Step3 ======
-  $("#riskSel") && $("#riskSel").addEventListener("change",(e)=>{
+  // ====== Step3：选风险等级 -> 自动计算样本量 ======
+  $("#riskSel") && $("#riskSel").addEventListener("change", (e)=>{
     const map = {"重大+":"重要的+","重大":"重要的","提高":"提高的","基础":"基础的"};
     WP.risk = e.target.value;
     WP.riskLabel = map[WP.risk] || "";
-  });
-  $("#btnCalc") && $("#btnCalc").addEventListener("click", ()=>{
-    if (!WP.risk){ alert("请先选择风险等级"); return; }
-    computeSamples();
+
+    // 只有在 Step1 已保存 且 Direct Test=Y 才触发计算
+    if (WP.risk && WP.step1Saved && WP.directTest === "Y") {
+      computeSamples();                       // <- 直接算 & 重渲染（函数里已有 renderTable）
+    } else {
+      // 清空样本量/提示（比如选回占位项或 DT=N）
+      WP.accounts.forEach(a => a.sample = null);
+      $("#riskNote").textContent = (WP.directTest === "N")
+        ? "Direct Test = 否，本步骤不适用"
+        : "基于风险等级：—";
+      renderTable();
+    }
   });
 
   // 可选：初始化时也同步一次按钮显隐（放在你的初始化尾部）
