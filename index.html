@@ -1881,8 +1881,8 @@
   --grid-gap:24px;                         /* 三段之间的间距(保持可读性) */
 
   /* 三列宽度比例：加大前两列即可把 Step3 推向更靠右的位置 */
-  --col1:1.15fr;
-  --col2:1.15fr;
+  --col1:1.4fr;
+  --col2:1.4fr;
   --col3:0.70fr;     /* 上面两列越大，这列相对越小 → Step3 更靠右 */
 }
 
@@ -1901,7 +1901,7 @@
   display:flex;
   align-items:baseline;  /* 与文字基线对齐，线能贴文字 */
   gap:10px;
-  padding:2px 0 4px;
+  padding:1px 0 6px;
 }
 
 /* 数字圆点 */
@@ -1958,6 +1958,20 @@
 /* 表格本体 */
 .wp-table-wrap{ margin-top:6px; }
 .table{ width:100%; border-collapse:collapse; }
+
+/* 想右移多少就改这里：8~24px 之间自己调 */
+:root{
+  --step-nudge-x: 16px;
+}
+
+/* 仅移动步骤行（数字/标题/连线/控件全部一起右移） */
+.op-flow{
+  position: relative;
+  transform: translateX(var(--step-nudge-x)) !important;
+  overflow: visible;  /* 防止右端连线被裁切 */
+}
+
+/* 其他模块不要动——如果你之前给 .table-toolbar / .wp-table-wrap 也加了对齐样式，保持不变即可 */
 
 /* ===== Footer 安全区 + 滚动不被遮挡 ===== */
 :root{ --footer-h: 56px; }               /* 兜底高度，JS 会动态覆盖 */
