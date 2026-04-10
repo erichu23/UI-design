@@ -1,0 +1,246 @@
+/* ===== Tab 6 特定工商查询 ===== */
+
+
+
+/* 主体分栏：左侧菜单 + 右侧内容 */
+#pane-routine .split{
+  position:relative;
+  display:flex;
+  gap:16px;
+}
+
+/* 侧栏，带右侧蓝色竖线和内贴式折叠按钮 */
+#pane-routine .sidebar-pane{
+  position:relative;
+  width:260px; min-width:260px;
+  transition:width .2s ease;
+  border-right:2px solid #1e40af;
+  --sbar-toggle-offset: 84px;   /* ← 想再高一点就把 84 改大/小 */
+}
+
+#pane-routine main{
+  flex:1 1 auto;
+  min-width:0;
+}
+
+/* 内贴式折叠按钮 */
+.sbar-toggle-inset{
+  position:absolute;
+  top:var(--sbar-toggle-offset);
+  right:0;
+  transform:translateY(-50%);
+  width:12px;
+  height:36px;
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  color:#64748b;
+  line-height:36px;
+  padding:0;
+  z-index:2;
+}
+.sbar-toggle-inset::before{
+  content:'❮';
+  display:block;
+  text-align:center;
+  font-size:16px;
+}
+.sbar-toggle-inset:hover{ color:#1e40af; }
+
+/* 折叠态：只保留 12px 导轨和按钮 */
+#pane-routine .split.is-collapsed .sidebar-pane{
+  width:12px;
+  min-width:12px;
+  overflow:hidden;
+  border-right:2px solid #1e40af;
+}
+#pane-routine .split.is-collapsed .sidebar-pane > *{
+  display:none;
+}
+#pane-routine .split.is-collapsed .sidebar-pane > .sbar-toggle-inset{
+  display:block !important;
+}
+#pane-routine .split.is-collapsed .sbar-toggle-inset::before{
+  content:'❯';
+}
+#pane-routine .split.is-collapsed main{
+  flex:1 1 100%;
+  min-width:0;
+}
+
+/* ===== 通用 Routine 主卡片：左 田字格 + 右散点图 ===== */
+
+/* 左右两列，保持一侧田字格、一侧散点图，不再中小屏换行 */
+/* 左 4 卡 + 右侧气泡图：两列等宽，确保对齐 */
+.routine-main {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* ← 等宽 */
+  gap: 18px;
+  align-items: stretch;
+}
+
+/* 左侧 KPI 区域标题 */
+.routine-kpi-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.routine-kpi-panel .kpi-panel-title,
+.routine-scatter .scatter-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;          /* 两边标题间距统一 */
+}
+
+/* 田字格 2×2 */
+.routine-card .top-strip {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* 卡片 + 右侧小箱线图 */
+.kpi-box-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 90px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.04);
+  background: #ffffff;
+  column-gap: 8px;
+}
+
+/* 彩色背景 */
+.kpi-box-card.kpi-red    { background:#ef4444; color:#ffffff; }
+.kpi-box-card.kpi-orange { background:#f59e0b; color:#ffffff; }
+.kpi-box-card.kpi-blue   { background:#2563eb; color:#ffffff; }
+.kpi-box-card.kpi-green  { background:#16a34a; color:#ffffff; }
+
+.kpi-boxplot .boxplot-chart {
+  width: 80px;
+  height: 60px;
+}
+
+/* 右侧气泡图区容器：不要负外边距，只让它正常占满 */
+.routine-scatter{
+  padding: 0;
+  margin: 0;              /* ← 删掉 -20px */
+  
+  min-width: 0;           /* 防止被左右区域挤压导致内部 canvas 计算错误 */
+  overflow: visible;      /* 保险：就算没开 containLabel 也不裁切轴标签 */
+}
+
+/* 图表区域固定高度，保证有空间画轴和滑块 */
+.routine-scatter .chart{
+  width: 100%;
+  height: 360px;          /* 你需要的高度 */
+}
+
+/* Routine4 筛选条 */
+.filters-bar{
+  display:flex; flex-wrap:wrap; align-items:center; gap:12px 16px;
+  margin: 6px 0 12px 0;
+}
+.filters-bar .field{ display:flex; align-items:center; gap:8px; }
+.filters-bar label{ color:#334155; font-size:13px; white-space:nowrap; }
+.filters-bar .breaks input{
+  width:88px; padding:6px 8px; border:1px solid #e5e7eb; border-radius:6px; font-size:13px;
+}
+.filters-bar .breaks .sep{ color:#94a3b8; }
+
+.filters-bar .btn.primary{
+  padding:6px 12px; border-radius:8px; border:1px solid #2066c9; background:#2066c9;
+  color:#fff; font-size:13px; cursor:pointer;
+}
+
+/* 多选下拉 */
+.multi{ position:relative; }
+.multi-toggle{
+  min-width:160px; padding:6px 10px; border:1px solid #e5e7eb; border-radius:8px;
+  background:#fff; color:#334155; font-size:13px; display:flex; justify-content:space-between; align-items:center;
+}
+.multi .chev{ margin-left:8px; font-size:12px; color:#64748b; }
+.multi-menu{
+  position:absolute; top:36px; left:0; z-index:30; width:220px; max-height:240px; overflow:auto;
+  background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 10px 30px rgba(15,23,42,.08);
+  padding:8px; display:none;
+}
+.multi-menu .row{ display:flex; align-items:center; gap:8px; padding:6px 4px; border-radius:6px; }
+.multi-menu .row:hover{ background:#f8fafc; }
+.multi-menu input[type="checkbox"]{ width:14px; height:14px; }
+.multi-menu .search{
+  display:flex; align-items:center; gap:6px; padding:4px 6px; border:1px solid #e5e7eb; border-radius:8px; margin:4px 4px 8px;
+}
+.multi-menu .search input{ flex:1; border:none; outline:none; font-size:13px; }
+.multi.open .multi-menu{ display:block; }
+
+/* 默认隐藏 */
+#pane-routine #r4Filters { display: none !important; }
+
+/* 在 2.1 / 2.2 / 2.4 显示 */
+#pane-routine[data-routine="2.1"] #r4Filters,
+#pane-routine[data-routine="2.2"] #r4Filters,
+#pane-routine[data-routine="2.4"] #r4Filters {
+  display: flex !important;
+}
+
+/* 布局 */
+/* ===== Routine7 样式（作用于 #r7x 作用域） ===== */
+#r7x .r7x-layout{
+  display:grid; grid-template-columns: 380px 1fr; gap:16px; align-items:start;
+}
+
+#r7x .r7x-left{ display:flex; flex-direction:column; gap:12px; }
+
+/* 顶部筛选条 */
+#r7x .r7x-filters{
+  display:flex; align-items:center; flex-wrap:wrap; gap:10px;
+  background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:10px 12px;
+}
+#r7x .r7x-filters .lbl{ color:#334155; font-size:13px; }
+#r7x .r7x-filters .chk{ font-size:13px; color:#334155; margin-right:6px; }
+#r7x .r7x-filters .sep{ width:1px; height:18px; background:#e5e7eb; margin:0 8px; display:inline-block; }
+
+/* 2×2 田字格 KPI */
+#r7x .r7x-kpi-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+#r7x .r7x-kpi{
+  border-radius:10px; padding:12px 14px; color:#fff; box-shadow:0 6px 18px rgba(0,0,0,.06);
+  min-height:110px; display:flex; flex-direction:column; justify-content:center;
+}
+#r7x .kpi-title{ font-weight:600; margin-bottom:4px; opacity:.95; }
+#r7x .kpi-num{ font-size:28px; font-weight:800; line-height:1.1; margin:6px 0 8px; }
+#r7x .kpi-sub{ font-size:13px; opacity:.95; }
+
+#r7x .kpi-blue{ background:#2563eb; }
+#r7x .kpi-green{ background:#16a34a; }
+#r7x .kpi-orange{ background:#f59e0b; }
+#r7x .kpi-red{ background:#ef4444; }
+
+/* 锚点信息占满两列 */
+#r7x .r7x-anchor{
+  grid-column: 1 / span 2;
+  padding:10px 12px; border:1px dashed #e5e7eb; border-radius:8px; background:#fff;
+}
+#r7x .anchor-xy{ font-family: ui-monospace,Menlo,monospace; color:#334155; }
+
+/* 地图 */
+#r7x .r7x-map-wrap{ position:relative; min-height:520px; }
+#r7x #r7xMap{ width:100%; height:520px; border-radius:10px; border:1px solid #e5e7eb; }
+#r7x .r7x-legend{
+  position:absolute; right:8px; bottom:8px; background:rgba(255,255,255,.92);
+  border:1px solid #e5e7eb; border-radius:8px; padding:6px 8px; display:flex; gap:8px; font-size:12px; color:#334155;
+}
+#r7x .r7x-legend i{ display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:4px; vertical-align:-2px; }
+
+/* 窄屏自适应 */
+@media (max-width: 1280px){
+  #r7x .r7x-layout{ grid-template-columns: 320px 1fr; }
+}
+@media (max-width: 1024px){
+  #r7x .r7x-layout{ grid-template-columns: 1fr; }
+  #r7x #r7xMap{ height:420px; }
+}
