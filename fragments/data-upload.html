@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-Hans-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>数据上传</title>
+  <link rel="stylesheet" href="../assets/css/pages/data-upload.css"/>
+</head>
+<body>
+  <div class="du-page">
+    <div class="du-header">
+      <div class="du-title">
+        <span class="du-title-bar"></span>
+        <span>数据上传</span>
+      </div>
+      <button class="du-template-btn" type="button">下载导入模板</button>
+    </div>
+
+    <!-- 主档数据管理 -->
+    <section class="du-card">
+      <div class="du-card-head">
+        <div class="du-card-title">
+          <span class="du-card-bar"></span>
+          <span>主档数据管理</span>
+        </div>
+      </div>
+
+      <div class="du-table-wrap">
+        <table class="du-table">
+          <thead>
+            <tr>
+              <th style="width:60px;">序号</th>
+              <th>数据采集项</th>
+              <th style="width:110px;">采集状态</th>
+              <th style="width:120px;">创建人</th>
+              <th style="width:120px;">创建时间</th>
+              <th style="width:120px;">更新人</th>
+              <th style="width:120px;">更新时间</th>
+              <th style="width:140px;">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>被审计单位主档信息（必有上传）</td>
+              <td><span class="du-status done"><i></i> 已采集</span></td>
+              <td>Ken</td>
+              <td>2026-04-08</td>
+              <td>Ken</td>
+              <td>2026-04-08</td>
+              <td class="du-actions">
+                <a href=" ">导入</a >
+                <a href="javascript:void(0)">导入记录</a >
+                <a href="javascript:void(0)">查看数据</a >
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>被审计单位银行账号主档信息</td>
+              <td><span class="du-status pending"><i></i> 未采集</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="du-actions">
+                <a href="javascript:void(0)">导入</a >
+                <a href="javascript:void(0)">导入记录</a >
+                <a href="javascript:void(0)">查看数据</a >
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>关联方主档信息</td>
+              <td><span class="du-status pending"><i></i> 未采集</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="du-actions">
+                <a href="javascript:void(0)">导入</a >
+                <a href="javascript:void(0)">导入记录</a >
+                <a href="javascript:void(0)">查看数据</a >
+              </td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>客户主档信息</td>
+              <td><span class="du-status pending"><i></i> 未采集</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="du-actions">
+                <a href="javascript:void(0)">导入</a >
+                <a href="javascript:void(0)">导入记录</a >
+                <a href="javascript:void(0)">查看数据</a >
+              </td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>供应商主档信息</td>
+              <td><span class="du-status pending"><i></i> 未采集</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="du-actions">
+                <a href="javascript:void(0)">导入</a >
+                <a href="javascript:void(0)">导入记录</a >
+                <a href="javascript:void(0)">查看数据</a >
+              </td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>员工主档信息</td>
+              <td><span class="du-status pending"><i></i> 未采集</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="du-actions">
+                <a href="javascript:void(0)">导入</a >
+                <a href="javascript:void(0)">导入记录</a >
+                <a href="javascript:void(0)">查看数据</a >
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 流水数据管理 -->
+    <section class="du-card">
+      <div class="du-card-head">
+        <div class="du-card-title">
+          <span class="du-card-bar"></span>
+          <span>流水数据管理</span>
+        </div>
+      </div>
+
+      <div class="du-tabbar">
+        <button class="du-tab active" type="button">银行流水数据上传</button>
+        <button class="du-tab" type="button">增值税数据上传</button>
+      </div>
+
+      <div class="du-table-wrap">
+        <table class="du-table">
+          <thead>
+            <tr>
+              <th style="width:60px;">序号</th>
+              <th>数据采集项</th>
+              <th style="width:110px;">采集状态</th>
+              <th style="width:120px;">创建人</th>
+              <th style="width:120px;">创建时间</th>
+              <th style="width:120px;">更新人</th>
+              <th style="width:120px;">更新时间</th>
+              <th style="width:140px;">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>银行流水（账龄电子明细及支付宝/微信数据）</td>
+              <td><span class="du-status pending"><i></i> 未采集</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="du-actions">
+                <a href="javascript:void(0)">导入</a >
+                <a href="javascript:void(0)">导入记录</a >
+                <a href="javascript:void(0)">查看数据</a >
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>银行流水（手工账明细流水数据）</td>
+              <td><span class="du-status pending"><i></i> 未采集</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="du-actions">
+                <a href="javascript:void(0)">导入</a >
+                <a href="javascript:void(0)">导入记录</a >
+                <a href="javascript:void(0)">查看数据</a >
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>总账科目余额表</td>
+              <td><span class="du-status pending"><i></i> 未采集</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="du-actions">
+                <a href="javascript:void(0)">导入</a >
+                <a href="javascript:void(0)">导入记录</a >
+                <a href="javascript:void(0)">查看数据</a >
+              </td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>汇率主档信息</td>
+              <td><span class="du-status pending"><i></i> 未采集</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="du-actions">
+                <a href="javascript:void(0)">导入</a >
+                <a href="javascript:void(0)">导入记录</a >
+                <a href="javascript:void(0)">查看数据</a >
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="du-footer">
+        <button class="du-analyze-btn" type="button" disabled>执行分析</button>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
