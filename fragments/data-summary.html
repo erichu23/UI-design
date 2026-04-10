@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-Hans-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-summary.css"/>
+  <script src="https://unpkg.com/echarts@5/dist/echarts.min.js"></script>
+</head>
+<body>
+  <div class="ds3-page">
+
+    <!-- 顶部指标区 -->
+    <div class="ds3-top">
+    <div class="ds3-top-grid">
+      <div class="ds3-kpi-card">
+        <div class="ds3-kpi-line">
+          <span class="ds3-kpi-label">银行流入总额</span>
+          <span class="ds3-kpi-value">3,596,044K</span>
+        </div>
+      </div>
+
+      <div class="ds3-kpi-card">
+        <div class="ds3-kpi-line">
+          <span class="ds3-kpi-label">银行流出总额</span>
+          <span class="ds3-kpi-value">2,551,804K</span>
+        </div>
+      </div>
+
+      <div class="ds3-kpi-card">
+        <div class="ds3-kpi-line">
+          <span class="ds3-kpi-label">收入匹配率</span>
+          <span class="ds3-kpi-value is-pos">88.5%</span>
+        </div>
+      </div>
+
+      <div class="ds3-kpi-card">
+        <div class="ds3-kpi-line">
+          <span class="ds3-kpi-label">销项税总额</span>
+          <span class="ds3-kpi-value">3,182,110K</span>
+        </div>
+      </div>
+
+      <div class="ds3-kpi-card">
+        <div class="ds3-kpi-line">
+          <span class="ds3-kpi-label">进项税总额</span>
+          <span class="ds3-kpi-value">2,106,540K</span>
+        </div>
+      </div>
+
+      <div class="ds3-kpi-card">
+        <div class="ds3-kpi-line">
+          <span class="ds3-kpi-label">成本匹配率</span>
+          <span class="ds3-kpi-value is-neg">82.6%</span>
+        </div>
+      </div>
+    </div>
+
+    <aside class="ds3-tip-card">
+      <div class="ds3-tip-title">数据分析提示</div>
+      <div class="ds3-tip-list">
+        <div class="ds3-tip-item">本页面用于银行流水与增值税数据的交叉对比分析。</div>
+        <div class="ds3-tip-item">可按单位、职能、对手方类型与名称进行筛选分析。</div>
+        <div class="ds3-tip-item">建议结合异常记录清单定位差异来源。</div>
+      </div>
+    </aside>
+    </div>
+
+    <!-- Tabs -->
+    <div class="ds3-tab-container">
+    <div class="ds3-tabbar" id="ds3Tabbar">
+      <button class="ds3-tab is-active" data-tab="overview" type="button">综合总览</button>
+      <button class="ds3-tab" data-tab="filter" type="button">筛选分析</button>
+      <button class="ds3-tab" data-tab="counterparty" type="button">交易对手方分析</button>
+      <button class="ds3-tab" data-tab="exception" type="button">异常记录清单</button>
+      <div class="ds3-inkbar" id="ds3Inkbar"></div>
+    </div>
+    <div class="ds3-intro">
+      <span class="ds3-intro-title">页面说明：</span>
+      <span>本页用于展示银行流水与增值税数据在总体、筛选、对手方、异常四个维度的对比情况。</span>
+    </div>
+    </div>
+
+    <!-- TAB 1 -->
+    <section class="ds3-pane is-active" id="ds3-pane-overview">
+    <div class="ds3-scroll">
+
+      <div class="ds3-block">
+        <div class="ds3-block-head">
+          <div class="ds3-block-title">总体匹配概览</div>
+          <button class="ds3-fold" type="button">收起</button>
+        </div>
+        <div class="ds3-block-body">
+          <div class="ds3-grid-2">
+            <div class="ds3-panel">
+              <div class="ds3-panel-title">资金流与税票流总体对比</div>
+              <div id="ds3OverviewCompareChart" class="ds3-chart"></div>
+            </div>
+            <div class="ds3-panel">
+              <div class="ds3-panel-title">差异金额构成</div>
+              <div id="ds3OverviewGapChart" class="ds3-chart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ds3-block">
+        <div class="ds3-block-head">
+          <div class="ds3-block-title">总体匹配明细</div>
+          <button class="ds3-fold" type="button">收起</button>
+        </div>
+        <div class="ds3-block-body">
+          <div class="ds3-table-wrap">
+            <table class="ds3-table">
+              <thead>
+                <tr>
+                  <th>分析维度</th>
+                  <th class="is-num">银行金额</th>
+                  <th class="is-num">税票金额</th>
+                  <th class="is-num">差异金额</th>
+                  <th class="is-num">匹配率</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>收入侧（流入 / 销项税）</td>
+                  <td class="is-num">3,596,044</td>
+                  <td class="is-num">3,182,110</td>
+                  <td class="is-num">413,934</td>
+                  <td class="is-num">88.5%</td>
+                </tr>
+                <tr>
+                  <td>成本侧（流出 / 进项税）</td>
+                  <td class="is-num">2,551,804</td>
+                  <td class="is-num">2,106,540</td>
+                  <td class="is-num">445,264</td>
+                  <td class="is-num">82.6%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="ds3-block">
+        <div class="ds3-block-head">
+          <div class="ds3-block-title">总体补充图表</div>
+          <button class="ds3-fold" type="button">收起</button>
+        </div>
+        <div class="ds3-block-body">
+          <div class="ds3-grid-2">
+            <div class="ds3-panel">
+              <div class="ds3-panel-title">月度匹配率概览</div>
+              <div id="ds3OverviewRatioChart" class="ds3-chart ds3-chart-sm"></div>
+            </div>
+            <div class="ds3-panel">
+              <div class="ds3-panel-title">收入 / 成本结构占比</div>
+              <div id="ds3OverviewStructureChart" class="ds3-chart ds3-chart-sm"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </section>
+
+    <!-- TAB 2 -->
+    <section class="ds3-pane" id="ds3-pane-filter">
+    <div class="ds3-scroll">
+
+      <div class="ds3-block">
+        <div class="ds3-block-head">
+          <div class="ds3-block-title">筛选条件</div>
+          <button class="ds3-fold" type="button">收起</button>
+        </div>
+        <div class="ds3-block-body">
+          <div class="ds3-filter-grid">
+            <div class="ds3-field">
+              <label for="ds3Unit">被审计单位</label>
+              <select id="ds3Unit"></select>
+            </div>
+            <div class="ds3-field">
+              <label for="ds3Func">公司职能</label>
+              <select id="ds3Func"></select>
+            </div>
+            <div class="ds3-field">
+              <label for="ds3Type">对手方类型</label>
+              <select id="ds3Type"></select>
+            </div>
+            <div class="ds3-field">
+              <label for="ds3Keyword">对手方名称</label>
+              <input id="ds3Keyword" type="text" placeholder="输入名称关键词"/>
+            </div>
+            <div class="ds3-actions">
+              <button class="ds3-btn is-primary" id="ds3ApplyBtn" type="button">查询</button>
+              <button class="ds3-btn" id="ds3ResetBtn" type="button">重置</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ds3-block">
+        <div class="ds3-block-head">
+          <div class="ds3-block-title">筛选结果趋势</div>
+          <button class="ds3-fold" type="button">收起</button>
+        </div>
+        <div class="ds3-block-body">
+          <div class="ds3-grid-2">
+            <div class="ds3-panel">
+              <div class="ds3-panel-title">银行流水流入 VS 销项税（月度）</div>
+              <div id="ds3FilterInChart" class="ds3-chart"></div>
+            </div>
+            <div class="ds3-panel">
+              <div class="ds3-panel-title">银行流水流出 VS 进项税（月度）</div>
+              <div id="ds3FilterOutChart" class="ds3-chart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ds3-block">
+        <div class="ds3-block-head">
+          <div class="ds3-block-title">筛选结果：交易对手方分析</div>
+          <button class="ds3-fold" type="button">收起</button>
+        </div>
+        <div class="ds3-block-body">
+          <div class="ds3-toolbar">
+            <input id="ds3TableSearch" class="ds3-search" placeholder="搜索交易对手方..."/>
+          </div>
+          <div class="ds3-table-wrap">
+            <table class="ds3-table" id="ds3FilterTable">
+              <thead>
+                <tr>
+                  <th style="min-width:180px">交易对手方</th>
+                  <th class="is-num">流入金额</th>
+                  <th class="is-num">流出金额</th>
+                  <th class="is-num">销项税</th>
+                  <th class="is-num">进项税</th>
+                  <th class="is-num">总金额</th>
+                  <th class="is-num">交易笔数</th>
+                  <th class="is-num">占比</th>
+                  <th>差异等级</th>
+                  <th style="min-width:112px">操作</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </section>
+
+    <!-- TAB 3 -->
+    <section class="ds3-pane" id="ds3-pane-counterparty">
+    <div class="ds3-scroll">
+
+      <div class="ds3-block">
+        <div class="ds3-block-head">
+          <div class="ds3-block-title">重点对手方图表分析</div>
+          <button class="ds3-fold" type="button">收起</button>
+        </div>
+        <div class="ds3-block-body">
+          <div class="ds3-grid-2">
+            <div class="ds3-panel">
+              <div class="ds3-panel-title">重点对手方金额对比（Top 8）</div>
+              <div id="ds3CounterpartyAmountChart" class="ds3-chart"></div>
+            </div>
+            <div class="ds3-panel">
+              <div class="ds3-panel-title">对手方匹配率分布</div>
+              <div id="ds3CounterpartyRatioChart" class="ds3-chart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ds3-block">
+        <div class="ds3-block-head">
+          <div class="ds3-block-title">对手方明细</div>
+          <button class="ds3-fold" type="button">收起</button>
+        </div>
+        <div class="ds3-block-body">
+          <div class="ds3-table-wrap">
+            <table class="ds3-table">
+              <thead>
+                <tr>
+                  <th>对手方</th>
+                  <th class="is-num">银行流入</th>
+                  <th class="is-num">销项税</th>
+                  <th class="is-num">银行流出</th>
+                  <th class="is-num">进项税</th>
+                  <th class="is-num">收入匹配率</th>
+                  <th class="is-num">成本匹配率</th>
+                  <th>差异等级</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>上海A贸易有限公司</td>
+                  <td class="is-num">820,000</td>
+                  <td class="is-num">601,000</td>
+                  <td class="is-num">0</td>
+                  <td class="is-num">0</td>
+                  <td class="is-num">73.3%</td>
+                  <td class="is-num">—</td>
+                  <td><span class="ds3-tag is-high">高</span></td>
+                </tr>
+                <tr>
+                  <td>杭州B科技有限公司</td>
+                  <td class="is-num">520,000</td>
+                  <td class="is-num">501,000</td>
+                  <td class="is-num">0</td>
+                  <td class="is-num">0</td>
+                  <td class="is-num">96.3%</td>
+                  <td class="is-num">—</td>
+                  <td><span class="ds3-tag is-low">低</span></td>
+                </tr>
+                <tr>
+                  <td>宁波C供应链有限公司</td>
+                  <td class="is-num">0</td>
+                  <td class="is-num">0</td>
+                  <td class="is-num">430,000</td>
+                  <td class="is-num">201,000</td>
+                  <td class="is-num">—</td>
+                  <td class="is-num">46.7%</td>
+                  <td><span class="ds3-tag is-high">高</span></td>
+                </tr>
+                <tr>
+                  <td>苏州D工业有限公司</td>
+                  <td class="is-num">0</td>
+                  <td class="is-num">0</td>
+                  <td class="is-num">385,000</td>
+                  <td class="is-num">342,000</td>
+                  <td class="is-num">—</td>
+                  <td class="is-num">88.8%</td>
+                  <td><span class="ds3-tag is-low">低</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </section>
+
+    <!-- TAB 4 -->
+    <section class="ds3-pane" id="ds3-pane-exception">
+    <div class="ds3-scroll">
+
+      <div class="ds3-block">
+        <div class="ds3-block-head">
+          <div class="ds3-block-title">异常分布分析</div>
+          <button class="ds3-fold" type="button">收起</button>
+        </div>
+        <div class="ds3-block-body">
+          <div class="ds3-grid-2">
+            <div class="ds3-panel">
+              <div class="ds3-panel-title">异常类型分布</div>
+              <div id="ds3ExceptionTypeChart" class="ds3-chart ds3-chart-sm"></div>
+            </div>
+            <div class="ds3-panel">
+              <div class="ds3-panel-title">异常月份分布</div>
+              <div id="ds3ExceptionMonthChart" class="ds3-chart ds3-chart-sm"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ds3-block">
+        <div class="ds3-block-head">
+          <div class="ds3-block-title">异常记录明细</div>
+          <button class="ds3-fold" type="button">收起</button>
+        </div>
+        <div class="ds3-block-body">
+          <div class="ds3-filter-inline">
+            <div class="ds3-field">
+              <label>异常类型</label>
+              <select>
+                <option>全部</option>
+                <option>有流水无税票</option>
+                <option>有税票无流水</option>
+                <option>金额差异过大</option>
+                <option>对手方名称不一致</option>
+              </select>
+            </div>
+            <div class="ds3-field">
+              <label>月份</label>
+              <select>
+                <option>全部</option>
+                <option>2025-03</option>
+                <option>2025-06</option>
+                <option>2025-08</option>
+                <option>2025-09</option>
+              </select>
+            </div>
+            <div class="ds3-field">
+              <label>对手方</label>
+              <input type="text" placeholder="输入名称筛选"/>
+            </div>
+          </div>
+
+          <div class="ds3-table-wrap">
+            <table class="ds3-table">
+              <thead>
+                <tr>
+                  <th>异常类型</th>
+                  <th>月份</th>
+                  <th>对手方</th>
+                  <th class="is-num">银行金额</th>
+                  <th class="is-num">税票金额</th>
+                  <th class="is-num">差异金额</th>
+                  <th>备注</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>有流水无税票</td>
+                  <td>2025-03</td>
+                  <td>上海A贸易有限公司</td>
+                  <td class="is-num">180,000</td>
+                  <td class="is-num">0</td>
+                  <td class="is-num">180,000</td>
+                  <td>需复核票据记录或确认时点</td>
+                </tr>
+                <tr>
+                  <td>有税票无流水</td>
+                  <td>2025-06</td>
+                  <td>广州F商贸有限公司</td>
+                  <td class="is-num">0</td>
+                  <td class="is-num">95,000</td>
+                  <td class="is-num">95,000</td>
+                  <td>可能存在回款滞后</td>
+                </tr>
+                <tr>
+                  <td>流出与进项差异过大</td>
+                  <td>2025-08</td>
+                  <td>宁波C供应链有限公司</td>
+                  <td class="is-num">120,000</td>
+                  <td class="is-num">35,000</td>
+                  <td class="is-num">85,000</td>
+                  <td>付款显著高于进项票金额</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </section>
+
+    <!-- 弹窗 -->
+    <div class="ds3-modal" id="ds3DetailModal">
+    <div class="ds3-modal-panel">
+      <div class="ds3-modal-head">
+        <div class="ds3-modal-title" id="ds3DetailTitle">交易对手方详情</div>
+        <button class="ds3-close" id="ds3DetailClose" type="button">✕</button>
+      </div>
+      <div class="ds3-modal-body">
+        <div id="ds3DetailChart" class="ds3-chart ds3-chart-sm"></div>
+      </div>
+    </div>
+    </div>
+
+    </div>
+
+
+  <script src="../assets/js/pages/data-summary.js"></script>
+</body>
+</html>
