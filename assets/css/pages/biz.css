@@ -1,0 +1,818 @@
+/* =========================
+   Tab 2 经营实质 - 筛选区
+========================= */
+.biz-filter-bar {
+  background: #fff;
+  padding: 4px 12px 10px;
+  border-left: 1px solid #e5edf5;
+  border-right: 1px solid #e5edf5;
+  border-bottom: 1px solid #e5edf5;
+  box-sizing: border-box;
+}
+
+/* 取消外层 card */
+.biz-filter-bar .filter-card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* 整体筛选区域紧凑布局 */
+.biz-filter-bar .filter-area {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  padding: 6px 0 4px;
+}
+
+/* 小字体、紧凑行高 */
+.biz-filter-bar .filter-area label {
+  font-size: 12px;
+  color: #334155;
+  font-weight: 600;
+  line-height: 28px;
+  margin-right: 4px;
+}
+
+/* 胶囊输入框/下拉框 */
+.biz-filter-bar select,
+.biz-filter-bar input[type="text"],
+.biz-filter-bar input[type="date"] {
+  font-size: 12px;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 12px;
+  min-width: 130px;
+  border: 1px solid #cfd9e5;
+  border-radius: 50px;
+  background: #fff;
+  transition: .2s;
+  box-sizing: border-box;
+}
+
+/* Hover + Focus */
+.biz-filter-bar select:hover,
+.biz-filter-bar input:hover {
+  border-color: #1e49e2;
+  box-shadow: 0 0 0 2px rgba(30,73,226,.1);
+}
+
+.biz-filter-bar select:focus,
+.biz-filter-bar input:focus {
+  outline: none;
+  border-color: #0d3bc4;
+  box-shadow: 0 0 0 2px rgba(13,59,196,.15);
+}
+
+/* “至” */
+.biz-filter-bar .range-sep {
+  margin: 0 4px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 30px;
+}
+
+/* 按钮 */
+.biz-filter-bar button {
+  height: 30px;
+  font-size: 12px;
+  padding: 0 14px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: .2s;
+  border: none;
+}
+
+/* 主色按钮 */
+.biz-filter-bar .query {
+  background: #1e49e2;
+  color: #fff;
+}
+.biz-filter-bar .query:hover {
+  background: #0d3bc4;
+}
+
+/* 重置按钮 */
+.biz-filter-bar .reset {
+  background: #eef3fb;
+  color: #334155;
+}
+.biz-filter-bar .reset:hover {
+  background: #e6eefc;
+}
+
+/* 下拉箭头 */
+.biz-filter-bar .select-wrap {
+  position: relative;
+  display: inline-block;
+}
+.biz-filter-bar .select-wrap select {
+  appearance: none;
+  padding-right: 30px;
+}
+.biz-filter-bar .select-wrap .chev {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  width: 15px;
+  height: 15px;
+  transform: translateY(-50%);
+  opacity: .7;
+  pointer-events: none;
+}
+
+/* “不包含” */
+.biz-filter-bar .negate {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #5b6b7e;
+  position: relative;
+}
+.biz-filter-bar .negate input {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #7788a0;
+  border-radius: 50%;
+  position: relative;
+  background: #fff;
+}
+.biz-filter-bar .negate input:checked {
+  border-color: #1e49e2;
+}
+.biz-filter-bar .negate input:checked::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: #1e49e2;
+}
+
+/* 内部滚动 */
+#page-biz .tab-scroll {
+  max-height: calc(100vh - 260px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 16px;
+  box-sizing: border-box;
+}
+
+/* =========================
+   经营实质主面板
+========================= */
+#pane-biz .panel {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e6edf5;
+  border-radius: 10px;
+  margin: 12px 16px;
+  padding: 12px 16px 16px 16px; /* 修正：左右统一，不再左28右16 */
+  box-shadow: 0 2px 8px rgba(17,24,39,.04);
+  box-sizing: border-box;
+}
+
+#pane-biz .panel::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  border-radius: 4px;
+  background: #dadbe0;
+}
+
+/* 面板头部 */
+#pane-biz .panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fbff;
+  border: 1px solid #e8f0ff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: -4px 0 10px;
+  box-sizing: border-box;
+}
+
+.ph-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ph-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.ph-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 右侧按钮 */
+.btn-ghost {
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid #d8e1ee;
+  border-radius: 14px;
+  background: #fff;
+  color: #334155;
+  font-size: 12px;
+  cursor: pointer;
+}
+.btn-ghost:hover {
+  background: #eef3ff;
+  border-color: #c7d4f4;
+}
+
+.note-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #1e49e2;
+  cursor: pointer;
+}
+.note-link .icon {
+  width: 14px;
+  height: 14px;
+}
+.note-link u {
+  text-underline-offset: 3px;
+}
+
+/* 标题右侧胶囊下拉 */
+.pill-wrap {
+  position: relative;
+  display: inline-block;
+}
+.pill-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 20px;
+  border: 1px solid #cfd9e5;
+  padding: 0 30px 0 12px;
+  font-size: 13px;
+  background: #fff;
+  cursor: pointer;
+}
+.pill-wrap .chev {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  color: #64748b;
+}
+
+/* KPI */
+#pane-biz .kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 6px 10px 2px;
+}
+
+#pane-biz .kpi {
+  background: #f8fafc;
+  border: 1px solid #eef2f7;
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+}
+#pane-biz .kpi .k {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+#pane-biz .kpi .v {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* 图表 */
+#pane-biz .chart-lg {
+  height: 300px;
+}
+#pane-biz .chart-md {
+  height: 260px;
+}
+
+/* 高级一点的图表容器 */
+.chart-lg,
+.chart-md {
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(17,24,39,.04) inset;
+}
+
+/* =========================
+   构成区域
+========================= */
+.tabs-mini {
+  display: inline-flex;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px solid #e6edf5;
+  border-radius: 20px;
+  padding: 3px;
+  margin: 6px 10px 2px;
+}
+.tabs-mini .tab {
+  padding: 6px 12px;
+  border-radius: 14px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #334155;
+  user-select: none;
+}
+.tabs-mini .tab.active {
+  background: #eef3ff;
+  color: #2152ff;
+  border: 1px solid #d6e4ff;
+}
+
+.seven-cats {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin: 6px 10px 2px;
+}
+.seven-cats .cat {
+  background: #f8fafc;
+  border: 1px solid #e6edf5;
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+}
+.seven-cats .name {
+  font-size: 12px;
+  color: #475569;
+  margin-bottom: 6px;
+}
+.seven-cats .pct {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 6px 10px 2px;
+}
+
+/* 这里保留你原来的展示风格，但避免过度奇怪的小数宽度 */
+.chart-md {
+  width: 100%;
+  height: 320px;
+  min-height: 300px;
+  background: #fff;
+  border: 1px solid #e6edf5;
+  border-radius: 20px;
+  padding: 3px;
+  margin: 6px 0 2px;
+  box-sizing: border-box;
+}
+
+/* =========================
+   Top20 卡片
+========================= */
+.top20-card {
+  background: #fff;
+  border: 1px solid #e6edf5;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.top20-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  flex: 0 0 auto;
+}
+.top20-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.top20-total {
+  font-weight: 800;
+  color: #2152ff;
+  font-variant-numeric: tabular-nums;
+}
+.top20-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin-left: 8px;
+}
+
+.top20-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.top20-row {
+  display: grid;
+  grid-template-columns: 26px 1fr 120px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px dashed #eef2f7;
+}
+.top20-row:last-child {
+  border-bottom: none;
+}
+
+.rank-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2152ff;
+  background: #eef3ff;
+  border: 1px solid #d6e4ff;
+}
+.rank-badge.top1 {
+  background: #fddc7a;
+  color: #7a5900;
+  border-color: #f4cc50;
+}
+.rank-badge.top2 {
+  background: #e8edf5;
+  color: #364152;
+  border-color: #cfd8e3;
+}
+.rank-badge.top3 {
+  background: #f4e1cf;
+  color: #6b3f23;
+  border-color: #edc8a9;
+}
+
+.cp-name {
+  color: #0f172a;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cp-amt {
+  text-align: right;
+  color: #0f172a;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.top20-list::-webkit-scrollbar {
+  width: 6px;
+}
+.top20-list::-webkit-scrollbar-thumb {
+  background: #e6edf5;
+  border-radius: 99px;
+}
+.top20-list::-webkit-scrollbar-thumb:hover {
+  background: #d5dfef;
+}
+
+/* =========================
+   tooltip
+========================= */
+.tip-card {
+  padding: 8px 10px;
+  border: 1px solid #e6edf5;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 6px 24px rgba(15,23,42,.08);
+  font-size: 12px;
+  color: #0f172a;
+}
+.tip-card .t {
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #334155;
+}
+.tip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  line-height: 18px;
+}
+.tip-k {
+  color: #64748b;
+}
+.tip-v {
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================
+   表格区域：这部分是本次重点修复
+========================= */
+
+/* =========================
+   表格区统一与上方图表区域左右对齐
+========================= */
+/* =========================
+   经营实质下半区最终对齐版
+========================= */
+
+/* 统一和上面图表区一致的横向边距 */
+#pane-biz{
+  --biz-inner-gap-x: 10px;
+}
+
+/* panel 左右保持对称 */
+#pane-biz .panel{
+  position: relative;
+  background: #fff;
+  border: 1px solid #e6edf5;
+  border-radius: 10px;
+  margin: 12px 16px;
+  padding: 12px 16px 16px 16px;
+  box-shadow: 0 2px 8px rgba(17,24,39,.04);
+  box-sizing: border-box;
+}
+
+#pane-biz .panel::before{
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  border-radius: 4px;
+  background: #dadbe0;
+}
+
+/* =========================
+   外层
+========================= */
+#pane-biz .table-section{
+  width: 100%;
+  margin-top: 10px;
+  box-sizing: border-box;
+}
+
+#pane-biz .table-inner{
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* =========================
+   第一行：左tab + 右按钮
+   关键点：
+   1）整行使用和上面一致的左右 margin
+   2）右侧容器强制占满
+   3）按钮组再强制贴右
+========================= */
+#pane-biz .table-toolbar{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+
+  margin: 6px var(--biz-inner-gap-x) 8px var(--biz-inner-gap-x) !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+#pane-biz .toolbar-left{
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+#pane-biz .toolbar-right{
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+}
+
+/* 左侧切换 */
+#pane-biz .seg{
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  padding: 3px !important;
+  background: #f8fafc !important;
+  border: 1px solid #e6edf5 !important;
+  border-radius: 22px !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+}
+
+#pane-biz .seg .opt{
+  min-width: 86px !important;
+  padding: 6px 14px !important;
+  border: none !important;
+  background: transparent !important;
+  color: #334155 !important;
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+  border-radius: 16px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  transition: all .18s ease !important;
+}
+
+#pane-biz .seg .opt:hover{
+  color: #1e40af !important;
+}
+
+#pane-biz .seg .opt.active{
+  background: #eef3ff !important;
+  color: #2152ff !important;
+  border: 1px solid #d6e4ff !important;
+}
+
+/* 右侧按钮组：强制顶到最右 */
+#pane-biz .btn-bar{
+  margin-left: auto !important;
+
+  display: inline-flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+
+  width: auto !important;
+  max-width: 100% !important;
+}
+
+#pane-biz .btn-bar .btn{
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+  border: 1px solid #e6edf5 !important;
+  background: #fff !important;
+  color: #0f172a !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  transition: all .15s ease !important;
+  box-sizing: border-box !important;
+}
+
+#pane-biz .btn-bar .btn:hover{
+  background: #f6f9ff !important;
+  border-color: #d6e4ff !important;
+}
+
+#pane-biz .btn-bar .btn.ghost{
+  color: #2152ff !important;
+  border-color: #d6e4ff !important;
+  background: #fff !important;
+}
+
+#pane-biz .btn-bar .btn.ghost:hover{
+  background: #eef3ff !important;
+}
+
+#pane-biz .btn-bar .btn.primary{
+  color: #fff !important;
+  background: #2152ff !important;
+  border-color: #2152ff !important;
+}
+
+#pane-biz .btn-bar .btn.primary:hover{
+  filter: brightness(.96) !important;
+}
+
+/* =========================
+   第二行：提示行
+   和上面完全同一套左右 margin
+========================= */
+#pane-biz .table-announce{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+
+  margin: 0 var(--biz-inner-gap-x) !important;
+  padding: 0 0 8px 0 !important;
+  box-sizing: border-box !important;
+
+  font-size: 13px !important;
+  color: #475569 !important;
+  border-bottom: 1px solid #e9eef5 !important;
+}
+
+#pane-biz .table-announce .left-msg{
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  text-align: left !important;
+}
+
+#pane-biz .table-announce .right-msg{
+  flex: 0 0 auto !important;
+  margin-left: auto !important;
+  white-space: nowrap !important;
+  text-align: right !important;
+  color: #64748b !important;
+}
+
+#pane-biz .file-link{
+  color: #2152ff !important;
+  cursor: pointer !important;
+}
+
+#pane-biz .file-link:hover{
+  text-decoration: underline !important;
+}
+
+/* =========================
+   第三行：表格
+   核心：不要 width: calc(...)
+   直接和上面一样用左右 margin 留白
+========================= */
+#pane-biz .table-wrap,
+#pane-biz #tbl-deal-wrap{
+  margin: 0 var(--biz-inner-gap-x) !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  overflow-x: auto !important;
+}
+
+/* 表格吃满它自己的包裹层 */
+#pane-biz #tblDeal{
+  width: 100% !important;
+  margin: 0 !important;
+  border-collapse: collapse !important;
+  table-layout: auto !important;
+}
+
+#pane-biz #tblDeal th,
+#pane-biz #tblDeal td{
+  box-sizing: border-box !important;
+}
+
+/* =========================
+   如果你表格外层还有别的壳子，把它们也归零
+========================= */
+#pane-biz .table-section,
+#pane-biz .table-inner,
+#pane-biz .table-toolbar,
+#pane-biz .table-announce,
+#pane-biz #tbl-deal-wrap{
+  width: auto !important;
+  max-width: none !important;
+}
+
+/* =========================
+   小屏兼容
+========================= */
+@media (max-width: 1200px){
+  #pane-biz .table-toolbar{
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  #pane-biz .toolbar-right{
+    justify-content: flex-start !important;
+  }
+
+  #pane-biz .btn-bar{
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    margin-left: 0 !important;
+  }
+
+  #pane-biz .table-announce{
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  #pane-biz .table-announce .right-msg{
+    align-self: flex-end !important;
+    margin-left: 0 !important;
+  }
+}
