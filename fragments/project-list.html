@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-Hans-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="../assets/css/pages/project-list.css"/>
+</head>
+<body>
+  <div class="pl-page">
+    <div class="pl-welcome">
+      <div class="pl-welcome-title">欢迎，Ken</div>
+      <div class="pl-welcome-desc">
+        在使用 KPMG Audit Compass 之前，请点击
+        <a href=" ">此处</a >
+        阅读相关指引。
+      </div>
+    </div>
+
+    <div class="pl-toolbar">
+      <div class="pl-search">
+        <input type="text" placeholder="请输入项目编号/项目名称/客户名称/工作簿名称"/>
+        <button type="button">搜索</button>
+      </div>
+      <button class="pl-hint-btn" type="button">操作提示</button>
+    </div>
+
+    <div class="pl-card">
+      <div class="pl-card-head">
+        <div class="pl-meta">
+          <span>项目编号/名称: <b>20220318/TEST</b></span>
+          <span>客户名称: <b>TEST_客户</b></span>
+          <span>工作簿数量: <b>36</b></span>
+          <span class="pl-status">开启中</span>
+          <a href="javascript:void(0)">详情</a >
+          <a href="javascript:void(0)">组员查看</a >
+        </div>
+        <div class="pl-actions">
+          <button type="button">新建工作簿</button>
+        </div>
+      </div>
+
+      <div class="pl-table-wrap">
+        <table class="pl-table">
+          <thead>
+            <tr>
+              <th>工作簿名称</th>
+              <th>接口文件总数</th>
+              <th>更新日期</th>
+              <th>分析期间</th>
+              <th>备注</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>20251022</td>
+              <td>2</td>
+              <td>2026-04-08</td>
+              <td>2026-04-01 - 2026-05-29</td>
+              <td></td>
+              <td>
+                <a href="javascript:void(0)" onclick="enterWorkbook('Test2','20251022')">进入</a >
+              </td>
+            </tr>
+            <tr>
+              <td>test</td>
+              <td>0</td>
+              <td>2026-04-01</td>
+              <td>2022-04-01 - 2022-04-30</td>
+              <td></td>
+              <td><a href="javascript:void(0)">进入</a ></td>
+            </tr>
+            <tr>
+              <td>v3.5 testing for prod</td>
+              <td>7</td>
+              <td>2026-03-29</td>
+              <td>2025-01-01 - 2025-12-31</td>
+              <td>v3.5 testing for prod</td>
+              <td><a href="javascript:void(0)">进入</a ></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/pages/project-list.js"></script>
+</body>
+</html>
