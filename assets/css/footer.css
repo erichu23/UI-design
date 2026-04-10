@@ -1,0 +1,59 @@
+/* =========================
+   Footer 最终版
+   ========================= */
+:root{
+  --footer-h: 76px; /* 默认兜底，JS 会自动覆盖为真实高度 */
+}
+
+/* 固定底部 footer */
+#app-footer{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+
+  background: #fff;
+  border-top: 1px solid #eaecef;
+  box-shadow: 0 -2px 8px rgba(0,0,0,.04);
+
+  padding: 6px 12px;
+  padding-bottom: calc(6px + env(safe-area-inset-bottom, 0));
+
+  font-size: 12px;
+  line-height: 1.4;
+  box-sizing: border-box;
+}
+
+#app-footer p{
+  margin: 0;
+  user-select: text;
+}
+
+/* 不要再让 body 自己留白，避免和内部滚动冲突 */
+body{
+  padding-bottom: 0 !important;
+}
+
+/* 给真正可能滚动的容器留出 footer 空间 */
+.main-right,
+#module-container,
+.tab-scroll,
+.ds3-scroll,
+.ds3-page{
+  padding-bottom: calc(var(--footer-h) + 16px) !important;
+  box-sizing: border-box;
+}
+
+/* 某些表格/内容容器如果是最后一层滚动，也一并兜底 */
+.wp-table-wrap,
+.ds-table-wrap,
+.ds3-table-wrap{
+  margin-bottom: 12px;
+}
+
+/* 如果某些页面是 tab-pane 直接承载内容，也给一点兜底 */
+.tab-pane,
+.ds3-pane{
+  box-sizing: border-box;
+}
