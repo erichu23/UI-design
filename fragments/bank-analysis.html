@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="zh-Hans-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+  <!-- ECharts -->
+  <script src="https://unpkg.com/echarts@5/dist/echarts.min.js"></script>
+  <script src="./static/echarts/map/js/china.js"></script>
+  <script src="./static/js/audit-routine.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="../assets/css/base.css"/>
+  <link rel="stylesheet" href="../assets/css/pages/account.css"/>
+  <link rel="stylesheet" href="../assets/css/pages/biz.css"/>
+  <link rel="stylesheet" href="../assets/css/pages/routine.css"/>
+  <link rel="stylesheet" href="../assets/css/pages/workingpaper.css"/>
+  <style>
+    body{
+      margin:0;
+      background:transparent;
+    }
+  </style>
+</head>
+<body>
+  <!-- 2) KPI + 数据问题分析（整块） -->
+<div class="kpi-and-issue">
+<!-- 左侧 KPI 总容器：左1列(前三个纵排) + 右2列(后四个2×2) -->
+<div class="kpi-grid">
+<div class="kpi k1">
+<div class="kpi-label">被审计单位</div>
+<div class="kpi-value">1 家</div>
+</div>
+<div class="kpi k2">
+<div class="kpi-label">对手方</div>
+<div class="kpi-value">29 家</div>
+</div>
+<div class="kpi k3">
+<div class="kpi-label">账号</div>
+<div class="kpi-value">17 个</div>
+</div>
+<div class="kpi k4">
+<div class="kpi-label">交易总额</div>
+<div class="kpi-value">6,147,847K</div>
+</div>
+<div class="kpi k5">
+<div class="kpi-label">流水总数</div>
+<div class="kpi-value">6,398 条</div>
+</div>
+<div class="kpi k6">
+<div class="kpi-label">流入总额</div>
+<div class="kpi-value pos"><a class="link-num" href="javascript:;">3,596,044K</a></div>
+</div>
+<div class="kpi k7">
+<div class="kpi-label">流出金额</div>
+<div class="kpi-value neg"><a class="link-num danger" href="javascript:;">2,551,804K</a></div>
+</div>
+</div>
+<!-- 右侧：数据问题分析 -->
+<!-- 数据问题分析卡 -->
+<aside class="issue-card">
+  <div class="issue-body-simple">
+    <p class="issue-note">
+      <b>仅供预览分析：</b>
+      当前数据存在未认领 / 银行账号主档不完整的问题，仅供项目组进行风险评估，实质性审计程序不可依赖。
+    </p >
+
+    <p class="issue-inline">
+      <span class="dot-danger"></span>
+      <span>存在未认领的原始流水文件，请及时认领。</span>
+      <a class="issue-inline-link" href=" ">点击跳转 »</a >
+    </p >
+
+    <p class="issue-inline">
+      <span class="dot-danger"></span>
+      <span>银行流水中，存在未在银行账号主档维护的账号，请补充银行账号主档。</span>
+      <a class="issue-inline-link" href="#详情">点击跳转 »</a >
+    </p >
+
+    <p class="issue-inline">
+      <span class="dot-danger"></span>
+      <span>存在汇率未转换的流水，请及时补充汇率主档。</span>
+      <a class="issue-inline-link" href="#详情">点击跳转 »</a >
+    </p >
+
+    <p class="issue-inline">
+      <span class="dot-danger"></span>
+      <span>存在当日不连续的流水文件，可在月度分布处手工打标首尾笔重新验证，请及时处理并确认无误。</span>
+      <a class="issue-inline-link" href="#详情">点击跳转 »</a >
+    </p >
+  </div>
+
+  <a class="issue-toggle" href="javascript:void(0)">展开详情</a >
+</aside>
+<!-- 3) Tabs（紧贴在KPI/问题卡下面） -->
+<div class="tab-container">
+<div class="tabbar" id="topTabs">
+<div class="tab active" data-top="account">账户总览</div>
+<div class="tab" data-top="biz">经营实质</div>
+<div class="tab" data-top="relation">已知关联方交易</div>
+<div class="tab" data-top="personal—transaction">个人交易</div>
+<div class="tab" data-top="transaction">特定交易查询</div>
+<div class="tab" data-top="routine">特定工商查询</div>
+<div class="tab" data-top="statement">流水查询</div>
+<div class="tab" data-top="verify">总账核对</div>
+<div class="tab" data-top="workingpaper">资金流水核查底稿导出</div>
+<i class="inkbar" id="inkbar"></i>
+</div>
+<div class="tab-intro" id="tabIntro"></div>
+<!-- ✅ 说明条放在同一个框内 -->
+<div class="biz-filter-bar hide" id="bizFilterBar">
+<div class="filter-card">
+<div class="filter-area">
+<label>被审计单位公司：</label>
+<span class="select-wrap">
+<select class="select" id="fCompany"></select>
+<i class="chev"><svg viewbox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
+</span>
+<label class="negate"><input id="negCompany" type="checkbox"/>不包含</label>
+<label>银行账户：</label>
+<span class="select-wrap">
+<select class="select" id="fBank"></select>
+<i class="chev"><svg viewbox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
+</span>
+<label class="negate"><input id="negBank" type="checkbox"/>不包含</label>
+<label>公司职能：</label>
+<span class="select-wrap">
+<select class="select" id="fFunc"></select>
+<i class="chev"><svg viewbox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
+</span>
+<label class="negate"><input id="negFunc" type="checkbox"/>不包含</label>
+<label>分析时间：</label>
+<input id="beginDate" type="date"/>
+<span class="range-sep">至</span>
+<input id="endDate" type="date"/>
+<label>对手方类型：</label>
+<span class="select-wrap">
+<select class="select" id="fType">
+<option value="all">全部</option>
+<option>客户</option>
+<option>供应商</option>
+<option>员工</option>
+</select>
+<i class="chev"><svg viewbox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
+</span>
+<button class="query" id="btnQueryBiz">查询</button>
+<button class="reset" id="btnResetBiz">重置</button>
+</div>
+</div>
+</div>
+</div>
+<!-- ===================== 账户总览页 ===================== -->
+<section class="tab-pane active" id="pane-account">
+<div class="tab-scroll">
+<!-- ========== 资金总览 ========== -->
+<div class="card">
+<div class="head">
+<div class="title">资金总览</div>
+<!-- 紧跟标题：业务逻辑 / 操作提示 -->
+<div class="head-inline" style="margin-left:8px;display:flex;gap:8px;">
+<button class="btn" id="btnAccountLogic">业务逻辑</button>
+<button class="btn" id="btnAccountTips">操作提示</button>
+</div>
+<!-- 右侧：自定义表头 / 生成分析结果 -->
+<div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+<button class="btn" id="btnCustomizeCols">自定义表头</button>
+<button class="btn primary" id="btnAnalyze">生成分析结果</button>
+</div>
+</div>
+<div class="content">
+<!-- 状态图例（靠右） -->
+<div class="small" style="display:flex;gap:16px;justify-content:flex-end;margin-bottom:8px;">
+<span><i style="width:10px;height:10px;border-radius:50%;background:#facc15;display:inline-block;"></i> 当日余额不连续</span>
+<span><i style="width:10px;height:10px;border-radius:50%;background:#cbd5e1;display:inline-block;"></i> 无流水数据</span>
+<span><i style="width:10px;height:10px;border-radius:50%;background:#3b82f6;display:inline-block;"></i> 检验无误</span>
+<span><i style="width:10px;height:10px;border-radius:50%;background:#ef4444;display:inline-block;"></i> 余额错误</span>
+</div>
+<!-- 总览表 -->
+<div style="overflow:auto">
+<div class="check-scope" id="checkScope">
+<table class="table" id="tblAccountSummary">
+<thead>
+<tr>
+<th class="sortable">被审计单位公司</th>
+<th class="sortable">本方账号</th>
+<th class="sortable">银行名称</th>
+<th class="sortable">流入总额</th>
+<th class="sortable">流出总额</th>
+<th class="sortable">交易总额</th>
+<th class="sortable">交易总额占比</th>
+<th class="sortable">交易笔数</th>
+<th class="sortable">对手方数量</th>
+<th>流水文件</th>
+<th>操作</th>
+<th class="check-col">
+<div class="check-head">
+<button class="arrow-btn" id="btnToggleCheck" title="展开/收起2023年">
+<svg aria-hidden="true" viewbox="0 0 16 16">
+<path d="M6.2 3.5l5 4.5-5 4.5V3.5z"></path>
+</svg>
+</button>
+<span>校验情况：</span>
+<div class="y-labels">
+<span class="y y-2023">2023</span>
+<span class="sep-label">｜</span>
+<span class="y y-2024">2024</span>
+</div>
+</div>
+</th>
+</tr>
+</thead>
+<tbody>
+<!-- 合计行 -->
+<tr class="sum-row">
+<td><strong>合计</strong></td><td></td><td></td>
+<td style="color:#2563eb"><strong>3,596,044K</strong></td><td style="color:#ef4444"><strong>2,551,804K</strong></td><td><strong>6,147,847K</strong></td>
+<td><strong>100.00%</strong></td><td><strong>6,398</strong></td><td><strong>401</strong></td><td></td><td></td>
+<td class="check-col">
+<div class="months-grid">
+<span class="month-num col-2023">1</span><span class="month-num col-2023">2</span>
+<span class="month-num col-2023">3</span><span class="month-num col-2023">4</span>
+<span class="month-num col-2023">5</span><span class="month-num col-2023">6</span>
+<span class="month-num col-2023">7</span><span class="month-num col-2023">8</span>
+<span class="month-num col-2023">9</span><span class="month-num col-2023">10</span>
+<span class="month-num col-2023">11</span><span class="month-num col-2023">12</span>
+<span class="col-sep"></span>
+<span class="month-num">1</span><span class="month-num">2</span>
+<span class="month-num">3</span><span class="month-num">4</span>
+<span class="month-num">5</span><span class="month-num">6</span>
+<span class="month-num">7</span><span class="month-num">8</span>
+<span class="month-num">9</span><span class="month-num">10</span>
+<span class="month-num">11</span><span class="month-num">12</span>
+</div>
+</td>
+</tr>
+<!-- 数据行（仅一行圆点） -->
+<tr>
+<td>abc有限公司</td>
+<td>574***0001</td>
+<td>招商银行</td>
+<td style="color:#2563eb">3,596,044K</td>
+<td style="color:#ef4444">2,551,804K</td>
+<td><b>6,147,847K</b></td>
+<td>100.00%</td>
+<td>6,398</td>
+<td>401</td>
+<td>1</td>
+<td class="actions">
+<a href=" " title="账号详情"><i class="fa-solid fa-eye"></i></a>
+<a href="#" title="文件详情"><i class="fa-regular fa-file-lines"></i></a>
+</td>
+<td class="check-col">
+<div class="months-grid check-row">
+<i class="chk-dot chk-ok col-2023" title="2023-01"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-02"></i>
+<i class="chk-dot chk-err col-2023" title="2023-03"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-04"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-05"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-06"></i>
+<i class="chk-dot chk-warn col-2023" title="2023-07"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-08"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-09"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-10"></i>
+<i class="chk-dot chk-err col-2023" title="2023-11"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-12"></i>
+<span class="col-sep"></span>
+<i class="chk-dot chk-ok" title="2024-01"></i>
+<i class="chk-dot chk-ok" title="2024-02"></i>
+<i class="chk-dot chk-ok" title="2024-03"></i>
+<i class="chk-dot chk-warn" title="2024-04"></i>
+<i class="chk-dot chk-ok" title="2024-05"></i>
+<i class="chk-dot chk-ok" title="2024-06"></i>
+<i class="chk-dot chk-none" title="2024-07"></i>
+<i class="chk-dot chk-ok" title="2024-08"></i>
+<i class="chk-dot chk-ok" title="2024-09"></i>
+<i class="chk-dot chk-ok" title="2024-10"></i>
+<i class="chk-dot chk-err" title="2024-11"></i>
+<i class="chk-dot chk-ok" title="2024-12"></i>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="pagination" id="pagination-account"></div>
+</div>
+</div>
+<!-- ========== 缺失同名账户（不变，仅提醒：字段已按你要求更新） ========== -->
+<div class="card">
+<div class="head">
+<div class="title">缺失同名账户</div>
+<div class="head-inline" style="margin-left:8px;display:flex;gap:8px;">
+<button class="btn" id="btnAccountLogic">业务逻辑</button>
+<button class="btn" id="btnAccountTips">操作提示</button>
+</div>
+<div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+<button class="btn primary" id="btnAnalyze">生成分析结果</button>
+<button class="btn primary" id="btnFlow">生成流水</button>
+</div>
+</div>
+<div class="content">
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px;">
+<div class="top-item"><div class="lbl small">交易总额</div><div class="num">1,358,100 K</div></div>
+<div class="top-item"><div class="lbl small">流入本方总额</div><div class="num" style="color:#2563eb">
+1,253,100 K
+</div></div>
+<div class="top-item"><div class="lbl small">本方流出总额</div><div class="num" style="color:#ef4444">
+105,000 K</div></div>
+<div class="top-item"><div class="lbl small">已解释/总数</div><div class="num">0 / 4</div></div>
+</div>
+<div style="overflow:auto;">
+<table class="table" id="tblMissingSameName">
+<thead>
+<tr>
+<th>对手方名称（被审计单位）</th>
+<th class="sortable">缺失银行账号</th>
+<th class="sortable">流入本方总额</th>
+<th class="sortable">占比</th>
+<th class="sortable">本方流出总额</th>
+<th class="sortable">占比</th>
+<th class="sortable">交易次数</th>
+<th class="sortable">占比</th>
+<th>缺失原因</th>
+<th>支持性文件索引</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<!-- ====== 汇总行（可展开/收起） ====== -->
+<tr class="group-row" data-group="abc">
+<td>
+<button class="expand-btn expanded" title="展开/收起明细">▼</button>
+<strong>abc有限公司</strong>　<span class="text-muted">已解释/总数：0/4</span>
+</td>
+<td></td>
+<td style="color:#2563eb"><strong>1,253,100K</strong></td>
+<td><strong>100.00%</strong></td>
+<td style="color:#ef4444"><strong>105,000K</strong></td>
+<td><strong>100.00%</strong></td>
+<td><strong>45</strong></td>
+<td><strong>100.00%</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<!-- ====== 明细行（默认显示） ====== -->
+<tr class="detail-row group-abc">
+<td>　└ abc有限公司</td>
+<td>6214 **** 8890</td>
+<td style="color:#2563eb">1,021,100K</td>
+<td>81.49%</td>
+<td style="color:#ef4444">0K</td>
+<td>0.00%</td>
+<td>37</td>
+<td>82.22%</td>
+<td></td>
+<td></td>
+<td class="actions">
+<a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
+</td>
+</tr>
+<tr class="detail-row group-abc">
+<td>　└ abc有限公司</td>
+<td>3941 **** 2193</td>
+<td style="color:#2563eb">232,000K</td>
+<td>18.51%</td>
+<td style="color:#ef4444">2,000K</td>
+<td>1.90%</td>
+<td>6</td>
+<td>13.33%</td>
+<td></td>
+<td></td>
+<td class="actions">
+<a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
+</td>
+</tr>
+<tr class="detail-row group-abc">
+<td>　└ abc有限公司</td>
+<td>2170 **** 7797</td>
+<td style="color:#2563eb">0K</td>
+<td>0.00%</td>
+<td style="color:#ef4444">8,000K</td>
+<td>7.62%</td>
+<td>1</td>
+<td>2.22%</td>
+<td></td>
+<td></td>
+<td class="actions">
+<a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
+</td>
+</tr>
+<tr class="detail-row group-abc">
+<td>　└ abc有限公司</td>
+<td>5784 **** 7907</td>
+<td style="color:#2563eb">0K</td>
+<td>0.00%</td>
+<td style="color:#ef4444">95,000K</td>
+<td>90.48%</td>
+<td>1</td>
+<td>2.22%</td>
+<td></td>
+<td></td>
+<td class="actions">
+<a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div></div></section>
+<!-- ===================== 经营实质 面板 ===================== -->
+<section class="tab-pane" id="pane-biz">
+<div class="tab-scroll">
+<!-- 1) 筛选区 -->
+<!-- 2) 资金流水金额 -->
+<div class="card">
+<div class="head">
+<div class="ph-left">
+<div class="title">资金流水金额</div>
+<button class="btn" id="btnAccountLogic">业务逻辑</button>
+<button class="btn" id="btnAccountTips">操作提示</button>
+</div>
+<div class="ph-right">
+<span class="note-link"><i class="icon">
+<svg viewbox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
+</i><u>备注说明</u></span>
+<span class="pill-wrap">
+<select class="pill-select" id="yearBalance">
+<option>2023-2024</option><option>2023</option><option>2024</option>
+</select>
+<i class="chev"><svg viewbox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
+</span>
+</div>
+</div>
+<div class="chart-lg" id="chart-balance"></div>
+</div>
+<!-- 3) 流入流出趋势 -->
+<div class="card">
+<div class="head">
+<div class="ph-left">
+<div class="title">流入流出趋势</div>
+<button class="btn" id="btnAccountLogic">业务逻辑</button>
+<button class="btn" id="btnAccountTips">操作提示</button>
+</div>
+<div class="ph-right">
+<span class="note-link"><i class="icon">
+<svg viewbox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
+</i><u>备注说明</u></span>
+<span class="pill-wrap">
+<select class="pill-select" id="yearIO">
+<option>2023-2024</option><option>2023</option><option>2024</option>
+</select>
+<i class="chev"><svg viewbox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
+</span>
+<span class="pill-wrap">
+<select class="pill-select" id="ctypeIO">
+<option value="all">全部类型</option><option>供应商</option><option>客户</option><option>员工</option><option>其他</option><option>个人</option>
+</select>
+<i class="chev"><svg viewbox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
+</span>
+</div>
+</div>
+<div class="kpi-row" id="kpi-io">
+<div class="kpi"><div class="k">流入金额</div><div class="v" id="io_in_sum">—</div></div>
+<div class="kpi"><div class="k">月均流入</div><div class="v" id="io_in_avg">—</div></div>
+<div class="kpi"><div class="k">流出总额</div><div class="v" id="io_out_sum">—</div></div>
+<div class="kpi"><div class="k">月均流出</div><div class="v" id="io_out_avg">—</div></div>
+</div>
+<div class="chart-md" id="chart-io"></div>
+</div>
+<!-- 4) 流入流出构成（标题 + Tab + 7占比 + 左右两图） -->
+<div class="card">
+<div class="head">
+<div class="ph-left">
+<div class="title">流入流出构成</div>
+<button class="btn" id="btnAccountLogic">业务逻辑</button>
+<button class="btn" id="btnAccountTips">操作提示</button>
+</div>
+<div class="ph-right">
+<span class="note-link"><i class="icon">
+<svg viewbox="0 0 24 24"><path d="M12 3v18M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
+</i><u>备注说明</u></span>
+</div>
+</div>
+<div class="tabs-mini" id="compTabs">
+<div class="tab active" data-mode="total">交易总额</div>
+<div class="tab" data-mode="in">流入方</div>
+<div class="tab" data-mode="out">流出方</div>
+</div>
+<div class="seven-cats" id="compCats"></div>
+<div class="grid-2">
+<div class="chart-md" id="chart-comp-monthly"></div>
+<div class="chart-md" id="chart-comp-top20"></div>
+</div>
+<!-- 工具栏：左侧切换 / 右侧按钮组 -->
+<div class="table-section">
+  <div class="table-inner">
+
+    <div class="table-toolbar">
+      <div class="toolbar-left">
+        <div aria-label="明细视图切换" class="seg" id="tblSwitcher" role="tablist">
+          <button aria-selected="true" class="opt active" data-view="deal" role="tab">交易明细</button>
+          <button aria-selected="false" class="opt" data-view="corp" role="tab">工商信息</button>
+        </div>
+      </div>
+
+      <div class="toolbar-right">
+        <div class="btn-bar">
+          <button class="btn ghost" id="btnQuick">快速查看勾选结果</button>
+          <button class="btn ghost" id="btnReset">重置筛选</button>
+          <button class="btn ghost" id="btnHead">自定义表头</button>
+          <button class="btn ghost" id="btnDist">流入流出分布</button>
+          <button class="btn primary" id="btnAnalyze">生成分析结果</button>
+          <button class="btn primary" id="btnFlow">生成流水</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-announce" id="tableAnnounce">
+      <div class="left-msg">
+        当前工作簿下总计有
+        <strong id="fraudCount" style="font-weight:700;">0</strong>
+        个对手方存在配合造假行为，请关注！
+        （AQPP-Audit 提供的全量配合造假清单见
+        <span class="file-link" id="fraudListFile">第三方配合造假名单.xlsx</span>）
+      </div>
+      <div class="right-msg">不勾选即默认基于全部记录导出</div>
+    </div>
+
+    <div class="table-wrap" id="tbl-deal-wrap">
+      <table class="table" id="tblDeal">
+        <thead>
+          <tr>
+            <th>对手方名称</th>
+            <th>对手方类型</th>
+            <th>关联关系</th>
+            <th>黑名单</th>
+            <th>流入总额</th>
+            <th>流出总额</th>
+            <th>交易总额</th>
+            <th>交易总额占比</th>
+            <th>交易笔数</th>
+            <th>销售类别</th>
+            <th>采购类别</th>
+            <th>职位</th>
+            <th>备注说明</th>
+            <th>操作</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+<div class="pagination" id="pagination-deal"></div>
+</div>
+<div class="table-wrap" id="tbl-corp-wrap">
+<table class="table" id="tblCorp">
+<thead>
+<tr>
+<th>对手方名称</th><th>交易总额</th><th>成立日期</th><th>经营开始时间</th>
+<th>经营结束时间</th><th>营业期限</th><th>经营状态</th><th>注册资本</th>
+<th>行业</th><th>经营范围</th><th>注册地址</th><th>企业联系方式</th><th>董监高</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+<div class="pagination" id="pagination-corp"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- =====================已知关联交易 面板 ===================== -->
+
+<!-- ===================== 特定工商查询  ===================== -->
+<section class="tab-pane" id="pane-routine">
+<div class="tab-scroll">
+<div class="split">
+<!-- 左侧菜单 -->
+<aside class="sidebar-pane">
+<div class="menu" id="routineMenu">
+<div class="item active" data-code="2.1">1. 经营时间较短</div>
+<div class="item" data-code="2.2">2. 社保缴纳人数较少</div>
+<div class="item" data-code="2.3">3. 为个人或个体工商户</div>
+<div class="item" data-code="2.4">4. 注册资本与交易规模不匹配</div>
+<div class="item" data-code="2.5">5. 交易规模与第三方所处行业状况不匹配</div>
+<div class="item" data-code="2.6">6. 经营范围与交易性质不匹配</div>
+<div class="item" data-code="2.7">7. 注册地址与被审计单位地址较为接近</div>
+<div class="item" data-code="2.8">8. 不同第三方的工商登记信息相同或相近</div>
+<div class="item" data-code="2.9">9. 既是客户又是供应商，或受同一实际控制人控制</div>
+</div>
+<div class="small">说明：切换 Routine 仅刷新右侧内容。</div>
+<button aria-label="收起侧栏" class="sbar-toggle-inset" type="button"></button>
+</aside>
+<main>
+<!-- ========= 通用 Routine 布局（1,2,3,4,5,6,8,9 共用） ========= -->
+<div class="routine-common-block" id="routineCommon">
+<!-- 顶部：标题 + 主卡片（左田字格 + 右散点图） -->
+<div class="card routine-card">
+<div class="head">
+<div class="title" id="rTitle">经营时间汇总指标</div>
+</div>
+<div class="content">
+<div class="routine-main">
+<!-- 左：2×2 田字格 + 每格右侧小箱线图 -->
+<section class="routine-kpi-panel">
+<div class="kpi-panel-title">分段整体情况</div>
+<!-- Routine4 专用筛选条：仅在 2.4 显示 -->
+<div class="filters-bar" id="r4Filters">
+<!-- 对手方类型多选 -->
+<div class="field">
+<label>对手方类型：</label>
+<div class="multi" id="r4TypeBox">
+<button class="multi-toggle" id="r4TypeBtn" type="button">
+<span id="r4TypeText">全部</span>
+<i class="chev">▾</i>
+</button>
+<div class="multi-menu" id="r4TypeMenu"></div>
+</div>
+</div>
+<!-- 自定义） -->
+<div class="field breaks">
+<label>分段阈值 ：</label>
+<input id="r4b0" step="0.01" type="number" value="">
+<span class="sep">/</span>
+<input id="r4b1" step="0.01" type="number" value="">
+<span class="sep">/</span>
+<input id="r4b2" step="0.01" type="number" value="">
+<button class="btn primary" id="r4Apply">筛选</button>
+</input></input></input></div>
+</div>
+<div class="top-strip" id="topStrip">
+<!-- JS 动态插入 .kpi-box-card -->
+</div>
+</section>
+<!-- 右：散点图 -->
+<section class="routine-scatter">
+<div class="scatter-title" id="scatterTitle">
+                          经营时间分布表
+                        </div>
+<div class="chart" id="chart-scatter"></div>
+</section>
+</div>
+</div>
+</div>
+<!-- 明细：交易明细表 -->
+<div class="card">
+<div class="head">
+<div class="title">交易明细表</div>
+</div>
+<div class="content" style="overflow:auto;max-height:520px">
+<table class="table" id="tblRoutineDetail">
+<thead></thead>
+<tbody></tbody>
+</table>
+<div class="pagination" id="pagination-routine"></div>
+</div>
+</div>
+</div>
+<!-- ========= /通用 Routine 布局 ========= -->
+<!-- ========= Routine7：注册地址接近 · 地图（独立模块 r7x） ========= -->
+<section id="r7x" style="display:none;">
+<div class="card">
+<div class="head">
+<div class="title">7. 注册地址与被审计单位地址接近 · 地图</div>
+</div>
+<div class="content">
+<div class="r7x-layout">
+<!-- 左列：筛选 + 2×2 KPI -->
+<aside class="r7x-left">
+<!-- 顶部筛选条 -->
+<div class="r7x-filters">
+<label class="lbl">被审计单位：</label>
+<select class="pill-select" id="r7xAuditSel"></select>
+<span class="sep"></span>
+<label class="lbl">显示级别：</label>
+<label class="chk"><input checked="" type="checkbox" value="city"/> 同市</label>
+<label class="chk"><input checked="" type="checkbox" value="district"/> 同区/县</label>
+<label class="chk"><input checked="" type="checkbox" value="street"/> 同街道</label>
+<label class="chk"><input checked="" type="checkbox" value="near"/> 距离&lt;1km</label>
+</div>
+<!-- 2×2 田字格 KPI -->
+<div class="r7x-kpi-grid">
+<div class="r7x-kpi kpi-blue">
+<div class="kpi-title">同市</div>
+<div class="kpi-num" id="r7xCityCnt">0</div>
+<div class="kpi-sub">累计流入：<b id="r7xCityIn">0 万</b></div>
+<div class="kpi-sub">累计流出：<b id="r7xCityOut">0 万</b></div>
+</div>
+<div class="r7x-kpi kpi-green">
+<div class="kpi-title">同区/县</div>
+<div class="kpi-num" id="r7xDistrictCnt">0</div>
+<div class="kpi-sub">累计流入：<b id="r7xDistrictIn">0 万</b></div>
+<div class="kpi-sub">累计流出：<b id="r7xDistrictOut">0 万</b></div>
+</div>
+<div class="r7x-kpi kpi-orange">
+<div class="kpi-title">同街道</div>
+<div class="kpi-num" id="r7xStreetCnt">0</div>
+<div class="kpi-sub">累计流入：<b id="r7xStreetIn">0 万</b></div>
+<div class="kpi-sub">累计流出：<b id="r7xStreetOut">0 万</b></div>
+</div>
+<div class="r7x-kpi kpi-red">
+<div class="kpi-title">距离 &lt; 1km</div>
+<div class="kpi-num" id="r7xNearCnt">0</div>
+<div class="kpi-sub">累计流入：<b id="r7xNearIn">0 万</b></div>
+<div class="kpi-sub">累计流出：<b id="r7xNearOut">0 万</b></div>
+</div>
+<div class="r7x-anchor">
+<div class="small text-muted">被审计单位坐标：</div>
+<div class="anchor-xy" id="r7xAnchorXY">—</div>
+</div>
+</div>
+</aside>
+<!-- 右列：地图 -->
+<section class="r7x-map-wrap">
+<div aria-label="地图" id="r7xMap"></div>
+<div class="r7x-legend">
+<span><i style="background:#2563eb;"></i>同市</span>
+<span><i style="background:#16a34a;"></i>同区/县</span>
+<span><i style="background:#f59e0b;"></i>同街道</span>
+<span><i style="background:#ef4444;"></i>距离&lt;1km</span>
+<span><i style="background:#334155;opacity:.6;"></i>其他</span>
+</div>
+</section>
+</div>
+</div>
+</div>
+<!-- 下：明细表 -->
+<div class="card">
+<div class="head"><div class="title">当前地图点 · 对手方明细</div></div>
+<div class="content">
+<div style="overflow:auto;max-height:360px">
+<table class="table" id="r7xTable">
+<thead>
+<tr>
+<th>对手方名称</th>
+<th>接近级别</th>
+<th>距离(km)</th>
+<th>城市</th>
+<th>区/县</th>
+<th>街道</th>
+<th>经度</th>
+<th>纬度</th>
+<th>累计流入(万)</th>
+<th>累计流出(万)</th>
+<th>交易总额(万)</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<!-- ========= /Routine7 ========= -->
+</main>
+</div>
+</div>
+</section>
+<!-- ===================== 资金流水核查底稿导出 ===================== -->
+<section class="tab-pane" id="pane-workingpaper">
+  <div class="tab-scroll wp-page">
+
+    <!-- 顶部信息条 -->
+    <div class="wp-info-strip">
+      <span>项目编号/名称：<b id="wpProj">20220318/TEST</b></span>
+      <span>工作簿名：<b id="wpBook">test for tech hour</b></span>
+      <span>工作簿类型：<b id="wpKind">Non-IPO_NON-PIE</b></span>
+      <span>资本市场：<b id="wpMarket">N/A</b></span>
+      <span>重要性水平：<b id="wpMaterialityText">-</b></span>
+      <a href=" " id="wpEditMarket" class="wp-strip-edit" title="编辑">✎</a >
+    </div>
+
+    <div class="wp-page-tip">
+      该底稿基于A股IPO的资金流水核查底稿生成，非A股IPO项目组可参考使用。
+    </div>
+
+    <!-- ① 信息测试 - 完整性测试 -->
+    <section class="wp-card-section" id="wpBlock1">
+      <div class="wp-card-head">
+        <div class="wp-card-title-wrap">
+          <span class="wp-card-index">①</span>
+          <div class="wp-card-title-group">
+            <div class="wp-card-title">信息测试 - 完整性测试</div>
+            <div class="wp-card-subtitle">
+              请先在表格确定每个账户银行流水获取方式
+              <a href="javascript:void(0)" class="blue">（说明）</a >
+            </div>
+          </div>
+        </div>
+        <button class="wp-fold-btn" type="button" data-fold-target="wpBlock1" title="收起/展开"></button>
+      </div>
+
+      <div class="wp-card-body">
+        <div class="wp-card-desc">
+          不同的流水获取方式，需执行对应的审计程序；<br>
+          用于评价资金流水的完整性（对应底稿中的 &lt; 1.2阅览交易流水完整性测试 &gt;）
+        </div>
+
+        <div class="wp-tools">
+          <div></div>
+          <div class="wp-tools-right">
+            <button class="btn primary" id="btnExportWp">导出</button>
+            <label class="btn primary">
+              导入
+              <input type="file" id="btnImportWp" accept=".xlsx,.csv" hidden>
+            </label>
+          </div>
+        </div>
+
+        <div class="wp-table-wrap">
+          <table class="table wp-table" id="wpTable1">
+            <thead>
+              <tr>
+                <th>被审计单位名称</th>
+                <th>银行账号</th>
+                <th>本方银行</th>
+                <th class="num">交易总额</th>
+                <th class="num">交易笔数</th>
+                <th style="min-width:280px;">银行流水获取方式</th>
+                <th style="width:90px;">更新人</th>
+                <th style="width:120px;">更新时间</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="wp-pager">
+          <span>共 <b id="wpTable1Total">0</b> 条</span>
+          <button class="pager-btn" disabled>&lt;</button>
+          <button class="pager-btn is-active">1</button>
+          <button class="pager-btn" disabled>&gt;</button>
+          <select>
+            <option>20 条/页</option>
+          </select>
+          <span>跳至</span>
+          <input type="text" value="1">
+          <span>页</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ② 信息测试 - 准确性测试 -->
+    <section class="wp-card-section" id="wpBlock2" style="display:none;">
+      <div class="wp-card-head">
+        <div class="wp-card-title-wrap">
+          <span class="wp-card-index">②</span>
+          <div class="wp-card-title-group">
+            <div class="wp-card-title">信息测试 - 准确性测试</div>
+          </div>
+        </div>
+        <button class="wp-fold-btn" type="button" data-fold-target="wpBlock2" title="收起/展开"></button>
+      </div>
+
+      <div class="wp-card-body">
+        <div class="wp-inline-row">
+          <div class="wp-inline-label">是否使用系统内置的随机抽样工具进行直接测试：</div>
+          <label class="wp-switch">
+            <input type="checkbox" id="directTestSwitch" checked>
+            <span class="slider"></span>
+            <span class="switch-text" id="directTestText">是</span>
+          </label>
+        </div>
+
+        <div class="wp-card-desc" style="margin-top: 2px;">
+          若依赖控制测试，或使用非随机抽样的方式进行直接测试，可选择否
+        </div>
+
+        <div class="wp-form-row" id="sampleConfigRow">
+          <div class="field">
+            <label>设置风险等级：</label>
+            <select id="riskSel">
+              <option value="">选择风险等级…</option>
+              <option value="重大+">重要的+</option>
+              <option value="重大">重要的</option>
+              <option value="提高">提高的</option>
+              <option value="基础">基础的</option>
+            </select>
+          </div>
+
+          <div class="field wp-inline-link-field">
+            <label>抽样说明</label>
+            <a href="javascript:void(0)" class="blue">抽样说明</a >
+          </div>
+        </div>
+
+        <div class="wp-card-desc">
+          系统会根据KAE中，使用直接测试方案时，属性抽样样本量表，自动计算最小样本量并进行随机抽样。<br>
+          用于评价资金流水的准确性（对应底稿中的 &lt; 1.3阅览交易流水准确性测试 &gt;）
+        </div>
+
+        <div class="wp-table-wrap">
+          <table class="table wp-table" id="wpTable2">
+            <thead>
+              <tr>
+                <th>被审计单位名称</th>
+                <th>银行账号</th>
+                <th>本方银行</th>
+                <th class="num">交易总额</th>
+                <th class="num">交易笔数</th>
+                <th>最小样本量（自动计算）</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="wp-pager">
+          <span>共 <b id="wpTable2Total">0</b> 条</span>
+          <button class="pager-btn" disabled>&lt;</button>
+          <button class="pager-btn is-active">1</button>
+          <button class="pager-btn" disabled>&gt;</button>
+          <select>
+            <option>20 条/页</option>
+          </select>
+          <span>跳至</span>
+          <input type="text" value="1">
+          <span>页</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ③ 核查标准 -->
+    <section class="wp-card-section" id="wpBlock3">
+      <div class="wp-card-head">
+        <div class="wp-card-title-wrap">
+          <span class="wp-card-index">③</span>
+          <div class="wp-card-title-group">
+            <div class="wp-card-title">核查标准</div>
+          </div>
+        </div>
+        <button class="wp-fold-btn" type="button" data-fold-target="wpBlock3" title="收起/展开"></button>
+      </div>
+
+      <div class="wp-card-body">
+        <div class="wp-card-desc">
+          对于符合下述标准的、通过KPMG Audit Compass系统平台中项目组浏览凭证的筛选条件识别的资金流水记录，
+          已自动填充至工作底稿 &lt;3.大额、异常资金流水&gt;
+        </div>
+
+        <div class="wp-tags">
+          <span class="tag ok">✓ 关联方</span>
+          <span class="tag err">× 客户（缺失）</span>
+          <span class="tag err">× 供应商（缺失）</span>
+          <span class="tag err">× 员工（缺失）</span>
+        </div>
+
+        <div class="wp-table-wrap">
+          <table class="table wp-table wp-standard-table" id="rngTable">
+            <thead>
+              <tr>
+                <th style="width:34%;">核查程序</th>
+                <th style="width:82px;">标识号</th>
+                <th>Audit Compass系统设定筛选条件</th>
+                <th style="width:82px;">执行状态</th>
+                <th class="num" style="width:100px;">识别对手方数</th>
+                <th class="num" style="width:120px;">识别交易总额</th>
+                <th class="num" style="width:100px;">识别交易笔数</th>
+                <th style="width:90px;">操作</th>
+                <th style="width:140px;">解释理由</th>
+              </tr>
+            </thead>
+            <tbody id="rngTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ④ 可能配合实施财务舞弊的第三方特征 -->
+    <section class="wp-card-section" id="wpBlock4">
+      <div class="wp-card-head">
+        <div class="wp-card-title-wrap">
+          <span class="wp-card-index">④</span>
+          <div class="wp-card-title-group">
+            <div class="wp-card-title">可能配合实施财务舞弊的第三方特征</div>
+          </div>
+        </div>
+        <button class="wp-fold-btn" type="button" data-fold-target="wpBlock4" title="收起/展开"></button>
+      </div>
+
+      <div class="wp-card-body">
+        <div class="wp-card-desc">
+          除A股IPO收入审计程序示例 &lt;A股IPO采购与存货审计程序示例&gt; 底稿中列示的背景调查程序外，
+          项目组可从资金流水出发，借助KPMG Audit Compass识别符合特定特征的异常交易对手方，
+          对于识别出的异常资金流的交易对手方，项目组应考虑在资金流水核查、走访、函证、烤凭等核查程序中重点关注。
+        </div>
+
+        <div class="wp-table-wrap">
+          <table class="table wp-table wp-standard-table" id="fraudTable">
+            <thead>
+              <tr>
+                <th style="width:34%;">核查程序</th>
+                <th style="width:82px;">标识号</th>
+                <th>Audit Compass系统设定筛选条件</th>
+                <th style="width:82px;">执行状态</th>
+                <th class="num" style="width:100px;">识别对手方数</th>
+                <th class="num" style="width:120px;">识别交易总额</th>
+                <th class="num" style="width:100px;">识别交易笔数</th>
+                <th style="width:140px;">解释理由</th>
+              </tr>
+            </thead>
+            <tbody id="fraudTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div class="wp-bottom-actions">
+      <button class="btn primary" id="btnGenRisk">生成资金流水核查底稿</button>
+    </div>
+  </div>
+</section>
+
+<!-- 编辑弹窗 -->
+<div class="modal" id="wpModal">
+  <div class="dialog">
+    <div class="hd">
+      <span>编辑工作簿属性</span>
+      <span class="x" id="wpModalClose">✕</span>
+    </div>
+    <div class="bd">
+      <div class="row2">
+        <div class="field">
+          <label>是否 IPO</label>
+          <div class="radio">
+            <label><input type="radio" name="wpIPO" value="Y" checked> 是</label>
+            <label><input type="radio" name="wpIPO" value="N"> 否</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>资本市场</label>
+          <select id="wpMarketSel">
+            <option value="A">A</option>
+            <option value="H">H</option>
+            <option value="科创板">科创板</option>
+            <option value="创业板">创业板</option>
+            <option value="N/A">N/A</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row2" style="margin-top:12px;">
+        <div class="field">
+          <label>财年结束日期</label>
+          <input id="wpFyEnd" type="text" value="12-31" placeholder="例如：12-31">
+        </div>
+        <div class="field">
+          <label>重要性水平（Materiality）</label>
+          <input id="wpMateriality" type="number" min="0" placeholder="仅正数，支持千分位">
+        </div>
+      </div>
+    </div>
+    <div class="ft">
+      <button class="btn" id="wpModalCancel">取消</button>
+      <button class="btn primary" id="wpModalOk">提交</button>
+    </div>
+  </div>
+</div>
+</div>
+</section></div>
+
+
+<script src="../assets/js/core/shared.js"></script>
+<script src="../assets/js/pages/biz.js"></script>
+<script src="../assets/js/core/echarts-stable.js"></script>
+<script src="../assets/js/pages/routine.js"></script>
+<script src="../assets/js/core/navigation.js"></script>
+</body>
+</html>
