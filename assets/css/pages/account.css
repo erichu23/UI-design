@@ -1,0 +1,284 @@
+/* Tab 1 账户总览 */
+
+/* 图例 */
+.legend{display:flex;gap:14px;justify-content:flex-end;margin:6px 0 10px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px}
+.lg-warn{background:#facc15}.lg-none{background:#cbd5e1}.lg-ok{background:#3b82f6}.lg-err{background:#ef4444}
+
+/* 控制参数 */
+.check-scope{--dot:12px;--col:22px;--gap:4px;--sepw:20px;--year:#334155}
+
+/* 表头与箭头 */
+.check-head{display:flex;align-items:center;gap:8px;color:#475569;font-size:13px;user-select:none;white-space:nowrap}
+.check-head .y{color:var(--year);font-weight:600}
+.arrow-btn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:24px;border:1px solid #cbd5e1;background:#fff;border-radius:6px;cursor:pointer;transition:.25s}
+.arrow-btn:hover{background:#f1f5f9}
+.arrow-btn svg{width:14px;height:14px;fill:#334155;transition:transform .25s}
+.arrow-btn.expanded svg{transform:rotate(90deg)}
+
+/* 月份网格 */
+.months-grid{
+  display:inline-grid;
+  align-items:center;justify-content:flex-start;
+  column-gap:var(--gap);
+  grid-template-columns:[y24] repeat(12,var(--col));
+  width:max-content;white-space:nowrap;
+}
+.check-scope.expanded .months-grid{
+  grid-template-columns:[y23] repeat(12,var(--col)) [sep] var(--sepw) [y24] repeat(12,var(--col));
+}
+
+/* 年份标签网格 */
+.y-labels{
+  display:inline-grid;align-items:center;column-gap:var(--gap);
+  grid-template-columns:[y24] repeat(12,var(--col));
+  width:max-content;
+}
+.check-scope.expanded .y-labels{
+  grid-template-columns:[y23] repeat(12,var(--col)) [sep] var(--sepw) [y24] repeat(12,var(--col));
+}
+.y-2023{grid-column:y23}
+.y-2024{grid-column:y24}
+.sep-label{grid-column:sep;text-align:center;color:#94a3b8}
+
+/* 收起默认隐藏2023列 */
+.y-2023,.sep-label,.col-2023,.col-sep{display:none!important}
+.check-scope.expanded .y-2023,
+.check-scope.expanded .sep-label,
+.check-scope.expanded .col-2023,
+.check-scope.expanded .col-sep{display:inline-block!important}
+
+/* 月份数字（合计行） */
+.month-num{font-size:12px;color:#64748b;text-align:center;line-height:1}
+
+/* 数据点 */
+.months-grid .chk-dot{display:inline-block;width:var(--dot);height:var(--dot);border-radius:3px;vertical-align:middle}
+.months-grid .chk-ok{background:#3b82f6}
+.months-grid .chk-none{background:#cbd5e1}
+.months-grid .chk-warn{background:#facc15}
+.months-grid .chk-err{background:#ef4444}
+
+/* 表格列宽优化 */
+.table{table-layout:auto}
+.table th.check-col,.table td.check-col{width:1%;white-space:nowrap}
+.table td .check-row{padding:6px 0}
+
+/* ===== 表头颜色定义 ===== */
+.table thead th {
+  background: #F6F8FE;   /* 这是你截图中表头的浅蓝灰色，可换其他色 */
+  color: #0f172a;         /* 字体颜色 */
+  font-weight: 600;
+}
+
+/* ===== 合计行与表头同色 ===== */
+.table tr.sum-row td {
+  background: #F6F8FE;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* 缺失同名账户可展开按钮样式 */
+.expand-btn{
+  border:none;
+  background:none;
+  cursor:pointer;
+  font-size:14px;
+  margin-right:4px;
+  color:#334155;
+  transition:.2s;
+}
+.expand-btn:hover{color:#1e3a8a}
+
+/* 行样式 */
+.group-row td{
+  font-weight:600;
+  background:#F6F8FE;  /* 浅灰底，区分层级 */
+}
+.detail-row{
+  background:#ffffff;   /* 明细行白底 */
+}
+.text-muted{
+  color:#94a3b8;
+  font-size:12px;
+}
+
+/* ===== 操作列图标样式 ===== */
+.actions a {
+  display: inline-block;
+  margin: 0 6px;
+  font-size: 16px;
+  color: #2563eb;          /* 蓝色，与按钮一致 */
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+.actions a:hover {
+  color: #1e3a8a;          /* 深蓝 hover 效果 */
+  transform: scale(1.1);
+}
+
+/* 可选：让操作列固定宽度，图标居中 */
+.actions {
+  text-align: center;
+  min-width: 70px;
+}
+
+#btnAccountLogic::before {
+  content: "💡";           /* 灯泡图标 */
+  margin-right: 6px;
+  font-size: 15px;
+  vertical-align: middle;
+}
+
+#btnAccountTips::before {
+  content: "⭐";           /* 星星图标 */
+  margin-right: 6px;
+  font-size: 15px;
+  vertical-align: middle;
+}
+/* 按钮内容整体对齐微调（可选） */
+.head-inline .btn {
+  display: inline-flex;
+  align-items: center;     /* ✅ 图标与文字垂直居中 */
+  justify-content: center;
+  gap: 4px;                /* 图标和文字之间的间距 */
+}
+
+/* ========== 表头双箭头美化（紧凑对齐版） ========== */
+
+/* ==================== 表头双箭头样式 ==================== */
+#tblAccountSummary thead th.sortable:not(.check-col) {
+  position: relative;
+  padding-right: 20px;         /* 箭头预留空间 */
+  cursor: pointer;
+  color: #334155;
+  font-weight: 500;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* 默认状态：上下灰箭头 */
+#tblAccountSummary thead th.sortable:not(.check-col)::before,
+#tblAccountSummary thead th.sortable:not(.check-col)::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+/* 上箭头（朝上） */
+#tblAccountSummary thead th.sortable:not(.check-col)::before {
+  top: calc(50% - 6px);
+  border-bottom: 6px solid #cbd5e1;
+}
+
+/* 下箭头（朝下） */
+#tblAccountSummary thead th.sortable:not(.check-col)::after {
+  top: calc(50% + 3px);
+  border-top: 6px solid #cbd5e1;
+}
+
+/* 悬停时整体变亮 */
+#tblAccountSummary thead th.sortable:not(.check-col):hover::before,
+#tblAccountSummary thead th.sortable:not(.check-col):hover::after {
+  border-bottom-color: #94a3b8;
+  border-top-color: #94a3b8;
+  opacity: 0.9;
+}
+
+/* 升序：上箭头蓝，下箭头灰 */
+#tblAccountSummary thead th.sortable.sort-asc:not(.check-col)::before {
+  border-bottom-color: #1e40af;
+  opacity: 1;
+}
+#tblAccountSummary thead th.sortable.sort-asc:not(.check-col)::after {
+  border-top-color: #cbd5e1;
+  opacity: 0.5;
+}
+
+/* 降序：下箭头蓝，上箭头灰 */
+#tblAccountSummary thead th.sortable.sort-desc:not(.check-col)::after {
+  border-top-color: #1e40af;
+  opacity: 1;
+}
+#tblAccountSummary thead th.sortable.sort-desc:not(.check-col)::before {
+  border-bottom-color: #cbd5e1;
+  opacity: 0.5;
+}
+
+/* 明确不显示箭头的列 */
+#tblAccountSummary thead th.nosort::before,
+#tblAccountSummary thead th.nosort::after {
+  content: none !important;
+}
+
+/* ==================== 表头双箭头样式 ==================== */
+#tblMissingSameName thead th.sortable:not(.check-col) {
+  position: relative;
+  padding-right: 20px;
+  cursor: pointer;
+  color: #334155;
+  font-weight: 500;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* 默认状态：上下灰箭头 */
+#tblMissingSameName thead th.sortable:not(.check-col)::before,
+#tblMissingSameName thead th.sortable:not(.check-col)::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+/* 上箭头（朝上） */
+#tblMissingSameName thead th.sortable:not(.check-col)::before {
+  top: calc(50% - 6px);
+  border-bottom: 6px solid #cbd5e1;
+}
+
+/* 下箭头（朝下） */
+#tblMissingSameName thead th.sortable:not(.check-col)::after {
+  top: calc(50% + 3px);
+  border-top: 6px solid #cbd5e1;
+}
+
+/* 悬停亮一点 */
+#tblMissingSameName thead th.sortable:not(.check-col):hover::before,
+#tblMissingSameName thead th.sortable:not(.check-col):hover::after {
+  border-bottom-color: #94a3b8;
+  border-top-color: #94a3b8;
+  opacity: 0.9;
+}
+
+/* ✅ 升序状态 */
+#tblMissingSameName thead th.sortable.sort-asc:not(.check-col)::before {
+  border-bottom-color: #1e40af;
+  opacity: 1;
+}
+#tblMissingSameName thead th.sortable.sort-asc:not(.check-col)::after {
+  border-top-color: #cbd5e1;
+  opacity: 0.4;
+}
+
+/* ✅ 降序状态 */
+#tblMissingSameName thead th.sortable.sort-desc:not(.check-col)::after {
+  border-top-color: #1e40af;
+  opacity: 1;
+}
+#tblMissingSameName thead th.sortable.sort-desc:not(.check-col)::before {
+  border-bottom-color: #cbd5e1;
+  opacity: 0.4;
+}
+
+/* 不排序的列 */
+#tblMissingSameName thead th.nosort::before,
+#tblMissingSameName thead th.nosort::after {
+  content: none !important;
+}
