@@ -1,6 +1,11 @@
 (function () {
   const charts = {};
-  let detailChart = null;
+  let detailInChart = null;
+  let detailOutChart = null;
+
+  let selectedMonth = null; // 点击柱状图后的月度视图
+  let yearColumnsExpanded = false; // 表头“合计”右侧年份列组是否展开
+  const remarkStore = {};
 
   const rawData = [
     { month: "2024-01", unit: "Test2", func: "销售", type: "客户", counterparty: "上海A贸易有限公司", inflow: 210, outflow: 0, outputVat: 195, inputVat: 0, txn: 12 },
@@ -17,13 +22,58 @@
     { month: "2024-12", unit: "Test2", func: "销售", type: "客户", counterparty: "上海A贸易有限公司", inflow: 420, outflow: 0, outputVat: 402, inputVat: 0, txn: 14 }
   ];
 
-  const months = ["2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12"];
+  const months = [
+    "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06",
+    "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12"
+  ];
 
-  function $(id) { return document.getElementById(id); }
+  function $(id) {
+    return document.getElementById(id);
+  }
 
-  function pct(a, b) {
-    if (!b) return 0;
-    return +(a / b * 100).toFixed(1);
+  function fmt(n) {
+    return Number(n || 0).toLocaleString();
+  }
+
+  function safePct(diff, base) {
+    if (!base) return 0;
+    return +((diff / base) * 100).toFixed(1);
+  }
+
+  function getYear(month) {
+    return String(month).slice(0, 4);
+  }
+
+  function getMonthLabel(month) {
+    return String(month).replace(/^(\d{4})-(\d{2})$/, "$1年$2月");
+  }
+
+  function getShortMonthLabel(month) {
+    return String(month).replace(/^(\d{4})-(\d{2})$/, "$2月");
+  }
+
+  function gapHtmlBlue(diff, base) {
+      const pct = safePct(diff, base);
+      return `<span class="ds3-gap-pos">${fmt(diff)} / ${pct}%</span>`;
+    }
+
+function gapHtmlRed(diff, base) {
+  const pct = safePct(diff, base);
+  return `<span class="ds3-gap-neg">${fmt(diff)} / ${pct}%</span>`;
+}
+
+
+
+
+  function sumRows(rows) {
+    return rows.reduce((acc, r) => {
+      acc.inflow += Number(r.inflow || 0);
+      acc.outflow += Number(r.outflow || 0);
+      acc.outputVat += Number(r.outputVat || 0);
+      acc.inputVat += Number(r.inputVat || 0);
+      acc.txn += Number(r.txn || 0);
+      return acc;
+    }, { inflow: 0, outflow: 0, outputVat: 0, inputVat: 0, txn: 0 });
   }
 
   function buildMonthlySeries(rows) {
@@ -38,93 +88,31 @@
     rows.forEach(r => {
       const idx = months.indexOf(r.month);
       if (idx >= 0) {
-        result[idx].inflow += r.inflow;
-        result[idx].outflow += r.outflow;
-        result[idx].outputVat += r.outputVat;
-        result[idx].inputVat += r.inputVat;
+        result[idx].inflow += Number(r.inflow || 0);
+        result[idx].outflow += Number(r.outflow || 0);
+        result[idx].outputVat += Number(r.outputVat || 0);
+        result[idx].inputVat += Number(r.inputVat || 0);
       }
     });
+
     return result;
-  }
-
-  function groupByCounterparty(rows) {
-    const map = {};
-    rows.forEach(r => {
-      if (!map[r.counterparty]) {
-        map[r.counterparty] = {
-          counterparty: r.counterparty,
-          inflow: 0, outflow: 0, outputVat: 0, inputVat: 0, txn: 0
-        };
-      }
-      map[r.counterparty].inflow += r.inflow;
-      map[r.counterparty].outflow += r.outflow;
-      map[r.counterparty].outputVat += r.outputVat;
-      map[r.counterparty].inputVat += r.inputVat;
-      map[r.counterparty].txn += r.txn;
-    });
-
-    return Object.values(map).map(x => {
-      const total = x.inflow + x.outflow + x.outputVat + x.inputVat;
-      return {
-        ...x,
-        total,
-        incomeRatio: x.inflow ? pct(x.outputVat, x.inflow) : 0,
-        costRatio: x.outflow ? pct(x.inputVat, x.outflow) : 0
-      };
-    }).sort((a, b) => b.total - a.total);
-  }
-
-  function createChart(id, option) {
-    const dom = $(id);
-    if (!dom || typeof echarts === "undefined") return null;
-    const chart = echarts.init(dom);
-    chart.setOption(option);
-    return chart;
   }
 
   function resizeAllCharts() {
     Object.values(charts).forEach(c => {
-      try { c.resize(); } catch (e) {}
-    });
-    if (detailChart) {
-      try { detailChart.resize(); } catch (e) {}
-    }
-  }
-
-  function initTabs() {
-    const tabs = Array.from(document.querySelectorAll("#ds3Tabbar .ds3-tab"));
-    const panes = Array.from(document.querySelectorAll(".ds3-pane"));
-    const inkbar = $("ds3Inkbar");
-
-    function moveInkbar(activeTab) {
-      if (!activeTab || !inkbar) return;
-      inkbar.style.width = `${activeTab.offsetWidth}px`;
-      inkbar.style.left = `${activeTab.offsetLeft}px`;
-    }
-
-    function activate(tabKey) {
-      tabs.forEach(t => t.classList.toggle("is-active", t.dataset.tab === tabKey));
-      panes.forEach(p => p.classList.toggle("is-active", p.id === `ds3-pane-${tabKey}`));
-      moveInkbar(tabs.find(t => t.dataset.tab === tabKey));
-      setTimeout(resizeAllCharts, 80);
-    }
-
-    tabs.forEach(tab => {
-      tab.addEventListener("click", () => activate(tab.dataset.tab));
+      try { c && c.resize(); } catch (e) {}
     });
 
-    window.addEventListener("resize", () => {
-      const active = tabs.find(t => t.classList.contains("is-active"));
-      moveInkbar(active);
+    [detailInChart, detailOutChart].forEach(c => {
+      try { c && c.resize(); } catch (e) {}
     });
-
-    activate("overview");
   }
 
   function initFold() {
     document.querySelectorAll(".ds3-fold").forEach(btn => {
       btn.addEventListener("click", function () {
         const block = this.closest(".ds3-block");
+        if (!block) return;
         block.classList.toggle("is-collapsed");
         this.textContent = block.classList.contains("is-collapsed") ? "展开" : "收起";
         setTimeout(resizeAllCharts, 80);
@@ -137,12 +125,12 @@
     const funcs = ["全部", ...new Set(rawData.map(x => x.func))];
     const types = ["全部", ...new Set(rawData.map(x => x.type))];
 
-    $("ds3Unit").innerHTML = units.map(x => `<option value="${x}">${x}</option>`).join("");
-    $("ds3Func").innerHTML = funcs.map(x => `<option value="${x}">${x}</option>`).join("");
-    $("ds3Type").innerHTML = types.map(x => `<option value="${x}">${x}</option>`).join("");
+    if ($("ds3Unit")) $("ds3Unit").innerHTML = units.map(x => `<option value="${x}">${x}</option>`).join("");
+    if ($("ds3Func")) $("ds3Func").innerHTML = funcs.map(x => `<option value="${x}">${x}</option>`).join("");
+    if ($("ds3Type")) $("ds3Type").innerHTML = types.map(x => `<option value="${x}">${x}</option>`).join("");
   }
 
-  function getFilteredRows() {
+  function getBaseFilteredRows() {
     const unit = $("ds3Unit")?.value || "全部";
     const func = $("ds3Func")?.value || "全部";
     const type = $("ds3Type")?.value || "全部";
@@ -150,243 +138,443 @@
 
     return rawData.filter(r => {
       return (unit === "全部" || r.unit === unit) &&
-             (func === "全部" || r.func === func) &&
-             (type === "全部" || r.type === type) &&
-             (!keyword || r.counterparty.toLowerCase().includes(keyword));
+        (func === "全部" || r.func === func) &&
+        (type === "全部" || r.type === type) &&
+        (!keyword || r.counterparty.toLowerCase().includes(keyword));
     });
   }
 
-  function initOverviewCharts() {
-    charts.overviewCompare = createChart("ds3OverviewCompareChart", {
-      tooltip: { trigger: "axis" },
-      legend: { top: 0, data: ["银行金额", "税票金额"] },
-      grid: { left: 50, right: 20, top: 40, bottom: 35 },
-      xAxis: { type: "category", data: ["收入侧", "成本侧"] },
-      yAxis: { type: "value", name: "K" },
-      series: [
-        { name: "银行金额", type: "bar", barWidth: 34, data: [3596044, 2551804] },
-        { name: "税票金额", type: "bar", barWidth: 34, data: [3182110, 2106540] }
-      ]
-    });
-
-    charts.overviewGap = createChart("ds3OverviewGapChart", {
-      tooltip: { trigger: "item" },
-      legend: { bottom: 0 },
-      series: [{
-        type: "pie",
-        radius: ["42%", "72%"],
-        center: ["50%", "46%"],
-        label: { formatter: "{b}\n{d}%" },
-        data: [
-          { value: 180000, name: "有流水无税票" },
-          { value: 95000, name: "有税票无流水" },
-          { value: 240000, name: "金额差异过大" },
-          { value: 343198, name: "其他差异" }
-        ]
-      }]
-    });
-
-    charts.overviewRatio = createChart("ds3OverviewRatioChart", {
-      tooltip: { trigger: "axis" },
-      legend: { top: 0, data: ["收入匹配率", "成本匹配率"] },
-      grid: { left: 50, right: 20, top: 40, bottom: 35 },
-      xAxis: { type: "category", data: ["1月","2月","3月","4月","5月","6月"] },
-      yAxis: { type: "value", name: "%", max: 130 },
-      series: [
-        { name: "收入匹配率", type: "line", smooth: true, data: [93, 92, 62, 105, 94, 118] },
-        { name: "成本匹配率", type: "line", smooth: true, data: [83, 93, 73, 94, 94, 85] }
-      ]
-    });
-
-    charts.overviewStructure = createChart("ds3OverviewStructureChart", {
-      tooltip: { trigger: "item" },
-      legend: { bottom: 0 },
-      series: [{
-        type: "pie",
-        radius: ["42%", "72%"],
-        center: ["50%", "46%"],
-        label: { formatter: "{b}\n{d}%" },
-        data: [
-          { value: 3596044, name: "银行流入" },
-          { value: 3182110, name: "销项税" },
-          { value: 2551804, name: "银行流出" },
-          { value: 2106540, name: "进项税" }
-        ]
-      }]
-    });
+  function getRowsForCurrentView() {
+    const rows = getBaseFilteredRows();
+    if (!selectedMonth) return rows;
+    return rows.filter(r => r.month === selectedMonth);
   }
 
-  function renderFilterSection() {
-    const rows = getFilteredRows();
+  function updateTopKpis(rows) {
+    const total = sumRows(rows);
+    const incomeGap = +(total.inflow - total.outputVat).toFixed(1);
+    const costGap = +(total.outflow - total.inputVat).toFixed(1);
+
+    if ($("ds3InflowTotal")) $("ds3InflowTotal").textContent = fmt(total.inflow);
+    if ($("ds3OutputVatTotal")) $("ds3OutputVatTotal").textContent = fmt(total.outputVat);
+    if ($("ds3IncomeGapTotal")) $("ds3IncomeGapTotal").textContent = `${fmt(incomeGap)} / ${safePct(incomeGap, total.inflow)}%`;
+
+    if ($("ds3OutflowTotal")) $("ds3OutflowTotal").textContent = fmt(total.outflow);
+    if ($("ds3InputVatTotal")) $("ds3InputVatTotal").textContent = fmt(total.inputVat);
+    if ($("ds3CostGapTotal")) $("ds3CostGapTotal").textContent = `${fmt(costGap)} / ${safePct(costGap, total.outflow)}%`;
+  }
+
+  function renderCharts(rows) {
     const monthly = buildMonthlySeries(rows);
-    const cps = groupByCounterparty(rows);
-    const searchKeyword = ($("ds3TableSearch")?.value || "").trim().toLowerCase();
-    const x = monthly.map(x => x.month.replace("2024-", "").replace("-", "月"));
+    const xAxisData = monthly.map(x => getShortMonthLabel(x.month));
 
-    if (!charts.filterIn) charts.filterIn = echarts.init($("ds3FilterInChart"));
-    charts.filterIn.setOption({
-      tooltip: { trigger: "axis" },
-      legend: { top: 0, data: ["银行流入", "销项税", "差额"] },
-      grid: { left: 46, right: 20, top: 42, bottom: 35 },
-      xAxis: { type: "category", data: x },
-      yAxis: { type: "value", name: "K" },
-      series: [
-        { name: "银行流入", type: "bar", data: monthly.map(x => x.inflow) },
-        { name: "销项税", type: "bar", data: monthly.map(x => x.outputVat) },
-        { name: "差额", type: "line", smooth: true, data: monthly.map(x => +(x.inflow - x.outputVat).toFixed(1)) }
-      ]
-    });
+    if (!charts.filterIn && $("ds3FilterInChart")) {
+      charts.filterIn = echarts.init($("ds3FilterInChart"));
+      charts.filterIn.on("click", params => {
+        const idx = params?.dataIndex;
+        if (idx == null) return;
+        selectedMonth = monthly[idx].month;
+        renderFilterSection();
+      });
+    }
 
-    if (!charts.filterOut) charts.filterOut = echarts.init($("ds3FilterOutChart"));
-    charts.filterOut.setOption({
-      tooltip: { trigger: "axis" },
-      legend: { top: 0, data: ["银行流出", "进项税", "差额"] },
-      grid: { left: 46, right: 20, top: 42, bottom: 35 },
-      xAxis: { type: "category", data: x },
-      yAxis: { type: "value", name: "K" },
-      series: [
-        { name: "银行流出", type: "bar", data: monthly.map(x => x.outflow) },
-        { name: "进项税", type: "bar", data: monthly.map(x => x.inputVat) },
-        { name: "差额", type: "line", smooth: true, data: monthly.map(x => +(x.outflow - x.inputVat).toFixed(1)) }
-      ]
-    });
-
-    const filtered = cps.filter(r => !searchKeyword || r.counterparty.toLowerCase().includes(searchKeyword));
-    const totalAmount = filtered.reduce((s, x) => s + x.total, 0);
-
-    $("ds3FilterTable").querySelector("tbody").innerHTML = filtered.map(r => {
-      const tagClass = (r.incomeRatio < 70 || r.costRatio < 60) ? "is-high"
-        : ((r.incomeRatio < 90 || r.costRatio < 85) ? "is-mid" : "is-low");
-      const tagText = tagClass === "is-high" ? "高" : (tagClass === "is-mid" ? "中" : "低");
-
-      return `
-        <tr>
-          <td>${r.counterparty}</td>
-          <td class="is-num">${r.inflow.toLocaleString()}</td>
-          <td class="is-num">${r.outflow.toLocaleString()}</td>
-          <td class="is-num">${r.outputVat.toLocaleString()}</td>
-          <td class="is-num">${r.inputVat.toLocaleString()}</td>
-          <td class="is-num">${r.total.toLocaleString()}</td>
-          <td class="is-num">${r.txn}</td>
-          <td class="is-num">${totalAmount ? ((r.total / totalAmount) * 100).toFixed(1) : 0}%</td>
-          <td><span class="ds3-tag ${tagClass}">${tagText}</span></td>
-          <td><button class="ds3-btn small is-primary ds3-detail-btn" data-cp="${r.counterparty}" type="button">查看详情</button></td>
-        </tr>
-      `;
-    }).join("");
-
-    bindDetailButtons(rows);
-  }
-
-  function initCounterpartyCharts() {
-    charts.counterpartyAmount = createChart("ds3CounterpartyAmountChart", {
-      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-      legend: { top: 0, data: ["银行流入", "销项税", "银行流出", "进项税"] },
-      grid: { left: 70, right: 20, top: 42, bottom: 20 },
-      xAxis: { type: "value", name: "K" },
-      yAxis: { type: "category", data: ["上海A贸易","杭州B科技","宁波C供应链","苏州D工业","深圳E服务"] },
-      series: [
-        { name: "银行流入", type: "bar", data: [820, 520, 0, 0, 210] },
-        { name: "销项税", type: "bar", data: [601, 501, 0, 0, 120] },
-        { name: "银行流出", type: "bar", data: [0, 0, 430, 385, 88] },
-        { name: "进项税", type: "bar", data: [0, 0, 201, 342, 32] }
-      ]
-    });
-
-    charts.counterpartyRatio = createChart("ds3CounterpartyRatioChart", {
-      tooltip: { trigger: "axis" },
-      legend: { top: 0, data: ["收入匹配率", "成本匹配率"] },
-      grid: { left: 52, right: 20, top: 42, bottom: 35 },
-      xAxis: { type: "category", data: ["上海A贸易","杭州B科技","宁波C供应链","苏州D工业","深圳E服务"] },
-      yAxis: { type: "value", name: "%", max: 120 },
-      series: [
-        { name: "收入匹配率", type: "bar", data: [73.3, 96.3, 0, 0, 57.1] },
-        { name: "成本匹配率", type: "bar", data: [0, 0, 46.7, 88.8, 36.4] }
-      ]
-    });
-  }
-
-  function initExceptionCharts() {
-    charts.exceptionType = createChart("ds3ExceptionTypeChart", {
-      tooltip: { trigger: "item" },
-      series: [{
-        type: "pie",
-        radius: ["46%", "72%"],
-        center: ["50%", "52%"],
-        label: { formatter: "{b}\n{d}%" },
-        data: [
-          { value: 12, name: "有流水无税票" },
-          { value: 7, name: "有税票无流水" },
-          { value: 9, name: "金额差异过大" },
-          { value: 4, name: "名称不一致" }
+    if (charts.filterIn) {
+      charts.filterIn.setOption({
+        color: ["#108dff", "#38bdf8", "#2468a2"],
+        tooltip: { trigger: "axis" },
+        legend: { top: 0, data: ["银行流入", "销项价税合计", "差额"] },
+        grid: { left: 52, right: 20, top: 42, bottom: 40 },
+        xAxis: { type: "category", data: xAxisData },
+        yAxis: { type: "value", name: "K" },
+        series: [
+          { name: "银行流入", type: "bar", barMaxWidth: 28, data: monthly.map(x => x.inflow) },
+          { name: "销项价税合计", type: "bar", barMaxWidth: 28, data: monthly.map(x => x.outputVat) },
+          { name: "差额", type: "line", smooth: true, data: monthly.map(x => +(x.inflow - x.outputVat).toFixed(1)) }
         ]
-      }]
-    });
+      });
+    }
 
-    charts.exceptionMonth = createChart("ds3ExceptionMonthChart", {
-      tooltip: { trigger: "axis" },
-      grid: { left: 42, right: 20, top: 30, bottom: 34 },
-      xAxis: { type: "category", data: ["3月", "4月", "5月", "6月", "7月", "8月", "9月"] },
-      yAxis: { type: "value", name: "条数" },
-      series: [{ type: "bar", barWidth: 28, data: [6, 3, 2, 7, 4, 8, 5] }]
+    if (!charts.filterOut && $("ds3FilterOutChart")) {
+      charts.filterOut = echarts.init($("ds3FilterOutChart"));
+      charts.filterOut.on("click", params => {
+        const idx = params?.dataIndex;
+        if (idx == null) return;
+        selectedMonth = monthly[idx].month;
+        renderFilterSection();
+      });
+    }
+
+    if (charts.filterOut) {
+      charts.filterOut.setOption({
+        color: ["#ff5733", "#fb7185", "#be185d"],
+        tooltip: { trigger: "axis" },
+        legend: { top: 0, data: ["银行流出", "进项价税合计", "差额"] },
+        grid: { left: 52, right: 20, top: 42, bottom: 40 },
+        xAxis: { type: "category", data: xAxisData },
+        yAxis: { type: "value", name: "K" },
+        series: [
+          { name: "银行流出", type: "bar", barMaxWidth: 28, data: monthly.map(x => x.outflow) },
+          { name: "进项价税合计", type: "bar", barMaxWidth: 28, data: monthly.map(x => x.inputVat) },
+          { name: "差额", type: "line", smooth: true, data: monthly.map(x => +(x.outflow - x.inputVat).toFixed(1)) }
+        ]
+      });
+    }
+  }
+
+  function renderMonthHint() {
+    const hint = $("ds3MonthHint");
+    if (!hint) return;
+
+    if (!selectedMonth) {
+      hint.textContent = "当前展示：全部月份汇总。点击上方柱子可切换为对应月份视图；表头“合计”支持展开年份列组。";
+    } else {
+      hint.textContent = `当前展示：${getMonthLabel(selectedMonth)} 视图。点击“重置月份”可恢复全部月份；表头“合计”仍可展开年份列组。`;
+    }
+  }
+
+  function buildGroupCells(total, withSepClass = "") {
+    const incomeGap = +(total.inflow - total.outputVat).toFixed(1);
+    const costGap = +(total.outflow - total.inputVat).toFixed(1);
+
+    return `
+      <td class="is-num ds3-num-inflow ${withSepClass}">${fmt(total.inflow)}</td>
+      <td class="is-num ds3-num-output">${fmt(total.outputVat)}</td>
+      <td class="is-num">${gapHtmlBlue(incomeGap, total.inflow)}</td>
+      <td class="is-num ds3-num-outflow">${fmt(total.outflow)}</td>
+      <td class="is-num ds3-num-input">${fmt(total.inputVat)}</td>
+      <td class="is-num">${gapHtmlRed(costGap, total.outflow)}</td>
+    `;
+  }
+
+  function renderFilterTableHead(rows) {
+    const thead = $("ds3FilterTableHead");
+    if (!thead) return;
+
+    // 年份列组来自当前全部筛选结果，而不是当前月度切片
+    const allRows = getBaseFilteredRows();
+    const years = [...new Set(allRows.map(r => getYear(r.month)))].sort((a, b) => b.localeCompare(a));
+    const expandIcon = yearColumnsExpanded ? "▾" : "▸";
+
+
+    const groupCols = `
+      <th>流入金额</th>
+      <th>销项价税合计</th>
+      <th>差异金额 / 差异占比</th>
+      <th>流出金额</th>
+      <th>进项价税合计</th>
+      <th>差异金额 / 差异占比</th>
+    `;
+
+    const topHead = `
+      <tr class="ds3-year-group-head">
+        <th rowspan="2" style="min-width:180px;text-align:left;">对手方名称</th>
+
+        <th colspan="6" class="ds3-group-toggle-cell">
+          <button type="button" class="ds3-group-toggle-btn" id="ds3GroupToggleBtn">
+            <span>合计</span>
+            <span class="ds3-group-toggle-icon">${expandIcon}</span>
+          </button>
+        </th>
+
+        ${yearColumnsExpanded ? years.map(y => `
+          <th colspan="6" class="ds3-col-sep">${y}</th>
+        `).join("") : ""}
+        <th rowspan="2" style="min-width:90px;">操作</th>
+        <th rowspan="2" class="ds3-remark-cell">备注</th>
+
+      </tr>
+    `;
+
+    const subHead = `
+      <tr class="ds3-year-sub-head">
+        ${groupCols}
+        ${yearColumnsExpanded ? years.map(() => `
+          <th class="ds3-col-sep">流入金额</th>
+          <th>销项价税合计</th>
+          <th>差异金额 / 差异占比</th>
+          <th>流出金额</th>
+          <th>进项价税合计</th>
+          <th>差异金额 / 差异占比</th>
+        `).join("") : ""}
+      </tr>
+    `;
+
+    thead.innerHTML = topHead + subHead;
+
+    const toggleBtn = $("ds3GroupToggleBtn");
+    if (toggleBtn) {
+      toggleBtn.onclick = function () {
+        yearColumnsExpanded = !yearColumnsExpanded;
+        renderFilterSection();
+      };
+    }
+  }
+
+  function bindRemarkInputs() {
+    document.querySelectorAll(".ds3-note-input").forEach(input => {
+      input.addEventListener("input", function () {
+        remarkStore[this.dataset.cp] = this.value;
+      });
     });
   }
 
-  function bindDetailButtons(rows) {
+  function bindDetailButtons() {
     document.querySelectorAll(".ds3-detail-btn").forEach(btn => {
       btn.onclick = function () {
         const cp = this.dataset.cp;
-        $("ds3DetailTitle").textContent = `${cp} - 月度明细`;
-        const monthly = buildMonthlySeries(rows.filter(r => r.counterparty === cp));
-        const x = monthly.map(x => x.month.replace("2024-", "").replace("-", "月"));
-
-        $("ds3DetailModal").classList.add("is-show");
-
-        if (!detailChart) detailChart = echarts.init($("ds3DetailChart"));
-        detailChart.setOption({
-          tooltip: { trigger: "axis" },
-          legend: { top: 0, data: ["流入", "流出", "销项税", "进项税"] },
-          grid: { left: 46, right: 20, top: 42, bottom: 35 },
-          xAxis: { type: "category", data: x },
-          yAxis: { type: "value", name: "K" },
-          series: [
-            { name: "流入", type: "bar", data: monthly.map(x => x.inflow) },
-            { name: "流出", type: "bar", data: monthly.map(x => x.outflow) },
-            { name: "销项税", type: "line", smooth: true, data: monthly.map(x => x.outputVat) },
-            { name: "进项税", type: "line", smooth: true, data: monthly.map(x => x.inputVat) }
-          ]
-        });
-        setTimeout(() => detailChart.resize(), 80);
+        if (!cp) return;
+        openDetailModal(cp);
       };
     });
   }
 
+  function renderCounterpartyTable(rows) {
+    renderFilterTableHead(rows);
+
+    const tbody = $("ds3FilterTable")?.querySelector("tbody");
+    if (!tbody) return;
+
+    const allRows = getBaseFilteredRows();
+    const years = [...new Set(allRows.map(r => getYear(r.month)))].sort((a, b) => b.localeCompare(a));
+
+    const grouped = {};
+    rows.forEach(r => {
+      if (!grouped[r.counterparty]) grouped[r.counterparty] = [];
+      grouped[r.counterparty].push(r);
+    });
+
+    const cps = Object.keys(grouped).sort((a, b) => a.localeCompare(b, "zh-Hans-CN"));
+
+    tbody.innerHTML = cps.map(cp => {
+      const cpRows = grouped[cp];
+      const total = sumRows(cpRows);
+
+      const totalCols = buildGroupCells(total);
+
+      const yearCols = yearColumnsExpanded
+        ? years.map((year) => {
+            const yRows = cpRows.filter(r => getYear(r.month) === year);
+            const yTotal = sumRows(yRows);
+            return buildGroupCells(yTotal, "ds3-col-sep");
+          }).join("")
+        : "";
+
+      return `
+        <tr>
+          <td>
+            <span class="ds3-row-main-name">${cp}</span>
+          </td>
+          ${totalCols}
+          ${yearCols}
+
+          <td>
+            <button class="ds3-btn small is-primary ds3-detail-btn" data-cp="${cp}" type="button">查看详情</button>
+          </td>
+          <td class="ds3-remark-cell">
+            <input
+              class="ds3-note-input"
+              type="text"
+              placeholder="填写备注"
+              value="${remarkStore[cp] || ""}"
+              data-cp="${cp}"
+            />
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    bindRemarkInputs();
+    bindDetailButtons();
+  }
+
+  function renderDetailKpis(rows) {
+      const total = sumRows(rows);
+      const incomeGap = +(total.inflow - total.outputVat).toFixed(1);
+      const costGap = +(total.outflow - total.inputVat).toFixed(1);
+
+      if ($("ds3DetailInflowTotal")) {
+        $("ds3DetailInflowTotal").textContent = fmt(total.inflow);
+      }
+      if ($("ds3DetailOutputVatTotal")) {
+        $("ds3DetailOutputVatTotal").textContent = fmt(total.outputVat);
+      }
+      if ($("ds3DetailIncomeGapTotal")) {
+        $("ds3DetailIncomeGapTotal").textContent = `${fmt(incomeGap)} / ${safePct(incomeGap, total.inflow)}%`;
+      }
+
+      if ($("ds3DetailOutflowTotal")) {
+        $("ds3DetailOutflowTotal").textContent = fmt(total.outflow);
+      }
+      if ($("ds3DetailInputVatTotal")) {
+        $("ds3DetailInputVatTotal").textContent = fmt(total.inputVat);
+      }
+      if ($("ds3DetailCostGapTotal")) {
+        $("ds3DetailCostGapTotal").textContent = `${fmt(costGap)} / ${safePct(costGap, total.outflow)}%`;
+      }
+}
+
+  function renderDetailTables(monthly) {
+  const inTbody = $("ds3DetailInTable")?.querySelector("tbody");
+  const outTbody = $("ds3DetailOutTable")?.querySelector("tbody");
+
+  if (inTbody) {
+    inTbody.innerHTML = monthly.map(m => {
+      const gap = +(m.inflow - m.outputVat).toFixed(1);
+
+      return `
+        <tr>
+          <td>${getMonthLabel(m.month)}</td>
+          <td class="is-num ds3-num-inflow">${fmt(m.inflow)}</td>
+          <td class="is-num ds3-num-output">${fmt(m.outputVat)}</td>
+          <td class="is-num">
+            <span class="ds3-gap-blue">
+              ${fmt(gap)} / ${safePct(gap, m.inflow)}%
+            </span>
+          </td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  if (outTbody) {
+    outTbody.innerHTML = monthly.map(m => {
+      const gap = +(m.outflow - m.inputVat).toFixed(1);
+
+      return `
+        <tr>
+          <td>${getMonthLabel(m.month)}</td>
+          <td class="is-num ds3-num-outflow">${fmt(m.outflow)}</td>
+          <td class="is-num ds3-num-input">${fmt(m.inputVat)}</td>
+          <td class="is-num">
+            <span class="ds3-gap-red">
+              ${fmt(gap)} / ${safePct(gap, m.outflow)}%
+            </span>
+          </td>
+        </tr>
+      `;
+    }).join("");
+  }
+}
+
+  function openDetailModal(counterparty) {
+      const rows = getBaseFilteredRows().filter(r => r.counterparty === counterparty);
+      const monthly = buildMonthlySeries(rows);
+
+      if ($("ds3DetailTitle")) {
+        $("ds3DetailTitle").textContent = `${counterparty} - 交易对手方详情`;
+      }
+
+      renderDetailKpis(rows);
+      renderDetailTables(monthly);
+
+
+    if ($("ds3DetailModal")) {
+      $("ds3DetailModal").classList.add("is-show");
+    }
+
+    const x = monthly.map(x => getShortMonthLabel(x.month));
+
+    if (!detailInChart && $("ds3DetailInChart")) {
+      detailInChart = echarts.init($("ds3DetailInChart"));
+    }
+    if (!detailOutChart && $("ds3DetailOutChart")) {
+      detailOutChart = echarts.init($("ds3DetailOutChart"));
+    }
+
+    if (detailInChart) {
+      detailInChart.setOption({
+        color: ["#108dff", "#38bdf8", "#2468a2"],
+        tooltip: { trigger: "axis" },
+        legend: { top: 0, data: ["银行流入", "销项价税合计", "差额"] },
+        grid: { left: 52, right: 20, top: 42, bottom: 35 },
+        xAxis: { type: "category", data: x },
+        yAxis: { type: "value", name: "K" },
+        series: [
+          { name: "银行流入", type: "bar", barMaxWidth: 24, data: monthly.map(x => x.inflow) },
+          { name: "销项价税合计", type: "bar", barMaxWidth: 24, data: monthly.map(x => x.outputVat) },
+          { name: "差额", type: "line", smooth: true, data: monthly.map(x => +(x.inflow - x.outputVat).toFixed(1)) }
+        ]
+      });
+    }
+
+    if (detailOutChart) {
+      detailOutChart.setOption({
+        color: ["#ff5733", "#fb7185", "#be185d"],
+        tooltip: { trigger: "axis" },
+        legend: { top: 0, data: ["银行流出", "进项价税合计", "差额"] },
+        grid: { left: 52, right: 20, top: 42, bottom: 35 },
+        xAxis: { type: "category", data: x },
+        yAxis: { type: "value", name: "K" },
+        series: [
+          { name: "银行流出", type: "bar", barMaxWidth: 24, data: monthly.map(x => x.outflow) },
+          { name: "进项价税合计", type: "bar", barMaxWidth: 24, data: monthly.map(x => x.inputVat) },
+          { name: "差额", type: "line", smooth: true, data: monthly.map(x => +(x.outflow - x.inputVat).toFixed(1)) }
+        ]
+      });
+    }
+
+    setTimeout(resizeAllCharts, 80);
+  }
+
   function bindModal() {
-    $("ds3DetailClose").onclick = () => $("ds3DetailModal").classList.remove("is-show");
-    $("ds3DetailModal").onclick = (e) => {
-      if (e.target.id === "ds3DetailModal") $("ds3DetailModal").classList.remove("is-show");
-    };
+    if ($("ds3DetailClose")) {
+      $("ds3DetailClose").onclick = () => {
+        $("ds3DetailModal")?.classList.remove("is-show");
+      };
+    }
+
+    if ($("ds3DetailModal")) {
+      $("ds3DetailModal").onclick = (e) => {
+        if (e.target.id === "ds3DetailModal") {
+          $("ds3DetailModal").classList.remove("is-show");
+        }
+      };
+    }
+  }
+
+  function renderFilterSection() {
+    const baseRows = getBaseFilteredRows();
+    const currentRows = getRowsForCurrentView();
+
+    updateTopKpis(baseRows);
+    renderCharts(baseRows);
+    renderCounterpartyTable(currentRows);
+    renderMonthHint();
+
+    setTimeout(resizeAllCharts, 80);
   }
 
   function init() {
-    initTabs();
     initFold();
     initFilterOptions();
-    initOverviewCharts();
-    initCounterpartyCharts();
-    initExceptionCharts();
     bindModal();
 
-    $("ds3ApplyBtn").onclick = renderFilterSection;
-    $("ds3ResetBtn").onclick = function () {
-      $("ds3Unit").value = "全部";
-      $("ds3Func").value = "全部";
-      $("ds3Type").value = "全部";
-      $("ds3Keyword").value = "";
-      $("ds3TableSearch").value = "";
-      renderFilterSection();
-    };
-    $("ds3TableSearch").addEventListener("input", renderFilterSection);
+    if ($("ds3ApplyBtn")) {
+      $("ds3ApplyBtn").onclick = function () {
+        selectedMonth = null;
+        renderFilterSection();
+      };
+    }
+
+    if ($("ds3ResetBtn")) {
+      $("ds3ResetBtn").onclick = function () {
+        if ($("ds3Unit")) $("ds3Unit").value = "全部";
+        if ($("ds3Func")) $("ds3Func").value = "全部";
+        if ($("ds3Type")) $("ds3Type").value = "全部";
+        if ($("ds3Keyword")) $("ds3Keyword").value = "";
+        selectedMonth = null;
+        yearColumnsExpanded = false;
+        renderFilterSection();
+      };
+    }
+
+    if ($("ds3ResetMonthBtn")) {
+      $("ds3ResetMonthBtn").onclick = function () {
+        selectedMonth = null;
+        yearColumnsExpanded = false;
+        renderFilterSection();
+      };
+    }
 
     renderFilterSection();
 
