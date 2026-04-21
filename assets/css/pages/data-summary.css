@@ -1,112 +1,44 @@
 
 :root{
-  --ds3-blue:#003366;
+  --ds3-blue:#1d4ed8;
+  --ds3-blue-2:#38bdf8;
+  --ds3-red:#dc2626;
+  --ds3-red-2:#fb7185;
   --ds3-border:#e6edf5;
   --ds3-bg:#f8fafc;
   --ds3-text:#1b2c53;
   --ds3-muted:#64748b;
+  --ds3-white:#ffffff;
+  --ds3-shadow:0 1px 3px rgba(0,0,0,.04);
 }
 
-*{box-sizing:border-box}
-
-
-
-/* 顶部 */
-.ds3-top{
-  display:grid;
-  grid-template-columns:minmax(520px,1fr) 360px;
-  gap:8px;
-  padding:6px 12px 4px;
+*{
+  box-sizing:border-box;
 }
 
-.ds3-top-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:8px;
+html,body{
+  margin:0;
+  padding:0;
+  background:#f5f8fc;
+  color:#334155;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif;
 }
 
-.ds3-kpi-card{
-  background:var(--ds3-bg);
-  border:1px solid var(--ds3-border);
-  border-radius:8px;
-  min-height:38px;
-  padding:0 12px;
-  display:flex;
-  align-items:center;
+.ds3-page{
+  min-height:100vh;
 }
 
-.ds3-kpi-line{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  width:100%;
+/* 隐藏 tab 容器，但保留结构 */
+.ds3-tab-container--hidden{
+  display:none;
 }
 
-.ds3-kpi-label{
-  font-size:14px;
-  font-weight:600;
-  color:#0e3469;
-  white-space:nowrap;
-}
-
-.ds3-kpi-value{
-  font-size:14px;
-  font-weight:700;
-  color:#1b2c53;
-  white-space:nowrap;
-}
-
-.ds3-kpi-value.is-pos{color:#0f7a43}
-.ds3-kpi-value.is-neg{color:#b2162a}
-
-.ds3-tip-card{
-  background:#fffdf7;
-  border:1px solid #ffe6b3;
-  border-radius:8px;
-  padding:8px 12px;
-  min-height:84px;
-}
-
-.ds3-tip-title{
-  color:#8a5c00;
-  font-size:12px;
-  font-weight:600;
-  margin-bottom:6px;
-}
-
-.ds3-tip-list{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.ds3-tip-item{
-  font-size:12px;
-  line-height:1.45;
-  color:#7c5a13;
-  position:relative;
-  padding-left:12px;
-}
-
-.ds3-tip-item::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:6px;
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:#dc2626;
-}
-
-/* tabs */
 .ds3-tab-container{
   background:#fff;
   border:1px solid var(--ds3-border);
   border-radius:8px;
   margin:10px 12px 0;
-  box-shadow:0 1px 3px rgba(0,0,0,.04);
+  box-shadow:var(--ds3-shadow);
   overflow:hidden;
 }
 
@@ -157,26 +89,31 @@
   margin-right:6px;
 }
 
-/* pane */
-.ds3-pane{display:none}
-.ds3-pane.is-active{display:block}
-
-.ds3-scroll{
-  padding:0 12px 8px;
+/* 主体 */
+.ds3-pane{
+  display:block;
 }
 
-/* block */
+.ds3-scroll{
+  padding:0 12px 12px;
+}
+
 .ds3-block{
   background:#fff;
   border:1px solid var(--ds3-border);
-  border-radius:8px;
+  border-radius:10px;
   margin-top:10px;
-  box-shadow:0 1px 3px rgba(0,0,0,.04);
+  box-shadow:var(--ds3-shadow);
   overflow:hidden;
 }
 
 .ds3-block-head{
-  display:flex;align-items:center;justify-content:space-between;padding:10px 10px;border-bottom:1px solid var(--border);background:#f9fbff;position:relative
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 12px;
+  border-bottom:1px solid var(--ds3-border);
+  background:#f9fbff;
 }
 
 .ds3-block-title{
@@ -201,10 +138,9 @@
 }
 
 .ds3-block-body{
-  padding:16px;
+  padding:14px 16px 16px;
 }
 
-/* panel */
 .ds3-grid-2{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -214,50 +150,23 @@
 .ds3-panel{
   background:#fff;
   border:1px solid #edf2f7;
-  border-radius:8px;
+  border-radius:10px;
   padding:14px;
 }
 
 .ds3-panel-title{
   font-size:13px;
-  font-weight:600;
+  font-weight:700;
   color:#0f172a;
   margin-bottom:10px;
 }
 
-.ds3-panel-headline{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:10px;
-}
-
-.ds3-chart{
-  width:100%;
-  height:340px;
-}
-
-.ds3-chart-sm{
-  height:300px;
-}
-
-.ds3-mt16{
-  margin-top:16px;
-}
-
-/* filter */
+/* 表单 */
 .ds3-filter-grid{
   display:grid;
   grid-template-columns:repeat(5,minmax(0,1fr));
   gap:12px;
   align-items:end;
-}
-
-.ds3-filter-inline{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:12px;
-  margin-bottom:16px;
 }
 
 .ds3-field{
@@ -273,8 +182,7 @@
 }
 
 .ds3-field select,
-.ds3-field input,
-.ds3-search{
+.ds3-field input{
   border:1px solid var(--ds3-border);
   border-radius:8px;
   background:#fff;
@@ -284,54 +192,170 @@
   outline:none;
 }
 
+.ds3-field select:focus,
+.ds3-field input:focus{
+  border-color:#93c5fd;
+  box-shadow:0 0 0 3px rgba(59,130,246,.10);
+}
+
 .ds3-actions{
   display:flex;
   gap:8px;
 }
 
 .ds3-btn{
-  padding:9px 14px;
+  padding:9px 10px;
   border-radius:8px;
   border:1px solid #dbe4f0;
-  background:#fff;
-  color:#334155;
+  background:#1e49e2;
+  color:#fff;
   font-size:13px;
   cursor:pointer;
+  transition:all .2s ease;
+}
+
+.ds3-btn:hover{
+  background:#009ad6;
 }
 
 .ds3-btn.is-primary{
+  padding:9px 10px;
+  border-radius:8px;
+  border:1px solid #dbe4f0;
   background:#1e49e2;
-  border-color:#1e49e2;
   color:#fff;
+  font-size:13px;
+  cursor:pointer;
+  transition:all .2s ease;
+
+}
+
+.ds3-btn.is-primary:hover{
+  background:#1b43cf;
+  border-color:#1b43cf;
+
 }
 
 .ds3-btn.small{
   padding:6px 10px;
   font-size:12px;
+  border-radius:6px;
 }
 
-.ds3-toolbar{
+/* KPI 条 */
+.ds3-kpi-strip{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.ds3-mini-kpi{
+  border-radius:10px;
+  padding:10px 12px;
+  min-height:34px;
   display:flex;
-  justify-content:flex-end;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  background:linear-gradient(180deg,#ffffff 0%, #f8fafc 100%);
+  border:1px solid #e7edf5;
+  box-shadow:0 1px 2px rgba(15,23,42,.03);
+}
+
+.ds3-mini-kpi-label{
+  font-size:13px;
+  font-weight:600;
+  color:#475569;
+  white-space:nowrap;
+}
+
+.ds3-mini-kpi-value{
+  font-size:13px;
+  line-height:1;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+/* KPI 数值颜色：与图表完全统一 */
+.ds3-mini-kpi.is-inflow .ds3-mini-kpi-value{
+  color:#108dff;
+}
+
+.ds3-mini-kpi.is-output .ds3-mini-kpi-value{
+  color:#38bdf8;
+}
+
+.ds3-mini-kpi.is-gap-blue .ds3-mini-kpi-value{
+  color:#2468a2;
+}
+
+.ds3-mini-kpi.is-outflow .ds3-mini-kpi-value{
+  color:#ff5733;
+}
+
+.ds3-mini-kpi.is-input .ds3-mini-kpi-value{
+  color:#fb7185;
+}
+
+.ds3-mini-kpi.is-gap-red .ds3-mini-kpi-value{
+  color:#be185d;
+}
+
+/* 图 */
+.ds3-chart{
+  width:100%;
+  height:340px;
+}
+
+.ds3-chart-sm{
+  height:320px;
+}
+
+/* 表格头部 */
+.ds3-linked-table-wrap{
+  margin-top:16px;
+}
+
+.ds3-section-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
   margin-bottom:10px;
 }
 
-.ds3-search{
-  width:240px;
+.ds3-section-title{
+  font-size:14px;
+  font-weight:700;
+  color:#0f172a;
 }
 
-/* table */
+.ds3-section-desc{
+  margin-top:4px;
+  font-size:12px;
+  color:#64748b;
+}
+
+.ds3-section-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* 表格 */
 .ds3-table-wrap{
   overflow:auto;
-  border:1px solid var(--ds3-border);
+  border:1px solid #cfd8e3;
   border-radius:8px;
-  margin-top:16px;
+  background:#fff;
+  margin-top:10px;
 }
 
 .ds3-table{
   width:100%;
-  border-collapse:collapse;
-  font-size:13px;
+  border-collapse:separate;
+  border-spacing:0;
   background:#fff;
 }
 
@@ -341,15 +365,29 @@
   font-weight:600;
   text-align:left;
   padding:10px 12px;
-  border-bottom:1px solid var(--ds3-border);
+  border-bottom:1px solid #d9e2ec;
+  border-right:1px solid #d9e2ec;
   white-space:nowrap;
+  font-size:13px;
 }
 
 .ds3-table td{
   padding:10px 12px;
-  border-bottom:1px solid #eef3f8;
+  border-bottom:1px solid #d9e2ec;
+  border-right:1px solid #d9e2ec;
   color:#334155;
   white-space:nowrap;
+  font-size:13px;
+  vertical-align:middle;
+}
+
+.ds3-table th:last-child,
+.ds3-table td:last-child{
+  border-right:none;
+}
+
+.ds3-table tbody tr:last-child td{
+  border-bottom:none;
 }
 
 .ds3-table tr:hover td{
@@ -358,37 +396,96 @@
 
 .ds3-table .is-num{
   text-align:right;
+  font-weight:700;
 }
 
-/* tag */
-.ds3-tag{
-  display:inline-flex;
-  align-items:center;
-  padding:4px 10px;
-  border-radius:999px;
+/* 紧凑表格 */
+.ds3-table-compact th{
+  padding:8px 10px;
   font-size:12px;
+}
+
+.ds3-table-compact td{
+  padding:8px 10px;
+  font-size:12px;
+}
+
+/* 年度分组表头 */
+.ds3-year-group-head th{
+  background:#f3f6fb;
+  color:#334155;
+  font-weight:700;
+  text-align:center;
+  border-bottom:1px solid #cfd8e3;
+}
+
+.ds3-year-sub-head th{
+  background:#f8fbff;
+  color:#64748b;
   font-weight:600;
+  text-align:center;
 }
 
-.ds3-tag.is-high{
-  background:#fef2f2;
-  color:#b91c1c;
-  border:1px solid #fecaca;
+.ds3-col-sep{
+  border-left:1px solid #cfd8e3 !important;
 }
 
-.ds3-tag.is-mid{
-  background:#fff7ed;
-  color:#c2410c;
-  border:1px solid #fdba74;
+/* 表格数字颜色：与图表完全统一 */
+.ds3-num-inflow{
+  color:#108dff !important;
+  font-weight:700;
 }
 
-.ds3-tag.is-low{
-  background:#ecfdf5;
-  color:#15803d;
-  border:1px solid #bbf7d0;
+.ds3-num-output{
+  color:#38bdf8 !important;
+  font-weight:700;
 }
 
-/* modal */
+.ds3-num-outflow{
+  color:#ff5733 !important;
+  font-weight:700;
+}
+
+.ds3-num-input{
+  color:#fb7185 !important;
+  font-weight:700;
+}
+
+.ds3-gap-pos{
+  color:#2468a2;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.ds3-gap-neg{
+  color:#be185d;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+/* 备注列 */
+.ds3-remark-cell{
+  min-width:160px;
+}
+
+.ds3-note-input{
+  width:140px;
+  min-width:140px;
+  border:1px solid #dbe4f0;
+  border-radius:6px;
+  padding:5px 8px;
+  font-size:12px;
+  outline:none;
+  background:#fff;
+  color:#334155;
+}
+
+.ds3-note-input:focus{
+  border-color:#93c5fd;
+  box-shadow:0 0 0 3px rgba(59,130,246,.10);
+}
+
+/* 弹窗 */
 .ds3-modal{
   position:fixed;
   inset:0;
@@ -413,12 +510,17 @@
   box-shadow:0 16px 40px rgba(2,6,23,.16);
 }
 
+.ds3-modal-panel-xl{
+  width:min(1440px,98vw);
+}
+
 .ds3-modal-head{
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding:12px 16px;
   border-bottom:1px solid var(--ds3-border);
+  background:#fff;
 }
 
 .ds3-modal-title{
@@ -429,6 +531,8 @@
 
 .ds3-modal-body{
   padding:16px;
+  max-height:86vh;
+  overflow:auto;
 }
 
 .ds3-close{
@@ -441,47 +545,471 @@
   cursor:pointer;
 }
 
-/* responsive */
+/* 弹窗顶部 KPI */
+.ds3-detail-summary{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:10px;
+  margin-bottom:16px;
+}
+
+.ds3-detail-card{
+  background:#f8fafc;
+  border:1px solid var(--ds3-border);
+  border-radius:10px;
+  padding:10px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-height:54px;
+}
+
+.ds3-detail-card-label{
+  font-size:12px;
+  color:#64748b;
+  font-weight:600;
+  white-space:nowrap;
+}
+
+.ds3-detail-card-value{
+  font-size:24px;
+  line-height:1;
+  font-weight:700;
+  color:#0f172a;
+  white-space:nowrap;
+}
+
+.ds3-detail-table-title{
+  font-size:13px;
+  font-weight:700;
+  color:#0f172a;
+  margin:12px 0 8px;
+}
+
+/* 响应式 */
 @media (max-width: 1280px){
-  .ds3-top{
-    grid-template-columns:1fr;
-  }
   .ds3-grid-2{
     grid-template-columns:1fr;
   }
+
   .ds3-filter-grid{
     grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .ds3-detail-summary{
+    grid-template-columns:repeat(3,1fr);
   }
 }
 
 @media (max-width: 900px){
-  .ds3-top-grid{
-    grid-template-columns:1fr 1fr;
-  }
-  .ds3-filter-inline{
+  .ds3-kpi-strip{
     grid-template-columns:1fr;
+  }
+
+  .ds3-detail-summary{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .ds3-mini-kpi{
+    min-height:52px;
+  }
+
+  .ds3-mini-kpi-value{
+    font-size:24px;
   }
 }
 
 @media (max-width: 640px){
-  .ds3-top-grid{
-    grid-template-columns:1fr;
-  }
-  .ds3-filter-grid{
-    grid-template-columns:1fr;
-  }
-  .ds3-tabbar{
-    padding:8px 10px;
-    gap:6px;
-  }
-  .ds3-intro{
-    padding:8px 10px 10px;
-  }
   .ds3-scroll{
     padding:0 8px 8px;
   }
+
   .ds3-block-body{
     padding:12px;
   }
+
+  .ds3-filter-grid{
+    grid-template-columns:1fr;
+  }
+
+  .ds3-section-head{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .ds3-detail-summary{
+    grid-template-columns:1fr;
+  }
+
+  .ds3-mini-kpi{
+    flex-direction:row;
+    align-items:center;
+  }
+
+  .ds3-mini-kpi-label{
+    font-size:12px;
+  }
+
+  .ds3-mini-kpi-value{
+    font-size:22px;
+  }
+
+  .ds3-detail-card{
+    flex-direction:row;
+    align-items:center;
+  }
+
+  .ds3-detail-card-value{
+    font-size:20px;
+  }
 }
+
+/* 合计 / 年份 分组头 */
+.ds3-group-toggle-cell{
+  text-align:center;
+  background:#f3f6fb !important;
+}
+
+.ds3-group-toggle-btn{
+  border:none;
+  background:transparent;
+  color:#334155;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:0;
+}
+
+.ds3-group-toggle-btn:hover{
+  color:#1d4ed8;
+}
+
+.ds3-group-toggle-icon{
+  font-size:12px;
+  line-height:1;
+  color:#64748b;
+}
+
+/* 表头更像你截图那种紧密分组 */
+.ds3-year-group-head th{
+  background:#f3f6fb;
+  color:#334155;
+  font-weight:700;
+  text-align:center;
+  border-bottom:1px solid var(--ds3-border);
+}
+
+.ds3-year-sub-head th{
+  background:#f8fbff;
+  color:#64748b;
+  font-weight:600;
+  text-align:center;
+  font-size:12px;
+}
+
+.ds3-col-sep{
+  border-left:1px solid #dbe4f0 !important;
+}
+
+/* 差异列不换行 */
+.ds3-table td .ds3-gap-pos,
+.ds3-table td .ds3-gap-neg{
+  white-space:nowrap;
+}
+
+/* 让表格更像报表 */
+.ds3-table-compact th,
+.ds3-table-compact td{
+  padding:7px 9px;
+  font-size:12px;
+}
+
+/* 表格列线更明显 */
+.ds3-table{
+  border-collapse:separate;
+  border-spacing:0;
+}
+
+.ds3-table th,
+.ds3-table td{
+  border-right:1px solid #d9e2ec;
+  border-bottom:1px solid #d9e2ec;
+}
+
+.ds3-table th:last-child,
+.ds3-table td:last-child{
+  border-right:none;
+}
+
+.ds3-table thead tr:first-child th{
+  border-top:none;
+}
+
+.ds3-table tbody tr:last-child td{
+  border-bottom:none;
+}
+
+/* 外框更清晰 */
+.ds3-table-wrap{
+  overflow:auto;
+  border:1px solid #cfd8e3;
+  border-radius:8px;
+  background:#fff;
+  margin-top:10px;
+}
+
+/* 表格更像报表 */
+.ds3-table-compact th,
+.ds3-table-compact td{
+  padding:7px 9px;
+  font-size:12px;
+}
+
+/* 备注列更宽 */
+.ds3-remark-cell{
+  min-width:220px;
+  width:220px;
+}
+
+.ds3-note-input{
+  width:100%;
+  min-width:0;
+  display:block;
+  border:1px solid #dbe4f0;
+  border-radius:6px;
+  padding:6px 8px;
+  font-size:12px;
+  outline:none;
+  background:#fff;
+  color:#334155;
+}
+
+.ds3-note-input:focus{
+  border-color:#93c5fd;
+  box-shadow:0 0 0 3px rgba(59,130,246,.10);
+}
+
+/* 总表头展开按钮 */
+.ds3-group-toggle-cell{
+  text-align:center;
+  background:#f3f6fb !important;
+}
+
+.ds3-group-toggle-btn{
+  border:none;
+  background:transparent;
+  color:#334155;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:0;
+}
+
+.ds3-group-toggle-btn:hover{
+  color:#1d4ed8;
+}
+
+.ds3-group-toggle-icon{
+  font-size:12px;
+  line-height:1;
+  color:#64748b;
+}
+
+/* 公司行展开按钮 */
+.ds3-row-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+
+.ds3-row-toggle-btn{
+  width:18px;
+  height:18px;
+  border:1px solid #dbe4f0;
+  background:#fff;
+  border-radius:4px;
+  font-size:11px;
+  color:#475569;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 18px;
+}
+
+.ds3-row-toggle-btn:hover{
+  border-color:#93c5fd;
+  color:#1d4ed8;
+}
+
+.ds3-row-main-name{
+  font-weight:500;
+  color:#0f172a;
+}
+
+/* 子行样式 */
+.ds3-subrow td{
+  background:#fafcff;
+}
+
+.ds3-subrow .ds3-subrow-label{
+  padding-left:28px;
+  color:#475569;
+  font-weight:600;
+}
+
+.ds3-subrow .ds3-subrow-year{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+
+.ds3-subrow .ds3-subrow-dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#94a3b8;
+}
+
+/* 表头分组 */
+.ds3-year-group-head th{
+  background:#f3f6fb;
+  color:#334155;
+  font-weight:700;
+  text-align:center;
+  border-bottom:1px solid #cfd8e3;
+}
+
+.ds3-year-sub-head th{
+  background:#f8fbff;
+  color:#64748b;
+  font-weight:600;
+  text-align:center;
+  font-size:12px;
+}
+
+.ds3-col-sep{
+  border-left:1px solid #cfd8e3 !important;
+}
+
+/* 差异列不换行 */
+.ds3-table td .ds3-gap-pos,
+.ds3-table td .ds3-gap-neg{
+  white-space:nowrap;
+}
+
+.ds3-table th,
+.ds3-table td{
+  text-align:left;
+}
+
+.ds3-table .is-num{
+  text-align:right;
+}
+
+.ds3-gap-blue{
+  color:#2468a2;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.ds3-gap-red{
+  color:#be185d;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+/* 主表整体：按内容自适应，而不是硬编码每列 */
+#ds3FilterTable{
+  table-layout:auto;
+  width:100%;
+}
+
+/* 表头和单元格默认不换行 */
+#ds3FilterTable th,
+#ds3FilterTable td{
+  white-space:nowrap;
+}
+
+/* 对手方名称：缩窄一些，但别太小 */
+#ds3FilterTable th:nth-child(1),
+#ds3FilterTable td:nth-child(1){
+  width:140px;
+  min-width:140px;
+  max-width:180px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* 所有数值列：按内容最小宽度自适应 */
+#ds3FilterTable th.is-num,
+#ds3FilterTable td.is-num{
+  width:1%;
+  white-space:nowrap;
+}
+
+/* 如果表头没有 is-num，可以按列号补充 */
+#ds3FilterTable th:nth-child(2),
+#ds3FilterTable td:nth-child(2),
+#ds3FilterTable th:nth-child(3),
+#ds3FilterTable td:nth-child(3),
+#ds3FilterTable th:nth-child(4),
+#ds3FilterTable td:nth-child(4),
+#ds3FilterTable th:nth-child(5),
+#ds3FilterTable td:nth-child(5),
+#ds3FilterTable th:nth-child(6),
+#ds3FilterTable td:nth-child(6),
+#ds3FilterTable th:nth-child(7),
+#ds3FilterTable td:nth-child(7){
+  width:1%;
+  white-space:nowrap;
+}
+
+/* 操作列保持紧凑 */
+#ds3FilterTable th:nth-last-child(2),
+#ds3FilterTable td:nth-last-child(2){
+  width:1%;
+  white-space:nowrap;
+  text-align:center;
+}
+
+/* 备注列自动吃掉剩余空间 */
+#ds3FilterTable th:last-child,
+#ds3FilterTable td:last-child{
+  width:auto;
+  min-width:220px;
+}
+
+/* 备注输入框撑满整列 */
+#ds3FilterTable td input,
+#ds3FilterTable td textarea,
+#ds3FilterTable .ds3-note-input{
+  width:100%;
+  min-width:0;
+  display:block;
+  box-sizing:border-box;
+}
+
+/* 数值列更紧凑 */
+#ds3FilterTable td.is-num{
+  padding-left:6px;
+  padding-right:6px;
+}
+
+/* 名称过长时省略号 */
+#ds3FilterTable td:first-child .ds3-row-main-name,
+#ds3FilterTable td:first-child{
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+
+
 
