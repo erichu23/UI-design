@@ -74,7 +74,18 @@
             <div class="ds3-grid-2">
               <!-- 收入侧 -->
               <div class="ds3-panel">
-                <div class="ds3-panel-title">银行流水流入 VS 销项税（ 月度 ）</div>
+                <div class="ds3-panel-headline">
+                  <div class="ds3-panel-title">银行流水流入 VS 销项税（月度）</div>
+
+                  <div class="ds3-chart-year-wrap">
+                    <label for="ds3YearFilterIn">年份</label>
+                    <select id="ds3YearFilterIn">
+                      <option value="2025" selected>2025年</option>
+                      <option value="2024">2024年</option>
+                      <option value="ALL">全部</option>
+                    </select>
+                  </div>
+                </div>
 
                 <div class="ds3-kpi-strip ds3-kpi-strip--blue">
                   <div class="ds3-mini-kpi is-inflow">
@@ -98,7 +109,18 @@
 
               <!-- 成本侧 -->
               <div class="ds3-panel">
-                <div class="ds3-panel-title">银行流水流出 VS 进项税（ 月度 ）</div>
+                <div class="ds3-panel-headline">
+                  <div class="ds3-panel-title">银行流水流出 VS 进项税（月度）</div>
+
+                  <div class="ds3-chart-year-wrap">
+                    <label for="ds3YearFilterOut">年份</label>
+                    <select id="ds3YearFilterOut">
+                      <option value="2025" selected>2025年</option>
+                      <option value="2024">2024年</option>
+                      <option value="ALL">全部</option>
+                    </select>
+                  </div>
+                </div>
 
                 <div class="ds3-kpi-strip ds3-kpi-strip--red">
                   <div class="ds3-mini-kpi is-outflow">
@@ -132,6 +154,8 @@
                 </div>
 
                 <div class="ds3-section-actions">
+                  <button class="ds3-btn is-primary" id="ds3ViewSelectedBtn" type="button">快速查看勾选结果</button>
+                  <button class="ds3-btn is-primary" type="button">生产分析结果</button>
                   <button class="ds3-btn" id="ds3ResetMonthBtn" type="button">重置月份</button>
                 </div>
               </div>
@@ -142,6 +166,8 @@
                   <tbody></tbody>
                 </table>
               </div>
+
+              <div class="ds3-pagination" id="ds3Pagination"></div>
             </div>
 
           </div>
@@ -149,6 +175,25 @@
 
       </div>
     </section>
+
+    <!-- 勾选结果弹窗 -->
+    <div class="ds3-modal" id="ds3SelectedModal">
+      <div class="ds3-modal-panel ds3-modal-panel-xl">
+        <div class="ds3-modal-head">
+          <div class="ds3-modal-title">勾选结果预览</div>
+          <button class="ds3-close" id="ds3SelectedClose" type="button">✕</button>
+        </div>
+
+        <div class="ds3-modal-body">
+          <div class="ds3-table-wrap">
+            <table class="ds3-table ds3-table-compact" id="ds3SelectedTable">
+              <thead id="ds3SelectedTableHead"></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- 详情弹窗 -->
     <div class="ds3-modal" id="ds3DetailModal">
