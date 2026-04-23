@@ -416,7 +416,7 @@ html,body{
 .ds3-table-wrap{
   overflow:auto;
   border:1px solid #cfd8e3;
-  border-radius:8px;
+  border-radius:5px;
   background:#fff;
   margin-top:10px;
 }
@@ -441,7 +441,7 @@ html,body{
 }
 
 .ds3-table td{
-  padding:10px 12px;
+  padding:5px 7px;
   border-bottom:1px solid #d9e2ec;
   border-right:1px solid #d9e2ec;
   color:#334155;
@@ -966,8 +966,8 @@ html,body{
 }
 
 .ds3-year-sub-head th{
-  background:#f8fbff;
-  color:#64748b;
+  background:#f3f6fb;
+  color:#334155;
   font-weight:600;
   text-align:center;
   font-size:12px;
@@ -1056,6 +1056,7 @@ html,body{
 #ds3FilterTable td:nth-child(7){
   width:1%;
 }
+
 
 /* =========================
    倒数第二列：操作列
@@ -1148,20 +1149,15 @@ html,body{
   font-weight:700;
   cursor:pointer;
   user-select:none;
+  margin-left:4px;
+  cursor:default;
+  z-index:20;
 }
-
-/* hover 图标 */
-.ds3-year-info:hover{
-  color:#2468a2;
-  border-color:#60a5fa;
-  background:#eff6ff;
-}
-
 /* 黑色提示框 */
 .ds3-year-tooltip{
   position:absolute;
   left:50%;
-  bottom:125%;
+  bottom:calc(100% + 8px);
   transform:translateX(-50%) translateY(6px);
 
   background:rgba(0,0,0,.78);
@@ -1189,7 +1185,6 @@ html,body{
   left:50%;
   top:100%;
   transform:translateX(-50%);
-
   border:6px solid transparent;
   border-top-color:rgba(0,0,0,.78);
 }
@@ -1201,9 +1196,7 @@ html,body{
   transform:translateX(-50%) translateY(0);
 }
 
-.ds3-table-wrap{
-  overflow:visible;
-}
+
 
 .ds3-eye-btn{
   width:32px;
@@ -1280,26 +1273,166 @@ html,body{
   box-shadow:0 0 0 3px rgba(59,130,246,.10);
 }
 
-/* 勾选列 */
-.ds3-check-cell{
-  width:42px;
-  min-width:42px;
-  text-align:center !important;
+
+.ds3-th-tools{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  width:100%;
+  min-width:0;
 }
 
+.ds3-th-label{
+  flex:0 1 auto;
+  min-width:auto;
+  overflow:visible;
+  text-overflow:clip;
+  white-space:nowrap;
+}
+
+#ds3FilterTable .ds3-year-sub-head th{
+  min-width:125px;
+}
+
+#ds3FilterTable .ds3-year-sub-head th:nth-child(6),
+#ds3FilterTable .ds3-year-sub-head th:nth-child(7),
+#ds3FilterTable .ds3-year-sub-head th:nth-child(8){
+  min-width:125px;
+}
+
+.ds3-th-actions{
+  display:inline-flex;
+  align-items:center;
+  gap:2px;
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+
+.ds3-th-action{
+  width:20px;
+  height:20px;
+  flex:0 0 20px;
+  border:none;
+  background:transparent;
+  color:#94a3b8;
+  border-radius:5px;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+}
+
+.ds3-th-action svg{
+  display:block;
+  width:14px;
+  height:14px;
+}
+
+
+.ds3-th-action:hover{
+  background:#eff6ff;
+  color:#2563eb;
+}
+
+.ds3-th-action:active{
+  transform:scale(.94);
+}
+
+.ds3-sort-btn.is-active{
+  color:#2563eb;
+  background:#dbeafe;
+}
+/* ==================================
+   勾选列最佳平衡版（不宽不窄）
+   推荐尺寸：32px
+   ================================== */
+
+/* 主表 + 勾选结果弹窗 */
+/* 勾选列 */
+
+/* ==================================
+   勾选列最佳平衡版（不宽不窄）
+   推荐尺寸：32px
+   ================================== */
+
+/* 主表 + 勾选结果弹窗 */
+
+#ds3SelectedTable td.ds3-check-cell{
+  width:32px !important;
+  min-width:32px !important;
+  max-width:32px !important;
+
+  padding:0 3px !important;
+  text-align:center !important;
+  overflow:hidden;
+  vertical-align:middle;
+}
+
+/* 第一列兜底 */
+
+#ds3SelectedTable td:first-child{
+  width:32px !important;
+  min-width:32px !important;
+  max-width:32px !important;
+}
+
+/* 居中 */
 .ds3-check-wrap{
+  width:100%;
+  height:100%;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
+/* 勾选框 */
 .ds3-check-input{
-  width:16px;
-  height:16px;
+  width:14px;
+  height:14px;
+  margin:0;
   cursor:pointer;
   accent-color:#2563eb;
+  flex:0 0 auto;
 }
 
+/* 大屏略收紧 */
+@media (min-width:1600px){
+  #ds3FilterTable th.ds3-check-cell,
+  #ds3FilterTable td.ds3-check-cell,
+  #ds3SelectedTable th.ds3-check-cell,
+  #ds3SelectedTable td.ds3-check-cell{
+    width:30px !important;
+    min-width:30px !important;
+    max-width:30px !important;
+  }
+}
+
+
+
+.ds3-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible; /* 确保垂直方向不被遮挡 */
+  -webkit-overflow-scrolling: touch;
+  position: relative; /* 确保 tooltip 可以正确定位 */
+}
+
+#ds3FilterTable,
+#ds3SelectedTable {
+  width: max-content;
+  min-width: 100%;
+  position: relative; /* 确保 tooltip 可以正确定位 */
+}
+
+
+@media (max-width:768px){
+  #ds3FilterTable,
+  #ds3SelectedTable{
+    min-width:1200px;
+  }
+}
 /* 分页 */
 .ds3-pagination{
   display:flex;
@@ -1346,4 +1479,553 @@ html,body{
 }
 
 
+/* =====================================================
+   详情弹窗终版完整 CSS
+   直接粘贴即可（建议放在你的 ds3 css 最后面）
+===================================================== */
 
+
+/* =====================================================
+   蒙层
+===================================================== */
+#ds3DetailModal{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(15,23,42,.52);
+  backdrop-filter:blur(3px);
+}
+
+#ds3DetailModal.is-show{
+  display:flex;
+}
+
+
+/* =====================================================
+   弹窗主体
+===================================================== */
+#ds3DetailModal .ds3-modal-panel{
+  width:min(96vw, 1700px);
+  max-width:1700px;
+
+  height:92vh;
+  max-height:92vh;
+
+  background:#ffffff;
+  border-radius:18px;
+
+  overflow:hidden;
+
+  display:flex;
+  flex-direction:column;
+
+  box-shadow:
+    0 30px 80px rgba(15,23,42,.22),
+    0 8px 30px rgba(15,23,42,.12);
+}
+
+
+/* =====================================================
+   顶部标题栏
+===================================================== */
+#ds3DetailModal .ds3-modal-head{
+  flex:0 0 auto;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:18px 22px;
+
+  border-bottom:1px solid #eef2f7;
+  background:#ffffff;
+}
+
+#ds3DetailModal .ds3-modal-title{
+  font-size:20px;
+  font-weight:800;
+  color:#0f172a;
+  letter-spacing:.2px;
+}
+
+
+/* =====================================================
+   关闭按钮
+===================================================== */
+#ds3DetailModal .ds3-close{
+  width:36px;
+  height:36px;
+
+  border:none;
+  border-radius:10px;
+
+  background:#f1f5f9;
+  color:#334155;
+
+  cursor:pointer;
+  transition:all .18s ease;
+}
+
+#ds3DetailModal .ds3-close:hover{
+  background:#e2e8f0;
+  transform:scale(1.04);
+}
+
+
+/* =====================================================
+   内容区域
+===================================================== */
+#ds3DetailModal .ds3-modal-body{
+  flex:1;
+  overflow:auto;
+
+  padding:18px;
+  background:#f8fafc;
+}
+
+
+/* =====================================================
+   顶部图表两列
+===================================================== */
+#ds3DetailModal .ds3-grid-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+@media (max-width:1200px){
+  #ds3DetailModal .ds3-grid-2{
+    grid-template-columns:1fr;
+  }
+}
+
+
+/* =====================================================
+   卡片
+===================================================== */
+#ds3DetailModal .ds3-panel{
+  background:#ffffff;
+  border:1px solid #e8eef6;
+  border-radius:16px;
+  padding:16px;
+
+  box-shadow:
+    0 8px 24px rgba(15,23,42,.04);
+}
+
+#ds3DetailModal .ds3-mt16{
+  margin-top:18px;
+}
+
+
+/* =====================================================
+   卡片标题
+===================================================== */
+#ds3DetailModal .ds3-panel-title{
+  font-size:15px;
+  font-weight:800;
+  color:#0f172a;
+}
+
+
+/* =====================================================
+   表格区标题栏
+===================================================== */
+#ds3DetailModal .ds3-panel-headline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+
+/* =====================================================
+   工具栏
+===================================================== */
+#ds3DetailModal .ds3-detail-toolbar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+
+/* =====================================================
+   KPI 区
+===================================================== */
+#ds3DetailModal .ds3-kpi-strip{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin:14px 0 14px;
+}
+
+@media (max-width:1100px){
+  #ds3DetailModal .ds3-kpi-strip{
+    grid-template-columns:1fr;
+  }
+}
+
+
+
+/* =====================================================
+   图表
+===================================================== */
+#ds3DetailModal .ds3-chart-sm{
+  height:290px;
+}
+
+
+/* =====================================================
+   表格容器
+===================================================== */
+#ds3DetailModal .ds3-detail-table-wrap{
+  border:1px solid #e9eff6;
+  border-radius:14px;
+  overflow:auto;
+  max-height:460px;
+  background:#ffffff;
+}
+
+
+/* =====================================================
+   表格
+===================================================== */
+#ds3DetailModal table{
+  width:max-content;
+  min-width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:13px;
+}
+
+#ds3DetailModal th,
+#ds3DetailModal td{
+  padding:10px 12px;
+  border-bottom:1px solid #f1f5f9;
+  white-space:nowrap;
+}
+
+#ds3DetailModal td{
+  color:#334155;
+}
+
+#ds3DetailModal tbody tr:hover{
+  background:#f8fbff;
+}
+
+
+/* =====================================================
+   固定表头
+===================================================== */
+#ds3DetailModal thead th{
+  position:sticky;
+  top:0;
+  z-index:5;
+
+  background:#f8fbff;
+  color:#1e3a8a;
+  font-weight:800;
+
+  box-shadow:inset 0 -1px 0 #dbeafe;
+}
+
+
+/* =====================================================
+   数字列
+===================================================== */
+#ds3DetailModal .is-num{
+  text-align:right;
+}
+
+#ds3DetailModal .ds3-num-inflow{
+  color:#0f766e;
+  font-weight:700;
+}
+
+#ds3DetailModal .ds3-num-outflow{
+  color:#b91c1c;
+  font-weight:700;
+}
+
+#ds3DetailModal .ds3-num-output{
+  color:#1d4ed8;
+  font-weight:700;
+}
+
+
+/* =====================================================
+   表头排序筛选
+===================================================== */
+#ds3DetailModal .ds3-th-tools{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+#ds3DetailModal .ds3-th-label{
+  font-weight:800;
+}
+
+#ds3DetailModal .ds3-th-actions{
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+
+#ds3DetailModal .ds3-th-action{
+  width:22px;
+  height:22px;
+
+  border:none;
+  border-radius:7px;
+
+  background:transparent;
+  color:#64748b;
+  font-size:12px;
+
+  cursor:pointer;
+  transition:all .16s ease;
+}
+
+#ds3DetailModal .ds3-th-action:hover{
+  background:#e8f0ff;
+  color:#2563eb;
+}
+
+
+/* =====================================================
+   按钮
+===================================================== */
+#ds3DetailModal .ds3-btn{
+  border:none;
+  border-radius:9px;
+  cursor:pointer;
+  transition:all .18s ease;
+}
+
+#ds3DetailModal .ds3-btn.small{
+  padding:7px 12px;
+  font-size:12px;
+}
+
+#ds3DetailModal .ds3-btn{
+  background:#f1f5f9;
+  color:#334155;
+}
+
+#ds3DetailModal .ds3-btn:hover{
+  background:#e2e8f0;
+}
+
+#ds3DetailModal .ds3-btn.is-primary{
+  background:#2563eb;
+  color:#fff;
+}
+
+#ds3DetailModal .ds3-btn.is-primary:hover{
+  background:#1d4ed8;
+}
+
+
+/* =====================================================
+   分页
+===================================================== */
+#ds3DetailModal .ds3-pager{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:10px;
+  margin-top:12px;
+}
+
+#ds3DetailModal .ds3-pager span{
+  font-size:13px;
+  color:#475569;
+}
+
+
+/* =====================================================
+   筛选弹层（如你 JS 用到）
+===================================================== */
+#ds3DetailFilterBox{
+  position:absolute;
+  z-index:12000;
+
+  width:240px;
+  padding:14px;
+
+  background:#ffffff;
+  border:1px solid #dbeafe;
+  border-radius:14px;
+
+  box-shadow:
+    0 18px 40px rgba(15,23,42,.14);
+
+  display:none;
+}
+
+#ds3DetailFilterBox .ds3-filter-title{
+  font-size:13px;
+  font-weight:800;
+  color:#0f172a;
+  margin-bottom:10px;
+}
+
+#ds3DetailFilterBox .ds3-filter-input{
+  width:100%;
+  height:36px;
+
+  border:1px solid #dbe4f0;
+  border-radius:10px;
+  outline:none;
+
+  padding:0 10px;
+  box-sizing:border-box;
+}
+
+#ds3DetailFilterBox .ds3-filter-input:focus{
+  border-color:#2563eb;
+}
+
+#ds3DetailFilterBox .ds3-filter-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:12px;
+}
+
+
+/* =====================================================
+   滚动条美化
+===================================================== */
+#ds3DetailModal ::-webkit-scrollbar{
+  width:10px;
+  height:10px;
+}
+
+#ds3DetailModal ::-webkit-scrollbar-thumb{
+  background:#cbd5e1;
+  border-radius:999px;
+}
+
+#ds3DetailModal ::-webkit-scrollbar-thumb:hover{
+  background:#94a3b8;
+}
+
+#ds3DetailModal ::-webkit-scrollbar-track{
+  background:#f8fafc;
+}
+
+
+
+/* 表格滚动容器 */
+.ds3-table-wrap{
+  width:100%;
+  overflow-x:auto;
+  overflow-y:visible;
+  position:relative;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* 年份 info 图标 */
+.ds3-year-info{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  z-index:30;
+}
+
+/* 黑色提示框 */
+.ds3-year-tooltip{
+  position:absolute;
+  left:50%;
+  bottom:calc(100% + 8px);
+  transform:translateX(-50%) translateY(6px);
+
+  background:rgba(0,0,0,.82);
+  color:#fff;
+  font-size:12px;
+  font-weight:500;
+  white-space:nowrap;
+  line-height:1.4;
+
+  padding:7px 10px;
+  border-radius:8px;
+
+  opacity:0;
+  visibility:hidden;
+  transition:all .18s ease;
+
+  z-index:9999;
+  pointer-events:none;
+}
+
+/* 小三角 */
+.ds3-year-tooltip::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:100%;
+  transform:translateX(-50%);
+  border:6px solid transparent;
+  border-top-color:rgba(0,0,0,.82);
+}
+
+/* hover 显示 */
+.ds3-year-info:hover .ds3-year-tooltip{
+  opacity:1;
+  visibility:visible;
+  transform:translateX(-50%) translateY(0);
+}
+
+.ds3-year-group-head th,
+.ds3-year-sub-head th{
+  overflow:visible !important;
+}
+
+
+
+.ds3-vat-head-left{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+.ds3-vat-tabs{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:3px;
+  background:#f1f5f9;
+  border-radius:10px;
+}
+
+.ds3-vat-tab{
+  border:none;
+  background:transparent;
+  color:#64748b;
+  padding:6px 12px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .18s ease;
+}
+
+.ds3-vat-tab:hover{
+  color:#2563eb;
+}
+
+.ds3-vat-tab.is-active{
+  background:#ffffff;
+  color:#2563eb;
+  box-shadow:0 1px 3px rgba(15,23,42,.08);
+}
