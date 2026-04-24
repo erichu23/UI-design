@@ -2029,3 +2029,107 @@ html,body{
   color:#2563eb;
   box-shadow:0 1px 3px rgba(15,23,42,.08);
 }
+
+/* 两行头部：强制左对齐 */
+.ds3-panel-headline--two-row{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start !important;
+  justify-content:flex-start !important;
+  gap:10px;
+  width:100%;
+  margin-bottom:12px;
+}
+
+/* 第一行标题永远左侧 */
+.ds3-panel-headline--two-row .ds3-panel-title{
+  width:100%;
+  text-align:left;
+  margin:0;
+}
+
+/* 第二行工具栏 */
+.ds3-panel-subline{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+/* 银行流水：按钮靠右 */
+.ds3-panel-subline--right{
+  justify-content:flex-end;
+}
+
+/* 工具按钮 */
+.ds3-detail-toolbar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* VAT TAB 左边 */
+.ds3-vat-tabs{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:3px;
+  background:#f1f5f9;
+  border-radius:10px;
+}
+
+/* 小屏幕自适应 */
+@media (max-width:768px){
+
+  .ds3-panel-subline{
+    flex-wrap:wrap;
+    row-gap:10px;
+  }
+
+  .ds3-panel-subline--right{
+    justify-content:flex-start;
+  }
+
+}
+
+.ds3-year-tooltip{
+  display:none !important;
+}
+
+.ds3-year-info{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:16px;
+  height:16px;
+  margin-left:4px;
+  border-radius:50%;
+  background:#e8f0ff;
+  color:#2563eb;
+  font-size:11px;
+  font-weight:700;
+  line-height:1;
+  cursor:default;
+  user-select:none;
+}
+
+#ds3BodyTooltip{
+  position:fixed !important;
+  z-index:2147483647 !important;
+  display:none;
+  background:rgba(15,23,42,.94);
+  color:#fff;
+  font-size:12px;
+  line-height:1.4;
+  padding:7px 10px;
+  border-radius:8px;
+  white-space:nowrap;
+  pointer-events:none;
+  box-shadow:0 10px 24px rgba(15,23,42,.25);
+}
+
+.ds3-year-group-head th{
+  text-align:center !important;
+  vertical-align:middle;
+}
