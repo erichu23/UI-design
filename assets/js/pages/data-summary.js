@@ -453,14 +453,13 @@ function buildHeaderTools(label, sortKey, filterKey = "", filterType = "text", a
       </th>
 
       ${yearColumnsExpanded ? years.map(y => `
-        <th colspan="6" class="ds3-col-sep" style="text-align:center;">
-          ${y}
-          <span class="ds3-year-info">
-            i
-            <span class="ds3-year-tooltip">${getYearRangeText(y)}</span>
-          </span>
-        </th>
-      `).join("") : ""}
+          <th colspan="6" class="ds3-col-sep">
+            <span class="ds3-year-head">
+              <span class="ds3-year-text">${y}</span>
+              <span class="ds3-year-info" data-tip="${getYearRangeText(y)}">i</span>
+            </span>
+          </th>
+        `).join("") : ""}
 
       <th rowspan="2" style="min-width:90px;">操作</th>
 
@@ -494,6 +493,13 @@ function buildHeaderTools(label, sortKey, filterKey = "", filterType = "text", a
     };
   }
 
+  if (typeof bindBodyTooltip === "function") {
+  bindBodyTooltip();
+}
+
+
+
+
   // 排序按钮
   thead.querySelectorAll(".ds3-sort-btn").forEach(btn => {
     btn.onclick = function (e) {
@@ -521,10 +527,54 @@ function buildHeaderTools(label, sortKey, filterKey = "", filterType = "text", a
   });
 }
 
+
 const sortState = {
   key: "",
   order: ""
 };
+
+function bindBodyTooltip() {
+  let tip = document.getElementById("ds3BodyTooltip");
+
+  if (!tip) {
+    tip = document.createElement("div");
+    tip.id = "ds3BodyTooltip";
+    document.body.appendChild(tip);
+  }
+
+  document.querySelectorAll(".ds3-year-info[data-tip]").forEach(el => {
+    el.onmouseenter = function () {
+      const text = this.getAttribute("data-tip") || "";
+      if (!text) return;
+
+      tip.textContent = text;
+      tip.style.display = "block";
+
+      const rect = this.getBoundingClientRect();
+      const tipRect = tip.getBoundingClientRect();
+
+      let left = rect.left + rect.width / 2 - tipRect.width / 2;
+      let top = rect.top - tipRect.height - 10;
+
+      if (left < 8) left = 8;
+
+      if (left + tipRect.width > window.innerWidth - 8) {
+        left = window.innerWidth - tipRect.width - 8;
+      }
+
+      if (top < 8) {
+        top = rect.bottom + 10;
+      }
+
+      tip.style.left = left + "px";
+      tip.style.top = top + "px";
+    };
+
+    el.onmouseleave = function () {
+      tip.style.display = "none";
+    };
+  });
+}
 
 function toggleSort(key) {
   if (sortState.key !== key) {
@@ -775,16 +825,13 @@ function buildCounterpartyTableHeadHtml(rows, includeCheckColumn = true) {
       </th>
 
       ${yearColumnsExpanded ? years.map(y => `
-        <th colspan="6" class="ds3-col-sep">
-          <span class="ds3-year-head">
-            <span class="ds3-year-text">${y}</span>
-            <span class="ds3-year-info">
-              i
-              <span class="ds3-year-tooltip">${getYearRangeText(y)}</span>
+          <th colspan="6" class="ds3-col-sep">
+            <span class="ds3-year-head">
+              <span class="ds3-year-text">${y}</span>
+              <span class="ds3-year-info" data-tip="${getYearRangeText(y)}">i</span>
             </span>
-          </span>
-        </th>
-      `).join("") : ""}
+          </th>
+        `).join("") : ""}
 
       <th rowspan="2" style="min-width:90px;">操作</th>
       <th rowspan="2" class="ds3-remark-cell">备注</th>
@@ -833,17 +880,14 @@ function renderSelectedTableHead(rows) {
         </button>
       </th>
 
-      ${yearColumnsExpanded ? years.map(y => `
-        <th colspan="6" class="ds3-col-sep">
-          <span class="ds3-year-head">
-            <span class="ds3-year-text">${y}</span>
-            <span class="ds3-year-info">
-              i
-              <span class="ds3-year-tooltip">${getYearRangeText(y)}</span>
+     ${yearColumnsExpanded ? years.map(y => `
+          <th colspan="6" class="ds3-col-sep">
+            <span class="ds3-year-head">
+              <span class="ds3-year-text">${y}</span>
+              <span class="ds3-year-info" data-tip="${getYearRangeText(y)}">i</span>
             </span>
-          </span>
-        </th>
-      `).join("") : ""}
+          </th>
+        `).join("") : ""}
 
       <th rowspan="2" style="min-width:90px;">操作</th>
       <th rowspan="2" class="ds3-remark-cell">备注</th>
@@ -1176,6 +1220,7 @@ function buildVatDetailRows(rows) {
     const inputAmount = Number(r.inputVat || 0);
     const inputTax = +(inputAmount * 0.13).toFixed(1);
     const deductibleTax = +(inputTax * 0.92).toFixed(1);
+    const inputTotal = +(inputAmount + inputTax).toFixed(1);
 
     return {
       invoiceNo: `FP${100000 + i}`,
@@ -1197,6 +1242,7 @@ function buildVatDetailRows(rows) {
       inputSellerTaxNo: `9132${1000 + i}`,
       inputAmount: inputAmount,
       inputTax: inputTax,
+      inputTotal: inputTotal,
       deductibleTax: deductibleTax,
       inputNote: r.note || ""
     };
@@ -1389,6 +1435,7 @@ function renderVatDetailTable(initRows) {
         <th><div class="ds3-th-tools"><span class="ds3-th-label">销方识别号</span><span class="ds3-th-actions"><button class="ds3-th-action ds3-detail-sort-btn" data-key="inputSellerTaxNo" type="button">${getDetailSortIcon("vat","inputSellerTaxNo")}</button><button class="ds3-th-action ds3-detail-filter-btn" data-key="inputSellerTaxNo" type="button">${iconFilter()}</button></span></div></th>
         <th class="is-num"><div class="ds3-th-tools"><span class="ds3-th-label">进项金额</span><span class="ds3-th-actions"><button class="ds3-th-action ds3-detail-sort-btn" data-key="inputAmount" type="button">${getDetailSortIcon("vat","inputAmount")}</button><button class="ds3-th-action ds3-detail-filter-btn" data-key="inputAmount" type="button">${iconFilter()}</button></span></div></th>
         <th class="is-num"><div class="ds3-th-tools"><span class="ds3-th-label">进项税额</span><span class="ds3-th-actions"><button class="ds3-th-action ds3-detail-sort-btn" data-key="inputTax" type="button">${getDetailSortIcon("vat","inputTax")}</button><button class="ds3-th-action ds3-detail-filter-btn" data-key="inputTax" type="button">${iconFilter()}</button></span></div></th>
+        <th class="is-num"><div class="ds3-th-tools"><span class="ds3-th-label">进项价税合计</span><span class="ds3-th-actions"><button class="ds3-th-action ds3-detail-sort-btn" data-key="inputTotal" type="button">${getDetailSortIcon("vat","inputTotal")}</button><button class="ds3-th-action ds3-detail-filter-btn" data-key="total" type="button">${iconFilter()}</button></span></div></th>
         <th class="is-num"><div class="ds3-th-tools"><span class="ds3-th-label">有效抵扣税额</span><span class="ds3-th-actions"><button class="ds3-th-action ds3-detail-sort-btn" data-key="deductibleTax" type="button">${getDetailSortIcon("vat","deductibleTax")}</button><button class="ds3-th-action ds3-detail-filter-btn" data-key="deductibleTax" type="button">${iconFilter()}</button></span></div></th>
         <th><div class="ds3-th-tools"><span class="ds3-th-label">发票明细尽调备注</span><span class="ds3-th-actions"><button class="ds3-th-action ds3-detail-sort-btn" data-key="inputNote" type="button">${getDetailSortIcon("vat","inputNote")}</button><button class="ds3-th-action ds3-detail-filter-btn" data-key="inputNote" type="button">${iconFilter()}</button></span></div></th>
       </tr>
@@ -1404,6 +1451,7 @@ function renderVatDetailTable(initRows) {
         <td>${r.inputSellerTaxNo}</td>
         <td class="is-num">${fmt(r.inputAmount)}</td>
         <td class="is-num">${fmt(r.inputTax)}</td>
+        <td class="is-num ds3-num-input">${fmt(r.inputTotal)}</td>
         <td class="is-num">${fmt(r.deductibleTax)}</td>
         <td>${r.inputNote}</td>
       </tr>
@@ -1414,28 +1462,36 @@ function renderVatDetailTable(initRows) {
   renderDetailPager("vat");
 }
 function bindVatTabs() {
-  const wrap = $("ds3VatTabs");
-  if (!wrap) return;
 
-  wrap.querySelectorAll(".ds3-vat-tab").forEach(tab => {
+  const tabs = document.querySelectorAll(".ds3-vat-tab");
+
+  tabs.forEach(tab => {
+
     tab.onclick = function () {
-      const mode = this.dataset.mode;
-      if (vatDetailMode === mode) return;
+
+      const mode = this.getAttribute("data-mode");
+
+      console.log("点击了TAB:", mode);   // 调试用
 
       vatDetailMode = mode;
 
-      wrap.querySelectorAll(".ds3-vat-tab").forEach(btn => {
-        btn.classList.toggle("is-active", btn === this);
-      });
+      tabs.forEach(btn => btn.classList.remove("is-active"));
+      this.classList.add("is-active");
 
       detailTableState.vat.page = 1;
       detailTableState.vat.sortKey = "";
       detailTableState.vat.sortOrder = "";
       detailTableState.vat.filters = {};
 
-      renderVatDetailTable();
+      // 强制刷新
+      setTimeout(() => {
+        renderVatDetailTable();
+      }, 0);
+
     };
+
   });
+
 }
 
 
@@ -1570,6 +1626,7 @@ function openDetailModal(counterparty) {
 
   renderDetailKpis(rows);
   renderDetailTables(rows);
+  bindVatTabs();
 
   if ($("ds3DetailModal")) {
     $("ds3DetailModal").classList.add("is-show");
