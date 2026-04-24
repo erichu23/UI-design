@@ -257,12 +257,14 @@
 
           <!-- 第二部分：银行流水明细 -->
           <div class="ds3-panel ds3-mt16">
-            <div class="ds3-panel-headline">
+            <div class="ds3-panel-headline ds3-panel-headline--two-row">
               <div class="ds3-panel-title">银行流水明细</div>
 
-              <div class="ds3-detail-toolbar">
-                <button class="ds3-btn small" id="ds3TxnResetFilterBtn" type="button">重置筛选</button>
-                <button class="ds3-btn small is-primary" id="ds3TxnExportBtn" type="button">导出</button>
+              <div class="ds3-panel-subline ds3-panel-subline--right">
+                <div class="ds3-detail-toolbar">
+                  <button class="ds3-btn small" id="ds3TxnResetFilterBtn" type="button">重置筛选</button>
+                  <button class="ds3-btn small is-primary" id="ds3TxnExportBtn" type="button">导出</button>
+                </div>
               </div>
             </div>
 
@@ -294,20 +296,21 @@
           </div>
 
           <!-- 第三部分：增值税明细 -->
+          <!-- 第三部分：增值税明细 -->
           <div class="ds3-panel ds3-mt16">
-            <div class="ds3-panel-headline">
-              <div class="ds3-vat-head-left">
-                <div class="ds3-panel-title">增值税明细</div>
+            <div class="ds3-panel-headline ds3-panel-headline--two-row">
+              <div class="ds3-panel-title">增值税明细</div>
 
+              <div class="ds3-panel-subline">
                 <div class="ds3-vat-tabs" id="ds3VatTabs">
                   <button class="ds3-vat-tab is-active" type="button" data-mode="output">销项税</button>
                   <button class="ds3-vat-tab" type="button" data-mode="input">进项税</button>
                 </div>
-              </div>
 
-              <div class="ds3-detail-toolbar">
-                <button class="ds3-btn small" id="ds3VatResetFilterBtn" type="button">重置筛选</button>
-                <button class="ds3-btn small is-primary" id="ds3VatExportBtn" type="button">导出</button>
+                <div class="ds3-detail-toolbar">
+                  <button class="ds3-btn small" id="ds3VatResetFilterBtn" type="button">重置筛选</button>
+                  <button class="ds3-btn small is-primary" id="ds3VatExportBtn" type="button">导出</button>
+                </div>
               </div>
             </div>
 
