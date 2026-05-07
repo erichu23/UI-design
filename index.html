@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-Hans-CN">
+<head>
+  <meta charset="utf-8"/>
+  <title>KPMG Audit Compass</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+  <link rel="icon" type="image/x-icon" href="./favicon.ico"/>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <!-- 平台基础样式 -->
+  <link rel="stylesheet" href="./assets/css/base.css"/>
+  <link rel="stylesheet" href="./assets/css/footer.css"/>
+
+  <link rel="stylesheet" href="./assets/css/layout.css"/>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="layout-header">
+    <div class="header-menu-control" style="position: relative;">
+      <svg fill="none" style="width: var(--responsive-size-16); height: var(--responsive-size-16);" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        <path clip-rule="evenodd" d="M1.40003 2.79995C1.40003 2.46858 1.66866 2.19995 2.00003 2.19995L14.8 2.19995C15.1314 2.19995 15.4 2.46858 15.4 2.79995C15.4 3.13132 15.1314 3.39995 14.8 3.39995L2.00003 3.39995C1.66866 3.39995 1.40003 3.13132 1.40003 2.79995ZM15.0909 5.47515C15.2816 5.58088 15.4 5.7818 15.4 5.9999L15.4003 9.9999C15.4004 10.218 15.282 10.419 15.0912 10.5247C14.9005 10.6305 14.6673 10.6244 14.4824 10.5088L11.2821 8.50876C11.1066 8.39913 11 8.20684 11 7.99996C11 7.79309 11.1066 7.6008 11.282 7.49115L14.482 5.49115C14.667 5.37556 14.9001 5.36943 15.0909 5.47515ZM12.7321 7.99993L14.2003 8.91741L14.2001 7.08245L12.7321 7.99993ZM1.40003 6.26662C1.40003 5.93524 1.66865 5.66662 2.00002 5.66662L8.40003 5.66662C8.7314 5.66662 9.00003 5.93525 9.00003 6.26662C9.00003 6.59799 8.7314 6.86662 8.40003 6.86662L2.00002 6.86662C1.66865 6.86662 1.40002 6.59799 1.40003 6.26662ZM1.40002 9.73328C1.40002 9.40191 1.66865 9.13328 2.00002 9.13328H8.40003C8.7314 9.13328 9.00003 9.40191 9.00003 9.73328C9.00003 10.0647 8.7314 10.3333 8.40003 10.3333H2.00002C1.66865 10.3333 1.40002 10.0647 1.40002 9.73328ZM1.40002 13.1999C1.40002 12.8686 1.66865 12.5999 2.00002 12.5999L14.8 12.6C15.1314 12.6 15.4 12.8686 15.4 13.2C15.4 13.5313 15.1314 13.8 14.8 13.8L2.00002 13.7999C1.66865 13.7999 1.40002 13.5313 1.40002 13.1999Z" fill="white" fill-rule="evenodd"></path>
+      </svg>
+    </div>
+
+    <img
+      alt="KPMG Audit Compass"
+      class="header-logo"
+      src="./logo.png"
+      style="width:43px;height:20px;margin-right:12px;"
+    />
+
+  
+    <div class="layout-header-name">
+      KPMG Audit Compass
+      <span class="layout-header-project">Test2 20251022</span>
+    </div>
+
+    <nav class="layout-header-nav">
+      <div class="header-dropdown">
+        <button class="nav-btn header-btn">千元/K ▾</button>
+        <ul class="dropdown-menu">
+          <li data-value="yuan">元</li>
+          <li data-value="k">千元/K</li>
+          <li data-value="w">万元/W</li>
+          <li data-value="m">百万/M</li>
+          <li data-value="b">亿元/B</li>
+        </ul>
+      </div>
+
+      <div class="header-dropdown">
+        <button class="nav-btn header-btn">0 ▾</button>
+        <ul class="dropdown-menu">
+          <li data-value="0">0</li>
+          <li data-value="1">0.0</li>
+          <li data-value="2">0.00</li>
+          <li data-value="3">0.000</li>
+          <li data-value="4">0.0000</li>
+        </ul>
+      </div>
+
+      <div class="lang-switch">
+        <button class="nav-btn lang-btn lang-active" data-lang="zh">中</button>
+        <button class="nav-btn lang-btn" data-lang="en">EN</button>
+      </div>
+
+      <button class="nav-btn nav-btn-with-icon">
+        <span class="icon">
+          <svg aria-hidden="true" viewBox="0 0 16 16">
+            <path d="M8 1.5a3 3 0 0 0-3 3v1a3 3 0 1 0 6 0v-1a3 3 0 0 0-3-3Zm0 8A4.5 4.5 0 0 0 3.5 14v.75c0 .414.336.75.75.75h7.5a.75.75 0 0 0 .75-.75V14A4.5 4.5 0 0 0 8 9.5Z"></path>
+          </svg>
+        </span>
+        <span>Ken</span>
+      </button>
+
+      <button class="nav-btn nav-icon-btn" title="打印">
+        <span class="icon">
+          <svg aria-hidden="true" viewBox="0 0 16 16">
+            <path d="M4 2.5A1.5 1.5 0 0 1 5.5 1h5A1.5 1.5 0 0 1 12 2.5V4H4V2.5ZM4 5.5h8v2h1a1 1 0 0 1 1 1v4.25a.75.75 0 0 1-.75.75H12v-3H4v3H2.75A.75.75 0 0 1 2 12.75V8.5a1 1 0 0 1 1-1h1v-2Zm1 5h6v3H5v-3Zm7-6.5h1a1 1 0 1 1 0 2h-1v-2Z"></path>
+          </svg>
+        </span>
+      </button>
+
+      <button class="nav-btn nav-icon-btn" title="发送反馈">
+        <span class="icon">
+          <svg aria-hidden="true" viewBox="0 0 16 16">
+            <path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v5A1.5 1.5 0 0 0 2.5 10H4v3.25a.75.75 0 0 0 1.28.53L8.06 10h5.44A1.5 1.5 0 0 0 15 8.5v-5A1.5 1.5 0 0 0 13.5 2h-11Z"></path>
+          </svg>
+        </span>
+      </button>
+
+      <button class="nav-btn nav-icon-btn" title="设置">
+        <span class="icon">
+          <svg aria-hidden="true" viewBox="0 0 16 16">
+            <path d="M8.93 1.5a.75.75 0 0 0-1.86 0l-.26.78a4.5 4.5 0 0 0-1.23.71l-.8-.31a.75.75 0 0 0-.95.95l.31.8a4.5 4.5 0 0 0-.71 1.23l-.78.26a.75.75 0 0 0 0 1.86l.78.26c.16.45.4.87.71 1.23l-.31.8a.75.75 0 0 0 .95.95l.8-.31c.36.31.78.55 1.23.71l.26.78a.75.75 0 0 0 1.86 0l.26-.78a4.5 4.5 0 0 0 1.23-.71l.8.31a.75.75 0 0 0 .95-.95l-.31-.8c.31-.36.55-.78.71-1.23l.78-.26a.75.75 0 0 0 0-1.86l-.78-.26a4.5 4.5 0 0 0-.71-1.23l.31-.8a.75.75 0 0 0-.95-.95l-.8.31a4.5 4.5 0 0 0-1.23-.71L8.93 1.5ZM8 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z"></path>
+          </svg>
+        </span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- 主体 -->
+
+<div class="layout-main">
+
+  <!-- 左侧菜单 -->
+  <aside class="sidebar is-project-list" id="appSidebar">
+    <div class="sidebar-top">
+      <button class="brand-toggle" id="sidebarToggle" type="button" aria-label="切换侧边栏">
+        <span class="brand-toggle-ring"></span>
+        <span class="brand-toggle-core">
+          <img src="./logo.png" alt="KPMG" class="brand-toggle-logo">
+        </span>
+      </button>
+
+      <div class="sidebar-brand-text">
+        <div class="sidebar-brand-title">KPMG Audit Compass</div>
+      </div>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li class="sb-row top-entry current-project-list"
+          onclick="goProjectList()">
+        <i class="fa-solid fa-bars ico"></i>
+        <span class="sb-txt">项目列表</span>
+      </li>
+
+      <li class="sb-toggle open" id="workbookMenuGroup">
+        <div class="sb-toggle-head" onclick="toggleSb(this.parentElement)">
+          <i class="fa-solid fa-folder ico"></i>
+          <span class="sb-txt">工作簿详情</span>
+          <i class="fa-solid fa-angle-right caret"></i>
+        </div>
+
+        <ul class="sb-submenu">
+          <li class="sb-row active module-item upload-analysis"
+              onclick="switchFrame('./fragments/data-upload.html','数据上传',this)">
+            <i class="fa-regular fa-circle-check ico"></i>
+            <span class="sb-txt">数据上传</span>
+          </li>
+
+          <li class="sb-row active module-item bank-analysis"
+              onclick="switchFrame('./fragments/bank-analysis.html','银行流水分析',this)">
+            <i class="fa-regular fa-circle-check ico"></i>
+            <span class="sb-txt">银行流水分析</span>
+          </li>
+
+          <li class="sb-row active module-item vat-analysis"
+              onclick="switchFrame('./fragments/vat-analysis.html','增值税数据分析',this)">
+            <i class="fa-regular fa-circle-check ico"></i>
+            <span class="sb-txt">增值税数据分析</span>
+          </li>
+
+          <li class="sb-row active module-item finance-analysis"
+              onclick="switchFrame('./fragments/finance-analysis.html','财务数据分析',this)">
+            <i class="fa-regular fa-circle-check ico"></i>
+            <span class="sb-txt">财务数据分析</span>
+          </li>
+
+          <li class="sb-row active module-item data-summary"
+              onclick="switchFrame('./fragments/data-summary.html','数据综合分析',this)">
+            <i class="fa-regular fa-circle-check ico"></i>
+            <span class="sb-txt">数据综合分析</span>
+          </li>
+        </ul>
+      </li>
+
+      <li class="sb-toggle">
+        <div class="sb-toggle-head" onclick="toggleSb(this.parentElement)">
+          <i class="fa-solid fa-gear ico"></i>
+          <span class="sb-txt">系统管理</span>
+          <i class="fa-solid fa-angle-right caret"></i>
+        </div>
+
+        <ul class="sb-submenu">
+          <li class="sb-row">
+
+            <span class="sb-txt">用户与权限</span>
+          </li>
+          <li class="sb-row">
+
+            <span class="sb-txt">参数配置</span>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- 右侧内容 -->
+  <section class="main-right">
+    <div class="breadcrumb-bar" id="breadcrumbBar">
+      <a class="back-link" href="javascript:void(0)" id="backToProjectList">← 返回项目列表</a>
+      <span class="sep">/</span>
+      <span class="crumb" id="crumbProject">项目列表</span>
+      <span class="sep">/</span>
+      <span class="crumb" id="crumbBook">-</span>
+      <span class="sep">/</span>
+      <b class="crumb" id="module-title">项目列表</b>
+    </div>
+
+    <!-- iframe模块区域 -->
+    <iframe
+      id="module-frame"
+      class="module-frame"
+      src="./fragments/project-list.html">
+    </iframe>
+  </section>
+</div>
+
+<!-- Footer -->
+
+<footer id="app-footer">
+<p>KPMG Audit Compass V3.5.0(2026.4)</p>
+<p>© 2025 毕马威科技服务(香港)有限公司 — 香港特别行政区有限责任公司，是与英国私营担保有限公司 — 毕马威国际有限公司相关联的独立成员所全球性组织中的成员。版权所有，不得转载。 毕马威的名称和标识均为毕马威全球性组织中的独立成员所经许可后使用的商标。</p>
+</footer>
+
+<!-- 平台外壳脚本 -->
+<script defer src="./assets/js/core/app-shell.js"></script>
+</body>
+</html>

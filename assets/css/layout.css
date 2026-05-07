@@ -1,0 +1,545 @@
+/* =========================================================
+   平台外壳样式：Header / Sidebar / 面包屑 / iframe 主区域
+   修改导航、侧边栏、主框架布局时优先看这里。
+   ========================================================= */
+
+:root{
+  --header-h: 48px;
+  --sidebar-w: 210px;
+  --sidebar-w-collapsed: 60px;
+  --sidebar-bg: #fff;
+  --blue: #003366;
+  --blue-soft: #e9f2ff;
+  --green: #32b27c;
+  --hover-bg: #eef3f8;
+  --line: #e6edf5;
+}
+
+
+/* ===== Header ===== */
+/* ====== 顶部 Header（占位，类名保持，用于无缝替换） ====== */
+.layout-header {display:flex;align-items:center;height:48px;background:var(--primary-color);
+  padding:0 16px;color:#fff;position:sticky;top:0;z-index:9999}
+.layout-header .layout-header-name{font-size:22px;font-weight:700}
+
+.layout-header .layout-header-project{margin-left:12px;opacity:.9}
+
+html,
+body{
+  height:100%;
+  overflow:hidden;
+}
+
+
+/* 右上整条导航区域：靠右对齐 */
+.layout-header-nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #fff;
+}
+
+/* 通用按钮样式（文字 / 图标按钮统一基准） */
+.nav-btn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.nav-btn:hover {
+  background: rgba(255,255,255,0.20);
+}
+
+/* 带文字 + 图标（Eric） */
+.nav-btn-with-icon {
+  gap: 6px;
+}
+
+/* 纯图标按钮（打印 / 反馈 / 设置） */
+.nav-icon-btn {
+  width: 32px;
+  padding: 0;
+}
+
+/* 图标（统一大小 & 颜色跟随 currentColor） */
+.icon svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+/* ============ 单位 / 小数位 下拉 ============ */
+
+.header-dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+}
+
+.header-btn {
+  background: rgba(255,255,255,0.18);
+}
+
+.header-btn:hover {
+  background: rgba(255,255,255,0.28);
+}
+
+/* 下拉列表 */
+.dropdown-menu {
+  position: absolute;
+  top: 36px;
+  left: 0;
+  min-width: 120px;
+  background: #fff;
+  border: 1px solid #d0d7e2;
+  border-radius: 4px;
+  padding: 6px 0;
+  margin: 0;
+  list-style: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  display: none;
+  z-index: 2000;
+}
+
+.dropdown-menu li {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+  background: #eef3ff;
+  color: #1657b5;
+}
+
+/* hover 展开 */
+.header-dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+/* ============ 中 / EN 分段按钮 ============ */
+/* 语言区域整体 */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;              /* 中 和 EN 之间的间距，就跟你图里一样 */
+}
+
+/* 语言按钮：基于 nav-btn 再细调 */
+.lang-btn {
+  padding: 0 8px;
+  min-width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* hover 只做轻微高亮 */
+.lang-btn:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+/* 当前语言：深色小方块（你截图里的“中”样式） */
+.lang-btn.lang-active {
+  background: rgba(0, 0, 0, 0.25);  /* 比顶部蓝再深一点 */
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset;
+}
+
+/* 当前语言 hover 再稍微亮一点就行 */
+.lang-btn.lang-active:hover {
+  background: rgba(0, 0, 0, 0.32);
+}
+
+
+/* ===== Sidebar ===== */
+.sidebar{
+  flex: 0 0 var(--sidebar-w);
+  width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--line);
+  transition: width .22s ease, flex-basis .22s ease;
+  overflow: hidden;
+  box-sizing: border-box;
+  background:#fff;
+}
+
+.sidebar.is-collapsed{
+  flex-basis: var(--sidebar-w-collapsed);
+  width: var(--sidebar-w-collapsed);
+}
+
+.sidebar-top{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px 8px;
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+}
+
+.brand-toggle{
+  width: 34px;
+  height: 34px;
+  border: none;
+  padding: 0;
+  background: transparent;
+  position: relative;
+  cursor: pointer;
+  flex: 0 0 34px;
+}
+
+.brand-toggle-ring{
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,.24), transparent 40%),
+    linear-gradient(180deg, #1f5fb8, #003366);
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.28),
+    0 4px 12px rgba(0,0,0,.14);
+}
+
+.brand-toggle-core{
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: #0a3575;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.brand-toggle-logo{
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.sidebar-brand-text{
+  min-width: 0;
+  color: var(--blue);
+  transition: opacity .18s ease, transform .18s ease;
+}
+
+.sidebar-brand-title{
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.sidebar.is-collapsed .sidebar-brand-text{
+  opacity: 0;
+  transform: translateX(-6px);
+  pointer-events: none;
+}
+
+/* ===== Menu ===== */
+.sidebar-menu,
+.sidebar-menu ul{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-menu{
+  padding: 8px 8px 12px;
+  background:#fff;
+}
+
+.sidebar-menu > li:not(.sb-toggle){
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 8px;
+  border-radius: 8px;
+  color: var(--blue);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.sidebar-menu > li:not(.sb-toggle):hover{
+  background: var(--hover-bg);
+}
+
+.ico{
+  width: 16px;
+  min-width: 16px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--blue);
+}
+
+.sb-txt{
+  color: var(--blue);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.caret{
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted);
+  transition: transform .18s ease;
+}
+
+.sb-toggle{
+  display: block;
+  padding: 0;
+  margin-top: 2px;
+}
+
+.sb-toggle-head{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 8px;
+  border-radius: 8px;
+  color: var(--blue);
+  cursor: pointer;
+}
+
+.sb-toggle-head:hover{
+  background: var(--hover-bg);
+}
+
+.sb-toggle.open .caret{
+  transform: rotate(90deg);
+}
+
+.sb-submenu{
+  display: none;
+  margin: 4px 0 8px 16px;
+}
+
+.sb-toggle.open > .sb-submenu{
+  display: block;
+}
+
+.sb-submenu .sb-row{
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  align-items: center;
+  column-gap: 8px;
+  padding: 8px 6px;
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sb-submenu .sb-row:hover{
+  background: var(--hover-bg);
+  color: #2f5ea8;
+}
+
+.sb-submenu .sb-row .sb-txt{
+  color: var(--text);
+  font-size: 13px;
+}
+
+.sb-submenu .sb-row:not(.active)::before{
+  content: "";
+  width: 18px;
+  height: 18px;
+}
+
+.sb-submenu .sb-row.active{
+  background: var(--blue-soft);
+  font-weight: 600;
+  color: #2f5ea8;
+}
+
+.sb-submenu .sb-row.active .sb-txt{
+  color: #2f5ea8;
+}
+
+.sb-submenu .sb-row.active .ico{
+  color: var(--green);
+  font-size: 15px;
+}
+
+.sb-submenu .sb-row.disabled{
+  color: #999 !important;
+  background: transparent !important;
+  cursor: not-allowed !important;
+  opacity: .6;
+  pointer-events: none;
+}
+
+.sb-submenu .sb-row.disabled .sb-txt{
+  color: #999 !important;
+}
+
+/* ===== Collapsed Sidebar ===== */
+.sidebar.is-collapsed .sb-txt,
+.sidebar.is-collapsed .caret{
+  display: none;
+}
+
+.sidebar.is-collapsed .sidebar-menu > li:not(.sb-toggle),
+.sidebar.is-collapsed .sb-toggle-head,
+.sidebar.is-collapsed .sb-submenu .sb-row{
+  justify-content: center;
+  grid-template-columns: 1fr;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.sidebar.is-collapsed .sb-submenu{
+  display: none !important;
+  margin-left: 0;
+}
+
+.sidebar.is-collapsed .ico{
+  width: 18px;
+  min-width: 18px;
+  margin: 0 auto;
+}
+.sb-link{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  color:inherit;
+  text-decoration:none;
+}
+
+.sb-link:hover{
+  color:inherit;
+  text-decoration:none;
+}
+
+.module-item.current{
+  background:#eef4ff;
+  border-radius:8px;
+}
+
+.module-item.current .sb-txt,
+.module-item.current .ico{
+  color:#1e49e2;
+  font-weight:600;
+}
+
+.layout-main{
+  display:flex;
+  height:calc(100vh - var(--header-h) - var(--footer-h));
+  min-height:0;
+}
+
+/* ===== 项目列表页状态 ===== */
+.sidebar.is-project-list .current-project-list{
+  background:#eef4ff;
+  border-radius:8px;
+}
+
+.sidebar.is-project-list .current-project-list .sb-txt,
+.sidebar.is-project-list .current-project-list .ico{
+  color:#2f5ea8;
+  font-weight:600;
+}
+
+/* 项目列表页时，工作簿菜单头和子项全部灰掉 */
+.sidebar.is-project-list #workbookMenuGroup .sb-toggle-head{
+  opacity:.45;
+}
+
+.sidebar.is-project-list #workbookMenuGroup .sb-submenu .sb-row{
+  opacity:.45;
+  pointer-events:none;
+  cursor:not-allowed;
+}
+
+.sidebar.is-project-list #workbookMenuGroup .sb-toggle-head .sb-txt,
+.sidebar.is-project-list #workbookMenuGroup .sb-submenu .sb-row .sb-txt,
+.sidebar.is-project-list #workbookMenuGroup .sb-toggle-head .ico,
+.sidebar.is-project-list #workbookMenuGroup .sb-submenu .sb-row .ico,
+.sidebar.is-project-list #workbookMenuGroup .sb-toggle-head .caret{
+  color:#999 !important;
+}
+
+.back-link{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:#003366;
+  text-decoration:none;
+  font-weight:600;
+  cursor:pointer;
+  padding:4px 8px;
+  border-radius:6px;
+}
+
+.back-link:hover{
+  background:#eef4ff;
+}
+
+.sep{
+  color:#94a3b8;
+}
+
+.crumb{
+  color:#64748b;
+}
+
+#module-title{
+  color:#0f172a;
+  font-weight:700;
+}
+
+.breadcrumb-bar{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-height:40px;
+  margin:10px 12px 0;
+  padding:0 14px;
+  background:#fff;
+  border:1px solid #e6edf5;
+  border-radius:8px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+  font-size:12px;
+  box-sizing:border-box;
+  flex:0 0 auto;
+}
+
+/* ===== 右侧内容与 iframe 主区域 ===== */
+.module-frame{
+  width:100%;
+  height:100%;
+  border:none;
+  display:block;
+  flex:1;
+  background:#f5f7fa;
+}
+
+.main-right{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}

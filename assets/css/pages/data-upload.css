@@ -1,0 +1,328 @@
+:root{
+  --du-blue: #1e49e2;
+  --du-blue-deep: #003366;
+  --du-blue-soft: #eef4ff;
+  --du-bg: #f5f7fb;
+  --du-card: #ffffff;
+  --du-border: #e6edf5;
+  --du-border-dark: #d9e3ef;
+  --du-text: #1f2d3d;
+  --du-text-2: #334155;
+  --du-muted: #7b8aa0;
+  --du-head-bg: #f8fbff;
+  --du-hover: #fafcff;
+  --du-success: #16a34a;
+  --du-success-bg: #edf9f1;
+  --du-pending: #94a3b8;
+  --du-pending-bg: #f8fafc;
+  --du-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+  --du-radius: 10px;
+}
+
+*{
+  box-sizing: border-box;
+}
+
+html, body{
+  margin: 0;
+  padding: 0;
+  background: var(--du-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--du-text);
+}
+
+body{
+  min-height: 100vh;
+}
+
+.du-page{
+  padding: 14px 14px 18px;
+}
+
+/* 顶部标题区 */
+.du-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.du-title{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--du-blue-deep);
+  letter-spacing: .2px;
+}
+
+.du-title-bar{
+  width: 4px;
+  height: 18px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--du-blue), #4d77ff);
+  box-shadow: 0 0 0 3px rgba(30, 73, 226, 0.08);
+}
+
+.du-template-btn{
+  border: 1px solid var(--du-blue);
+  background: linear-gradient(180deg, #2f66f3 0%, #1e49e2 100%);
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(30, 73, 226, 0.18);
+  transition: all .18s ease;
+}
+
+.du-template-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(30, 73, 226, 0.22);
+}
+
+/* 卡片 */
+.du-card{
+  background: var(--du-card);
+  border: 1px solid var(--du-border);
+  border-radius: var(--du-radius);
+  box-shadow: var(--du-shadow);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.du-card-head{
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid #f1f5f9;
+  background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
+}
+
+.du-card-title{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.du-card-bar{
+  width: 3px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--du-blue);
+}
+
+/* Tab */
+.du-tabbar{
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 14px 10px;
+  border-bottom: 1px solid var(--du-border);
+  background: #fff;
+}
+
+.du-tab{
+  position: relative;
+  border: none;
+  background: transparent;
+  color: var(--du-muted);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 2px 0 4px;
+  cursor: pointer;
+  transition: color .18s ease;
+}
+
+.du-tab:hover{
+  color: var(--du-blue);
+}
+
+.du-tab.active{
+  color: var(--du-blue);
+}
+
+.du-tab.active::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -11px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--du-blue);
+}
+
+/* 表格容器 */
+.du-table-wrap{
+  padding: 12px 14px 14px;
+}
+
+.du-table{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+  background: #fff;
+  border: 1px solid var(--du-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.du-table thead th{
+  text-align: left;
+  color: #5f7188;
+  font-weight: 700;
+  background: var(--du-head-bg);
+  border-bottom: 1px solid var(--du-border);
+  padding: 10px 12px;
+  white-space: nowrap;
+}
+
+.du-table thead th + th{
+  border-left: 1px solid #edf2f7;
+}
+
+.du-table tbody td{
+  border-bottom: 1px solid #edf2f7;
+  padding: 10px 12px;
+  color: var(--du-text-2);
+  vertical-align: middle;
+  background: #fff;
+}
+
+.du-table tbody td + td{
+  border-left: 1px solid #f3f6fa;
+}
+
+.du-table tbody tr:last-child td{
+  border-bottom: none;
+}
+
+.du-table tbody tr:hover td{
+  background: var(--du-hover);
+}
+
+.du-table td:first-child,
+.du-table th:first-child{
+  text-align: center;
+}
+
+/* 状态 */
+.du-status{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 68px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.du-status i{
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex: 0 0 7px;
+}
+
+.du-status.done{
+  color: var(--du-success);
+  background: var(--du-success-bg);
+}
+
+.du-status.done i{
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+}
+
+.du-status.pending{
+  color: var(--du-pending);
+  background: var(--du-pending-bg);
+}
+
+.du-status.pending i{
+  background: #cbd5e1;
+  box-shadow: 0 0 0 3px rgba(203, 213, 225, 0.18);
+}
+
+/* 操作列 */
+.du-actions{
+  white-space: nowrap;
+}
+
+.du-actions a{
+  display: inline-block;
+  color: var(--du-blue);
+  text-decoration: none;
+  margin-right: 10px;
+  font-weight: 600;
+  position: relative;
+  transition: color .18s ease;
+}
+
+.du-actions a:hover{
+  color: #1437b8;
+}
+
+.du-actions a:last-child{
+  margin-right: 0;
+}
+
+.du-actions a + a::before{
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 10px;
+  background: #dbe4f0;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+/* 底部按钮 */
+.du-footer{
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 14px 14px;
+}
+
+.du-analyze-btn{
+  border: 1px solid #dbe4f0;
+  background: #f1f5f9;
+  color: #94a3b8;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: not-allowed;
+}
+
+/* 如果后面启用按钮，加这个类即可 */
+.du-analyze-btn.is-enabled{
+  background: linear-gradient(180deg, #2f66f3 0%, #1e49e2 100%);
+  color: #fff;
+  border-color: var(--du-blue);
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(30, 73, 226, 0.18);
+}
+
+/* 小屏适配 */
+@media (max-width: 1200px){
+  .du-page{
+    padding: 12px;
+  }
+
+  .du-table-wrap{
+    overflow-x: auto;
+  }
+
+  .du-table{
+    min-width: 1100px;
+  }
+}

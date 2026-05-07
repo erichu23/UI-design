@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-Hans-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-summary.css"/>
+  <script src="https://unpkg.com/echarts@5/dist/echarts.min.js"></script>
+</head>
+<body>
+  <div class="ds3-page">
+
+    <!-- 保留 Tab 框架，当前隐藏，后续恢复方便 -->
+    <div class="ds3-tab-container ds3-tab-container--hidden">
+      <div class="ds3-tabbar" id="ds3Tabbar">
+        <button class="ds3-tab" data-tab="overview" type="button">综合总览</button>
+        <button class="ds3-tab is-active" data-tab="filter" type="button">筛选分析</button>
+        <button class="ds3-tab" data-tab="counterparty" type="button">交易对手方分析</button>
+        <button class="ds3-tab" data-tab="exception" type="button">异常记录清单</button>
+        <div class="ds3-inkbar" id="ds3Inkbar"></div>
+      </div>
+      <div class="ds3-intro">
+        <span class="ds3-intro-title">页面说明：</span>
+        <span>当前页面仅展示筛选分析内容，已保留 Tab 框架，后续可继续扩展综合总览、异常记录等模块。</span>
+      </div>
+    </div>
+
+    <!-- 仅保留筛选分析 -->
+    <section class="ds3-pane is-active" id="ds3-pane-filter">
+      <div class="ds3-scroll">
+
+        <!-- 筛选条件 -->
+        <div class="ds3-block">
+          <div class="ds3-block-head">
+            <div class="ds3-block-title">筛选条件</div>
+            <button class="ds3-fold" type="button">收起</button>
+          </div>
+          <div class="ds3-block-body">
+            <div class="ds3-filter-grid">
+              <div class="ds3-field">
+                <label for="ds3Unit">被审计单位</label>
+                <select id="ds3Unit"></select>
+              </div>
+
+              <div class="ds3-field">
+                <label for="ds3Func">公司职能</label>
+                <select id="ds3Func"></select>
+              </div>
+
+              <div class="ds3-field">
+                <label for="ds3Type">对手方类型</label>
+                <select id="ds3Type"></select>
+              </div>
+
+              <div class="ds3-field">
+                <label for="ds3Keyword">对手方名称</label>
+                <input id="ds3Keyword" type="text" placeholder="输入名称关键词"/>
+              </div>
+
+              <div class="ds3-actions">
+                <button class="ds3-btn is-primary" id="ds3ApplyBtn" type="button">查询</button>
+                <button class="ds3-btn" id="ds3ResetBtn" type="button">重置</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 筛选结果趋势 -->
+        <div class="ds3-block">
+          <div class="ds3-block-head">
+            <div class="ds3-block-title">筛选结果趋势</div>
+            <button class="ds3-fold" type="button">收起</button>
+          </div>
+          <div class="ds3-block-body">
+            <div class="ds3-grid-2">
+              <!-- 收入侧 -->
+              <div class="ds3-panel">
+                <div class="ds3-panel-headline">
+                  <div class="ds3-panel-title">银行流水流入 VS 销项税（月度）</div>
+
+                  <div class="ds3-chart-year-wrap">
+                    <label for="ds3YearFilterIn">年份</label>
+                    <select id="ds3YearFilterIn">
+                      <option value="2024">2024年</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="ds3-kpi-strip ds3-kpi-strip--blue">
+                  <div class="ds3-mini-kpi is-inflow">
+                    <span class="ds3-mini-kpi-label">银行流入</span>
+                    <span class="ds3-mini-kpi-value" id="ds3InflowTotal">0</span>
+                  </div>
+
+                  <div class="ds3-mini-kpi is-output">
+                    <span class="ds3-mini-kpi-label">销项价税合计</span>
+                    <span class="ds3-mini-kpi-value" id="ds3OutputVatTotal">0</span>
+                  </div>
+
+                  <div class="ds3-mini-kpi is-gap-blue">
+                    <span class="ds3-mini-kpi-label">差异金额 / 差异占比</span>
+                    <span class="ds3-mini-kpi-value" id="ds3IncomeGapTotal">0 / 0%</span>
+                  </div>
+                </div>
+
+                <div id="ds3FilterInChart" class="ds3-chart"></div>
+              </div>
+
+              <!-- 成本侧 -->
+              <div class="ds3-panel">
+                <div class="ds3-panel-headline">
+                  <div class="ds3-panel-title">银行流水流出 VS 进项税（月度）</div>
+
+                  <div class="ds3-chart-year-wrap">
+                    <label for="ds3YearFilterOut">年份</label>
+                    <select id="ds3YearFilterOut">
+                      <option value="2024">2024年</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="ds3-kpi-strip ds3-kpi-strip--red">
+                  <div class="ds3-mini-kpi is-outflow">
+                    <span class="ds3-mini-kpi-label">银行流出</span>
+                    <span class="ds3-mini-kpi-value" id="ds3OutflowTotal">0</span>
+                  </div>
+
+                  <div class="ds3-mini-kpi is-input">
+                    <span class="ds3-mini-kpi-label">进项价税合计</span>
+                    <span class="ds3-mini-kpi-value" id="ds3InputVatTotal">0</span>
+                  </div>
+
+                  <div class="ds3-mini-kpi is-gap-red">
+                    <span class="ds3-mini-kpi-label">差异金额 / 差异占比</span>
+                    <span class="ds3-mini-kpi-value" id="ds3CostGapTotal">0 / 0%</span>
+                  </div>
+                </div>
+
+                <div id="ds3FilterOutChart" class="ds3-chart"></div>
+              </div>
+            </div>
+
+            <!-- 表格区域 -->
+            <div class="ds3-linked-table-wrap">
+              <div class="ds3-section-head">
+                <div>
+                  <div class="ds3-section-title">交易对手方分析</div>
+                  <div class="ds3-section-desc" id="ds3MonthHint">
+                    当前展示：全部月份汇总。点击上方柱子可切换为对应月份明细。
+                  </div>
+                </div>
+
+                <div class="ds3-section-actions">
+                  <button class="ds3-btn is-primary" id="ds3ViewSelectedBtn" type="button">快速查看勾选结果</button>
+                  <button class="ds3-btn is-primary" type="button">重置筛选</button>
+                  <button class="ds3-btn is-primary" type="button">生成分析结果</button>
+                  <button class="ds3-btn" id="ds3ResetMonthBtn" type="button">重置月份</button>
+                </div>
+              </div>
+
+              <div class="ds3-table-wrap">
+                <table class="ds3-table ds3-table-compact" id="ds3FilterTable">
+                  <thead id="ds3FilterTableHead"></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+
+              <div class="ds3-pagination" id="ds3Pagination"></div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 勾选结果弹窗 -->
+    <div class="ds3-modal" id="ds3SelectedModal">
+      <div class="ds3-modal-panel ds3-modal-panel-xl">
+        <div class="ds3-modal-head">
+          <div class="ds3-modal-title">勾选结果预览</div>
+          <button class="ds3-close" id="ds3SelectedClose" type="button">✕</button>
+        </div>
+
+        <div class="ds3-modal-body">
+          <div class="ds3-table-wrap">
+            <table class="ds3-table ds3-table-compact" id="ds3SelectedTable">
+              <thead id="ds3SelectedTableHead"></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <!-- 详情弹窗 -->
+    <div class="ds3-modal" id="ds3DetailModal">
+      <div class="ds3-modal-panel ds3-modal-panel-xl">
+        <div class="ds3-modal-head">
+          <div class="ds3-modal-title" id="ds3DetailTitle">交易对手方详情</div>
+          <button class="ds3-close" id="ds3DetailClose" type="button">✕</button>
+        </div>
+
+        <div class="ds3-modal-body">
+
+          <!-- 第一部分：图表 -->
+          <div class="ds3-grid-2">
+
+            <!-- 左：收入侧 -->
+            <div class="ds3-panel">
+              <div class="ds3-panel-title">银行流水流入 VS 销项税（月度）</div>
+
+              <div class="ds3-kpi-strip ds3-kpi-strip--blue">
+                <div class="ds3-mini-kpi is-inflow">
+                  <span class="ds3-mini-kpi-label">银行流入</span>
+                  <span class="ds3-mini-kpi-value" id="ds3DetailInflowTotal">0</span>
+                </div>
+
+                <div class="ds3-mini-kpi is-output">
+                  <span class="ds3-mini-kpi-label">销项价税合计</span>
+                  <span class="ds3-mini-kpi-value" id="ds3DetailOutputVatTotal">0</span>
+                </div>
+
+                <div class="ds3-mini-kpi is-gap-blue">
+                  <span class="ds3-mini-kpi-label">差异金额 / 差异占比</span>
+                  <span class="ds3-mini-kpi-value" id="ds3DetailIncomeGapTotal">0 / 0%</span>
+                </div>
+              </div>
+
+              <div id="ds3DetailInChart" class="ds3-chart ds3-chart-sm"></div>
+            </div>
+
+            <!-- 右：成本侧 -->
+            <div class="ds3-panel">
+              <div class="ds3-panel-title">银行流水流出 VS 进项税（月度）</div>
+
+              <div class="ds3-kpi-strip ds3-kpi-strip--red">
+                <div class="ds3-mini-kpi is-outflow">
+                  <span class="ds3-mini-kpi-label">银行流出</span>
+                  <span class="ds3-mini-kpi-value" id="ds3DetailOutflowTotal">0</span>
+                </div>
+
+                <div class="ds3-mini-kpi is-input">
+                  <span class="ds3-mini-kpi-label">进项价税合计</span>
+                  <span class="ds3-mini-kpi-value" id="ds3DetailInputVatTotal">0</span>
+                </div>
+
+                <div class="ds3-mini-kpi is-gap-red">
+                  <span class="ds3-mini-kpi-label">差异金额 / 差异占比</span>
+                  <span class="ds3-mini-kpi-value" id="ds3DetailCostGapTotal">0 / 0%</span>
+                </div>
+              </div>
+
+              <div id="ds3DetailOutChart" class="ds3-chart ds3-chart-sm"></div>
+            </div>
+          </div>
+
+          <!-- 第二部分：银行流水明细 -->
+          <div class="ds3-panel ds3-mt16">
+            <div class="ds3-panel-headline ds3-panel-headline--two-row">
+              <div class="ds3-panel-title">银行流水明细</div>
+
+              <div class="ds3-panel-subline ds3-panel-subline--right">
+                <div class="ds3-detail-toolbar">
+                  <button class="ds3-btn small" id="ds3TxnResetFilterBtn" type="button">重置筛选</button>
+                  <button class="ds3-btn small is-primary" id="ds3TxnExportBtn" type="button">导出</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="ds3-table-wrap ds3-detail-table-wrap">
+              <table class="ds3-table ds3-table-compact" id="ds3TxnDetailTable">
+                <thead id="ds3TxnDetailHead">
+                  <tr>
+                    <th>本方名称</th>
+                    <th>本方账号</th>
+                    <th>对方名称</th>
+                    <th>交易日期</th>
+                    <th>交易时间</th>
+                    <th>币种</th>
+                    <th class="is-num">流入金额</th>
+                    <th class="is-num">流出金额</th>
+                    <th class="is-num">交易后余额</th>
+                    <th class="is-num">等值人民币余额</th>
+                    <th>交易类型</th>
+                    <th>摘要</th>
+                    <th>流水明细尽调备注</th>
+                    <th>关联关系</th>
+                    <th>所属集团</th>
+                    <th>对手方类型</th>
+                  </tr>
+                </thead>
+                <tbody id="ds3TxnDetailBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 第三部分：增值税明细 -->
+          <!-- 第三部分：增值税明细 -->
+          <div class="ds3-panel ds3-mt16">
+            <div class="ds3-panel-headline ds3-panel-headline--two-row">
+              <div class="ds3-panel-title">增值税明细</div>
+
+              <div class="ds3-panel-subline">
+                <div class="ds3-vat-tabs" id="ds3VatTabs">
+                  <button class="ds3-vat-tab is-active" type="button" data-mode="output">销项税</button>
+                  <button class="ds3-vat-tab" type="button" data-mode="input">进项税</button>
+                </div>
+
+                <div class="ds3-detail-toolbar">
+                  <button class="ds3-btn small" id="ds3VatResetFilterBtn" type="button">重置筛选</button>
+                  <button class="ds3-btn small is-primary" id="ds3VatExportBtn" type="button">导出</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="ds3-table-wrap ds3-detail-table-wrap">
+              <table class="ds3-table ds3-table-compact" id="ds3VatDetailTable">
+                <thead id="ds3VatDetailHead"></thead>
+                <tbody id="ds3VatDetailBody"></tbody>
+              </table>
+            </div>
+          </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../assets/js/pages/data-summary.js"></script>
+</body>
+</html>
+

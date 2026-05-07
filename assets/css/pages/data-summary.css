@@ -1,0 +1,2135 @@
+
+:root{
+  --ds3-blue:#1d4ed8;
+  --ds3-blue-2:#38bdf8;
+  --ds3-red:#dc2626;
+  --ds3-red-2:#fb7185;
+  --ds3-border:#e6edf5;
+  --ds3-bg:#f8fafc;
+  --ds3-text:#1b2c53;
+  --ds3-muted:#64748b;
+  --ds3-white:#ffffff;
+  --ds3-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  background:#f5f8fc;
+  color:#334155;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+
+.ds3-page{
+  min-height:100vh;
+}
+
+/* 隐藏 tab 容器，但保留结构 */
+.ds3-tab-container--hidden{
+  display:none;
+}
+
+.ds3-tab-container{
+  background:#fff;
+  border:1px solid var(--ds3-border);
+  border-radius:8px;
+  margin:10px 12px 0;
+  box-shadow:var(--ds3-shadow);
+  overflow:hidden;
+}
+
+.ds3-tabbar{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 16px;
+  border-bottom:1px solid var(--ds3-border);
+  overflow-x:auto;
+}
+
+.ds3-tab{
+  border:none;
+  background:transparent;
+  color:#475569;
+  font-size:13px;
+  padding:5px 10px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.ds3-tab.is-active{
+  color:var(--ds3-blue);
+  font-weight:600;
+}
+
+.ds3-inkbar{
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:0;
+  height:2px;
+  background:var(--ds3-blue);
+  transition:left .25s ease,width .25s ease;
+}
+
+.ds3-intro{
+  padding:8px 16px 12px;
+  font-size:11.5px;
+  line-height:2;
+  color:#334155;
+}
+
+.ds3-intro-title{
+  font-weight:600;
+  margin-right:6px;
+}
+
+/* 主体 */
+.ds3-pane{
+  display:block;
+}
+
+.ds3-scroll{
+  padding:0 12px 12px;
+}
+
+.ds3-block{
+  background:#fff;
+  border:1px solid var(--ds3-border);
+  border-radius:10px;
+  margin-top:10px;
+  box-shadow:var(--ds3-shadow);
+  overflow:hidden;
+}
+
+.ds3-block-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 12px;
+  border-bottom:1px solid var(--ds3-border);
+  background:#f9fbff;
+}
+
+.ds3-block-title{
+  font-size:14px;
+  font-weight:700;
+  color:#0f172a;
+}
+
+.ds3-fold{
+  border:none;
+  background:#f8fafc;
+  border:1px solid var(--ds3-border);
+  color:#64748b;
+  border-radius:8px;
+  padding:5px 10px;
+  font-size:12px;
+  cursor:pointer;
+}
+
+.ds3-block.is-collapsed .ds3-block-body{
+  display:none;
+}
+
+.ds3-block-body{
+  padding:14px 16px 16px;
+}
+
+.ds3-grid-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.ds3-panel{
+  background:#fff;
+  border:1px solid #edf2f7;
+  border-radius:10px;
+  padding:14px;
+}
+
+.ds3-panel-title{
+  font-size:13px;
+  font-weight:700;
+  color:#0f172a;
+  margin-bottom:10px;
+}
+
+/* 表单 */
+.ds3-filter-grid{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:12px;
+  align-items:end;
+}
+
+.ds3-field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.ds3-field label{
+  font-size:12px;
+  color:var(--ds3-muted);
+  font-weight:600;
+}
+
+.ds3-field select,
+.ds3-field input{
+  border:1px solid var(--ds3-border);
+  border-radius:8px;
+  background:#fff;
+  padding:9px 10px;
+  font-size:13px;
+  color:#334155;
+  outline:none;
+}
+
+.ds3-field select:focus,
+.ds3-field input:focus{
+  border-color:#93c5fd;
+  box-shadow:0 0 0 3px rgba(59,130,246,.10);
+}
+
+.ds3-actions{
+  display:flex;
+  gap:8px;
+}
+
+/* ===============================
+   Button 高级清晰版（更亮、更干净、更有质感）
+   直接替换你当前按钮代码
+   =============================== */
+
+.ds3-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+
+  min-height:36px;
+  padding:0 16px;
+
+  border-radius:10px;
+  border:1px solid #2563eb;
+
+  background:#2563eb;
+  color:#ffffff;
+
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.2px;
+  line-height:1;
+
+  cursor:pointer;
+  user-select:none;
+  white-space:nowrap;
+
+  box-shadow:
+    0 6px 14px rgba(37,99,235,.22);
+
+  transition:
+    background .18s ease,
+    border-color .18s ease,
+    transform .18s ease,
+    box-shadow .18s ease;
+}
+
+/* hover */
+.ds3-btn:hover{
+  background:#1d4ed8;
+  border-color:#1d4ed8;
+
+  transform:translateY(-1px);
+
+  box-shadow:
+    0 10px 18px rgba(37,99,235,.28);
+}
+
+/* 点击 */
+.ds3-btn:active{
+  transform:translateY(0);
+
+  box-shadow:
+    0 4px 10px rgba(37,99,235,.20);
+}
+
+/* 主按钮 */
+.ds3-btn.is-primary{
+  background:#2563eb;
+  border-color:#2563eb;
+  color:#fff;
+}
+
+.ds3-btn.is-primary:hover{
+  background:#1d4ed8;
+  border-color:#1d4ed8;
+}
+
+/* small 按钮 */
+.ds3-btn.small{
+  min-height:30px;
+  padding:0 12px;
+  font-size:12px;
+  border-radius:8px;
+}
+
+/* 次级按钮（重置按钮等） */
+.ds3-btn:not(.is-primary){
+  background:#ffffff;
+  color:#2563eb;
+  border:1px solid #bfdbfe;
+  box-shadow:none;
+}
+
+.ds3-btn:not(.is-primary):hover{
+  background:#eff6ff;
+  color:#1d4ed8;
+  border-color:#93c5fd;
+}
+
+/* 聚焦 */
+.ds3-btn:focus-visible{
+  outline:none;
+  box-shadow:
+    0 0 0 3px rgba(59,130,246,.18),
+    0 8px 18px rgba(37,99,235,.18);
+}
+
+/* 禁用 */
+.ds3-btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
+}
+
+/* KPI 条 */
+.ds3-kpi-strip{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.ds3-mini-kpi{
+  border-radius:10px;
+  padding:10px 12px;
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  background:linear-gradient(180deg,#ffffff 0%, #f8fafc 100%);
+  border:1px solid #e7edf5;
+  box-shadow:0 1px 2px rgba(15,23,42,.03);
+}
+
+.ds3-mini-kpi-label{
+  font-size:13px;
+  font-weight:600;
+  color:#475569;
+  white-space:nowrap;
+}
+
+.ds3-mini-kpi-value{
+  font-size:13px;
+  line-height:1;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+/* KPI 数值颜色：与图表完全统一 */
+.ds3-mini-kpi.is-inflow .ds3-mini-kpi-value{
+  color:#108dff;
+}
+
+.ds3-mini-kpi.is-output .ds3-mini-kpi-value{
+  color:#38bdf8;
+}
+
+.ds3-mini-kpi.is-gap-blue .ds3-mini-kpi-value{
+  color:#2468a2;
+}
+
+.ds3-mini-kpi.is-outflow .ds3-mini-kpi-value{
+  color:#ff5733;
+}
+
+.ds3-mini-kpi.is-input .ds3-mini-kpi-value{
+  color:#fb7185;
+}
+
+.ds3-mini-kpi.is-gap-red .ds3-mini-kpi-value{
+  color:#be185d;
+}
+
+/* 图 */
+.ds3-chart{
+  width:100%;
+  height:340px;
+}
+
+.ds3-chart-sm{
+  height:320px;
+}
+
+/* 表格头部 */
+.ds3-linked-table-wrap{
+  margin-top:16px;
+}
+
+.ds3-section-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+
+.ds3-section-title{
+  font-size:14px;
+  font-weight:700;
+  color:#0f172a;
+}
+
+.ds3-section-desc{
+  margin-top:4px;
+  font-size:12px;
+  color:#64748b;
+}
+
+.ds3-section-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* 表格 */
+.ds3-table-wrap{
+  overflow:auto;
+  border:1px solid #cfd8e3;
+  border-radius:5px;
+  background:#fff;
+  margin-top:10px;
+}
+
+.ds3-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  background:#fff;
+}
+
+.ds3-table th{
+  background:#f8fbff;
+  color:#475569;
+  font-weight:600;
+  text-align:left;
+  padding:10px 12px;
+  border-bottom:1px solid #d9e2ec;
+  border-right:1px solid #d9e2ec;
+  white-space:nowrap;
+  font-size:13px;
+}
+
+.ds3-table td{
+  padding:5px 7px;
+  border-bottom:1px solid #d9e2ec;
+  border-right:1px solid #d9e2ec;
+  color:#334155;
+  white-space:nowrap;
+  font-size:13px;
+  vertical-align:middle;
+}
+
+.ds3-table th:last-child,
+.ds3-table td:last-child{
+  border-right:none;
+}
+
+.ds3-table tbody tr:last-child td{
+  border-bottom:none;
+}
+
+.ds3-table tr:hover td{
+  background:#fafcff;
+}
+
+.ds3-table .is-num{
+  text-align:right;
+  font-weight:700;
+}
+
+/* 紧凑表格 */
+.ds3-table-compact th{
+  padding:8px 10px;
+  font-size:12px;
+}
+
+.ds3-table-compact td{
+  padding:8px 10px;
+  font-size:12px;
+}
+
+/* 年度分组表头 */
+.ds3-year-group-head th{
+  background:#f3f6fb;
+  color:#334155;
+  font-weight:700;
+  text-align:center;
+  border-bottom:1px solid #cfd8e3;
+}
+
+.ds3-year-sub-head th{
+  background:#f8fbff;
+  color:#64748b;
+  font-weight:600;
+  text-align:center;
+}
+
+.ds3-col-sep{
+  text-align:center;
+}
+
+/* 表格数字颜色：与图表完全统一 */
+.ds3-num-inflow{
+  color:#108dff !important;
+  font-weight:700;
+}
+
+.ds3-num-output{
+  color:#38bdf8 !important;
+  font-weight:700;
+}
+
+.ds3-num-outflow{
+  color:#ff5733 !important;
+  font-weight:700;
+}
+
+.ds3-num-input{
+  color:#fb7185 !important;
+  font-weight:700;
+}
+
+.ds3-gap-pos{
+  color:#2468a2;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.ds3-gap-neg{
+  color:#be185d;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+/* 备注列 */
+.ds3-remark-cell{
+  min-width:160px;
+}
+
+.ds3-note-input{
+  width:140px;
+  min-width:140px;
+  border:1px solid #dbe4f0;
+  border-radius:6px;
+  padding:5px 8px;
+  font-size:12px;
+  outline:none;
+  background:#fff;
+  color:#334155;
+}
+
+.ds3-note-input:focus{
+  border-color:#93c5fd;
+  box-shadow:0 0 0 3px rgba(59,130,246,.10);
+}
+
+/* 弹窗 */
+.ds3-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.45);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+  padding:20px;
+}
+
+.ds3-modal.is-show{
+  display:flex;
+}
+
+.ds3-modal-panel{
+  width:min(920px,96vw);
+  background:#fff;
+  border:1px solid var(--ds3-border);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 16px 40px rgba(2,6,23,.16);
+}
+
+.ds3-modal-panel-xl{
+  width:min(1440px,98vw);
+}
+
+.ds3-modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 16px;
+  border-bottom:1px solid var(--ds3-border);
+  background:#fff;
+}
+
+.ds3-modal-title{
+  font-size:14px;
+  font-weight:700;
+  color:#0f172a;
+}
+
+.ds3-modal-body{
+  padding:16px;
+  max-height:86vh;
+  overflow:auto;
+}
+
+.ds3-close{
+  border:none;
+  background:#f8fafc;
+  border:1px solid var(--ds3-border);
+  color:#64748b;
+  border-radius:8px;
+  padding:6px 10px;
+  cursor:pointer;
+}
+
+/* 弹窗顶部 KPI */
+.ds3-detail-summary{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:10px;
+  margin-bottom:16px;
+}
+
+.ds3-detail-card{
+  background:#f8fafc;
+  border:1px solid var(--ds3-border);
+  border-radius:10px;
+  padding:10px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-height:54px;
+}
+
+.ds3-detail-card-label{
+  font-size:12px;
+  color:#64748b;
+  font-weight:600;
+  white-space:nowrap;
+}
+
+.ds3-detail-card-value{
+  font-size:24px;
+  line-height:1;
+  font-weight:700;
+  color:#0f172a;
+  white-space:nowrap;
+}
+
+.ds3-detail-table-title{
+  font-size:13px;
+  font-weight:700;
+  color:#0f172a;
+  margin:12px 0 8px;
+}
+
+/* 响应式 */
+@media (max-width: 1280px){
+  .ds3-grid-2{
+    grid-template-columns:1fr;
+  }
+
+  .ds3-filter-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .ds3-detail-summary{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+
+@media (max-width: 900px){
+  .ds3-kpi-strip{
+    grid-template-columns:1fr;
+  }
+
+  .ds3-detail-summary{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .ds3-mini-kpi{
+    min-height:52px;
+  }
+
+  .ds3-mini-kpi-value{
+    font-size:24px;
+  }
+}
+
+@media (max-width: 640px){
+  .ds3-scroll{
+    padding:0 8px 8px;
+  }
+
+  .ds3-block-body{
+    padding:12px;
+  }
+
+  .ds3-filter-grid{
+    grid-template-columns:1fr;
+  }
+
+  .ds3-section-head{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .ds3-detail-summary{
+    grid-template-columns:1fr;
+  }
+
+  .ds3-mini-kpi{
+    flex-direction:row;
+    align-items:center;
+  }
+
+  .ds3-mini-kpi-label{
+    font-size:12px;
+  }
+
+  .ds3-mini-kpi-value{
+    font-size:22px;
+  }
+
+  .ds3-detail-card{
+    flex-direction:row;
+    align-items:center;
+  }
+
+  .ds3-detail-card-value{
+    font-size:20px;
+  }
+}
+
+/* 合计 / 年份 分组头 */
+.ds3-group-toggle-cell{
+  text-align:center;
+  background:#f3f6fb !important;
+}
+
+.ds3-group-toggle-btn{
+  border:none;
+  background:transparent;
+  color:#334155;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:0;
+}
+
+.ds3-group-toggle-btn:hover{
+  color:#1d4ed8;
+}
+
+
+
+/* 表头更像你截图那种紧密分组 */
+.ds3-year-group-head th{
+  background:#f3f6fb;
+  color:#334155;
+  font-weight:700;
+  text-align:center;
+  border-bottom:1px solid var(--ds3-border);
+}
+
+.ds3-year-sub-head th{
+  background:#f8fbff;
+  color:#64748b;
+  font-weight:600;
+  text-align:center;
+  font-size:12px;
+  text-align:center
+}
+
+.ds3-col-sep{
+
+  text-align:center;
+}
+
+/* 差异列不换行 */
+.ds3-table td .ds3-gap-pos,
+.ds3-table td .ds3-gap-neg{
+  white-space:nowrap;
+}
+
+/* 让表格更像报表 */
+.ds3-table-compact th,
+.ds3-table-compact td{
+  padding:7px 9px;
+  font-size:12px;
+}
+
+/* 表格列线更明显 */
+.ds3-table{
+  border-collapse:separate;
+  border-spacing:0;
+}
+
+.ds3-table th,
+.ds3-table td{
+  border-right:1px solid #d9e2ec;
+  border-bottom:1px solid #d9e2ec;
+}
+
+.ds3-table th:last-child,
+.ds3-table td:last-child{
+  border-right:none;
+}
+
+.ds3-table thead tr:first-child th{
+  border-top:none;
+}
+
+.ds3-table tbody tr:last-child td{
+  border-bottom:none;
+}
+
+/* 外框更清晰 */
+.ds3-table-wrap{
+  overflow:auto;
+  border:1px solid #cfd8e3;
+  border-radius:8px;
+  background:#fff;
+  margin-top:10px;
+}
+
+/* 表格更像报表 */
+.ds3-table-compact th,
+.ds3-table-compact td{
+  padding:7px 9px;
+  font-size:12px;
+}
+
+/* 备注列更宽 */
+.ds3-remark-cell{
+  min-width:220px;
+  width:220px;
+}
+
+.ds3-note-input{
+  width:100%;
+  min-width:0;
+  display:block;
+  border:1px solid #dbe4f0;
+  border-radius:6px;
+  padding:6px 8px;
+  font-size:12px;
+  outline:none;
+  background:#fff;
+  color:#334155;
+}
+
+.ds3-note-input:focus{
+  border-color:#93c5fd;
+  box-shadow:0 0 0 3px rgba(59,130,246,.10);
+}
+
+/* 总表头展开按钮 */
+.ds3-group-toggle-cell{
+  text-align:center;
+  background:#f3f6fb !important;
+}
+
+.ds3-group-toggle-btn{
+  border:none;
+  background:transparent;
+  color:#334155;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:0;
+}
+
+.ds3-group-toggle-btn:hover{
+  color:#0000FF;
+}
+
+.ds3-group-toggle-icon{
+  font-size:18px;
+  line-height:1;
+  color：#0000FF;
+  font-weight:700;
+  transition:all .2s ease;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:16px;
+}
+
+.ds3-group-toggle-btn:hover .ds3-group-toggle-icon{
+  color:#0000FF;
+  transform:scale(1.08);
+}
+
+/* 公司行展开按钮 */
+.ds3-row-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+
+.ds3-row-toggle-btn{
+  width:18px;
+  height:18px;
+  border:1px solid #dbe4f0;
+  background:#fff;
+  border-radius:4px;
+  font-size:11px;
+  color:#475569;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 18px;
+}
+
+.ds3-row-toggle-btn:hover{
+  border-color:#93c5fd;
+  color:#1d4ed8;
+}
+
+.ds3-row-main-name{
+  font-weight:500;
+  color:#0f172a;
+}
+
+/* 子行样式 */
+.ds3-subrow td{
+  background:#fafcff;
+}
+
+.ds3-subrow .ds3-subrow-label{
+  padding-left:28px;
+  color:#475569;
+  font-weight:600;
+}
+
+.ds3-subrow .ds3-subrow-year{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+
+.ds3-subrow .ds3-subrow-dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#94a3b8;
+}
+
+/* 表头分组 */
+.ds3-year-group-head th{
+  background:#f3f6fb;
+  color:#334155;
+  font-weight:700;
+  text-align:center;
+  border-bottom:1px solid #cfd8e3;
+}
+
+.ds3-year-sub-head th{
+  background:#f3f6fb;
+  color:#334155;
+  font-weight:600;
+  text-align:center;
+  font-size:12px;
+}
+
+.ds3-col-sep{
+  border-left:1px solid #cfd8e3 !important;
+}
+
+/* 差异列不换行 */
+.ds3-table td .ds3-gap-pos,
+.ds3-table td .ds3-gap-neg{
+  white-space:nowrap;
+}
+
+.ds3-table th,
+.ds3-table td{
+  text-align:left;
+}
+
+.ds3-table .is-num{
+  text-align:right;
+}
+
+.ds3-gap-blue{
+  color:#2468a2;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.ds3-gap-red{
+  color:#be185d;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+/* =========================
+   主表整体：按内容自适应
+   ========================= */
+#ds3FilterTable{
+  table-layout:auto;
+  width:100%;
+}
+
+/* 表头和单元格默认不换行 */
+#ds3FilterTable th,
+#ds3FilterTable td{
+  white-space:nowrap;
+  vertical-align:middle;
+}
+
+/* =========================
+   第1列：对手方名称
+   ========================= */
+#ds3FilterTable th:nth-child(1),
+#ds3FilterTable td:nth-child(1){
+  width:140px;
+  min-width:140px;
+  max-width:180px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* =========================
+   数值列：按内容最小宽度自适应
+   （第2~7列）
+   ========================= */
+#ds3FilterTable th.is-num,
+#ds3FilterTable td.is-num{
+  width:1%;
+  text-align:right;
+}
+
+/* 如果表头没加 is-num，用列号兜底 */
+#ds3FilterTable th:nth-child(2),
+#ds3FilterTable td:nth-child(2),
+#ds3FilterTable th:nth-child(3),
+#ds3FilterTable td:nth-child(3),
+#ds3FilterTable th:nth-child(4),
+#ds3FilterTable td:nth-child(4),
+#ds3FilterTable th:nth-child(5),
+#ds3FilterTable td:nth-child(5),
+#ds3FilterTable th:nth-child(6),
+#ds3FilterTable td:nth-child(6),
+#ds3FilterTable th:nth-child(7),
+#ds3FilterTable td:nth-child(7){
+  width:1%;
+}
+
+
+/* =========================
+   倒数第二列：操作列
+   ========================= */
+#ds3FilterTable th:nth-last-child(2),
+#ds3FilterTable td:nth-last-child(2){
+  width:88px;
+  min-width:88px;
+  max-width:88px;
+  text-align:center;
+  white-space:nowrap;
+  padding-left:8px;
+  padding-right:8px;
+}
+
+/* 操作按钮不要撑宽列 */
+#ds3FilterTable td:nth-last-child(2) button,
+#ds3FilterTable td:nth-last-child(2) .ds3-btn{
+  width:auto;
+  min-width:0;
+  padding:5px 9px;
+  white-space:nowrap;
+}
+
+/* =========================
+   最后一列：备注列
+   ========================= */
+#ds3FilterTable th:last-child,
+#ds3FilterTable td:last-child{
+  width:auto;
+  min-width:220px;
+}
+
+/* 输入框撑满备注列 */
+#ds3FilterTable td:last-child input,
+#ds3FilterTable td:last-child textarea,
+#ds3FilterTable td:last-child .ds3-note-input{
+  width:100%;
+  min-width:0;
+  display:block;
+  box-sizing:border-box;
+}
+
+/* =========================
+   表格线更清晰（可选）
+   ========================= */
+#ds3FilterTable th,
+#ds3FilterTable td{
+  border-right:1px solid #d9e2ec;
+  border-bottom:1px solid #d9e2ec;
+}
+
+#ds3FilterTable th:last-child,
+#ds3FilterTable td:last-child{
+  border-right:none;
+}
+
+#ds3FilterTable tbody tr:last-child td{
+  border-bottom:none;
+}
+
+/* hover */
+#ds3FilterTable tr:hover td{
+  background:#fafcff;
+}
+
+
+/* 名称过长时省略号 */
+#ds3FilterTable td:first-child .ds3-row-main-name,
+#ds3FilterTable td:first-child{
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+
+
+/* i 图标 */
+.ds3-year-info{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  border:1px solid #93c5fd;
+  background:#f8fbff;
+  color:#108dff;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+  user-select:none;
+  margin-left:4px;
+  cursor:default;
+  z-index:20;
+}
+/* 黑色提示框 */
+.ds3-year-tooltip{
+  position:absolute;
+  left:50%;
+  bottom:calc(100% + 8px);
+  transform:translateX(-50%) translateY(6px);
+
+  background:rgba(0,0,0,.78);
+  color:#fff;
+  font-size:12px;
+  font-weight:500;
+  line-height:1.4;
+  white-space:nowrap;
+
+  padding:7px 10px;
+  border-radius:8px;
+
+  opacity:0;
+  visibility:hidden;
+  transition:all .18s ease;
+
+  z-index:9999;
+  pointer-events:none;
+}
+
+/* 小三角 */
+.ds3-year-tooltip::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:100%;
+  transform:translateX(-50%);
+  border:6px solid transparent;
+  border-top-color:rgba(0,0,0,.78);
+}
+
+/* hover 显示 */
+.ds3-year-info:hover .ds3-year-tooltip{
+  opacity:1;
+  visibility:visible;
+  transform:translateX(-50%) translateY(0);
+}
+
+
+
+.ds3-eye-btn{
+  width:32px;
+  height:32px;
+  border-radius:9px;
+
+  background:#ffffff;
+  border:1px solid #dbeafe;
+
+  color:#108dff;
+
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+  transition:all .18s ease;
+}
+
+/* hover */
+.ds3-eye-btn:hover{
+  background:#eff6ff;
+  border-color:#93c5fd;
+  color:#2468a2;
+  transform:translateY(-1px);
+}
+
+/* active */
+.ds3-eye-btn:active{
+  transform:translateY(0);
+}
+
+/* focus */
+.ds3-eye-btn:focus{
+  outline:none;
+  box-shadow:0 0 0 3px rgba(16,141,255,.12);
+}
+
+.ds3-panel-headline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+
+.ds3-chart-year-wrap{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-shrink:0;
+}
+
+.ds3-chart-year-wrap label{
+  font-size:12px;
+  color:#64748b;
+  font-weight:600;
+  white-space:nowrap;
+}
+
+.ds3-chart-year-wrap select{
+  height:30px;
+  padding:0 10px;
+  border:1px solid #dbe4f0;
+  border-radius:8px;
+  background:#fff;
+  font-size:12px;
+  color:#334155;
+  outline:none;
+}
+
+.ds3-chart-year-wrap select:focus{
+  border-color:#93c5fd;
+  box-shadow:0 0 0 3px rgba(59,130,246,.10);
+}
+
+
+.ds3-th-tools{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  width:100%;
+  min-width:0;
+}
+
+.ds3-th-label{
+  flex:0 1 auto;
+  min-width:auto;
+  overflow:visible;
+  text-overflow:clip;
+  white-space:nowrap;
+}
+
+#ds3FilterTable .ds3-year-sub-head th{
+  min-width:125px;
+}
+
+#ds3FilterTable .ds3-year-sub-head th:nth-child(6),
+#ds3FilterTable .ds3-year-sub-head th:nth-child(7),
+#ds3FilterTable .ds3-year-sub-head th:nth-child(8){
+  min-width:125px;
+}
+
+.ds3-th-actions{
+  display:inline-flex;
+  align-items:center;
+  gap:2px;
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+
+.ds3-th-action{
+  width:20px;
+  height:20px;
+  flex:0 0 20px;
+  border:none;
+  background:transparent;
+  color:#94a3b8;
+  border-radius:5px;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+}
+
+.ds3-th-action svg{
+  display:block;
+  width:14px;
+  height:14px;
+}
+
+
+.ds3-th-action:hover{
+  background:#eff6ff;
+  color:#2563eb;
+}
+
+.ds3-th-action:active{
+  transform:scale(.94);
+}
+
+.ds3-sort-btn.is-active{
+  color:#2563eb;
+  background:#dbeafe;
+}
+/* ==================================
+   勾选列最佳平衡版（不宽不窄）
+   推荐尺寸：32px
+   ================================== */
+
+/* 主表 + 勾选结果弹窗 */
+/* 勾选列 */
+
+/* ==================================
+   勾选列最佳平衡版（不宽不窄）
+   推荐尺寸：32px
+   ================================== */
+
+/* 主表 + 勾选结果弹窗 */
+
+#ds3SelectedTable td.ds3-check-cell{
+  width:32px !important;
+  min-width:32px !important;
+  max-width:32px !important;
+
+  padding:0 3px !important;
+  text-align:center !important;
+  overflow:hidden;
+  vertical-align:middle;
+}
+
+/* 第一列兜底 */
+
+#ds3SelectedTable td:first-child{
+  width:32px !important;
+  min-width:32px !important;
+  max-width:32px !important;
+}
+
+/* 居中 */
+.ds3-check-wrap{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* 勾选框 */
+.ds3-check-input{
+  width:14px;
+  height:14px;
+  margin:0;
+  cursor:pointer;
+  accent-color:#2563eb;
+  flex:0 0 auto;
+}
+
+/* 大屏略收紧 */
+@media (min-width:1600px){
+  #ds3FilterTable th.ds3-check-cell,
+  #ds3FilterTable td.ds3-check-cell,
+  #ds3SelectedTable th.ds3-check-cell,
+  #ds3SelectedTable td.ds3-check-cell{
+    width:30px !important;
+    min-width:30px !important;
+    max-width:30px !important;
+  }
+}
+
+
+
+.ds3-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible; /* 确保垂直方向不被遮挡 */
+  -webkit-overflow-scrolling: touch;
+  position: relative; /* 确保 tooltip 可以正确定位 */
+}
+
+#ds3FilterTable,
+#ds3SelectedTable {
+  width: max-content;
+  min-width: 100%;
+  position: relative; /* 确保 tooltip 可以正确定位 */
+}
+
+
+@media (max-width:768px){
+  #ds3FilterTable,
+  #ds3SelectedTable{
+    min-width:1200px;
+  }
+}
+/* 分页 */
+.ds3-pagination{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+
+.ds3-page-btn{
+  min-width:32px;
+  height:32px;
+  padding:0 10px;
+  border:1px solid #dbe4f0;
+  background:#fff;
+  color:#334155;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:600;
+}
+
+.ds3-page-btn:hover{
+  background:#f8fbff;
+  border-color:#93c5fd;
+  color:#1d4ed8;
+}
+
+.ds3-page-btn.is-active{
+  background:#2563eb;
+  color:#fff;
+  border-color:#2563eb;
+}
+
+.ds3-page-info{
+  font-size:12px;
+  color:#64748b;
+  margin-right:8px;
+}
+
+#ds3SelectedModal .ds3-table-wrap{
+  margin-top:0;
+}
+
+
+/* =====================================================
+   详情弹窗终版完整 CSS
+   直接粘贴即可（建议放在你的 ds3 css 最后面）
+===================================================== */
+
+
+/* =====================================================
+   蒙层
+===================================================== */
+#ds3DetailModal{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(15,23,42,.52);
+  backdrop-filter:blur(3px);
+}
+
+#ds3DetailModal.is-show{
+  display:flex;
+}
+
+
+/* =====================================================
+   弹窗主体
+===================================================== */
+#ds3DetailModal .ds3-modal-panel{
+  width:min(96vw, 1700px);
+  max-width:1700px;
+
+  height:92vh;
+  max-height:92vh;
+
+  background:#ffffff;
+  border-radius:18px;
+
+  overflow:hidden;
+
+  display:flex;
+  flex-direction:column;
+
+  box-shadow:
+    0 30px 80px rgba(15,23,42,.22),
+    0 8px 30px rgba(15,23,42,.12);
+}
+
+
+/* =====================================================
+   顶部标题栏
+===================================================== */
+#ds3DetailModal .ds3-modal-head{
+  flex:0 0 auto;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:18px 22px;
+
+  border-bottom:1px solid #eef2f7;
+  background:#ffffff;
+}
+
+#ds3DetailModal .ds3-modal-title{
+  font-size:20px;
+  font-weight:800;
+  color:#0f172a;
+  letter-spacing:.2px;
+}
+
+
+/* =====================================================
+   关闭按钮
+===================================================== */
+#ds3DetailModal .ds3-close{
+  width:36px;
+  height:36px;
+
+  border:none;
+  border-radius:10px;
+
+  background:#f1f5f9;
+  color:#334155;
+
+  cursor:pointer;
+  transition:all .18s ease;
+}
+
+#ds3DetailModal .ds3-close:hover{
+  background:#e2e8f0;
+  transform:scale(1.04);
+}
+
+
+/* =====================================================
+   内容区域
+===================================================== */
+#ds3DetailModal .ds3-modal-body{
+  flex:1;
+  overflow:auto;
+
+  padding:18px;
+  background:#f8fafc;
+}
+
+
+/* =====================================================
+   顶部图表两列
+===================================================== */
+#ds3DetailModal .ds3-grid-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+@media (max-width:1200px){
+  #ds3DetailModal .ds3-grid-2{
+    grid-template-columns:1fr;
+  }
+}
+
+
+/* =====================================================
+   卡片
+===================================================== */
+#ds3DetailModal .ds3-panel{
+  background:#ffffff;
+  border:1px solid #e8eef6;
+  border-radius:16px;
+  padding:16px;
+
+  box-shadow:
+    0 8px 24px rgba(15,23,42,.04);
+}
+
+#ds3DetailModal .ds3-mt16{
+  margin-top:18px;
+}
+
+
+/* =====================================================
+   卡片标题
+===================================================== */
+#ds3DetailModal .ds3-panel-title{
+  font-size:15px;
+  font-weight:800;
+  color:#0f172a;
+}
+
+
+/* =====================================================
+   表格区标题栏
+===================================================== */
+#ds3DetailModal .ds3-panel-headline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+
+/* =====================================================
+   工具栏
+===================================================== */
+#ds3DetailModal .ds3-detail-toolbar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+
+/* =====================================================
+   KPI 区
+===================================================== */
+#ds3DetailModal .ds3-kpi-strip{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin:14px 0 14px;
+}
+
+@media (max-width:1100px){
+  #ds3DetailModal .ds3-kpi-strip{
+    grid-template-columns:1fr;
+  }
+}
+
+
+
+/* =====================================================
+   图表
+===================================================== */
+#ds3DetailModal .ds3-chart-sm{
+  height:290px;
+}
+
+
+/* =====================================================
+   表格容器
+===================================================== */
+#ds3DetailModal .ds3-detail-table-wrap{
+  border:1px solid #e9eff6;
+  border-radius:14px;
+  overflow:auto;
+  max-height:460px;
+  background:#ffffff;
+}
+
+
+/* =====================================================
+   表格
+===================================================== */
+#ds3DetailModal table{
+  width:max-content;
+  min-width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:13px;
+}
+
+#ds3DetailModal th,
+#ds3DetailModal td{
+  padding:10px 12px;
+  border-bottom:1px solid #f1f5f9;
+  white-space:nowrap;
+}
+
+#ds3DetailModal td{
+  color:#334155;
+}
+
+#ds3DetailModal tbody tr:hover{
+  background:#f8fbff;
+}
+
+
+/* =====================================================
+   固定表头
+===================================================== */
+#ds3DetailModal thead th{
+  position:sticky;
+  top:0;
+  z-index:5;
+
+  background:#f8fbff;
+  color:#1e3a8a;
+  font-weight:800;
+
+  box-shadow:inset 0 -1px 0 #dbeafe;
+}
+
+
+/* =====================================================
+   数字列
+===================================================== */
+#ds3DetailModal .is-num{
+  text-align:right;
+}
+
+#ds3DetailModal .ds3-num-inflow{
+  color:#0f766e;
+  font-weight:700;
+}
+
+#ds3DetailModal .ds3-num-outflow{
+  color:#b91c1c;
+  font-weight:700;
+}
+
+#ds3DetailModal .ds3-num-output{
+  color:#1d4ed8;
+  font-weight:700;
+}
+
+
+/* =====================================================
+   表头排序筛选
+===================================================== */
+#ds3DetailModal .ds3-th-tools{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+#ds3DetailModal .ds3-th-label{
+  font-weight:800;
+}
+
+#ds3DetailModal .ds3-th-actions{
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+
+#ds3DetailModal .ds3-th-action{
+  width:22px;
+  height:22px;
+
+  border:none;
+  border-radius:7px;
+
+  background:transparent;
+  color:#64748b;
+  font-size:12px;
+
+  cursor:pointer;
+  transition:all .16s ease;
+}
+
+#ds3DetailModal .ds3-th-action:hover{
+  background:#e8f0ff;
+  color:#2563eb;
+}
+
+
+/* =====================================================
+   按钮
+===================================================== */
+#ds3DetailModal .ds3-btn{
+  border:none;
+  border-radius:9px;
+  cursor:pointer;
+  transition:all .18s ease;
+}
+
+#ds3DetailModal .ds3-btn.small{
+  padding:7px 12px;
+  font-size:12px;
+}
+
+#ds3DetailModal .ds3-btn{
+  background:#f1f5f9;
+  color:#334155;
+}
+
+#ds3DetailModal .ds3-btn:hover{
+  background:#e2e8f0;
+}
+
+#ds3DetailModal .ds3-btn.is-primary{
+  background:#2563eb;
+  color:#fff;
+}
+
+#ds3DetailModal .ds3-btn.is-primary:hover{
+  background:#1d4ed8;
+}
+
+
+/* =====================================================
+   分页
+===================================================== */
+#ds3DetailModal .ds3-pager{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:10px;
+  margin-top:12px;
+}
+
+#ds3DetailModal .ds3-pager span{
+  font-size:13px;
+  color:#475569;
+}
+
+
+/* =====================================================
+   筛选弹层（如你 JS 用到）
+===================================================== */
+#ds3DetailFilterBox{
+  position:absolute;
+  z-index:12000;
+
+  width:240px;
+  padding:14px;
+
+  background:#ffffff;
+  border:1px solid #dbeafe;
+  border-radius:14px;
+
+  box-shadow:
+    0 18px 40px rgba(15,23,42,.14);
+
+  display:none;
+}
+
+#ds3DetailFilterBox .ds3-filter-title{
+  font-size:13px;
+  font-weight:800;
+  color:#0f172a;
+  margin-bottom:10px;
+}
+
+#ds3DetailFilterBox .ds3-filter-input{
+  width:100%;
+  height:36px;
+
+  border:1px solid #dbe4f0;
+  border-radius:10px;
+  outline:none;
+
+  padding:0 10px;
+  box-sizing:border-box;
+}
+
+#ds3DetailFilterBox .ds3-filter-input:focus{
+  border-color:#2563eb;
+}
+
+#ds3DetailFilterBox .ds3-filter-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:12px;
+}
+
+
+/* =====================================================
+   滚动条美化
+===================================================== */
+#ds3DetailModal ::-webkit-scrollbar{
+  width:10px;
+  height:10px;
+}
+
+#ds3DetailModal ::-webkit-scrollbar-thumb{
+  background:#cbd5e1;
+  border-radius:999px;
+}
+
+#ds3DetailModal ::-webkit-scrollbar-thumb:hover{
+  background:#94a3b8;
+}
+
+#ds3DetailModal ::-webkit-scrollbar-track{
+  background:#f8fafc;
+}
+
+
+
+/* 表格滚动容器 */
+.ds3-table-wrap{
+  width:100%;
+  overflow-x:auto;
+  overflow-y:visible;
+  position:relative;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* 年份 info 图标 */
+.ds3-year-info{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  z-index:30;
+}
+
+/* 黑色提示框 */
+.ds3-year-tooltip{
+  position:absolute;
+  left:50%;
+  bottom:calc(100% + 8px);
+  transform:translateX(-50%) translateY(6px);
+
+  background:rgba(0,0,0,.82);
+  color:#fff;
+  font-size:12px;
+  font-weight:500;
+  white-space:nowrap;
+  line-height:1.4;
+
+  padding:7px 10px;
+  border-radius:8px;
+
+  opacity:0;
+  visibility:hidden;
+  transition:all .18s ease;
+
+  z-index:9999;
+  pointer-events:none;
+}
+
+/* 小三角 */
+.ds3-year-tooltip::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:100%;
+  transform:translateX(-50%);
+  border:6px solid transparent;
+  border-top-color:rgba(0,0,0,.82);
+}
+
+/* hover 显示 */
+.ds3-year-info:hover .ds3-year-tooltip{
+  opacity:1;
+  visibility:visible;
+  transform:translateX(-50%) translateY(0);
+}
+
+.ds3-year-group-head th,
+.ds3-year-sub-head th{
+  overflow:visible !important;
+}
+
+
+
+.ds3-vat-head-left{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+.ds3-vat-tabs{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:3px;
+  background:#f1f5f9;
+  border-radius:10px;
+}
+
+.ds3-vat-tab{
+  border:none;
+  background:transparent;
+  color:#64748b;
+  padding:6px 12px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .18s ease;
+}
+
+.ds3-vat-tab:hover{
+  color:#2563eb;
+}
+
+.ds3-vat-tab.is-active{
+  background:#ffffff;
+  color:#2563eb;
+  box-shadow:0 1px 3px rgba(15,23,42,.08);
+}
+
+/* 两行头部：强制左对齐 */
+.ds3-panel-headline--two-row{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start !important;
+  justify-content:flex-start !important;
+  gap:10px;
+  width:100%;
+  margin-bottom:12px;
+}
+
+/* 第一行标题永远左侧 */
+.ds3-panel-headline--two-row .ds3-panel-title{
+  width:100%;
+  text-align:left;
+  margin:0;
+}
+
+/* 第二行工具栏 */
+.ds3-panel-subline{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+/* 银行流水：按钮靠右 */
+.ds3-panel-subline--right{
+  justify-content:flex-end;
+}
+
+/* 工具按钮 */
+.ds3-detail-toolbar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* VAT TAB 左边 */
+.ds3-vat-tabs{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:3px;
+  background:#f1f5f9;
+  border-radius:10px;
+}
+
+/* 小屏幕自适应 */
+@media (max-width:768px){
+
+  .ds3-panel-subline{
+    flex-wrap:wrap;
+    row-gap:10px;
+  }
+
+  .ds3-panel-subline--right{
+    justify-content:flex-start;
+  }
+
+}
+
+.ds3-year-tooltip{
+  display:none !important;
+}
+
+.ds3-year-info{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:16px;
+  height:16px;
+  margin-left:4px;
+  border-radius:50%;
+  background:#e8f0ff;
+  color:#2563eb;
+  font-size:11px;
+  font-weight:700;
+  line-height:1;
+  cursor:default;
+  user-select:none;
+}
+
+#ds3BodyTooltip{
+  position:fixed !important;
+  z-index:2147483647 !important;
+  display:none;
+  background:rgba(15,23,42,.94);
+  color:#fff;
+  font-size:12px;
+  line-height:1.4;
+  padding:7px 10px;
+  border-radius:8px;
+  white-space:nowrap;
+  pointer-events:none;
+  box-shadow:0 10px 24px rgba(15,23,42,.25);
+}
+
+.ds3-year-group-head th{
+  text-align:center !important;
+  vertical-align:middle;
+}

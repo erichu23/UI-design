@@ -1,0 +1,430 @@
+/* =========================================================
+   银行流水分析页：顶部 KPI / 数据问题分析 / Tab 布局
+   ========================================================= */
+
+/* ===== 顶部 KPI + 数据问题分析 ===== */
+:root{
+  --kpi-row: 48px;
+  --kpi-gap: 8px;
+  --bank-page-x: 12px;
+  --flow-in: #2563eb;
+  --flow-out: #ef4444;
+}
+
+html,
+body{
+  height:100%;
+}
+
+body{
+  background:#f5f7fa;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  overflow:hidden;
+}
+
+.kpi-and-issue{
+  display:grid;
+  grid-template-columns: minmax(480px, 1fr) 420px;
+  gap: var(--kpi-gap);
+  flex:0 0 auto;
+  margin:10px var(--bank-page-x) 0;
+}
+
+/* 左侧 KPI：两行结构 */
+.kpi-grid{
+  display:grid;
+  grid-template-columns: 0.8fr 0.8fr 0.8fr 1.2fr 1.2fr;
+  grid-template-rows: var(--kpi-row) var(--kpi-row); /* 原 64px 64px */
+  gap: var(--kpi-gap);
+  align-items:stretch;
+  grid-template-areas:
+    "k1 k2 k3 k4 k5"
+    "k1 k2 k3 k6 k7";
+}
+
+/* KPI 区域映射 */
+.k1{ grid-area:k1; } .k2{ grid-area:k2; } .k3{ grid-area:k3; }
+.k4{ grid-area:k4; } .k5{ grid-area:k5; } .k6{ grid-area:k6; } .k7{ grid-area:k7; }
+
+.kpi{
+  background:#f8fafc;
+  border:1px solid #e6edf5;
+  border-radius:8px;
+  padding:4px 8px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+}
+.kpi-label{
+  font-size:14px;
+  color:#0e3469;
+  font-weight:600;
+  margin-bottom:2px;
+  white-space:nowrap;
+}
+.kpi-value{
+  font-size:14px;
+  font-weight:700;
+  color:#1b2c53;
+  line-height:1.1;
+  white-space:nowrap;
+}
+.kpi-value.pos,
+.flow-in{
+  color:var(--flow-in) !important;
+}
+
+.kpi-value.neg,
+.flow-out{
+  color:var(--flow-out) !important;
+}
+
+.flow-in-bg{
+  background:var(--flow-in) !important;
+}
+
+.flow-out-bg{
+  background:var(--flow-out) !important;
+}
+.link-num{ text-decoration:none; border-bottom:1px dotted currentColor }
+.link-num:hover{ opacity:.85 }
+.link-num.danger{ color:#D2283E }
+
+/* 前三列整体居中不变 */
+.k1, .k2, .k3 {
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  align-items:center !important;
+  text-align:center !important;
+}
+
+/* 右侧 2×2 横排，数值右对齐不变 */
+.k4,.k5,.k6,.k7{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+}
+.k4 .kpi-label,.k5 .kpi-label,.k6 .kpi-label,.k7 .kpi-label{margin-bottom:0}
+.k4 .kpi-value,.k5 .kpi-value,.k6 .kpi-value,.k7 .kpi-value{
+  margin-left:auto; text-align:right;
+}
+
+/* ===== 数据问题分析卡 ===== */
+.issue-card{
+  position: relative;
+  background: #fffaf0;
+  border: 1px solid #f2d7a6;
+  border-radius: 10px;
+  padding: 10px 14px 34px;
+  height: calc(var(--kpi-row) * 2 + var(--kpi-gap));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 滚动区 */
+.issue-body-simple{
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.issue-note{
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #7a5a12;
+}
+
+.issue-note b{
+  color: #8a5c00;
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.issue-inline{
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  align-items: start;
+  column-gap: 8px;
+  margin: 0 0 8px;
+  padding: 0;
+}
+
+.dot-danger{
+  width: 8px;
+  height: 8px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220,38,38,.10);
+}
+
+.issue-inline span{
+  color: #a61b1b;
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 500;
+  display: block;
+}
+
+.issue-inline-link{
+  white-space: nowrap;
+  font-size: 11px;
+  color: #b42318;
+  text-decoration: none;
+  margin-left: 8px;
+  font-weight: 600;
+}
+
+.issue-inline-link:hover{
+  color: #8f1d1d;
+  text-decoration: underline;
+}
+
+.issue-toggle{
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  font-size: 12px;
+  color: #475569;
+  text-decoration: none;
+  background: transparent;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.issue-toggle:hover{
+  color: #003366;
+  text-decoration: underline;
+}
+
+.issue-body-simple::-webkit-scrollbar{
+  width: 6px;
+}
+.issue-body-simple::-webkit-scrollbar-thumb{
+  background: rgba(138,92,0,.18);
+  border-radius: 999px;
+}
+.issue-body-simple::-webkit-scrollbar-track{
+  background: transparent;
+}
+
+/* ===== 银行流水页：Tab 导航 ===== */
+.tab-container{
+  background:#fff;
+  border:1px solid #e6edf5;
+  border-radius:8px;
+  margin:10px var(--bank-page-x) 0;
+  padding:0;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+  box-sizing:border-box;
+  width:auto;
+  min-width:0;
+  max-width:none;
+  flex:0 0 auto;
+}
+
+.tab-container .tabbar{
+  position:relative;
+  display:flex;
+  align-items:center;
+  flex-wrap:nowrap;
+  gap:10px;
+
+  padding:8px 16px;
+  margin:0 !important;
+
+  border-bottom:1px solid #e6edf5;
+  background:#fff;
+
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:auto;
+  overflow-y:hidden;
+}
+
+
+.tab-container .tab{
+  flex:0 0 auto;
+  padding:5px 10px;
+  cursor:pointer;
+  color:#475569;
+  border:none;
+  background:transparent;
+  white-space:nowrap;
+  transition:color .15s;
+}
+.tab-container .tab:hover{ background:transparent; color:#1e40af; }
+.tab-container .tab.active{ color:#003366; font-weight:600; background:transparent; }
+
+.tab-container .inkbar{
+  position:absolute;
+  bottom:0;
+  height:2px;
+  background:#003366;
+  border-radius:2px;
+  transition:left .25s ease, width .25s ease;
+}
+
+.tab-container .tab-intro{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 16px 12px;
+  color:#334155;
+  font-size:11.5px;
+  line-height:2;
+  width:100%;
+  box-sizing:border-box;
+}
+.tab-container .ti-icon{ width:14px; height:14px; margin-top:2px; color:#1e40af;flex-shrink:0; }
+.tab-container .ti-title{ font-weight:600; margin-right:6px; }
+
+/* ===== 银行流水页：Tab 内容区 ===== */
+.tab-pane{
+  border:0;
+  border-radius:0;
+  margin:0;
+  padding:0;
+  box-shadow:none;
+  background:transparent;
+  box-sizing:border-box;
+  width:auto;
+  min-width:0;
+  max-width:none;
+  min-height:0;
+  flex:1 1 auto;
+  overflow:hidden;
+}
+
+.tab-pane.active{
+  display:flex;
+  flex-direction:column;
+}
+
+.tab-pane .card{
+  width:auto;
+  min-width:0;
+  max-width:none;
+  box-sizing: border-box;
+}
+
+.tab-pane .card > .head{
+  min-height:42px;
+}
+
+.card-fold-btn{
+  width:26px;
+  height:26px;
+  border:1px solid #dbe5f0;
+  border-radius:999px;
+  background:#fff;
+  cursor:pointer;
+  position:relative;
+  flex:0 0 26px;
+  margin-left:8px;
+}
+
+.card-fold-btn::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-right:2px solid #64748b;
+  border-bottom:2px solid #64748b;
+  position:absolute;
+  top:7px;
+  left:8px;
+  transform:rotate(45deg);
+  transition:transform .18s ease;
+}
+
+.card.is-collapsed > :not(.head){
+  display:none !important;
+}
+
+.card.is-collapsed .card-fold-btn::before{
+  transform:rotate(-135deg);
+  top:10px;
+}
+
+.tab-scroll{
+  width: 100%;
+  margin: 0;
+  padding:10px var(--bank-page-x) 18px;
+  box-sizing: border-box;
+  min-height:0;
+  flex:1 1 auto;
+  overflow:auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15,23,42,.22) transparent;
+}
+
+.tab-scroll::-webkit-scrollbar{
+  width:8px;
+  height:8px;
+}
+
+.tab-scroll::-webkit-scrollbar-thumb{
+  background:rgba(15,23,42,.18);
+  border-radius:999px;
+}
+
+.tab-scroll::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+/* ===== 银行流水页：分页 ===== */
+.pagination{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:4px;
+  margin:12px 0 4px;
+  font-size:12px;
+}
+
+.pagination .btn{
+  min-width:30px;
+  height:28px;
+  padding:0 9px;
+  border:1px solid #dbe4f0;
+  border-radius:6px;
+  background:#fff;
+  color:#475569;
+  box-shadow:none;
+  line-height:26px;
+}
+
+.pagination .btn:hover{
+  border-color:#8fb2e8;
+  color:#003366;
+  background:#f6f9ff;
+}
+
+.pagination .btn-primary{
+  border-color:#003366;
+  background:#003366;
+  color:#fff;
+}
+
+.pagination .btn[disabled]{
+  color:#cbd5e1;
+  background:#f8fafc;
+  border-color:#e5eaf2;
+  cursor:not-allowed;
+}
+
+.pagination .pager-ellipsis{
+  min-width:22px;
+  color:#94a3b8;
+  text-align:center;
+}
