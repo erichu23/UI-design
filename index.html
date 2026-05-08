@@ -6,8 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta http-equiv="x-ua-compatible" content="ie=edge"/>
   <link rel="icon" type="image/x-icon" href="./favicon.ico"/>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin/>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin/>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/></noscript>
 
   <!-- 平台基础样式 -->
   <link rel="stylesheet" href="./assets/css/base.css?v=20260507-routine"/>
@@ -142,7 +145,7 @@
           </li>
 
           <li class="sb-row active module-item bank-analysis"
-              onclick="switchFrame('./fragments/bank-analysis.html','银行流水分析',this)">
+              onclick="switchFrame('./fragments/bank-analysis.html?v=20260508-fast2','银行流水分析',this)">
             <i class="fa-regular fa-circle-check ico"></i>
             <span class="sb-txt">银行流水分析</span>
           </li>
@@ -160,7 +163,7 @@
           </li>
 
           <li class="sb-row active module-item data-summary"
-              onclick="switchFrame('./fragments/data-summary.html','数据综合分析',this)">
+              onclick="switchFrame('./fragments/data-summary.html?v=20260508-vat-compare-10','数据综合分析',this)">
             <i class="fa-regular fa-circle-check ico"></i>
             <span class="sb-txt">数据综合分析</span>
           </li>
@@ -217,6 +220,6 @@
 </footer>
 
 <!-- 平台外壳脚本 -->
-<script defer src="./assets/js/core/app-shell.js?v=20260507-routine"></script>
+<script defer src="./assets/js/core/app-shell.js?v=20260508-fast2"></script>
 </body>
 </html>

@@ -25,6 +25,58 @@ function toggleSb(el){
   el.classList.toggle('open');
 }
 
+const APP_FRAME_STATE_KEY = 'auditCompass.currentFrameState';
+const DEFAULT_PROJECT = 'Test2';
+const DEFAULT_BOOK = '20251022';
+const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260508-fast2';
+const PROJECT_LIST_SRC = './fragments/project-list.html';
+
+function getWorkspaceContext(){
+  const crumbProject = document.getElementById('crumbProject')?.textContent || DEFAULT_PROJECT;
+  const crumbBook = document.getElementById('crumbBook')?.textContent || DEFAULT_BOOK;
+  return {
+    project: crumbProject === '项目列表' ? DEFAULT_PROJECT : crumbProject,
+    book: crumbBook === '-' ? DEFAULT_BOOK : crumbBook
+  };
+}
+
+function saveFrameState(src, title, project, book){
+  try {
+    localStorage.setItem(APP_FRAME_STATE_KEY, JSON.stringify({
+      src,
+      title,
+      project: project || DEFAULT_PROJECT,
+      book: book || DEFAULT_BOOK
+    }));
+  } catch (e) {
+    // localStorage 不可用时不影响页面切换。
+  }
+}
+
+function clearFrameState(){
+  try {
+    localStorage.removeItem(APP_FRAME_STATE_KEY);
+  } catch (e) {}
+}
+
+function getSavedFrameState(){
+  try {
+    return JSON.parse(localStorage.getItem(APP_FRAME_STATE_KEY) || 'null');
+  } catch (e) {
+    return null;
+  }
+}
+
+function setCurrentModuleBySrc(src){
+  const baseSrc = (src || '').split('?')[0];
+  document.querySelectorAll('.module-item').forEach(item => item.classList.remove('current'));
+  const matched = Array.from(document.querySelectorAll('.module-item')).find(item => {
+    const action = item.getAttribute('onclick') || '';
+    return baseSrc && action.includes(baseSrc);
+  });
+  if (matched) matched.classList.add('current');
+}
+
 function setProjectListState(){
   const sidebar = document.getElementById('appSidebar');
   const titleEl = document.getElementById('module-title');
@@ -58,27 +110,27 @@ function goProjectList(){
   const frame = document.getElementById('module-frame');
   const breadcrumb = document.getElementById('breadcrumbBar');
 
-  if (frame) frame.src = './fragments/project-list.html';
+  if (frame) frame.src = PROJECT_LIST_SRC;
   if (breadcrumb) breadcrumb.style.display = 'none';
 
+  clearFrameState();
   setProjectListState();
 }
 
 function switchFrame(src, title, el){
   const frame = document.getElementById('module-frame');
   const breadcrumb = document.getElementById('breadcrumbBar');
+  const ctx = getWorkspaceContext();
 
   if (frame) frame.src = src;
   if (breadcrumb) breadcrumb.style.display = 'flex';
 
-  setWorkspaceState(
-    document.getElementById('crumbProject')?.textContent || 'Test2',
-    document.getElementById('crumbBook')?.textContent || '20251022',
-    title
-  );
+  setWorkspaceState(ctx.project, ctx.book, title);
 
   document.querySelectorAll('.module-item').forEach(item => item.classList.remove('current'));
   if (el) el.classList.add('current');
+
+  saveFrameState(src, title, ctx.project, ctx.book);
 }
 
 function enterWorkbook(project, book){
@@ -86,24 +138,38 @@ function enterWorkbook(project, book){
   const bankMenu = document.querySelector('.module-item.bank-analysis');
   const breadcrumb = document.getElementById('breadcrumbBar');
 
-  if (frame) frame.src = './fragments/bank-analysis.html';
+  if (frame) frame.src = BANK_ANALYSIS_SRC;
   if (breadcrumb) breadcrumb.style.display = 'flex';
 
   setWorkspaceState(project, book, '银行流水分析');
 
   document.querySelectorAll('.module-item').forEach(item => item.classList.remove('current'));
   if (bankMenu) bankMenu.classList.add('current');
+
+  saveFrameState(BANK_ANALYSIS_SRC, '银行流水分析', project, book);
 }
-
-document.addEventListener("DOMContentLoaded",function(){
-  const breadcrumb = document.getElementById('breadcrumbBar');
-
-  if(breadcrumb) breadcrumb.style.display = "none";
-});
 
 document.getElementById('backToProjectList')?.addEventListener('click', function(){
   goProjectList();
 });
+
+function restoreFrameState(){
+  const frame = document.getElementById('module-frame');
+  const breadcrumb = document.getElementById('breadcrumbBar');
+  const saved = getSavedFrameState();
+
+  if (!saved || !saved.src || saved.src.includes('project-list.html')) {
+    if (frame) frame.src = PROJECT_LIST_SRC;
+    if (breadcrumb) breadcrumb.style.display = 'none';
+    setProjectListState();
+    return;
+  }
+
+  if (frame) frame.src = saved.src;
+  if (breadcrumb) breadcrumb.style.display = 'flex';
+  setWorkspaceState(saved.project, saved.book, saved.title);
+  setCurrentModuleBySrc(saved.src);
+}
 
 (function(){
   const sidebar = document.getElementById('appSidebar');
@@ -115,6 +181,5 @@ document.getElementById('backToProjectList')?.addEventListener('click', function
     });
   }
 
-  // 平台默认打开项目列表
-  setProjectListState();
+  restoreFrameState();
 })();

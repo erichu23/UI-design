@@ -12,6 +12,175 @@
   --ds3-shadow:0 1px 3px rgba(0,0,0,.04);
 }
 
+/* ===== V1 银行流水与增值税对比页：保留旧表格形式的补充样式 ===== */
+.ds3-vat-page{
+  padding:0 12px 12px;
+}
+
+.ds3-vat-filter-grid{
+  grid-template-columns:repeat(9,minmax(0,1fr));
+}
+
+.ds3-month-field{
+  grid-column:span 2;
+}
+
+.ds3-month-picker{
+  position:relative;
+}
+
+.ds3-month-picker-btn{
+  width:100%;
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  border:1px solid var(--ds3-border);
+  border-radius:8px;
+  background:#fff;
+  color:#334155;
+  padding:0 10px;
+  font-size:13px;
+}
+
+.ds3-month-menu{
+  position:absolute;
+  left:0;
+  top:40px;
+  z-index:40;
+  display:none;
+  width:260px;
+  padding:10px;
+  border:1px solid var(--ds3-border);
+  border-radius:10px;
+  background:#fff;
+  box-shadow:0 12px 28px rgba(15,23,42,.12);
+}
+
+.ds3-month-picker.is-open .ds3-month-menu{
+  display:block;
+}
+
+.ds3-month-menu-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+}
+
+.ds3-month-chip{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  min-height:30px;
+  border:1px solid #dce6f3;
+  border-radius:7px;
+  background:#f8fafc;
+  font-size:12px;
+}
+
+.ds3-month-menu-actions,
+.ds3-month-toolbar{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+.ds3-month-toolbar{
+  margin:0 0 12px;
+}
+
+.ds3-month-btn{
+  min-height:30px;
+  border:1px solid var(--ds3-border);
+  border-radius:8px;
+  background:#fff;
+  color:#334155;
+  padding:0 10px;
+  font-size:12px;
+  cursor:pointer;
+}
+
+.ds3-month-btn.is-active{
+  border-color:#1d4ed8;
+  background:#eef3ff;
+  color:#1d4ed8;
+  font-weight:700;
+}
+
+.ds3-vat-kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(8,minmax(0,1fr));
+  gap:10px;
+}
+
+.ds3-vat-kpi{
+  border:1px solid var(--ds3-border);
+  border-radius:10px;
+  background:#fff;
+  padding:10px 12px;
+  min-height:82px;
+}
+
+.ds3-vat-kpi.is-blue{ background:#eaf2ff; border-color:#cfe0ff; }
+.ds3-vat-kpi.is-red{ background:#fff3e8; border-color:#fed7aa; }
+.ds3-vat-kpi.is-neutral{ background:#f8fafc; }
+.ds3-vat-kpi span{ display:block; color:#64748b; font-size:12px; font-weight:700; }
+.ds3-vat-kpi b{ display:inline-block; margin-top:8px; color:#0f172a; font-size:18px; }
+.ds3-vat-kpi em{ margin-left:4px; color:#64748b; font-style:normal; font-size:11px; }
+
+.ds3-vat-summary-grid{
+  display:grid;
+  grid-template-columns:minmax(230px,.72fr) minmax(360px,1fr) minmax(560px,1.8fr);
+  gap:14px;
+}
+
+.ds3-summary-list{
+  display:grid;
+  gap:8px;
+}
+
+.ds3-summary-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  border-bottom:1px dashed #e6edf5;
+  padding-bottom:8px;
+  font-size:13px;
+}
+
+.ds3-summary-row span{ color:#64748b; }
+.ds3-summary-row b{ color:#0f172a; }
+.ds3-chip-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+.ds3-chip{ border:1px solid #d8e5f4; border-radius:999px; background:#f8fafc; padding:5px 9px; font-size:12px; }
+.ds3-chip button{ border:0; background:transparent; cursor:pointer; color:#64748b; }
+.ds3-small-select{ border:1px solid var(--ds3-border); border-radius:8px; min-height:32px; padding:0 8px; background:#fff; }
+.ds3-bar-list{ display:grid; gap:9px; }
+.ds3-bar-item{ display:grid; grid-template-columns:minmax(120px,1fr) 72px; gap:8px; cursor:pointer; }
+.ds3-bar-name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; }
+.ds3-bar-value{ text-align:right; font-weight:700; font-size:12px; }
+.ds3-bar-track{ grid-column:1/-1; height:8px; border-radius:999px; background:#edf2f7; overflow:hidden; }
+.ds3-bar-fill{ height:100%; border-radius:999px; background:#2563eb; }
+.ds3-bar-fill.is-out{ background:#f97316; }
+.ds3-segment{ display:inline-flex; border:1px solid var(--ds3-border); border-radius:8px; overflow:hidden; }
+.ds3-segment button{ border:0; border-right:1px solid var(--ds3-border); background:#fff; min-height:32px; padding:0 10px; cursor:pointer; }
+.ds3-segment button:last-child{ border-right:0; }
+.ds3-segment button.is-active{ background:#eef3ff; color:#1d4ed8; font-weight:700; }
+.ds3-vat-table-head{ margin-bottom:12px; }
+.is-hidden{ display:none !important; }
+
+@media (max-width:1439px){
+  .ds3-vat-kpi-grid{ grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .ds3-vat-filter-grid{ grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .ds3-vat-summary-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+@media (max-width:1024px){
+  .ds3-vat-summary-grid{ grid-template-columns:1fr; }
+}
+
 *{
   box-sizing:border-box;
 }
@@ -2132,4 +2301,1358 @@ html,body{
 .ds3-year-group-head th{
   text-align:center !important;
   vertical-align:middle;
+}
+
+/* =====================================================
+   数据综合分析 V1 表格与右侧详情抽屉整理
+   - 主表：合计/年度分组表头、可筛选排序、清爽网格
+   - 查看明细：文字按钮触发右侧抽屉
+===================================================== */
+
+.ds3-vat-page .ds3-table-wrap{
+  border:1px solid #d9e4f2;
+  border-radius:10px;
+  background:#ffffff;
+  box-shadow:0 10px 24px rgba(15,23,42,.05);
+}
+
+.ds3-vat-page #ds3FilterTable{
+  width:max-content;
+  min-width:100%;
+  table-layout:auto !important;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:13px;
+  color:#1f2a3d;
+}
+
+.ds3-vat-page #ds3FilterTable th,
+.ds3-vat-page #ds3FilterTable td{
+  padding:10px 12px !important;
+  height:42px;
+  border-right:1px solid #e0e8f3 !important;
+  border-bottom:1px solid #e0e8f3 !important;
+  background:#ffffff;
+  white-space:nowrap;
+  vertical-align:middle;
+  box-sizing:border-box;
+}
+
+.ds3-vat-page #ds3FilterTable th:last-child,
+.ds3-vat-page #ds3FilterTable td:last-child{
+  border-right:none !important;
+}
+
+.ds3-vat-page #ds3FilterTable tbody tr:last-child td{
+  border-bottom:none !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead th{
+  position:sticky;
+  z-index:6;
+  color:#26364d;
+  font-weight:800;
+  text-align:center;
+  box-shadow:inset 0 -1px 0 #cddbed;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-year-group-head th{
+  top:0;
+  height:42px;
+  background:#eaf1f9 !important;
+  color:#17233a;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-year-sub-head th{
+  top:42px;
+  min-width:118px;
+  background:#f7faff !important;
+  color:#334155;
+  font-size:12px;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-col-sep{
+  border-left:2px solid #b9cbe1 !important;
+}
+
+.ds3-vat-page #ds3FilterTable tbody tr:hover td{
+  background:#fbfdff;
+}
+
+.ds3-vat-page #ds3FilterTable td:first-child,
+.ds3-vat-page #ds3FilterTable th:first-child{
+  min-width:220px !important;
+  max-width:280px !important;
+  text-align:left;
+}
+
+.ds3-vat-page #ds3FilterTable td:nth-child(2),
+.ds3-vat-page #ds3FilterTable th:nth-child(2){
+  min-width:92px !important;
+}
+
+.ds3-vat-page #ds3FilterTable .is-num{
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-row-main-name{
+  display:block;
+  max-width:240px;
+  overflow:hidden;
+  color:#0f172a;
+  font-weight:800;
+  text-overflow:ellipsis;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-group-toggle-cell{
+  background:#e4efff !important;
+  padding:6px 12px !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-group-toggle-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  height:30px;
+  min-width:86px;
+  padding:0 14px;
+  border:1px solid #9ab7e7;
+  border-radius:999px;
+  background:#ffffff;
+  color:#1d4ed8;
+  font-size:13px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 4px 10px rgba(29,78,216,.08);
+  transition:all .16s ease;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-group-toggle-btn:hover{
+  border-color:#2563eb;
+  background:#eff6ff;
+  transform:translateY(-1px);
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-group-toggle-icon{
+  font-size:11px;
+  color:#64748b;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-th-tools{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-th-tools.left{
+  justify-content:flex-start;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-th-label{
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-th-actions{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  flex-shrink:0;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-th-action{
+  width:22px;
+  height:22px;
+  border:1px solid transparent;
+  border-radius:7px;
+  background:transparent;
+  color:#6b7a90;
+  font-size:12px;
+  line-height:1;
+  cursor:pointer;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-th-action:hover,
+.ds3-vat-page #ds3FilterTable .ds3-th-action.is-active{
+  border-color:#bfdbfe;
+  background:#eff6ff;
+  color:#2563eb;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-eye-btn.ds3-detail-btn{
+  width:auto !important;
+  min-width:72px !important;
+  height:30px !important;
+  padding:0 12px !important;
+  border:1px solid #b7cff4;
+  border-radius:999px;
+  background:#f8fbff;
+  color:#1d4ed8;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:0;
+  box-shadow:none;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-eye-btn.ds3-detail-btn:hover{
+  border-color:#2563eb;
+  background:#eff6ff;
+  color:#1e40af;
+  transform:translateY(-1px);
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-remark-cell{
+  min-width:220px !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-note-input{
+  width:100%;
+  height:32px;
+  padding:0 10px;
+  border:1px solid #d9e4f2;
+  border-radius:8px;
+  background:#ffffff;
+  color:#334155;
+  outline:none;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-note-input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,.10);
+}
+
+.ds3-vat-page #ds3Pager{
+  padding:12px 4px 0;
+}
+
+.ds3-vat-page #ds3Pager button{
+  border:1px solid #d7e2f0;
+  border-radius:8px;
+  background:#ffffff;
+  color:#475569;
+  font-weight:700;
+}
+
+.ds3-vat-page #ds3Pager button.is-active{
+  border-color:#2563eb;
+  background:#2563eb;
+  color:#ffffff;
+}
+
+/* 右侧“查看明细”抽屉 */
+.ds3-vat-page #ds3DetailModal{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  align-items:stretch;
+  justify-content:flex-end;
+  background:rgba(15,23,42,.32);
+  backdrop-filter:blur(2px);
+}
+
+.ds3-vat-page #ds3DetailModal.is-show{
+  display:flex;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-modal-panel{
+  width:min(1040px, 92vw) !important;
+  max-width:1040px !important;
+  height:100vh !important;
+  max-height:100vh !important;
+  margin:0;
+  border-left:1px solid #d8e4f2;
+  border-radius:0 !important;
+  background:#f6f9fd;
+  box-shadow:-24px 0 60px rgba(15,23,42,.18);
+  animation:ds3DrawerIn .2s ease-out;
+}
+
+@keyframes ds3DrawerIn{
+  from{ transform:translateX(24px); opacity:.82; }
+  to{ transform:translateX(0); opacity:1; }
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-modal-head{
+  min-height:58px;
+  padding:14px 18px;
+  border-bottom:1px solid #dbe6f3;
+  background:#ffffff;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-modal-title{
+  font-size:17px;
+  font-weight:900;
+  color:#0f172a;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-close{
+  width:34px;
+  height:34px;
+  border:1px solid #dbe4f0;
+  border-radius:999px;
+  background:#ffffff;
+  color:#475569;
+  font-size:20px;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-close:hover{
+  border-color:#bfdbfe;
+  background:#eff6ff;
+  color:#1d4ed8;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-modal-body{
+  flex:1;
+  overflow:auto;
+  padding:16px;
+  background:#f6f9fd;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-panel{
+  border:1px solid #dfe8f4;
+  border-radius:10px;
+  background:#ffffff;
+  box-shadow:0 8px 22px rgba(15,23,42,.05);
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-table-wrap{
+  border:1px solid #dfe8f4;
+  border-radius:10px;
+  background:#ffffff;
+}
+
+.ds3-vat-page #ds3DetailModal table{
+  border-collapse:separate;
+  border-spacing:0;
+}
+
+.ds3-vat-page #ds3DetailModal th,
+.ds3-vat-page #ds3DetailModal td{
+  padding:10px 12px;
+  border-right:1px solid #e6edf6;
+  border-bottom:1px solid #e6edf6;
+}
+
+.ds3-vat-page #ds3DetailModal th:last-child,
+.ds3-vat-page #ds3DetailModal td:last-child{
+  border-right:none;
+}
+
+.ds3-vat-page #ds3DetailModal thead th{
+  background:#f7faff;
+  color:#25364f;
+}
+
+.ds3-vat-page #ds3DetailModal tbody tr:hover td{
+  background:#fbfdff;
+}
+
+@media (max-width:768px){
+  .ds3-vat-page #ds3DetailModal .ds3-modal-panel{
+    width:100vw !important;
+    max-width:100vw !important;
+  }
+
+  .ds3-vat-page #ds3FilterTable .ds3-year-sub-head th{
+    top:42px;
+  }
+}
+
+/* =====================================================
+   本轮交互细化：无框查看明细 / 图标工具 / 勾选结果抽屉
+===================================================== */
+
+.ds3-vat-page #ds3FilterTable .ds3-check-cell,
+.ds3-vat-page #ds3SelectedTable .ds3-check-cell{
+  width:42px !important;
+  min-width:42px !important;
+  max-width:42px !important;
+  text-align:center !important;
+}
+
+.ds3-vat-page input[type="checkbox"]{
+  width:15px;
+  height:15px;
+  accent-color:#2563eb;
+  cursor:pointer;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-th-tools.is-left{
+  justify-content:flex-start;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-th-action,
+.ds3-vat-page #ds3DetailModal .ds3-th-action{
+  border:none !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#64748b;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-th-action:hover,
+.ds3-vat-page #ds3FilterTable .ds3-th-action.is-active,
+.ds3-vat-page #ds3DetailModal .ds3-th-action:hover,
+.ds3-vat-page #ds3DetailModal .ds3-th-action.is-active{
+  border:none !important;
+  background:transparent !important;
+  color:#1d4ed8;
+}
+
+.ds3-vat-page .ds3-filter-btn,
+.ds3-vat-page .ds3-detail-filter{
+  position:relative;
+  color:transparent !important;
+}
+
+.ds3-vat-page .ds3-filter-btn::before,
+.ds3-vat-page .ds3-detail-filter::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:11px;
+  height:11px;
+  transform:translate(-50%,-50%);
+  background:currentColor;
+  color:#64748b;
+  clip-path:polygon(8% 14%,92% 14%,62% 48%,62% 86%,38% 86%,38% 48%);
+}
+
+.ds3-vat-page .ds3-filter-btn:hover::before,
+.ds3-vat-page .ds3-filter-btn.is-active::before,
+.ds3-vat-page .ds3-detail-filter:hover::before,
+.ds3-vat-page .ds3-detail-filter.is-active::before{
+  color:#1d4ed8;
+}
+
+.ds3-vat-page .ds3-sort-btn,
+.ds3-vat-page .ds3-detail-sort{
+  font-size:9px !important;
+  letter-spacing:0;
+}
+
+.ds3-vat-page .ds3-sort-stack{
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  width:10px;
+  height:14px;
+  line-height:1;
+}
+
+.ds3-vat-page .ds3-sort-stack span{
+  display:block;
+  height:7px;
+  line-height:7px;
+  color:#94a3b8;
+  transform:scale(.82);
+}
+
+.ds3-vat-page .ds3-sort-stack.asc span:first-child,
+.ds3-vat-page .ds3-sort-stack.desc span:last-child{
+  color:#1d4ed8;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-eye-btn.ds3-detail-btn{
+  min-width:auto !important;
+  height:auto !important;
+  padding:0 !important;
+  border:none !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#2563eb;
+  box-shadow:none !important;
+  font-size:13px;
+  font-weight:800;
+  text-decoration:none;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-eye-btn.ds3-detail-btn:hover{
+  border:none !important;
+  background:transparent !important;
+  color:#1e40af;
+  transform:none;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+
+.ds3-vat-page #ds3DetailModal,
+.ds3-vat-page #ds3SelectedModal{
+  align-items:stretch;
+  justify-content:flex-end;
+  background:rgba(15,23,42,.24);
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-modal-panel,
+.ds3-vat-page #ds3SelectedModal .ds3-modal-panel{
+  width:min(1080px, 92vw) !important;
+  max-width:1080px !important;
+  height:100vh !important;
+  max-height:100vh !important;
+  margin:0;
+  border-radius:18px 0 0 18px !important;
+  transform-origin:right center;
+  animation:ds3DrawerStretch .24s cubic-bezier(.2,.8,.2,1);
+}
+
+@keyframes ds3DrawerStretch{
+  from{
+    transform:translateX(52px) scaleX(.92);
+    opacity:.2;
+  }
+  to{
+    transform:translateX(0) scaleX(1);
+    opacity:1;
+  }
+}
+
+.ds3-vat-page #ds3SelectedModal{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  backdrop-filter:blur(2px);
+}
+
+.ds3-vat-page #ds3SelectedModal.is-show{
+  display:flex;
+}
+
+.ds3-vat-page #ds3SelectedModal .ds3-modal-head,
+.ds3-vat-page #ds3DetailModal .ds3-modal-head{
+  min-height:60px;
+  padding:14px 18px;
+  border-bottom:1px solid #dbe6f3;
+  background:#ffffff;
+}
+
+.ds3-vat-page #ds3SelectedModal .ds3-modal-body{
+  flex:1;
+  overflow:auto;
+  padding:16px;
+  background:#f6f9fd;
+}
+
+.ds3-vat-page .ds3-selected-hint{
+  margin-bottom:12px;
+  color:#64748b;
+  font-size:13px;
+  font-weight:700;
+}
+
+.ds3-vat-page .ds3-selected-table-wrap{
+  max-height:calc(100vh - 118px);
+}
+
+.ds3-vat-page #ds3SelectedTable{
+  width:max-content;
+  min-width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:13px;
+}
+
+.ds3-vat-page #ds3SelectedTable th,
+.ds3-vat-page #ds3SelectedTable td{
+  padding:10px 12px;
+  border-right:1px solid #e0e8f3;
+  border-bottom:1px solid #e0e8f3;
+  background:#ffffff;
+  white-space:nowrap;
+}
+
+.ds3-vat-page #ds3SelectedTable thead th{
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:#f7faff;
+  color:#25364f;
+  font-weight:800;
+}
+
+.ds3-vat-page #ds3SelectedTable .ds3-year-group-head th{
+  background:#eaf1f9;
+}
+
+.ds3-vat-page #ds3SelectedTable .ds3-year-sub-head th{
+  top:42px;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-summary{
+  display:block;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-context{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-card{
+  border:1px solid #dfe8f4;
+  border-radius:10px;
+  background:#ffffff;
+  padding:10px 12px;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-kpi-strip{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:10px;
+  margin:12px 0 16px;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi{
+  min-height:78px;
+  border:1px solid #dfe8f4;
+  border-radius:10px;
+  background:#ffffff;
+  padding:10px 12px;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi span{
+  display:block;
+  color:#64748b;
+  font-size:12px;
+  font-weight:800;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi b{
+  display:inline-block;
+  margin-top:7px;
+  color:#0f172a;
+  font-size:17px;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi em{
+  margin-left:4px;
+  color:#64748b;
+  font-size:11px;
+  font-style:normal;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi.is-inflow,
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi.is-output{
+  background:#eef5ff;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi.is-outflow,
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi.is-input{
+  background:#fff5ec;
+}
+
+@media (max-width:1100px){
+  .ds3-vat-page #ds3DetailModal .ds3-detail-context,
+  .ds3-vat-page #ds3DetailModal .ds3-kpi-strip{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+/* =====================================================
+   最终覆盖：自适应列宽 + 贴右满高抽屉
+===================================================== */
+
+.ds3-vat-page #ds3FilterTable,
+.ds3-vat-page #ds3SelectedTable,
+.ds3-vat-page #ds3DetailModal table{
+  table-layout:auto !important;
+  width:max-content !important;
+  min-width:100% !important;
+}
+
+.ds3-vat-page #ds3FilterTable th,
+.ds3-vat-page #ds3FilterTable td,
+.ds3-vat-page #ds3SelectedTable th,
+.ds3-vat-page #ds3SelectedTable td,
+.ds3-vat-page #ds3DetailModal th,
+.ds3-vat-page #ds3DetailModal td{
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-check-cell,
+.ds3-vat-page #ds3SelectedTable .ds3-check-cell{
+  width:28px !important;
+  min-width:28px !important;
+  max-width:28px !important;
+  padding:0 6px !important;
+  text-align:center !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-check-cell input,
+.ds3-vat-page #ds3SelectedTable .ds3-check-cell input{
+  display:block;
+  margin:0 auto;
+}
+
+.ds3-vat-page #ds3FilterTable tr:first-child th:nth-child(2),
+.ds3-vat-page #ds3FilterTable tbody td:nth-child(2){
+  min-width:180px !important;
+  max-width:260px !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-row-main-name{
+  max-width:240px;
+}
+
+html:has(.ds3-vat-page #ds3DetailModal.is-show),
+html:has(.ds3-vat-page #ds3SelectedModal.is-show),
+body:has(.ds3-vat-page #ds3DetailModal.is-show),
+body:has(.ds3-vat-page #ds3SelectedModal.is-show){
+  overflow:hidden;
+}
+
+.ds3-vat-page #ds3DetailModal,
+.ds3-vat-page #ds3SelectedModal{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:99999 !important;
+  align-items:stretch !important;
+  justify-content:flex-end !important;
+  padding:0 !important;
+  margin:0 !important;
+  background:rgba(15,23,42,.58) !important;
+  backdrop-filter:none !important;
+}
+
+.ds3-vat-page #ds3DetailModal::before,
+.ds3-vat-page #ds3SelectedModal::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg, rgba(15,23,42,.66) 0%, rgba(15,23,42,.46) 58%, rgba(15,23,42,.18) 100%);
+  pointer-events:none;
+}
+
+.ds3-vat-page #ds3DetailModal.is-show,
+.ds3-vat-page #ds3SelectedModal.is-show{
+  display:flex !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-modal-panel,
+.ds3-vat-page #ds3SelectedModal .ds3-modal-panel{
+  position:relative !important;
+  z-index:1 !important;
+  flex:0 0 min(1120px, 88vw) !important;
+  width:min(1120px, 88vw) !important;
+  max-width:min(1120px, 88vw) !important;
+  height:100dvh !important;
+  min-height:100dvh !important;
+  max-height:100dvh !important;
+  margin:0 !important;
+  border-radius:0 !important;
+  border-top:none !important;
+  border-right:none !important;
+  border-bottom:none !important;
+  border-left:1px solid #d9e4f2 !important;
+  background:#f6f9fd !important;
+  overflow:hidden !important;
+  box-shadow:-28px 0 72px rgba(15,23,42,.24) !important;
+  transform-origin:right center !important;
+  animation:ds3DrawerSlideFull .22s cubic-bezier(.2,.8,.2,1) !important;
+}
+
+@keyframes ds3DrawerSlideFull{
+  from{
+    transform:translateX(100%);
+  }
+  to{
+    transform:translateX(0);
+  }
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-modal-head,
+.ds3-vat-page #ds3SelectedModal .ds3-modal-head{
+  flex:0 0 58px !important;
+  min-height:58px !important;
+  height:58px !important;
+  margin:0 !important;
+  padding:0 18px !important;
+  border-bottom:1px solid #dbe6f3 !important;
+  background:#ffffff !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-modal-body,
+.ds3-vat-page #ds3SelectedModal .ds3-modal-body{
+  flex:1 1 auto !important;
+  height:calc(100dvh - 58px) !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:14px !important;
+  overflow:auto !important;
+  background:#f6f9fd !important;
+}
+
+@media (max-width:768px){
+  .ds3-vat-page #ds3DetailModal .ds3-modal-panel,
+  .ds3-vat-page #ds3SelectedModal .ds3-modal-panel{
+    flex-basis:100vw !important;
+    width:100vw !important;
+    max-width:100vw !important;
+  }
+}
+
+/* =====================================================
+   表格最终统一：合计/月度同风格、自适应内容、不省略
+===================================================== */
+
+.ds3-vat-page .ds3-vat-table-head{
+  align-items:center;
+  gap:10px;
+}
+
+.ds3-vat-page .ds3-table-view-line{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  flex:1 1 auto;
+}
+
+.ds3-vat-page .ds3-table-view-line .ds3-section-desc{
+  margin:0;
+  color:#64748b;
+  font-size:12px;
+  white-space:nowrap;
+}
+
+.ds3-vat-page #ds3FilterTable,
+.ds3-vat-page #ds3SelectedTable{
+  table-layout:auto !important;
+  width:max-content !important;
+  min-width:100% !important;
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+}
+
+.ds3-vat-page #ds3FilterTable th,
+.ds3-vat-page #ds3FilterTable td,
+.ds3-vat-page #ds3SelectedTable th,
+.ds3-vat-page #ds3SelectedTable td{
+  width:auto !important;
+  min-width:max-content !important;
+  max-width:none !important;
+  padding:8px 10px !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-check-cell,
+.ds3-vat-page #ds3SelectedTable .ds3-check-cell{
+  width:22px !important;
+  min-width:22px !important;
+  max-width:22px !important;
+  padding:0 4px !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-check-cell input,
+.ds3-vat-page #ds3SelectedTable .ds3-check-cell input{
+  width:14px;
+  height:14px;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-year-group-head th,
+.ds3-vat-page #ds3FilterTable .ds3-monthly-head th,
+.ds3-vat-page #ds3SelectedTable .ds3-year-group-head th,
+.ds3-vat-page #ds3SelectedTable .ds3-monthly-head th{
+  top:0 !important;
+  background:#eaf1f9 !important;
+  color:#17233a !important;
+  font-weight:800 !important;
+  border-bottom:1px solid #cbd9ea !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-year-sub-head th,
+.ds3-vat-page #ds3SelectedTable .ds3-year-sub-head th{
+  top:38px !important;
+  background:#f7faff !important;
+  color:#334155 !important;
+}
+
+.ds3-vat-page #ds3FilterTable tbody td,
+.ds3-vat-page #ds3SelectedTable tbody td{
+  background:#ffffff !important;
+}
+
+.ds3-vat-page #ds3FilterTable tbody tr:hover td,
+.ds3-vat-page #ds3SelectedTable tbody tr:hover td{
+  background:#fbfdff !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-row-main-name,
+.ds3-vat-page #ds3SelectedTable .ds3-row-main-name{
+  display:inline !important;
+  max-width:none !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  white-space:nowrap !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-context{
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-card{
+  min-width:0;
+  padding:8px 10px;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-card-label{
+  font-size:11px;
+  line-height:1.2;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-card-value{
+  margin-top:4px;
+  font-size:12px;
+  line-height:1.35;
+  font-weight:800;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi{
+  min-width:0;
+  min-height:68px;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi span{
+  font-size:11px;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi b{
+  font-size:15px;
+}
+
+@media (max-width:1180px){
+  .ds3-vat-page .ds3-vat-table-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .ds3-vat-page .ds3-section-actions{
+    width:100%;
+    justify-content:flex-start;
+  }
+}
+
+/* =====================================================
+   本轮最终覆盖：月份浮层 / 全局金额色 / 明细 VAT Tab
+===================================================== */
+
+.ds3-vat-page .ds3-block,
+.ds3-vat-page .ds3-block-body,
+.ds3-vat-page .ds3-filter-grid,
+.ds3-vat-page .ds3-field,
+.ds3-vat-page .ds3-month-field{
+  overflow:visible !important;
+}
+
+.ds3-vat-page .ds3-month-picker{
+  position:relative;
+  z-index:80;
+}
+
+.ds3-vat-page .ds3-month-picker.is-open{
+  z-index:3000;
+}
+
+.ds3-vat-page .ds3-month-menu{
+  z-index:3001 !important;
+  top:38px !important;
+  left:auto !important;
+  right:0 !important;
+  width:320px !important;
+  max-width:min(320px, calc(100vw - 32px));
+  border-color:#cbd8ea;
+  box-shadow:0 18px 42px rgba(15,23,42,.18);
+}
+
+.ds3-vat-page .ds3-month-menu-grid{
+  grid-template-columns:repeat(3,1fr) !important;
+}
+
+.ds3-vat-page .ds3-month-chip{
+  min-width:0;
+  justify-content:flex-start;
+  padding:0 8px;
+}
+
+.ds3-vat-page .ds3-vat-kpi.is-inflow,
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi.is-inflow{
+  background:#eef4ff !important;
+  border-color:#c9dcff !important;
+}
+
+.ds3-vat-page .ds3-vat-kpi.is-output,
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi.is-output{
+  background:#eafaf7 !important;
+  border-color:#b9eee4 !important;
+}
+
+.ds3-vat-page .ds3-vat-kpi.is-outflow,
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi.is-outflow{
+  background:#fff0f4 !important;
+  border-color:#f7c6d4 !important;
+}
+
+.ds3-vat-page .ds3-vat-kpi.is-input,
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi.is-input{
+  background:#fff7e8 !important;
+  border-color:#f6d59a !important;
+}
+
+.ds3-vat-page .ds3-vat-kpi.is-compare,
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi.is-neutral{
+  background:#f4f0ff !important;
+  border-color:#ddd2ff !important;
+}
+
+.ds3-vat-page .ds3-vat-kpi.is-count{
+  background:#f3f6fa !important;
+  border-color:#dbe4ef !important;
+}
+
+.ds3-vat-page .ds3-num-inflow{
+  color:#1d4ed8 !important;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-num-output{
+  color:#0f766e !important;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-num-outflow{
+  color:#be185d !important;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-num-input{
+  color:#b45309 !important;
+  font-weight:800;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-check-cell,
+.ds3-vat-page #ds3SelectedTable .ds3-check-cell{
+  width:18px !important;
+  min-width:18px !important;
+  max-width:18px !important;
+  padding:0 2px !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-check-cell input,
+.ds3-vat-page #ds3SelectedTable .ds3-check-cell input{
+  width:13px !important;
+  height:13px !important;
+}
+
+.ds3-vat-page #ds3SelectedTable .ds3-group-toggle-cell{
+  background:#e4efff !important;
+  padding:5px 10px !important;
+  text-align:center;
+}
+
+.ds3-vat-page #ds3SelectedTable .ds3-group-toggle-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  height:28px;
+  min-width:78px;
+  padding:0 12px;
+  border:1px solid #9ab7e7;
+  border-radius:999px;
+  background:#ffffff;
+  color:#1d4ed8;
+  font-size:13px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.ds3-vat-page .ds3-vat-detail-tabs{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:3px;
+  border:1px solid #d8e3f0;
+  border-radius:9px;
+  background:#f5f8fc;
+}
+
+.ds3-vat-page .ds3-vat-detail-tabs button{
+  min-height:28px;
+  border:none;
+  border-radius:7px;
+  background:transparent;
+  color:#64748b;
+  padding:0 12px;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.ds3-vat-page .ds3-vat-detail-tabs button.is-active{
+  background:#ffffff;
+  color:#1d4ed8;
+  box-shadow:0 1px 4px rgba(15,23,42,.08);
+}
+
+.ds3-vat-page .ds3-empty-cell{
+  height:72px;
+  text-align:center !important;
+  color:#94a3b8;
+  font-weight:700;
+}
+
+.ds3-vat-page .ds3-custom-period{
+  display:none;
+  align-items:center;
+  gap:4px;
+  position:static;
+  height:32px;
+  margin-top:0;
+  padding:0;
+  border-left:none;
+  background:transparent;
+  color:#64748b;
+  font-size:12px;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-custom-period.is-show{
+  display:flex;
+}
+
+.ds3-vat-page .ds3-custom-period input{
+  width:44px;
+  height:28px;
+  border:1px solid #d8e3f0;
+  border-radius:6px;
+  padding:0 6px;
+  color:#0f172a;
+}
+
+.ds3-vat-page .ds3-field:has(#ds3CustomPeriodWrap.is-show) select{
+  padding-right:8px;
+}
+
+.ds3-vat-page .ds3-field:has(#ds3CustomPeriodWrap.is-show){
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  column-gap:8px;
+}
+
+.ds3-vat-page .ds3-field:has(#ds3CustomPeriodWrap.is-show) label{
+  grid-column:1 / -1;
+}
+
+.ds3-vat-page .ds3-month-picker-btn.is-disabled{
+  background:#f3f6fa;
+  color:#94a3b8;
+  cursor:not-allowed;
+}
+
+.ds3-vat-page .ds3-month-field{
+  grid-column:span 1 !important;
+}
+
+.ds3-vat-page .ds3-month-picker-btn{
+  min-height:32px !important;
+  padding:0 8px !important;
+  font-size:12px !important;
+}
+
+.ds3-vat-page .ds3-month-quick{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:6px;
+  margin-bottom:8px;
+}
+
+.ds3-vat-page .ds3-month-quick button{
+  min-height:28px;
+  border:1px solid #d8e3f0;
+  border-radius:7px;
+  background:#f8fafc;
+  color:#475569;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.ds3-vat-page .ds3-month-quick button:hover{
+  border-color:#93b4e8;
+  background:#eef4ff;
+  color:#1d4ed8;
+}
+
+/* 复选框列最终压缩：只保留勾选所需宽度 */
+.ds3-vat-page #ds3FilterTable th.ds3-check-cell,
+.ds3-vat-page #ds3FilterTable td.ds3-check-cell,
+.ds3-vat-page #ds3SelectedTable th.ds3-check-cell,
+.ds3-vat-page #ds3SelectedTable td.ds3-check-cell{
+  width:26px !important;
+  min-width:26px !important;
+  max-width:26px !important;
+  padding:0 5px !important;
+  line-height:1 !important;
+}
+
+.ds3-vat-page #ds3FilterTable th.ds3-check-cell input,
+.ds3-vat-page #ds3FilterTable td.ds3-check-cell input,
+.ds3-vat-page #ds3SelectedTable th.ds3-check-cell input,
+.ds3-vat-page #ds3SelectedTable td.ds3-check-cell input{
+  width:14px !important;
+  height:14px !important;
+  min-width:14px !important;
+  margin:0 auto !important;
+  padding:0 !important;
+}
+
+/* 折叠按钮统一为银行流水分析圆形箭头样式 */
+.ds3-vat-page .ds3-fold{
+  width:26px !important;
+  height:26px !important;
+  min-width:26px !important;
+  padding:0 !important;
+  border:1px solid #dbe5f0 !important;
+  border-radius:999px !important;
+  background:#ffffff !important;
+  color:transparent !important;
+  font-size:0 !important;
+  cursor:pointer;
+  position:relative;
+  flex:0 0 26px;
+}
+
+.ds3-vat-page .ds3-fold::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-right:2px solid #64748b;
+  border-bottom:2px solid #64748b;
+  position:absolute;
+  top:7px;
+  left:8px;
+  transform:rotate(45deg);
+  transition:transform .18s ease;
+}
+
+.ds3-vat-page .ds3-block.is-collapsed .ds3-fold::before{
+  transform:rotate(-135deg);
+  top:10px;
+}
+
+/* 合计子列按内容收紧 */
+.ds3-vat-page #ds3FilterTable .ds3-year-sub-head th{
+  min-width:0 !important;
+  padding:7px 9px !important;
+}
+
+/* 对比分析摘要：窄摘要 + 双列金额构成 */
+.ds3-vat-page .ds3-summary-panel .ds3-summary-row{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  align-items:center;
+  gap:8px;
+}
+
+.ds3-vat-page .ds3-summary-panel .ds3-summary-row b{
+  min-width:0;
+  text-align:right;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-composition-panel .ds3-panel-headline{
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.ds3-vat-page .ds3-composition-switch{
+  flex-shrink:0;
+}
+
+.ds3-vat-page .ds3-composition-compare{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.ds3-vat-page .ds3-composition-col{
+  min-width:0;
+}
+
+.ds3-vat-page .ds3-composition-title{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:8px;
+  color:#334155;
+  font-size:12px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-composition-title::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:#94a3b8;
+}
+
+.ds3-vat-page .ds3-composition-title.is-inflow::before,
+.ds3-vat-page .ds3-bar-fill.is-inflow{
+  background:#2f6fed !important;
+}
+
+.ds3-vat-page .ds3-composition-title.is-output::before,
+.ds3-vat-page .ds3-bar-fill.is-output{
+  background:#0f9f8a !important;
+}
+
+.ds3-vat-page .ds3-composition-title.is-outflow::before,
+.ds3-vat-page .ds3-bar-fill.is-outflow{
+  background:#d9466f !important;
+}
+
+.ds3-vat-page .ds3-composition-title.is-input::before,
+.ds3-vat-page .ds3-bar-fill.is-input{
+  background:#d97706 !important;
+}
+
+.ds3-vat-page .ds3-composition-panel .ds3-bar-item{
+  grid-template-columns:minmax(90px,1fr) auto;
+  gap:6px;
+}
+
+.ds3-vat-page .ds3-composition-panel .ds3-bar-name{
+  min-width:0;
+}
+
+.ds3-vat-page .ds3-composition-panel .ds3-bar-value{
+  min-width:54px;
+}
+
+.ds3-vat-page .ds3-chart-loading{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#94a3b8;
+  font-size:13px;
+  font-weight:700;
+  background:#f8fafc;
+  border-radius:8px;
 }

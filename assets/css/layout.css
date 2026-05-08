@@ -543,3 +543,8 @@ body{
   flex-direction:column;
   overflow:hidden;
 }
+
+/* iframe 内右侧抽屉打开时，让内容区顶到面包屑位置，避免外层“返回项目列表”露出 */
+body.ds3-parent-drawer-open .breadcrumb-bar{
+  display:none !important;
+}
