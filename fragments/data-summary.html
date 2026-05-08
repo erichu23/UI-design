@@ -66,7 +66,13 @@
     <section class="ds3-block">
       <div class="ds3-block-head"><div class="ds3-block-title">月度对比趋势</div><button class="ds3-fold" type="button">收起</button></div>
       <div class="ds3-block-body">
-        <div class="ds3-month-toolbar" id="ds3MonthToolbar"></div>
+        <div class="ds3-chart-toolbar">
+          <div class="ds3-month-toolbar" id="ds3MonthToolbar"></div>
+          <div class="ds3-segment ds3-chart-type-switch" id="ds3ChartTypeSwitch">
+            <button class="is-active" data-chart-type="bar" type="button">柱状图</button>
+            <button data-chart-type="line" type="button">折线图</button>
+          </div>
+        </div>
         <div class="ds3-grid-2">
           <div class="ds3-panel" data-view-panel="in"><div class="ds3-panel-title">银行流入 vs 销项税价合计（月度）</div><div class="ds3-chart" id="ds3InChart"></div></div>
           <div class="ds3-panel" data-view-panel="out"><div class="ds3-panel-title">银行流出 vs 进项税价合计（月度）</div><div class="ds3-chart" id="ds3OutChart"></div></div>
@@ -79,8 +85,14 @@
       <div class="ds3-block-body">
         <div class="ds3-vat-summary-grid">
           <div class="ds3-panel ds3-summary-panel"><div class="ds3-panel-title">当前查看摘要</div><div class="ds3-summary-list" id="ds3CurrentSummary"></div><div class="ds3-chip-row" id="ds3Chips"></div></div>
-          <div class="ds3-panel ds3-period-panel"><div class="ds3-panel-title">账期平移分析</div><div class="ds3-table-wrap"><table class="ds3-table ds3-mini-table"><thead><tr><th>账期口径</th><th class="is-num">银行金额</th><th class="is-num">税票金额</th><th class="is-num">对比金额</th></tr></thead><tbody id="ds3PeriodRows"></tbody></table></div></div>
-          <div class="ds3-panel ds3-composition-panel"><div class="ds3-panel-headline"><div class="ds3-panel-title">对手方金额构成</div><div class="ds3-segment ds3-composition-switch" id="ds3CompositionMetric"><button class="is-active" data-composition-view="in" type="button">流入 / 销项</button><button data-composition-view="out" type="button">流出 / 进项</button></div></div><div class="ds3-composition-compare" id="ds3Composition"></div></div>
+          <div class="ds3-panel ds3-period-panel">
+            <div class="ds3-panel-headline">
+              <div class="ds3-panel-title">账期口径摘要</div>
+              <button class="ds3-help-dot" type="button" title="用于查看不同账期口径下的摘要结果，并将选定口径应用到整页分析">?</button>
+            </div>
+            <div class="ds3-period-summary" id="ds3PeriodSummary"></div>
+          </div>
+          <div class="ds3-panel ds3-composition-panel"><div class="ds3-panel-headline"><div class="ds3-panel-title">对手方金额构成</div><div class="ds3-segment ds3-composition-switch" id="ds3CompositionMetric"><button class="is-active" data-composition-rank="inflow" type="button">流入前20</button><button data-composition-rank="outflow" type="button">流出前20</button><button data-composition-rank="salesVat" type="button">销项前20</button><button data-composition-rank="purchaseVat" type="button">进项前20</button></div></div><div class="ds3-composition-centipede" id="ds3Composition"></div></div>
         </div>
       </div>
     </section>
@@ -97,6 +109,7 @@
             <button class="ds3-btn" id="ds3ClearMonthBtn" type="button">清除月份筛选</button>
             <button class="ds3-btn" id="ds3ClearCounterpartyBtn" type="button">清除对手方筛选</button>
             <button class="ds3-btn" id="ds3ViewSelectedBtn" type="button">查看勾选结果</button>
+            <button class="ds3-btn" id="ds3BatchShiftBtn" type="button">批量平移账期</button>
             <button class="ds3-btn is-primary" id="ds3ExportBtn" type="button">导出当前结果</button>
           </div>
         </div>
@@ -149,7 +162,53 @@
         </div>
       </div>
     </div>
+
+    <div class="ds3-modal" id="ds3BatchShiftModal">
+      <div class="ds3-modal-panel ds3-modal-panel-md">
+        <div class="ds3-modal-head"><div class="ds3-modal-title">批量平移账期</div><button class="ds3-close" id="ds3BatchShiftClose" type="button">×</button></div>
+        <div class="ds3-modal-body">
+          <div class="ds3-batch-shift-intro" id="ds3BatchShiftIntro"></div>
+          <div class="ds3-batch-shift-control">
+            <label>税票平移</label>
+            <input id="ds3BatchShiftInput" type="number" min="-12" max="12" value="0"/>
+            <span>月</span>
+          </div>
+          <div class="ds3-batch-shift-control">
+            <label>账期对象</label>
+            <select id="ds3BatchShiftBasis">
+              <option value="all">全部</option>
+              <option value="receipt">收款</option>
+              <option value="payment">付款</option>
+            </select>
+          </div>
+          <div class="ds3-batch-shift-list" id="ds3BatchShiftList"></div>
+          <div class="ds3-modal-actions">
+            <button class="ds3-btn" id="ds3BatchShiftClear" type="button">恢复全局口径</button>
+            <button class="ds3-btn is-primary" id="ds3BatchShiftApply" type="button">应用到勾选对手方</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds3-modal" id="ds3PeriodDetailModal">
+      <div class="ds3-modal-panel ds3-modal-panel-lg">
+        <div class="ds3-modal-head"><div><div class="ds3-modal-title">详细月份变化</div><div class="ds3-modal-subtitle" id="ds3PeriodDetailSubtitle"></div></div><button class="ds3-close" id="ds3PeriodDetailClose" type="button">×</button></div>
+        <div class="ds3-modal-body">
+          <div class="ds3-period-detail-note" id="ds3PeriodDetailNote"></div>
+          <div class="ds3-table-wrap">
+            <table class="ds3-table ds3-table-compact">
+              <thead><tr><th>月份</th><th class="is-num">银行金额</th><th class="is-num">同期税票金额</th><th class="is-num">当前口径税票金额</th><th class="is-num">税票变化金额</th><th class="is-num">对比金额</th></tr></thead>
+              <tbody id="ds3PeriodDetailRows"></tbody>
+            </table>
+          </div>
+          <div class="ds3-modal-actions">
+            <button class="ds3-btn is-primary" id="ds3PeriodDetailApply" type="button">设为当前口径</button>
+            <button class="ds3-btn" id="ds3PeriodDetailCancel" type="button">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <script src="../assets/js/pages/data-summary.js?v=20260508-vat-compare-11"></script>
+  <script src="../assets/js/pages/data-summary.js?v=20260508-vat-compare-13"></script>
 </body>
 </html>

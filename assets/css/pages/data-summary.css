@@ -3656,3 +3656,459 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   background:#f8fafc;
   border-radius:8px;
 }
+
+/* 对手方金额构成：蜈蚣式四指标对比 */
+.ds3-vat-page .ds3-composition-panel .ds3-panel-headline{
+  gap:12px;
+}
+
+.ds3-vat-page .ds3-composition-switch{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+}
+
+.ds3-vat-page .ds3-composition-switch button{
+  min-width:auto;
+  padding:0 9px;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-composition-centipede{
+  display:block;
+  min-height:320px;
+}
+
+.ds3-vat-page .ds3-centipede-head,
+.ds3-vat-page .ds3-centipede-row{
+  display:grid;
+  grid-template-columns:minmax(170px,1fr) minmax(150px,190px) minmax(170px,1fr);
+  gap:12px;
+  align-items:center;
+}
+
+.ds3-vat-page .ds3-centipede-head{
+  padding:0 10px 8px;
+  color:#64748b;
+  font-size:12px;
+  font-weight:900;
+  text-align:center;
+}
+
+.ds3-vat-page .ds3-centipede-list{
+  max-height:420px;
+  overflow:auto;
+  padding-right:4px;
+}
+
+.ds3-vat-page .ds3-centipede-row{
+  min-height:58px;
+  padding:8px 10px;
+  border-top:1px solid #eef2f7;
+  cursor:pointer;
+}
+
+.ds3-vat-page .ds3-centipede-row:hover{
+  background:#f8fbff;
+}
+
+.ds3-vat-page .ds3-centipede-side{
+  display:grid;
+  gap:6px;
+  min-width:0;
+}
+
+.ds3-vat-page .ds3-centipede-bar{
+  display:grid;
+  grid-template-columns:34px minmax(64px,1fr) 58px;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+  color:#475569;
+  font-size:11px;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-centipede-bar.is-left{
+  grid-template-columns:58px minmax(64px,1fr) 34px;
+}
+
+.ds3-vat-page .ds3-centipede-bar.is-left .ds3-centipede-label{
+  grid-column:3;
+  grid-row:1;
+  text-align:left;
+}
+
+.ds3-vat-page .ds3-centipede-bar.is-left .ds3-centipede-track{
+  grid-column:2;
+  grid-row:1;
+}
+
+.ds3-vat-page .ds3-centipede-bar.is-left b{
+  grid-column:1;
+  grid-row:1;
+  text-align:right;
+}
+
+.ds3-vat-page .ds3-centipede-track{
+  position:relative;
+  height:9px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#eef2f7;
+}
+
+.ds3-vat-page .ds3-centipede-bar.is-left .ds3-centipede-track i{
+  right:0;
+  left:auto;
+}
+
+.ds3-vat-page .ds3-centipede-track i{
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  border-radius:999px;
+}
+
+.ds3-vat-page .ds3-centipede-track i.is-inflow{background:#2f6fed;}
+.ds3-vat-page .ds3-centipede-track i.is-output{background:#0f9f8a;}
+.ds3-vat-page .ds3-centipede-track i.is-outflow{background:#d9466f;}
+.ds3-vat-page .ds3-centipede-track i.is-input{background:#d97706;}
+
+.ds3-vat-page .ds3-centipede-name{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:3px 8px;
+  align-items:center;
+  min-width:0;
+  text-align:left;
+}
+
+.ds3-vat-page .ds3-centipede-name em{
+  width:24px;
+  height:24px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:#eef4ff;
+  color:#1d4ed8;
+  font-style:normal;
+  font-size:11px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-centipede-name strong{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#0f172a;
+  font-size:12px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-centipede-name span{
+  grid-column:2;
+  color:#7c3aed;
+  font-size:11px;
+  font-weight:800;
+}
+
+/* 批量账期平移弹窗 */
+.ds3-vat-page .ds3-modal-panel-md{
+  width:min(560px, calc(100vw - 32px));
+}
+
+.ds3-vat-page .ds3-batch-shift-intro{
+  padding:10px 12px;
+  border:1px solid #dbeafe;
+  border-radius:8px;
+  background:#eff6ff;
+  color:#334155;
+  font-size:13px;
+  font-weight:700;
+  line-height:1.6;
+}
+
+.ds3-vat-page .ds3-batch-shift-control{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:14px;
+  color:#334155;
+  font-size:13px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-batch-shift-control input{
+  width:72px;
+  height:34px;
+  border:1px solid #d8e3f0;
+  border-radius:7px;
+  padding:0 8px;
+  color:#0f172a;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-batch-shift-control select{
+  height:34px;
+  border:1px solid #d8e3f0;
+  border-radius:7px;
+  padding:0 28px 0 10px;
+  background:#ffffff;
+  color:#0f172a;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-batch-shift-list{
+  display:grid;
+  gap:8px;
+  max-height:260px;
+  overflow:auto;
+  margin-top:14px;
+}
+
+.ds3-vat-page .ds3-batch-shift-item{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  padding:9px 10px;
+  border:1px solid #e5edf7;
+  border-radius:8px;
+  background:#ffffff;
+}
+
+.ds3-vat-page .ds3-batch-shift-item span{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#0f172a;
+  font-size:13px;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-batch-shift-item b{
+  color:#64748b;
+  font-size:12px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:16px;
+}
+
+@media (max-width: 1100px){
+  .ds3-vat-page .ds3-centipede-head,
+  .ds3-vat-page .ds3-centipede-row{
+    grid-template-columns:1fr;
+  }
+
+  .ds3-vat-page .ds3-centipede-head{
+    display:none;
+  }
+}
+
+/* 月度趋势图切换 */
+.ds3-vat-page .ds3-chart-toolbar{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+
+.ds3-vat-page .ds3-chart-toolbar .ds3-month-toolbar{
+  flex:1;
+  min-width:0;
+}
+
+.ds3-vat-page .ds3-chart-type-switch{
+  flex:0 0 auto;
+}
+
+.ds3-vat-page .ds3-tip-card{
+  display:grid;
+  gap:4px;
+  min-width:150px;
+  color:#334155;
+  font-size:12px;
+  line-height:1.45;
+}
+
+.ds3-vat-page .ds3-tip-card b{
+  color:#0f172a;
+  font-size:13px;
+}
+
+/* 对比分析摘要：账期口径摘要 */
+.ds3-vat-page .ds3-panel-headline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.ds3-vat-page .ds3-help-dot{
+  width:20px;
+  height:20px;
+  border:0;
+  border-radius:50%;
+  background:#edf4ff;
+  color:#2563eb;
+  font-size:12px;
+  font-weight:900;
+  cursor:help;
+}
+
+.ds3-vat-page .ds3-period-summary{
+  display:grid;
+  gap:10px;
+  margin-top:10px;
+}
+
+.ds3-vat-page .ds3-period-tabs{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:6px;
+  padding:4px;
+  border:1px solid #e2e8f0;
+  border-radius:8px;
+  background:#f8fafc;
+}
+
+.ds3-vat-page .ds3-period-tabs button{
+  min-width:0;
+  height:30px;
+  border:0;
+  border-radius:6px;
+  background:transparent;
+  color:#64748b;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.ds3-vat-page .ds3-period-tabs button.is-active{
+  background:#ffffff;
+  color:#1d4ed8;
+  box-shadow:0 1px 4px rgba(15,23,42,.12);
+}
+
+.ds3-vat-page .ds3-period-preview-text{
+  display:grid;
+  gap:5px;
+  padding:10px 12px;
+  border:1px solid #e5edf7;
+  border-radius:8px;
+  background:#ffffff;
+}
+
+.ds3-vat-page .ds3-period-preview-text div{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  color:#64748b;
+  font-size:12px;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-period-preview-text b{
+  color:#0f172a;
+  font-size:13px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-period-preview-text p{
+  margin:0;
+  color:#475569;
+  font-size:12px;
+  line-height:1.55;
+}
+
+.ds3-vat-page .ds3-period-impact-grid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:8px;
+}
+
+.ds3-vat-page .ds3-period-impact-grid div{
+  display:grid;
+  gap:4px;
+  min-height:58px;
+  padding:10px;
+  border:1px solid #e5edf7;
+  border-radius:8px;
+  background:#fbfdff;
+}
+
+.ds3-vat-page .ds3-period-impact-grid span{
+  color:#64748b;
+  font-size:11px;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-period-impact-grid b{
+  overflow-wrap:anywhere;
+  color:#0f172a;
+  font-size:14px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-period-preview-note{
+  padding:8px 10px;
+  border:1px solid #fde68a;
+  border-radius:8px;
+  background:#fffbeb;
+  color:#92400e;
+  font-size:12px;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-period-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+}
+
+.ds3-vat-page .ds3-modal-panel-lg{
+  width:min(880px, calc(100vw - 32px));
+}
+
+.ds3-vat-page .ds3-modal-subtitle{
+  margin-top:4px;
+  color:#64748b;
+  font-size:12px;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-period-detail-note{
+  margin:0 0 10px;
+  padding:10px 12px;
+  border:1px solid #dbeafe;
+  border-radius:8px;
+  background:#eff6ff;
+  color:#334155;
+  font-size:13px;
+  font-weight:800;
+  line-height:1.55;
+}
+
+@media (max-width: 900px){
+  .ds3-vat-page .ds3-chart-toolbar{
+    display:grid;
+  }
+
+  .ds3-vat-page .ds3-chart-type-switch{
+    justify-self:start;
+  }
+
+  .ds3-vat-page .ds3-period-impact-grid{
+    grid-template-columns:1fr;
+  }
+}
