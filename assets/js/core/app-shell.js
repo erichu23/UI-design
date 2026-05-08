@@ -29,7 +29,15 @@ const APP_FRAME_STATE_KEY = 'auditCompass.currentFrameState';
 const DEFAULT_PROJECT = 'Test2';
 const DEFAULT_BOOK = '20251022';
 const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260508-fast2';
+const DATA_SUMMARY_SRC = './fragments/data-summary.html?v=20260508-vat-compare-11';
 const PROJECT_LIST_SRC = './fragments/project-list.html';
+
+function normalizeFrameSrc(src){
+  if (!src) return src;
+  if (src.includes('bank-analysis.html')) return BANK_ANALYSIS_SRC;
+  if (src.includes('data-summary.html')) return DATA_SUMMARY_SRC;
+  return src;
+}
 
 function getWorkspaceContext(){
   const crumbProject = document.getElementById('crumbProject')?.textContent || DEFAULT_PROJECT;
@@ -43,7 +51,7 @@ function getWorkspaceContext(){
 function saveFrameState(src, title, project, book){
   try {
     localStorage.setItem(APP_FRAME_STATE_KEY, JSON.stringify({
-      src,
+      src: normalizeFrameSrc(src),
       title,
       project: project || DEFAULT_PROJECT,
       book: book || DEFAULT_BOOK
@@ -121,8 +129,9 @@ function switchFrame(src, title, el){
   const frame = document.getElementById('module-frame');
   const breadcrumb = document.getElementById('breadcrumbBar');
   const ctx = getWorkspaceContext();
+  const nextSrc = normalizeFrameSrc(src);
 
-  if (frame) frame.src = src;
+  if (frame) frame.src = nextSrc;
   if (breadcrumb) breadcrumb.style.display = 'flex';
 
   setWorkspaceState(ctx.project, ctx.book, title);
@@ -130,7 +139,7 @@ function switchFrame(src, title, el){
   document.querySelectorAll('.module-item').forEach(item => item.classList.remove('current'));
   if (el) el.classList.add('current');
 
-  saveFrameState(src, title, ctx.project, ctx.book);
+  saveFrameState(nextSrc, title, ctx.project, ctx.book);
 }
 
 function enterWorkbook(project, book){
@@ -165,10 +174,12 @@ function restoreFrameState(){
     return;
   }
 
-  if (frame) frame.src = saved.src;
+  const restoredSrc = normalizeFrameSrc(saved.src);
+  if (frame) frame.src = restoredSrc;
   if (breadcrumb) breadcrumb.style.display = 'flex';
   setWorkspaceState(saved.project, saved.book, saved.title);
-  setCurrentModuleBySrc(saved.src);
+  setCurrentModuleBySrc(restoredSrc);
+  saveFrameState(restoredSrc, saved.title, saved.project, saved.book);
 }
 
 (function(){
