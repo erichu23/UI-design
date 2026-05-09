@@ -133,7 +133,7 @@
 
 .ds3-vat-summary-grid{
   display:grid;
-  grid-template-columns:minmax(230px,.72fr) minmax(360px,1fr) minmax(560px,1.8fr);
+  grid-template-columns:minmax(400px, 1fr) minmax(560px, 1.8fr);
   gap:14px;
 }
 
@@ -1641,6 +1641,20 @@ html,body{
   font-size:12px;
   color:#64748b;
   margin-right:8px;
+}
+
+.ds3-page-ellipsis{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:32px;
+  height:32px;
+  padding:0 6px;
+  color:#94a3b8;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:1px;
+  user-select:none;
 }
 
 #ds3SelectedModal .ds3-table-wrap{
@@ -3575,6 +3589,176 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   white-space:nowrap;
 }
 
+/* =====================================================
+   当前分析摘要 — 统一只读解释型卡片
+===================================================== */
+.ds3-vat-page .ds3-analysis-summary-panel{
+  min-width:0;
+}
+
+.ds3-vat-page .ds3-analysis-summary{
+  display:grid;
+  gap:0;
+}
+
+/* A. 标题区 */
+.ds3-vat-page .ds3-analysis-summary-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding-bottom:12px;
+  margin-bottom:14px;
+  border-bottom:1px solid #eef2f7;
+}
+
+.ds3-vat-page .ds3-analysis-summary-title{
+  font-size:14px;
+  font-weight:800;
+  color:#0f172a;
+}
+
+/* B / C / D. 各区域 */
+.ds3-vat-page .ds3-analysis-summary-section{
+  padding:10px 0;
+}
+
+.ds3-vat-page .ds3-analysis-summary-section + .ds3-analysis-summary-section{
+  border-top:1px solid #f2f5f9;
+}
+
+.ds3-vat-page .ds3-analysis-summary-section-label{
+  font-size:11px;
+  font-weight:800;
+  color:#64748b;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  margin-bottom:8px;
+}
+
+.ds3-vat-page .ds3-analysis-summary-fields{
+  display:grid;
+  gap:8px;
+}
+
+.ds3-vat-page .ds3-analysis-fields-4{
+  grid-template-columns:repeat(2, 1fr);
+}
+
+.ds3-vat-page .ds3-analysis-fields-3{
+  grid-template-columns:repeat(3, 1fr);
+}
+
+.ds3-vat-page .ds3-analysis-fields-2{
+  grid-template-columns:repeat(2, 1fr);
+}
+
+.ds3-vat-page .ds3-analysis-field{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-height:32px;
+  padding:6px 10px;
+  border:1px solid #edf2f7;
+  border-radius:8px;
+  background:#fbfdff;
+}
+
+.ds3-vat-page .ds3-analysis-field span{
+  flex:0 0 auto;
+  color:#64748b;
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-analysis-field b{
+  flex:1 1 auto;
+  min-width:0;
+  color:#0f172a;
+  font-size:13px;
+  font-weight:800;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  text-align:right;
+}
+
+.ds3-vat-page .ds3-analysis-field em{
+  flex:0 0 auto;
+  margin-left:2px;
+  color:#94a3b8;
+  font-size:11px;
+  font-style:normal;
+  font-weight:600;
+}
+
+.ds3-vat-page .ds3-analysis-clear-btn{
+  flex:0 0 auto;
+  width:18px;
+  height:18px;
+  border:none;
+  border-radius:50%;
+  background:#e2e8f0;
+  color:#64748b;
+  font-size:11px;
+  line-height:1;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  margin-left:6px;
+}
+
+.ds3-vat-page .ds3-analysis-clear-btn:hover{
+  background:#cbd5e1;
+  color:#334155;
+}
+
+/* 说明性文字 */
+.ds3-vat-page .ds3-analysis-summary-note{
+  margin-top:8px;
+  padding:8px 10px;
+  border:1px solid #dbeafe;
+  border-radius:8px;
+  background:#f0f6ff;
+  color:#334155;
+  font-size:12px;
+  font-weight:600;
+  line-height:1.5;
+}
+
+/* E. 只读查看入口区 */
+.ds3-vat-page .ds3-analysis-summary-actions{
+  display:flex;
+  gap:8px;
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid #eef2f7;
+}
+
+.ds3-vat-page .ds3-analysis-summary-actions .ds3-btn{
+  font-size:12px;
+  min-height:32px;
+  padding:0 12px;
+}
+
+/* 响应式 */
+@media (max-width: 1100px){
+  .ds3-vat-page .ds3-analysis-fields-3{
+    grid-template-columns:repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px){
+  .ds3-vat-page .ds3-analysis-fields-4,
+  .ds3-vat-page .ds3-analysis-fields-3,
+  .ds3-vat-page .ds3-analysis-fields-2{
+    grid-template-columns:1fr;
+  }
+}
+
 .ds3-vat-page .ds3-composition-panel .ds3-panel-headline{
   align-items:center;
   margin-bottom:10px;
@@ -3839,6 +4023,12 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   color:#334155;
   font-size:13px;
   font-weight:900;
+}
+
+.ds3-vat-page .ds3-batch-rule-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
 }
 
 .ds3-vat-page .ds3-batch-shift-control input{
@@ -4110,5 +4300,224 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 
   .ds3-vat-page .ds3-period-impact-grid{
     grid-template-columns:1fr;
+  }
+}
+
+/* 顶部账期规则设置 */
+.ds3-vat-page .ds3-rule-block{
+  border-color:#cbd8e7;
+  background:#f8fbff;
+}
+
+.ds3-vat-page .ds3-rule-card{
+  display:grid;
+  gap:10px;
+}
+
+.ds3-vat-page .ds3-rule-main{
+  display:grid;
+  grid-template-columns:minmax(300px, 1.25fr) minmax(260px, .9fr) auto;
+  gap:14px;
+  align-items:center;
+}
+
+.ds3-vat-page .ds3-rule-control{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+  flex-wrap:wrap;
+}
+
+.ds3-vat-page .ds3-rule-control label{
+  flex:0 0 auto;
+  color:#334155;
+  font-size:13px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-rule-period-tabs{
+  min-width:0;
+}
+
+.ds3-vat-page .ds3-rule-period-tabs button{
+  min-width:82px;
+}
+
+.ds3-vat-page .ds3-rule-month-control{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  color:#475569;
+  font-size:12px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-rule-month-control.is-muted{
+  opacity:.45;
+}
+
+.ds3-vat-page .ds3-rule-month-control input,
+.ds3-vat-page .ds3-rule-bulk input,
+.ds3-vat-page .ds3-rule-row-month{
+  width:56px;
+  height:34px;
+  border:1px solid #d8e3f0;
+  border-radius:7px;
+  padding:0 6px;
+  background:#ffffff;
+  color:#0f172a;
+  font-size:13px;
+  font-weight:900;
+  text-align:center;
+}
+
+.ds3-vat-page .ds3-rule-stats{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:8px;
+}
+
+.ds3-vat-page .ds3-rule-stats div{
+  display:grid;
+  gap:3px;
+  padding:8px 10px;
+  border:1px solid #dbeafe;
+  border-radius:8px;
+  background:#ffffff;
+}
+
+.ds3-vat-page .ds3-rule-stats span{
+  color:#64748b;
+  font-size:11px;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-rule-stats b{
+  color:#0f172a;
+  font-size:17px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-rule-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-rule-note{
+  padding:9px 11px;
+  border:1px solid #dbeafe;
+  border-radius:8px;
+  background:#eef6ff;
+  color:#334155;
+  font-size:12px;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-rule-manager-panel{
+  width:min(1180px, calc(100vw - 24px));
+}
+
+.ds3-vat-page .ds3-rule-manager-toolbar{
+  display:grid;
+  grid-template-columns:minmax(220px, .7fr) auto minmax(560px, 1.4fr);
+  gap:10px;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.ds3-vat-page .ds3-rule-manager-toolbar input,
+.ds3-vat-page .ds3-rule-bulk select,
+.ds3-vat-page .ds3-rule-row-period{
+  height:34px;
+  border:1px solid #d8e3f0;
+  border-radius:7px;
+  background:#ffffff;
+  color:#0f172a;
+  font-size:13px;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-rule-manager-toolbar input{
+  padding:0 10px;
+}
+
+.ds3-vat-page .ds3-rule-bulk{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.ds3-vat-page .ds3-rule-bulk select,
+.ds3-vat-page .ds3-rule-row-period{
+  padding:0 28px 0 10px;
+}
+
+.ds3-vat-page .ds3-rule-bulk-unit{
+  margin-left:-4px;
+  color:#64748b;
+  font-size:12px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-rule-row-control{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-width:230px;
+}
+
+.ds3-vat-page .ds3-rule-row-control span{
+  color:#64748b;
+  font-size:12px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-rule-manager-hint{
+  margin-bottom:10px;
+  padding:8px 10px;
+  border:1px solid #e5edf7;
+  border-radius:8px;
+  background:#fbfdff;
+  color:#475569;
+  font-size:12px;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-rule-table-wrap{
+  max-height:64vh;
+}
+
+.ds3-vat-page .ds3-rule-source{
+  display:inline-flex;
+  align-items:center;
+  height:24px;
+  padding:0 8px;
+  border-radius:999px;
+  background:#eef2f7;
+  color:#475569;
+  font-size:12px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-rule-source.is-custom{
+  background:#e0f2fe;
+  color:#0369a1;
+}
+
+@media (max-width: 1100px){
+  .ds3-vat-page .ds3-rule-main,
+  .ds3-vat-page .ds3-rule-manager-toolbar{
+    grid-template-columns:1fr;
+  }
+
+  .ds3-vat-page .ds3-rule-actions,
+  .ds3-vat-page .ds3-rule-bulk{
+    justify-content:flex-start;
+    flex-wrap:wrap;
   }
 }

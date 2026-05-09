@@ -7,6 +7,37 @@
 </head>
 <body>
   <div class="ds3-page ds3-vat-page">
+    <section class="ds3-block ds3-rule-block">
+      <div class="ds3-block-head">
+        <div class="ds3-block-title">账期规则设置</div>
+        <button class="ds3-fold" type="button">收起</button>
+      </div>
+      <div class="ds3-block-body">
+        <div class="ds3-rule-card">
+          <div class="ds3-rule-main">
+            <div class="ds3-rule-control">
+              <label>默认账期口径</label>
+              <div class="ds3-segment ds3-rule-period-tabs" id="ds3RulePeriodTabs">
+                <button class="is-active" data-rule-period="same" type="button">同期</button>
+                <button data-rule-period="minus1" type="button">税票前移</button>
+                <button data-rule-period="plus1" type="button">税票后移</button>
+              </div>
+              <div class="ds3-rule-month-control" id="ds3RuleMonthWrap">
+                <input id="ds3RuleMonthInput" type="number" min="1" max="12" value="1"/>
+                <span>个月</span>
+              </div>
+            </div>
+            <div class="ds3-rule-stats" id="ds3RuleStats"></div>
+            <div class="ds3-rule-actions">
+              <button class="ds3-btn is-primary" id="ds3OpenRuleManager" type="button">管理对手方账期规则</button>
+              <button class="ds3-btn" id="ds3ShowRuleApplied" type="button">查看已设置对象</button>
+            </div>
+          </div>
+          <div class="ds3-rule-note" id="ds3RuleNote">当前生效逻辑：全部使用默认口径</div>
+        </div>
+      </div>
+    </section>
+
     <section class="ds3-block">
       <div class="ds3-block-head">
         <div class="ds3-block-title">筛选条件</div>
@@ -25,28 +56,6 @@
               <option value="all">全部</option>
               <option value="in">银行流入 vs 销项税价合计</option>
               <option value="out">银行流出 vs 进项税价合计</option>
-            </select>
-          </div>
-          <div class="ds3-field">
-            <label>账期口径</label>
-            <select id="ds3PeriodOffset">
-              <option value="same">同期</option>
-              <option value="minus1">税票前移1月</option>
-              <option value="plus1">税票后移1月</option>
-              <option value="custom">自定义平移</option>
-            </select>
-            <div class="ds3-custom-period" id="ds3CustomPeriodWrap">
-              <span>税票平移</span>
-              <input id="ds3CustomPeriodShift" type="number" min="-12" max="12" value="0"/>
-              <span>月</span>
-            </div>
-          </div>
-          <div class="ds3-field">
-            <label>账期对象</label>
-            <select id="ds3PeriodBasis">
-              <option value="all">全部</option>
-              <option value="receipt">收款</option>
-              <option value="payment">付款</option>
             </select>
           </div>
           <div class="ds3-field ds3-month-field"><label>月份范围</label><div id="ds3MonthSelect"></div></div>
@@ -84,14 +93,7 @@
       <div class="ds3-block-head"><div class="ds3-block-title">对比分析摘要</div><button class="ds3-fold" type="button">收起</button></div>
       <div class="ds3-block-body">
         <div class="ds3-vat-summary-grid">
-          <div class="ds3-panel ds3-summary-panel"><div class="ds3-panel-title">当前查看摘要</div><div class="ds3-summary-list" id="ds3CurrentSummary"></div><div class="ds3-chip-row" id="ds3Chips"></div></div>
-          <div class="ds3-panel ds3-period-panel">
-            <div class="ds3-panel-headline">
-              <div class="ds3-panel-title">账期口径摘要</div>
-              <button class="ds3-help-dot" type="button" title="用于查看不同账期口径下的摘要结果，并将选定口径应用到整页分析">?</button>
-            </div>
-            <div class="ds3-period-summary" id="ds3PeriodSummary"></div>
-          </div>
+          <div class="ds3-panel ds3-analysis-summary-panel" id="ds3AnalysisSummaryPanel"></div>
           <div class="ds3-panel ds3-composition-panel"><div class="ds3-panel-headline"><div class="ds3-panel-title">对手方金额构成</div><div class="ds3-segment ds3-composition-switch" id="ds3CompositionMetric"><button class="is-active" data-composition-rank="inflow" type="button">流入前20</button><button data-composition-rank="outflow" type="button">流出前20</button><button data-composition-rank="salesVat" type="button">销项前20</button><button data-composition-rank="purchaseVat" type="button">进项前20</button></div></div><div class="ds3-composition-centipede" id="ds3Composition"></div></div>
         </div>
       </div>
@@ -109,7 +111,7 @@
             <button class="ds3-btn" id="ds3ClearMonthBtn" type="button">清除月份筛选</button>
             <button class="ds3-btn" id="ds3ClearCounterpartyBtn" type="button">清除对手方筛选</button>
             <button class="ds3-btn" id="ds3ViewSelectedBtn" type="button">查看勾选结果</button>
-            <button class="ds3-btn" id="ds3BatchShiftBtn" type="button">批量平移账期</button>
+            <button class="ds3-btn" id="ds3BatchShiftBtn" type="button">批量设置对手方账期</button>
             <button class="ds3-btn is-primary" id="ds3ExportBtn" type="button">导出当前结果</button>
           </div>
         </div>
@@ -165,13 +167,23 @@
 
     <div class="ds3-modal" id="ds3BatchShiftModal">
       <div class="ds3-modal-panel ds3-modal-panel-md">
-        <div class="ds3-modal-head"><div class="ds3-modal-title">批量平移账期</div><button class="ds3-close" id="ds3BatchShiftClose" type="button">×</button></div>
+        <div class="ds3-modal-head"><div class="ds3-modal-title">批量设置对手方账期</div><button class="ds3-close" id="ds3BatchShiftClose" type="button">×</button></div>
         <div class="ds3-modal-body">
           <div class="ds3-batch-shift-intro" id="ds3BatchShiftIntro"></div>
-          <div class="ds3-batch-shift-control">
-            <label>税票平移</label>
-            <input id="ds3BatchShiftInput" type="number" min="-12" max="12" value="0"/>
-            <span>月</span>
+          <div class="ds3-batch-rule-grid">
+            <div class="ds3-batch-shift-control">
+              <label>账期方向</label>
+              <select id="ds3BatchShiftDirection">
+                <option value="same">同期</option>
+                <option value="minus1">税票前移</option>
+                <option value="plus1">税票后移</option>
+              </select>
+            </div>
+            <div class="ds3-batch-shift-control">
+              <label>平移月数</label>
+              <input id="ds3BatchShiftMonth" type="number" min="1" max="12" value="1"/>
+              <span>个月</span>
+            </div>
           </div>
           <div class="ds3-batch-shift-control">
             <label>账期对象</label>
@@ -183,8 +195,60 @@
           </div>
           <div class="ds3-batch-shift-list" id="ds3BatchShiftList"></div>
           <div class="ds3-modal-actions">
-            <button class="ds3-btn" id="ds3BatchShiftClear" type="button">恢复全局口径</button>
+            <button class="ds3-btn" id="ds3BatchShiftClear" type="button">恢复默认口径</button>
             <button class="ds3-btn is-primary" id="ds3BatchShiftApply" type="button">应用到勾选对手方</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds3-modal" id="ds3RuleManagerModal">
+      <div class="ds3-modal-panel ds3-modal-panel-xl ds3-rule-manager-panel">
+        <div class="ds3-modal-head">
+          <div>
+            <div class="ds3-modal-title">对手方账期规则管理</div>
+            <div class="ds3-modal-subtitle" id="ds3RuleManagerSubtitle"></div>
+          </div>
+          <button class="ds3-close" id="ds3RuleManagerClose" type="button">×</button>
+        </div>
+        <div class="ds3-modal-body">
+          <div class="ds3-rule-manager-toolbar">
+            <input id="ds3RuleSearch" placeholder="搜索对手方名称"/>
+            <div class="ds3-segment" id="ds3RuleSourceFilter">
+              <button class="is-active" data-rule-source="all" type="button">全部</button>
+              <button data-rule-source="custom" type="button">已单独设置</button>
+              <button data-rule-source="default" type="button">使用默认口径</button>
+            </div>
+            <div class="ds3-rule-bulk">
+              <select id="ds3RuleBulkPeriod">
+                <option value="same">同期</option>
+                <option value="minus1">税票前移</option>
+                <option value="plus1">税票后移</option>
+              </select>
+              <input id="ds3RuleBulkMonth" type="number" min="1" max="12" value="1"/>
+              <span class="ds3-rule-bulk-unit">个月</span>
+              <button class="ds3-btn is-primary" id="ds3RuleBulkApply" type="button">批量设置账期</button>
+              <button class="ds3-btn" id="ds3RuleBulkClear" type="button">批量恢复默认</button>
+              <button class="ds3-btn" id="ds3RuleExport" type="button">导出规则</button>
+              <button class="ds3-btn" id="ds3RuleImportBtn" type="button">导入规则</button>
+              <input id="ds3RuleImportFile" type="file" accept=".csv,.txt" hidden/>
+            </div>
+          </div>
+          <div class="ds3-rule-manager-hint" id="ds3RuleManagerHint"></div>
+          <div class="ds3-table-wrap ds3-rule-table-wrap">
+            <table class="ds3-table ds3-table-compact">
+              <thead>
+                <tr>
+                  <th class="ds3-check-cell"><input id="ds3RuleCheckAll" type="checkbox"/></th>
+                  <th>对手方名称</th>
+                  <th>对手方类型</th>
+                  <th>当前生效规则</th>
+                  <th>规则来源</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="ds3RuleManagerRows"></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -202,8 +266,26 @@
             </table>
           </div>
           <div class="ds3-modal-actions">
-            <button class="ds3-btn is-primary" id="ds3PeriodDetailApply" type="button">设为当前口径</button>
             <button class="ds3-btn" id="ds3PeriodDetailCancel" type="button">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds3-modal" id="ds3RuleCoverageModal">
+      <div class="ds3-modal-panel ds3-modal-panel-lg">
+        <div class="ds3-modal-head">
+          <div><div class="ds3-modal-title">规则覆盖对象</div><div class="ds3-modal-subtitle" id="ds3RuleCoverageSubtitle"></div></div>
+          <button class="ds3-close" id="ds3RuleCoverageClose" type="button">×</button>
+        </div>
+        <div class="ds3-modal-body">
+          <div class="ds3-table-wrap">
+            <table class="ds3-table ds3-table-compact">
+              <thead>
+                <tr><th>对手方名称</th><th>对手方类型</th><th>当前生效规则</th><th>规则来源</th></tr>
+              </thead>
+              <tbody id="ds3RuleCoverageRows"></tbody>
+            </table>
           </div>
         </div>
       </div>
