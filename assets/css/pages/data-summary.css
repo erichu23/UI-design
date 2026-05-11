@@ -2317,6 +2317,216 @@ html,body{
   vertical-align:middle;
 }
 
+/* 最终修复：主明细表固定列间隙与透明漏底 */
+.ds3-vat-page #ds3FilterTable{
+  --ds3-check-col:32px;
+  --ds3-month-col:76px;
+}
+
+.ds3-vat-page #ds3FilterTable th.ds3-sticky-check,
+.ds3-vat-page #ds3FilterTable td.ds3-sticky-check{
+  position:sticky !important;
+  left:0 !important;
+  z-index:30 !important;
+  width:var(--ds3-check-col) !important;
+  min-width:var(--ds3-check-col) !important;
+  max-width:var(--ds3-check-col) !important;
+  padding:0 6px !important;
+  background:#ffffff !important;
+  background-clip:padding-box;
+  box-shadow:inset -1px 0 0 #dbe4ef, 0 0 0 1px #ffffff !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead th.ds3-sticky-check{
+  z-index:60 !important;
+  background:#eef5ff !important;
+  box-shadow:inset -1px 0 0 #cbd8e7, 0 0 0 1px #eef5ff !important;
+}
+
+.ds3-vat-page #ds3FilterTable th.ds3-sticky-cp,
+.ds3-vat-page #ds3FilterTable td.ds3-sticky-cp{
+  position:sticky !important;
+  left:var(--ds3-check-col) !important;
+  z-index:29 !important;
+  min-width:220px !important;
+  background:#ffffff !important;
+  background-clip:padding-box;
+  box-shadow:-1px 0 0 #ffffff, inset -1px 0 0 #dbe4ef, 7px 0 10px -8px rgba(15,23,42,.38) !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead th.ds3-sticky-cp{
+  z-index:59 !important;
+  background:#eef5ff !important;
+  box-shadow:-1px 0 0 #eef5ff, inset -1px 0 0 #cbd8e7, 7px 0 10px -8px rgba(15,23,42,.38) !important;
+}
+
+.ds3-vat-page #ds3FilterTable th.ds3-sticky-month,
+.ds3-vat-page #ds3FilterTable td.ds3-sticky-month{
+  position:sticky !important;
+  left:var(--ds3-check-col) !important;
+  z-index:29 !important;
+  width:var(--ds3-month-col) !important;
+  min-width:var(--ds3-month-col) !important;
+  max-width:var(--ds3-month-col) !important;
+  background:#ffffff !important;
+  box-shadow:inset -1px 0 0 #dbe4ef, 0 0 0 1px #ffffff !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead th.ds3-sticky-month{
+  z-index:59 !important;
+  background:#eef5ff !important;
+  box-shadow:inset -1px 0 0 #cbd8e7, 0 0 0 1px #eef5ff !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-sticky-month + .ds3-sticky-cp{
+  left:calc(var(--ds3-check-col) + var(--ds3-month-col)) !important;
+}
+
+/* 账期规则管理弹窗美化：更宽、更清晰的工具区与概览区 */
+.ds3-vat-page .ds3-rule-manager-panel{
+  width:min(1280px, calc(100vw - 20px)) !important;
+  max-height:calc(100vh - 28px);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 24px 70px rgba(15,23,42,.24);
+}
+
+.ds3-vat-page #ds3RuleManagerModal .ds3-modal-head{
+  min-height:62px;
+  padding:16px 20px;
+  border-bottom:1px solid #dbe7f5;
+  background:linear-gradient(180deg,#f8fbff,#eef5ff);
+}
+
+.ds3-vat-page #ds3RuleManagerModal .ds3-modal-title{
+  font-size:17px;
+  font-weight:900;
+}
+
+.ds3-vat-page #ds3RuleManagerModal .ds3-modal-body{
+  padding:16px 18px 18px;
+  background:#f6f9fd;
+}
+
+.ds3-vat-page .ds3-rule-manager-toolbar{
+  display:grid !important;
+  grid-template-columns:minmax(250px,.75fr) auto minmax(620px,1.45fr);
+  gap:12px;
+  align-items:center;
+  margin-bottom:12px;
+  padding:12px;
+  border:1px solid #dbe7f5;
+  border-radius:12px;
+  background:#ffffff;
+  box-shadow:0 8px 18px rgba(15,23,42,.04);
+}
+
+.ds3-vat-page .ds3-rule-manager-toolbar input{
+  max-width:none;
+}
+
+.ds3-vat-page .ds3-rule-bulk{
+  justify-content:flex-end;
+  flex-wrap:wrap;
+}
+
+.ds3-vat-page .ds3-rule-bulk .ds3-btn{
+  min-height:34px;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-rule-manager-hint{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(130px,170px)) minmax(260px,1fr);
+  gap:10px;
+  align-items:stretch;
+  margin-bottom:12px;
+  padding:0;
+  border:0;
+  background:transparent;
+}
+
+.ds3-vat-page .ds3-rule-overview-card,
+.ds3-vat-page .ds3-rule-overview-note{
+  padding:10px 12px;
+  border:1px solid #e5edf7;
+  border-radius:10px;
+  background:#ffffff;
+  box-shadow:0 6px 16px rgba(15,23,42,.035);
+}
+
+.ds3-vat-page .ds3-rule-overview-card{
+  display:grid;
+  gap:3px;
+}
+
+.ds3-vat-page .ds3-rule-overview-card span{
+  color:#64748b;
+  font-size:11px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-rule-overview-card b{
+  color:#0f172a;
+  font-size:18px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-rule-overview-card.is-custom{
+  border-color:#bfdbfe;
+  background:#eff6ff;
+}
+
+.ds3-vat-page .ds3-rule-overview-card.is-custom b{
+  color:#1d4ed8;
+}
+
+.ds3-vat-page .ds3-rule-overview-note{
+  display:flex;
+  align-items:center;
+  color:#475569;
+  font-size:13px;
+  font-weight:800;
+}
+
+.ds3-vat-page .ds3-rule-table-wrap{
+  max-height:64vh;
+  border-radius:12px;
+  border-color:#dbe7f5;
+  box-shadow:0 10px 24px rgba(15,23,42,.05);
+}
+
+.ds3-vat-page .ds3-rule-table-wrap table{
+  min-width:980px;
+}
+
+.ds3-vat-page .ds3-rule-table-wrap th{
+  background:#eef5ff !important;
+  color:#334155;
+  font-size:12px;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-rule-table-wrap td{
+  background:#ffffff;
+}
+
+.ds3-vat-page .ds3-rule-table-wrap th:nth-child(2),
+.ds3-vat-page .ds3-rule-table-wrap td:nth-child(2){
+  min-width:240px;
+}
+
+.ds3-vat-page .ds3-rule-table-wrap th:nth-child(4),
+.ds3-vat-page .ds3-rule-table-wrap td:nth-child(4){
+  min-width:260px;
+}
+
+.ds3-vat-page .ds3-rule-table-wrap th:last-child,
+.ds3-vat-page .ds3-rule-table-wrap td:last-child{
+  min-width:104px;
+  text-align:center;
+}
+
 /* =====================================================
    数据综合分析 V1 表格与右侧详情抽屉整理
    - 主表：合计/年度分组表头、可筛选排序、清爽网格
@@ -2334,8 +2544,7 @@ html,body{
   width:max-content;
   min-width:100%;
   table-layout:auto !important;
-  border-collapse:separate;
-  border-spacing:0;
+  border-collapse:collapse;
   font-size:13px;
   color:#1f2a3d;
 }
@@ -2867,8 +3076,7 @@ html,body{
 .ds3-vat-page #ds3SelectedTable{
   width:max-content;
   min-width:100%;
-  border-collapse:separate;
-  border-spacing:0;
+  border-collapse:collapse;
   font-size:13px;
 }
 
@@ -3143,8 +3351,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   table-layout:auto !important;
   width:max-content !important;
   min-width:100% !important;
-  border-collapse:separate !important;
-  border-spacing:0 !important;
+  border-collapse:collapse !important;
 }
 
 .ds3-vat-page #ds3FilterTable th,
@@ -4303,11 +4510,9 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   }
 }
 
-/* 顶部账期规则设置 */
+/* 顶部账期规则设置 — 与其他卡片风格统一 */
 .ds3-vat-page .ds3-rule-block{
-  border-color:#cbd8e7;
-  background:#f8fbff;
-}
+  /* 统一使用 ds3-block 默认背景与边框 */}
 
 .ds3-vat-page .ds3-rule-card{
   display:grid;
@@ -4421,8 +4626,8 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 }
 
 .ds3-vat-page .ds3-rule-manager-toolbar{
-  display:grid;
-  grid-template-columns:minmax(220px, .7fr) auto minmax(560px, 1.4fr);
+  display:flex;
+  flex-wrap:nowrap;
   gap:10px;
   align-items:center;
   margin-bottom:10px;
@@ -4442,6 +4647,8 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 
 .ds3-vat-page .ds3-rule-manager-toolbar input{
   padding:0 10px;
+  min-width:180px;
+  max-width:260px;
 }
 
 .ds3-vat-page .ds3-rule-bulk{
@@ -4449,7 +4656,8 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   justify-content:flex-end;
   gap:8px;
   align-items:center;
-  flex-wrap:wrap;
+  flex-wrap:nowrap;
+  flex-shrink:0;
 }
 
 .ds3-vat-page .ds3-rule-bulk select,
@@ -4509,15 +4717,230 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   color:#0369a1;
 }
 
+/* 恢复默认按钮 — 去除按钮背景，显示为纯文字链接 */
+.ds3-vat-page .ds3-rule-clear{
+  width:auto;
+  height:auto;
+  padding:2px 4px;
+  border:none;
+  background:transparent;
+  color:#64748b;
+  font-size:12px;
+  font-weight:700;
+  border-radius:4px;
+  transition:color .15s ease;
+}
+.ds3-vat-page .ds3-rule-clear:hover{
+  background:transparent;
+  border:none;
+  color:#1d4ed8;
+  transform:none;
+}
+
 @media (max-width: 1100px){
-  .ds3-vat-page .ds3-rule-main,
-  .ds3-vat-page .ds3-rule-manager-toolbar{
+  .ds3-vat-page .ds3-rule-main{
     grid-template-columns:1fr;
+  }
+
+  .ds3-vat-page .ds3-rule-manager-toolbar{
+    flex-wrap:wrap;
   }
 
   .ds3-vat-page .ds3-rule-actions,
   .ds3-vat-page .ds3-rule-bulk{
     justify-content:flex-start;
     flex-wrap:wrap;
+  }
+}
+
+/* 工商信息表格 — 长文本单元格截断 */
+.ds3-vat-page .ds3-scope-cell{
+  max-width:240px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* 固定列：checkbox与对手方名称（横向滚动时保持不动） */
+.ds3-vat-page #ds3FilterTable .ds3-sticky-check,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-check{
+  position:sticky;
+  left:0;
+  z-index:4;
+  background:#fff;
+  /* 用 box-shadow 填补 border-right 造成的 1px 间隙 */
+  box-shadow:-1px 0 0 #fff, 1px 0 0 #fff;
+}
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-check,
+.ds3-vat-page #ds3SelectedTable thead .ds3-sticky-check{
+  z-index:9;
+  background:#f9fbff;
+  box-shadow:-1px 0 0 #f9fbff, 1px 0 0 #f9fbff;
+}
+.ds3-vat-page #ds3FilterTable .ds3-sticky-cp,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-cp{
+  position:sticky;
+  z-index:3;
+  background:#fff;
+  /* 左侧用 -1px box-shadow 覆盖 border 间隙，右侧用 4px 产生滚动阴影 */
+  box-shadow:-1px 0 0 #fff, 4px 0 6px -2px rgba(0,0,0,.08);
+}
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-cp,
+.ds3-vat-page #ds3SelectedTable thead .ds3-sticky-cp{
+  z-index:8;
+  background:#f9fbff;
+  box-shadow:-1px 0 0 #f9fbff, 4px 0 6px -2px rgba(0,0,0,.08);
+}
+.ds3-vat-page #ds3FilterTable .ds3-sticky-month,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-month{
+  position:sticky;
+  z-index:3;
+  background:#fff;
+  box-shadow:-1px 0 0 #fff, 1px 0 0 #fff;
+}
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-month,
+.ds3-vat-page #ds3SelectedTable thead .ds3-sticky-month{
+  z-index:8;
+  background:#f9fbff;
+  box-shadow:-1px 0 0 #f9fbff, 1px 0 0 #f9fbff;
+}
+
+/* 终局覆盖：修复主表固定列透明缝 + 规则管理工具栏遮挡 */
+.ds3-vat-page #ds3FilterTable{
+  --ds3-check-col:32px;
+  --ds3-month-col:76px;
+}
+
+.ds3-vat-page #ds3FilterTable th.ds3-sticky-check,
+.ds3-vat-page #ds3FilterTable td.ds3-sticky-check{
+  position:sticky !important;
+  left:0 !important;
+  z-index:80 !important;
+  width:var(--ds3-check-col) !important;
+  min-width:var(--ds3-check-col) !important;
+  max-width:var(--ds3-check-col) !important;
+  padding:0 6px !important;
+  background:#ffffff !important;
+  background-clip:border-box !important;
+  box-shadow:inset -1px 0 0 #dbe4ef, 0 0 0 2px #ffffff !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead th.ds3-sticky-check{
+  z-index:120 !important;
+  background:#eef5ff !important;
+  box-shadow:inset -1px 0 0 #cbd8e7, 0 0 0 2px #eef5ff !important;
+}
+
+.ds3-vat-page #ds3FilterTable th.ds3-sticky-month,
+.ds3-vat-page #ds3FilterTable td.ds3-sticky-month{
+  position:sticky !important;
+  left:var(--ds3-check-col) !important;
+  z-index:79 !important;
+  width:var(--ds3-month-col) !important;
+  min-width:var(--ds3-month-col) !important;
+  max-width:var(--ds3-month-col) !important;
+  background:#ffffff !important;
+  background-clip:border-box !important;
+  box-shadow:inset -1px 0 0 #dbe4ef, 0 0 0 2px #ffffff !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead th.ds3-sticky-month{
+  z-index:119 !important;
+  background:#eef5ff !important;
+  box-shadow:inset -1px 0 0 #cbd8e7, 0 0 0 2px #eef5ff !important;
+}
+
+.ds3-vat-page #ds3FilterTable th.ds3-sticky-cp,
+.ds3-vat-page #ds3FilterTable td.ds3-sticky-cp{
+  position:sticky !important;
+  left:var(--ds3-check-col) !important;
+  z-index:78 !important;
+  min-width:220px !important;
+  background:#ffffff !important;
+  background-clip:border-box !important;
+  box-shadow:-2px 0 0 #ffffff, inset -1px 0 0 #dbe4ef, 8px 0 12px -10px rgba(15,23,42,.45) !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead th.ds3-sticky-cp{
+  z-index:118 !important;
+  background:#eef5ff !important;
+  box-shadow:-2px 0 0 #eef5ff, inset -1px 0 0 #cbd8e7, 8px 0 12px -10px rgba(15,23,42,.45) !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-sticky-month + .ds3-sticky-cp{
+  left:calc(var(--ds3-check-col) + var(--ds3-month-col)) !important;
+}
+
+.ds3-vat-page #ds3RuleManagerModal .ds3-rule-manager-panel{
+  width:min(1460px, calc(100vw - 12px)) !important;
+  max-height:calc(100vh - 16px) !important;
+  border-radius:12px !important;
+  overflow:hidden !important;
+}
+
+.ds3-vat-page #ds3RuleManagerModal .ds3-modal-body{
+  background:#f6f9fd !important;
+}
+
+.ds3-vat-page #ds3RuleManagerModal .ds3-rule-manager-toolbar{
+  display:grid !important;
+  grid-template-columns:260px max-content max-content !important;
+  justify-content:space-between !important;
+  gap:14px !important;
+  align-items:center !important;
+  padding:12px !important;
+  border:1px solid #dbe7f5 !important;
+  border-radius:12px !important;
+  background:#ffffff !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  white-space:nowrap !important;
+  scrollbar-width:thin;
+}
+
+.ds3-vat-page #ds3RuleSourceFilter{
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  gap:4px !important;
+  width:max-content !important;
+  max-width:100% !important;
+  overflow:visible !important;
+}
+
+.ds3-vat-page #ds3RuleSourceFilter button{
+  flex:0 0 auto !important;
+  min-width:auto !important;
+  white-space:nowrap !important;
+  padding:0 10px !important;
+}
+
+.ds3-vat-page #ds3RuleManagerModal .ds3-rule-bulk{
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  justify-content:flex-end !important;
+  align-items:center !important;
+  gap:8px !important;
+  min-width:0 !important;
+  overflow:visible !important;
+}
+
+.ds3-vat-page #ds3RuleManagerModal .ds3-rule-bulk .ds3-btn,
+.ds3-vat-page #ds3RuleManagerModal .ds3-rule-bulk select{
+  flex:0 0 auto !important;
+  white-space:nowrap !important;
+}
+
+.ds3-vat-page #ds3RuleManagerModal .ds3-rule-manager-hint{
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(120px, 170px)) minmax(260px, 1fr) !important;
+  gap:10px !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+}
+
+@media (max-width: 1180px){
+  .ds3-vat-page #ds3RuleManagerModal .ds3-rule-manager-hint{
+    grid-template-columns:1fr 1fr !important;
   }
 }
