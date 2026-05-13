@@ -10,6 +10,7 @@
     <section class="ds3-block ds3-rule-block">
       <div class="ds3-block-head">
         <div class="ds3-block-title">账期规则设置</div>
+        <div class="ds3-rule-note ds3-rule-note-head" id="ds3RuleNote">当前生效逻辑：全部使用默认口径</div>
         <button class="ds3-fold" type="button">收起</button>
       </div>
       <div class="ds3-block-body">
@@ -33,7 +34,6 @@
               <button class="ds3-btn" id="ds3ShowRuleApplied" type="button">查看已设置对象</button>
             </div>
           </div>
-          <div class="ds3-rule-note" id="ds3RuleNote">当前生效逻辑：全部使用默认口径</div>
         </div>
       </div>
     </section>
@@ -72,15 +72,30 @@
       <div class="ds3-block-body"><div class="ds3-vat-kpi-grid" id="ds3KpiGrid"></div></div>
     </section>
 
+    <section class="ds3-block ds3-structure-block">
+      <div class="ds3-block-head"><div class="ds3-block-title">对手方结构分布</div><button class="ds3-fold" type="button">收起</button></div>
+      <div class="ds3-block-body"><div class="ds3-structure-strip" id="ds3StructureCards"></div></div>
+    </section>
+
     <section class="ds3-block">
-      <div class="ds3-block-head"><div class="ds3-block-title">月度对比趋势</div><button class="ds3-fold" type="button">收起</button></div>
+      <div class="ds3-block-head">
+        <div class="ds3-block-title">月度对比</div>
+        <div class="ds3-block-actions">
+          <div class="ds3-segment ds3-trend-mode-tabs" id="ds3TrendModeTabs">
+            <button class="is-active" data-trend-mode="timeline" type="button">时序趋势</button>
+            <button data-trend-mode="crossYear" type="button">同月跨年对比</button>
+          </div>
+          <button class="ds3-fold" type="button">收起</button>
+        </div>
+      </div>
       <div class="ds3-block-body">
+        <div class="ds3-crossyear-toolbar is-hidden" id="ds3CrossYearToolbar"></div>
         <div class="ds3-chart-toolbar">
-          <div class="ds3-month-toolbar" id="ds3MonthToolbar"></div>
           <div class="ds3-segment ds3-chart-type-switch" id="ds3ChartTypeSwitch">
             <button class="is-active" data-chart-type="bar" type="button">柱状图</button>
             <button data-chart-type="line" type="button">折线图</button>
           </div>
+          <div class="ds3-month-toolbar" id="ds3MonthToolbar"></div>
         </div>
         <div class="ds3-grid-2">
           <div class="ds3-panel" data-view-panel="in"><div class="ds3-panel-title">银行流入 vs 销项税价合计（月度）</div><div class="ds3-chart" id="ds3InChart"></div></div>
@@ -104,7 +119,7 @@
       <div class="ds3-block-body">
         <div class="ds3-section-head ds3-vat-table-head">
           <div class="ds3-table-view-line">
-            <div class="ds3-segment" id="ds3TableViewTabs"><button class="is-active" data-view="summary" type="button">合计数据</button><button data-view="monthly" type="button">月度数据</button><button data-view="business" type="button">工商信息</button></div>
+            <div class="ds3-segment" id="ds3TableViewTabs"><button class="is-active" data-view="summary" type="button">合计数据</button><!-- <button data-view="monthly" type="button">月度数据</button> --><button data-view="business" type="button">工商信息</button></div>
             <div class="ds3-section-desc" id="ds3TableContext"></div>
           </div>
           <div class="ds3-section-actions">
@@ -261,7 +276,7 @@
           <div class="ds3-period-detail-note" id="ds3PeriodDetailNote"></div>
           <div class="ds3-table-wrap">
             <table class="ds3-table ds3-table-compact">
-              <thead><tr><th>月份</th><th class="is-num">银行金额</th><th class="is-num">同期税票金额</th><th class="is-num">当前口径税票金额</th><th class="is-num">税票变化金额</th><th class="is-num">对比金额</th></tr></thead>
+              <thead><tr><th>月份</th><th class="is-num">银行金额</th><th class="is-num">同期税票金额</th><th class="is-num">当前口径税票金额</th><th class="is-num">税票变化金额</th><th class="is-num" id="ds3PeriodCompareHead">对比金额</th></tr></thead>
               <tbody id="ds3PeriodDetailRows"></tbody>
             </table>
           </div>
