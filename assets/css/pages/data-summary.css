@@ -112,7 +112,7 @@
 
 .ds3-vat-kpi-grid{
   display:grid;
-  grid-template-columns:repeat(8,minmax(0,1fr));
+  grid-template-columns:repeat(7,minmax(0,1fr));
   gap:8px;
 }
 
@@ -5384,6 +5384,72 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   width:14px;
   height:14px;
   font-size:9px;
+}
+
+.ds3-vat-page #ds3DetailChartToolbar{
+  align-items:center;
+}
+
+.ds3-vat-page .ds3-detail-chart-tools{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+  min-width:0;
+}
+
+.ds3-vat-page .ds3-detail-crossyear-picker{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:6px;
+}
+
+.ds3-vat-page #ds3FilterTable{
+  --ds3-action-col:66px;
+  --ds3-remark-col:112px;
+}
+
+.ds3-vat-page #ds3FilterTable th.ds3-sticky-action,
+.ds3-vat-page #ds3FilterTable td.ds3-sticky-action,
+.ds3-vat-page #ds3FilterTable th.ds3-sticky-remark,
+.ds3-vat-page #ds3FilterTable td.ds3-sticky-remark{
+  position:sticky !important;
+  background:#ffffff !important;
+  background-clip:border-box !important;
+  border-bottom:1px solid #e0e8f3 !important;
+}
+
+.ds3-vat-page #ds3FilterTable th.ds3-sticky-action,
+.ds3-vat-page #ds3FilterTable td.ds3-sticky-action{
+  right:var(--ds3-remark-col) !important;
+  z-index:77 !important;
+  width:var(--ds3-action-col) !important;
+  min-width:var(--ds3-action-col) !important;
+  max-width:var(--ds3-action-col) !important;
+  box-shadow:inset 1px 0 0 #cbd8e7, inset -1px 0 0 #e0e8f3, inset 0 -1px 0 #e0e8f3, -8px 0 12px -12px rgba(15,23,42,.45) !important;
+}
+
+.ds3-vat-page #ds3FilterTable th.ds3-sticky-remark,
+.ds3-vat-page #ds3FilterTable td.ds3-sticky-remark{
+  right:0 !important;
+  z-index:78 !important;
+  width:var(--ds3-remark-col) !important;
+  min-width:var(--ds3-remark-col) !important;
+  max-width:var(--ds3-remark-col) !important;
+  box-shadow:inset -1px 0 0 #e0e8f3, inset 0 -1px 0 #e0e8f3 !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead th.ds3-sticky-action,
+.ds3-vat-page #ds3FilterTable thead th.ds3-sticky-remark{
+  z-index:118 !important;
+  background:#eef5ff !important;
+  box-shadow:inset 1px 0 0 #cbd8e7, inset -1px 0 0 #cbd8e7, inset 0 -1px 0 #cbd8e7, -8px 0 12px -12px rgba(15,23,42,.45) !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead th.ds3-sticky-remark{
+  z-index:119 !important;
+  box-shadow:inset -1px 0 0 #cbd8e7, inset 0 -1px 0 #cbd8e7 !important;
 }
 
 @media (max-width: 1180px){
