@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <link rel="stylesheet" href="../assets/css/pages/data-summary.css?v=20260508-vat-compare-10"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-summary.css?v=20260508-vat-compare-11"/>
 </head>
 <body>
   <div class="ds3-page ds3-vat-page">
@@ -45,19 +45,11 @@
       </div>
       <div class="ds3-block-body">
         <div class="ds3-filter-grid ds3-vat-filter-grid">
-          <div class="ds3-field"><label>被审计单位</label><select id="ds3Unit"></select></div>
-          <div class="ds3-field"><label>公司账户</label><select id="ds3Account"></select></div>
+          <div class="ds3-field"><label>被审计单位公司</label><select id="ds3Unit"></select></div>
+          <div class="ds3-field"><label>银行账户</label><select id="ds3Account"></select></div>
           <div class="ds3-field"><label>对手方类型</label><select id="ds3Type"></select></div>
-          <div class="ds3-field"><label>对手方名称</label><input id="ds3Keyword" placeholder="输入名称关键词"/></div>
           <div class="ds3-field"><label>年份</label><select id="ds3Year"></select></div>
-          <div class="ds3-field">
-            <label>对比视角</label>
-            <select id="ds3CompareView">
-              <option value="all">全部</option>
-              <option value="in">银行流入 vs 销项税价合计</option>
-              <option value="out">银行流出 vs 进项税价合计</option>
-            </select>
-          </div>
+          <div class="ds3-field"><label>对手方名称</label><input id="ds3Keyword" placeholder="名称关键词"/></div>
           <div class="ds3-field ds3-month-field"><label>月份范围</label><div id="ds3MonthSelect"></div></div>
           <div class="ds3-actions">
             <button class="ds3-btn is-primary" id="ds3ApplyBtn" type="button">查询</button>

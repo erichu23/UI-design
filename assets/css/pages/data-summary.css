@@ -648,6 +648,10 @@ html,body{
   height:340px;
 }
 
+.ds3-chart.is-crossyear-layered{
+  height:400px;
+}
+
 .ds3-chart-sm{
   height:320px;
 }
@@ -5456,4 +5460,1069 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   .ds3-vat-page #ds3RuleManagerModal .ds3-rule-manager-hint{
     grid-template-columns:1fr 1fr !important;
   }
+}
+
+/* =====================================================
+   数据综合分析：桌面工作台紧凑化
+   仅作用于 .ds3-vat-page，保留现有业务结构与交互
+===================================================== */
+.ds3-vat-page{
+  padding:0 10px 10px;
+  font-size:12px;
+}
+
+.ds3-vat-page .ds3-block{
+  margin-top:6px;
+  border-radius:8px;
+}
+
+.ds3-vat-page .ds3-block-head{
+  min-height:36px;
+  padding:6px 10px;
+  gap:8px;
+}
+
+.ds3-vat-page .ds3-block-title{
+  font-size:14px;
+  line-height:1.25;
+}
+
+.ds3-vat-page .ds3-block-body{
+  padding:8px 10px 10px;
+}
+
+.ds3-vat-page .ds3-block-actions{
+  gap:6px;
+}
+
+.ds3-vat-page .ds3-fold{
+  min-height:26px;
+  padding:0 9px;
+  border-radius:7px;
+  font-size:12px;
+}
+
+.ds3-vat-page .ds3-btn{
+  min-height:30px;
+  padding:0 10px;
+  border-radius:7px;
+  font-size:12px;
+}
+
+.ds3-vat-page .ds3-segment{
+  gap:3px;
+  padding:2px;
+  border-radius:8px;
+}
+
+.ds3-vat-page .ds3-segment button,
+.ds3-vat-page .ds3-trend-mode-tabs button,
+.ds3-vat-page .ds3-rule-period-tabs button,
+.ds3-vat-page .ds3-composition-switch button,
+.ds3-vat-page .ds3-vat-detail-tabs button{
+  min-height:26px;
+  padding:0 9px;
+  border-radius:7px;
+  font-size:12px;
+}
+
+.ds3-vat-page .ds3-grid-2{
+  gap:10px;
+}
+
+.ds3-vat-page .ds3-panel{
+  padding:10px;
+  border-radius:8px;
+}
+
+.ds3-vat-page .ds3-panel-title{
+  margin-bottom:6px;
+  font-size:12px;
+  line-height:1.25;
+}
+
+/* 账期规则设置 */
+.ds3-vat-page .ds3-rule-main{
+  gap:8px;
+}
+
+.ds3-vat-page .ds3-rule-control{
+  gap:6px;
+}
+
+.ds3-vat-page .ds3-rule-control label{
+  font-size:12px;
+}
+
+.ds3-vat-page .ds3-rule-period-tabs button{
+  min-width:64px;
+}
+
+.ds3-vat-page .ds3-rule-month-control input,
+.ds3-vat-page .ds3-rule-bulk input,
+.ds3-vat-page .ds3-rule-row-month{
+  width:50px;
+  height:26px;
+  font-size:12px;
+}
+
+.ds3-vat-page .ds3-rule-stats{
+  gap:5px;
+}
+
+.ds3-vat-page .ds3-rule-stats div{
+  padding:5px 7px;
+}
+
+.ds3-vat-page .ds3-rule-stats span{
+  font-size:10px;
+}
+
+.ds3-vat-page .ds3-rule-stats b{
+  font-size:14px;
+}
+
+.ds3-vat-page .ds3-rule-note{
+  padding:4px 8px;
+  border-radius:7px;
+  font-size:11px;
+}
+
+/* 筛选条件 */
+.ds3-vat-page .ds3-filter-grid{
+  gap:7px;
+}
+
+.ds3-vat-page .ds3-field{
+  gap:3px;
+}
+
+.ds3-vat-page .ds3-field label{
+  font-size:11px;
+}
+
+.ds3-vat-page .ds3-field select,
+.ds3-vat-page .ds3-field input,
+.ds3-vat-page .ds3-month-picker-btn{
+  min-height:30px;
+  height:30px;
+  padding:0 8px;
+  border-radius:7px;
+  font-size:12px;
+}
+
+.ds3-vat-page .ds3-month-menu{
+  top:34px;
+  width:238px;
+  padding:8px;
+  border-radius:8px;
+}
+
+.ds3-vat-page .ds3-month-menu-grid{
+  gap:5px;
+}
+
+.ds3-vat-page .ds3-month-chip{
+  min-height:26px;
+  border-radius:6px;
+  font-size:11px;
+}
+
+.ds3-vat-page .ds3-month-menu-actions,
+.ds3-vat-page .ds3-month-toolbar{
+  gap:6px;
+  margin-top:8px;
+}
+
+.ds3-vat-page .ds3-month-btn{
+  min-height:26px;
+  padding:0 8px;
+  border-radius:7px;
+  font-size:11px;
+}
+
+/* 核心指标概览 */
+.ds3-vat-page .ds3-vat-kpi-grid{
+  gap:6px;
+}
+
+.ds3-vat-page .ds3-vat-kpi{
+  min-height:58px;
+  padding:8px 9px;
+  border-radius:7px;
+}
+
+.ds3-vat-page .ds3-vat-kpi span{
+  font-size:11px;
+  line-height:1.2;
+}
+
+.ds3-vat-page .ds3-vat-kpi b{
+  margin-top:4px;
+  font-size:18px;
+  line-height:1.15;
+}
+
+.ds3-vat-page .ds3-vat-kpi em{
+  font-size:10px;
+}
+
+/* 对手方结构分布 */
+.ds3-vat-page .ds3-structure-block .ds3-block-body{
+  padding:7px 9px 9px;
+}
+
+.ds3-vat-page .ds3-structure-strip{
+  gap:6px;
+}
+
+.ds3-vat-page .ds3-structure-card{
+  min-height:58px;
+  padding:7px 34px 7px 9px;
+  border-radius:7px;
+}
+
+.ds3-vat-page .ds3-structure-label{
+  margin-bottom:3px;
+  font-size:11px;
+}
+
+.ds3-vat-page .ds3-structure-card strong{
+  font-size:17px;
+  line-height:1.15;
+}
+
+.ds3-vat-page .ds3-structure-card em{
+  margin-top:2px;
+  font-size:10px;
+}
+
+.ds3-vat-page .ds3-structure-ring{
+  right:8px;
+  top:50%;
+  width:30px;
+  height:30px;
+  transform:translateY(-50%);
+}
+
+.ds3-vat-page .ds3-structure-ring::after{
+  width:16px;
+  height:16px;
+}
+
+/* 月度对比趋势 */
+.ds3-vat-page .ds3-chart-toolbar{
+  gap:8px;
+  margin-bottom:6px;
+}
+
+.ds3-vat-page .ds3-crossyear-toolbar{
+  min-height:28px;
+  margin-bottom:6px;
+  gap:8px;
+}
+
+.ds3-vat-page .ds3-crossyear-note,
+.ds3-vat-page .ds3-table-view-line .ds3-section-desc{
+  font-size:11px;
+}
+
+.ds3-vat-page .ds3-year-chip{
+  min-height:24px;
+  padding:0 8px;
+  border-radius:999px;
+  font-size:11px;
+}
+
+.ds3-vat-page .ds3-chart{
+  height:300px;
+}
+
+.ds3-vat-page .ds3-chart.is-crossyear-layered{
+  height:380px;
+}
+
+.ds3-vat-page .ds3-chart-sm{
+  height:280px;
+}
+
+/* 对比分析摘要与金额构成 */
+.ds3-vat-page .ds3-vat-summary-grid{
+  gap:10px;
+}
+
+.ds3-vat-page .ds3-analysis-summary-head{
+  padding-bottom:8px;
+  margin-bottom:8px;
+}
+
+.ds3-vat-page .ds3-analysis-summary-title{
+  font-size:13px;
+}
+
+.ds3-vat-page .ds3-analysis-summary-section{
+  padding:7px 0;
+}
+
+.ds3-vat-page .ds3-analysis-summary-section-label{
+  margin-bottom:5px;
+  font-size:10px;
+}
+
+.ds3-vat-page .ds3-analysis-summary-fields{
+  gap:6px;
+}
+
+.ds3-vat-page .ds3-analysis-field{
+  min-height:28px;
+  padding:5px 8px;
+  border-radius:7px;
+}
+
+.ds3-vat-page .ds3-analysis-field span,
+.ds3-vat-page .ds3-analysis-field em{
+  font-size:10px;
+}
+
+.ds3-vat-page .ds3-analysis-field b{
+  font-size:12px;
+}
+
+.ds3-vat-page .ds3-analysis-summary-note{
+  margin-top:6px;
+  padding:6px 8px;
+  border-radius:7px;
+  font-size:11px;
+  line-height:1.4;
+}
+
+.ds3-vat-page .ds3-analysis-summary-actions{
+  gap:6px;
+  margin-top:8px;
+  padding-top:8px;
+}
+
+.ds3-vat-page .ds3-analysis-summary-actions .ds3-btn{
+  min-height:28px;
+}
+
+.ds3-vat-page .ds3-composition-panel .ds3-panel-headline{
+  margin-bottom:6px;
+}
+
+.ds3-vat-page .ds3-composition-centipede{
+  gap:5px;
+}
+
+.ds3-vat-page .ds3-centipede-list{
+  max-height:310px;
+}
+
+.ds3-vat-page .ds3-centipede-row{
+  min-height:28px;
+  padding:4px 0;
+}
+
+.ds3-vat-page .ds3-centipede-name strong{
+  font-size:12px;
+}
+
+.ds3-vat-page .ds3-centipede-name span,
+.ds3-vat-page .ds3-centipede-bar b{
+  font-size:10px;
+}
+
+/* 表格区域 */
+.ds3-vat-page .ds3-vat-table-head{
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.ds3-vat-page .ds3-section-actions{
+  gap:6px;
+}
+
+.ds3-vat-page #ds3FilterTable,
+.ds3-vat-page #ds3SelectedTable{
+  font-size:12px;
+}
+
+.ds3-vat-page #ds3FilterTable th,
+.ds3-vat-page #ds3FilterTable td,
+.ds3-vat-page #ds3SelectedTable th,
+.ds3-vat-page #ds3SelectedTable td{
+  height:34px;
+  padding:6px 8px !important;
+  font-size:12px;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-year-group-head th,
+.ds3-vat-page #ds3FilterTable .ds3-monthly-head th,
+.ds3-vat-page #ds3SelectedTable .ds3-year-group-head th,
+.ds3-vat-page #ds3SelectedTable .ds3-monthly-head th{
+  height:34px;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-year-sub-head th,
+.ds3-vat-page #ds3SelectedTable .ds3-year-sub-head th{
+  top:34px !important;
+  height:32px;
+  font-size:11px;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-group-toggle-cell{
+  padding:4px 8px !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-group-toggle-btn{
+  height:26px;
+  min-width:76px;
+  padding:0 10px;
+  font-size:12px;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-eye-btn.ds3-detail-btn{
+  min-width:64px !important;
+  height:26px !important;
+  padding:0 10px !important;
+  font-size:11px;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-th-action,
+.ds3-vat-page #ds3DetailModal .ds3-th-action{
+  width:20px;
+  height:20px;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-note-input{
+  height:28px;
+  padding:0 8px;
+  border-radius:7px;
+  font-size:12px;
+}
+
+.ds3-vat-page .ds3-pagination,
+.ds3-vat-page #ds3Pager{
+  margin-top:8px;
+  padding:8px 4px 0;
+}
+
+.ds3-vat-page .ds3-pagination button,
+.ds3-vat-page #ds3Pager button{
+  min-width:28px;
+  height:28px;
+  border-radius:7px;
+  font-size:12px;
+}
+
+@media (max-width: 1180px){
+  .ds3-vat-page .ds3-rule-main,
+  .ds3-vat-page .ds3-vat-filter-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+
+  .ds3-vat-page .ds3-rule-actions{
+    grid-column:1 / -1;
+    justify-content:flex-start;
+  }
+}
+
+/* 筛选条件单行紧凑版 */
+.ds3-vat-page .ds3-vat-filter-grid{
+  grid-template-columns:
+    minmax(150px,1fr)
+    minmax(132px,.9fr)
+    minmax(118px,.78fr)
+    minmax(92px,.6fr)
+    minmax(104px,.68fr)
+    minmax(156px,1fr)
+    max-content;
+  gap:6px;
+  align-items:end;
+}
+
+.ds3-vat-page .ds3-month-field{
+  grid-column:auto;
+}
+
+.ds3-vat-page .ds3-actions{
+  display:flex;
+  align-items:end;
+  justify-content:flex-end;
+  gap:5px;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field label{
+  font-size:10px;
+  line-height:1.1;
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field select,
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field input,
+.ds3-vat-page .ds3-vat-filter-grid .ds3-month-picker-btn{
+  min-height:24px;
+  height:24px;
+  padding:0 6px;
+  border-radius:6px;
+  font-size:11px;
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-btn{
+  min-height:24px;
+  padding:0 8px;
+  border-radius:6px;
+  font-size:11px;
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field{
+  flex-direction:row;
+  align-items:center;
+  gap:4px;
+  min-width:0;
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-month-menu{
+  top:28px;
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field label{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field label::after{
+  content:"：";
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field select,
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field input,
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field > div{
+  flex:1 1 auto;
+  min-width:0;
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-month-picker-btn{
+  width:100%;
+}
+
+@media (max-width: 1280px){
+  .ds3-vat-page .ds3-vat-filter-grid{
+    grid-template-columns:
+      minmax(142px,1fr)
+      minmax(124px,.9fr)
+      minmax(112px,.78fr)
+      minmax(86px,.58fr)
+      minmax(98px,.68fr)
+      minmax(148px,1fr)
+      max-content;
+    gap:5px;
+  }
+}
+
+@media (max-width: 1100px){
+  .ds3-vat-page .ds3-vat-filter-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+
+  .ds3-vat-page .ds3-actions{
+    justify-content:flex-start;
+  }
+}
+
+/* 数据综合分析：进一步紧凑化 */
+.ds3-vat-page{
+  padding:0 8px 8px;
+}
+
+.ds3-vat-page .ds3-block{
+  margin-top:4px;
+  border-radius:7px;
+}
+
+.ds3-vat-page .ds3-block-head{
+  min-height:32px;
+  padding:4px 8px;
+}
+
+.ds3-vat-page .ds3-block-title{
+  font-size:13px;
+}
+
+.ds3-vat-page .ds3-block-body{
+  padding:6px 8px 8px;
+}
+
+.ds3-vat-page .ds3-fold,
+.ds3-vat-page .ds3-segment button,
+.ds3-vat-page .ds3-trend-mode-tabs button,
+.ds3-vat-page .ds3-rule-period-tabs button,
+.ds3-vat-page .ds3-composition-switch button{
+  min-height:24px;
+  padding:0 8px;
+  font-size:11px;
+}
+
+.ds3-vat-page .ds3-btn{
+  min-height:26px;
+  padding:0 9px;
+  font-size:11px;
+}
+
+.ds3-vat-page .ds3-panel{
+  padding:8px;
+  border-radius:7px;
+}
+
+.ds3-vat-page .ds3-panel-title{
+  margin-bottom:4px;
+  font-size:12px;
+}
+
+.ds3-vat-page .ds3-grid-2,
+.ds3-vat-page .ds3-vat-summary-grid{
+  gap:8px;
+}
+
+.ds3-vat-page .ds3-rule-main{
+  gap:6px;
+}
+
+.ds3-vat-page .ds3-rule-stats div{
+  padding:4px 6px;
+}
+
+.ds3-vat-page .ds3-rule-note{
+  padding:3px 7px;
+}
+
+.ds3-vat-page .ds3-vat-filter-grid{
+  gap:4px;
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field select,
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field input,
+.ds3-vat-page .ds3-vat-filter-grid .ds3-month-picker-btn,
+.ds3-vat-page .ds3-vat-filter-grid .ds3-btn{
+  min-height:22px;
+  height:22px;
+  font-size:10px;
+}
+
+.ds3-vat-page .ds3-vat-kpi-grid{
+  gap:5px;
+}
+
+.ds3-vat-page .ds3-vat-kpi{
+  min-height:50px;
+  padding:6px 8px;
+}
+
+.ds3-vat-page .ds3-vat-kpi span{
+  font-size:10px;
+}
+
+.ds3-vat-page .ds3-vat-kpi b{
+  margin-top:3px;
+  font-size:16px;
+}
+
+.ds3-vat-page .ds3-structure-block .ds3-block-body{
+  padding:5px 7px 7px;
+}
+
+.ds3-vat-page .ds3-structure-strip{
+  gap:5px;
+}
+
+.ds3-vat-page .ds3-structure-card{
+  min-height:50px;
+  padding:6px 30px 6px 8px;
+}
+
+.ds3-vat-page .ds3-structure-card strong{
+  font-size:15px;
+}
+
+.ds3-vat-page .ds3-structure-ring{
+  width:26px;
+  height:26px;
+}
+
+.ds3-vat-page .ds3-structure-ring::after{
+  width:14px;
+  height:14px;
+}
+
+.ds3-vat-page .ds3-chart-toolbar,
+.ds3-vat-page .ds3-crossyear-toolbar{
+  margin-bottom:4px;
+}
+
+.ds3-vat-page .ds3-chart{
+  height:270px;
+}
+
+.ds3-vat-page .ds3-chart.is-crossyear-layered{
+  height:360px;
+}
+
+.ds3-vat-page .ds3-analysis-summary-head{
+  padding-bottom:6px;
+  margin-bottom:6px;
+}
+
+.ds3-vat-page .ds3-analysis-summary-section{
+  padding:5px 0;
+}
+
+.ds3-vat-page .ds3-analysis-summary-section-label{
+  margin-bottom:4px;
+}
+
+.ds3-vat-page .ds3-analysis-summary-fields{
+  gap:4px;
+}
+
+.ds3-vat-page .ds3-analysis-field{
+  min-height:24px;
+  padding:4px 6px;
+}
+
+.ds3-vat-page .ds3-analysis-summary-note{
+  margin-top:4px;
+  padding:5px 7px;
+}
+
+.ds3-vat-page .ds3-analysis-summary-actions{
+  margin-top:6px;
+  padding-top:6px;
+}
+
+.ds3-vat-page .ds3-centipede-list{
+  max-height:280px;
+}
+
+.ds3-vat-page .ds3-centipede-row{
+  min-height:24px;
+  padding:3px 0;
+}
+
+.ds3-vat-page .ds3-vat-table-head{
+  gap:6px;
+  margin-bottom:6px;
+}
+
+.ds3-vat-page #ds3FilterTable th,
+.ds3-vat-page #ds3FilterTable td,
+.ds3-vat-page #ds3SelectedTable th,
+.ds3-vat-page #ds3SelectedTable td{
+  height:30px;
+  padding:5px 7px !important;
+  font-size:11px;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-year-group-head th,
+.ds3-vat-page #ds3FilterTable .ds3-monthly-head th,
+.ds3-vat-page #ds3SelectedTable .ds3-year-group-head th,
+.ds3-vat-page #ds3SelectedTable .ds3-monthly-head th{
+  height:30px;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-year-sub-head th,
+.ds3-vat-page #ds3SelectedTable .ds3-year-sub-head th{
+  top:30px !important;
+  height:28px;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-group-toggle-btn,
+.ds3-vat-page #ds3FilterTable .ds3-eye-btn.ds3-detail-btn{
+  height:24px !important;
+  font-size:11px;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-note-input{
+  height:24px;
+}
+
+.ds3-vat-page .ds3-pagination,
+.ds3-vat-page #ds3Pager{
+  margin-top:5px;
+  padding:5px 4px 0;
+}
+
+/* 账期统计与 KPI 再压缩 */
+.ds3-vat-page .ds3-rule-stats{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  align-items:stretch;
+  gap:6px;
+  min-width:0;
+}
+
+.ds3-vat-page .ds3-rule-stats div{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:4px;
+  min-height:28px;
+  padding:0 8px;
+  border:1px solid #dbeafe;
+  border-radius:7px;
+  background:#ffffff;
+}
+
+.ds3-vat-page .ds3-rule-stats span,
+.ds3-vat-page .ds3-rule-stats b{
+  font-size:12px;
+  line-height:1;
+}
+
+.ds3-vat-page .ds3-rule-stats span{
+  color:#64748b;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-rule-stats b{
+  color:#0f172a;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-vat-kpi{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  height:38px;
+  min-height:38px;
+  padding:0 8px;
+  box-sizing:border-box;
+}
+
+.ds3-vat-page .ds3-vat-kpi span{
+  min-width:0;
+  font-size:11px;
+  line-height:1;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-vat-kpi b{
+  display:inline-flex;
+  align-items:baseline;
+  justify-content:flex-end;
+  gap:3px;
+  flex:0 0 auto;
+  margin-top:0;
+  color:#0f172a;
+  font-size:11px;
+  line-height:1;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-vat-kpi b strong{
+  font-size:11px;
+  line-height:1;
+  font-weight:900;
+}
+
+.ds3-vat-page .ds3-vat-kpi em{
+  color:#0f172a;
+  font-size:11px;
+  line-height:1;
+  font-weight:900;
+  margin-left:0;
+  vertical-align:baseline;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-chart-sm.is-crossyear-layered{
+  height:390px;
+}
+
+/* 查看明细抽屉紧凑版 */
+.ds3-vat-page #ds3DetailModal .ds3-modal-panel{
+  flex-basis:min(980px, 82vw) !important;
+  width:min(980px, 82vw) !important;
+  max-width:min(980px, 82vw) !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-modal-head{
+  flex-basis:44px !important;
+  min-height:44px !important;
+  height:44px !important;
+  padding:0 12px !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-modal-title{
+  font-size:14px !important;
+  line-height:1.2;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-close{
+  width:26px !important;
+  height:26px !important;
+  font-size:16px !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-modal-body{
+  height:calc(100dvh - 44px) !important;
+  padding:8px !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-context{
+  gap:6px !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-card{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:8px !important;
+  min-height:30px !important;
+  padding:6px 8px !important;
+  border-radius:7px !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-card-label{
+  flex:0 0 auto;
+  font-size:10px !important;
+  line-height:1 !important;
+  white-space:nowrap;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-card-value{
+  flex:1 1 auto;
+  min-width:0;
+  margin-top:0 !important;
+  font-size:11px !important;
+  line-height:1 !important;
+  text-align:right;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-kpi-strip{
+  gap:6px !important;
+  margin:6px 0 8px !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:8px !important;
+  height:38px !important;
+  min-height:38px !important;
+  padding:0 8px !important;
+  border-radius:7px !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:11px !important;
+  line-height:1;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi b{
+  display:inline-flex !important;
+  align-items:baseline !important;
+  justify-content:flex-end !important;
+  gap:3px !important;
+  flex:0 0 auto !important;
+  margin-top:0 !important;
+  color:#0f172a;
+  font-size:11px !important;
+  line-height:1;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi b strong{
+  font-size:11px !important;
+  line-height:1;
+  font-weight:900;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-kpi em{
+  color:#0f172a;
+  font-size:11px !important;
+  line-height:1;
+  font-weight:900;
+  margin-left:0;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-grid-2{
+  gap:8px !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-panel{
+  padding:8px !important;
+  border-radius:7px !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-panel-title,
+.ds3-vat-page #ds3DetailModal .ds3-panel-headline .ds3-panel-title{
+  margin-bottom:5px !important;
+  font-size:12px !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-chart-sm{
+  height:235px !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-chart-sm.is-crossyear-layered{
+  height:370px !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-mt16{
+  margin-top:8px !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-detail-table-wrap{
+  border-radius:7px !important;
+}
+
+.ds3-vat-page #ds3DetailModal table{
+  font-size:11px !important;
+}
+
+.ds3-vat-page #ds3DetailModal th,
+.ds3-vat-page #ds3DetailModal td{
+  height:28px !important;
+  padding:5px 7px !important;
+  font-size:11px !important;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-th-action{
+  width:18px !important;
+  height:18px !important;
+}
+
+.ds3-vat-page #ds3DetailModal #ds3DetailRemark{
+  min-height:56px;
+  font-size:11px;
+}
+
+.ds3-vat-page [data-view-panel]{
+  padding-bottom:3px !important;
+}
+
+.ds3-vat-page [data-view-panel] .ds3-chart:not(.is-crossyear-layered){
+  height:250px;
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-month-picker-btn{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }

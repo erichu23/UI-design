@@ -239,11 +239,11 @@
   }
 
   function years(){ return [...new Set(rawData.map(r=>r.month.slice(0,4)))].sort((a,b)=>b.localeCompare(a)); }
-  function crossYearOptions(rows=baseRows()){ return [...new Set(rows.map(r=>r.month.slice(0,4)))].sort((a,b)=>b.localeCompare(a)); }
+  function crossYearOptions(rows=baseRows()){ return [...new Set(rows.map(r=>r.month.slice(0,4)))].sort((a,b)=>a.localeCompare(b)); }
   function syncCrossYears(rows=baseRows()){
     const opts = crossYearOptions(rows);
-    const kept = state.crossYears.filter(y=>opts.includes(y)).slice(0,3);
-    state.crossYears = kept.length >= 2 ? kept : opts.slice(0,2);
+    const kept = state.crossYears.filter(y=>opts.includes(y)).sort((a,b)=>a.localeCompare(b)).slice(0,3);
+    state.crossYears = kept.length >= 2 ? kept : opts.slice(-2);
     return opts;
   }
   function shiftMonth(month, shift){ const [y,m]=month.split("-").map(Number); const d=new Date(y,m-1+shift,1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`; }
@@ -443,16 +443,17 @@
       host.innerHTML=`<div class="ds3-crossyear-note">同月跨年对比至少需要两个年份的数据</div>`;
       return;
     }
-    host.innerHTML=`<div class="ds3-crossyear-note">当前为跨年模式，年份对比以本图内所选年份为准</div><div class="ds3-crossyear-picker" id="ds3CrossYearPicker">${opts.map(y=>{const checked=state.crossYears.includes(y),disabled=(!checked&&state.crossYears.length>=3)||(checked&&state.crossYears.length<=2);return `<label class="ds3-year-chip ${checked?"is-active":""} ${disabled?"is-disabled":""}"><input type="checkbox" value="${y}" ${checked?"checked":""} ${disabled?"disabled":""}/> ${y}年</label>`;}).join("")}</div>`;
+    host.innerHTML=`<div class="ds3-crossyear-note">当前为上下分层跨年模式，颜色深浅表示年份，颜色越深表示年份越近</div><div class="ds3-crossyear-picker" id="ds3CrossYearPicker">${opts.map(y=>{const checked=state.crossYears.includes(y),disabled=(!checked&&state.crossYears.length>=3)||(checked&&state.crossYears.length<=2);return `<label class="ds3-year-chip ${checked?"is-active":""} ${disabled?"is-disabled":""}"><input type="checkbox" value="${y}" ${checked?"checked":""} ${disabled?"disabled":""}/> ${y}年</label>`;}).join("")}</div>`;
     host.querySelectorAll("#ds3CrossYearPicker input").forEach(input=>input.onchange=()=>{
       const selected = Array.from(host.querySelectorAll("#ds3CrossYearPicker input:checked")).map(x=>x.value);
       if(selected.length < 2 || selected.length > 3)return;
-      state.crossYears = selected;
+      state.crossYears = selected.sort((a,b)=>a.localeCompare(b));
       renderAll();
     });
   }
   function syncTrendModeTabs(){
     document.querySelectorAll("#ds3TrendModeTabs [data-trend-mode]").forEach(b=>b.classList.toggle("is-active", b.dataset.trendMode===state.trendMode));
+    $("ds3ChartTypeSwitch")?.classList.toggle("is-hidden", state.trendMode==="crossYear");
   }
   function renderCustomPeriod(){
     const wrap=$("ds3CustomPeriodWrap");
@@ -571,7 +572,7 @@
     ["银行流入合计",t.inflow,"inflow"],["销项税价合计",t.salesVat,"output"],[diffTitle("in"),t.inflow-t.salesVat,"compare"],
     ["银行流出合计",t.outflow,"outflow"],["进项税价合计",t.purchaseVat,"input"],[diffTitle("out"),t.outflow-t.purchaseVat,"compare"],
     ["覆盖月份数",t.months.size,"count","个月"]
-  ].map(([k,v,c,u])=>`<div class="ds3-vat-kpi is-${c}"><span>${k}</span><b>${fmt(v)}</b><em>${u||"千元"}</em></div>`).join(""); }
+  ].map(([k,v,c,u])=>`<div class="ds3-vat-kpi is-${c}"><span>${k}</span><b><strong>${fmt(v)}</strong><em>${u||"千元"}</em></b></div>`).join(""); }
 
   function renderCharts(rows){
     if(state.trendMode==="crossYear"){
@@ -582,8 +583,8 @@
         showChartEmpty("ds3OutChart","同月跨年对比至少需要两个年份的数据");
         return;
       }
-      renderCrossYearChart("ds3InChart",["银行流入","销项税价合计"],["#2f6fed","#0f9f8a"],"inflow","salesVat");
-      renderCrossYearChart("ds3OutChart",["银行流出","进项税价合计"],["#d9466f","#d97706"],"outflow","purchaseVat");
+      renderLayeredCrossYearChart("ds3InChart",["银行流入","销项税价合计"],"inflow","salesVat","in");
+      renderLayeredCrossYearChart("ds3OutChart",["银行流出","进项税价合计"],"outflow","purchaseVat","out");
       return;
     }
     renderCrossYearToolbar();
@@ -593,6 +594,7 @@
   }
   function showChartEmpty(id,text){
     const el=$(id); if(!el)return;
+    el.classList.remove("is-crossyear-layered");
     if(charts[id]){ try{charts[id].dispose();}catch(e){} delete charts[id]; }
     el.innerHTML=`<div class="ds3-chart-empty">${text}</div>`;
   }
@@ -609,7 +611,7 @@
     }
     return charts[id];
   }
-  function renderChart(id,side,m,legend,colors,aKey,bKey,chartType){ const el=$(id); if(!el)return; if(!window.echarts){el.innerHTML='<div class="ds3-chart-loading">图表加载中</div>';ensureEcharts();return;} const chart=getChartInstance(id,el); const x=m.map(r=>state.year==="all"?r.month.replace("-","年")+"月":r.month.slice(5)+"月"); const a=m.map(r=>r[aKey]); const b=m.map(r=>r[bKey]); const diff=a.map((v,i)=>+(v-b[i]).toFixed(1)); const isLine=(chartType||state.chartType)==="line", diffLabel=diffInfo(side).label; chart.setOption({color:colors,tooltip:{trigger:"axis",confine:true,formatter:params=>{const idx=params[0]?.dataIndex||0;return `<div class="ds3-tip-card"><b>${params[0]?.axisValue||""}</b><div>${legend[0]}：${fmt(a[idx])}</div><div>${legend[1]}：${fmt(b[idx])}</div><div>${diffLabel}：${fmt(diff[idx])}</div><div>账期口径：${periodName()}</div></div>`;}},legend:{top:0,data:legend},grid:{left:56,right:18,top:44,bottom:58},dataZoom:[{type:"slider",height:18,bottom:12,start:0,end:x.length>12?42:100,brushSelect:false},{type:"inside"}],xAxis:{type:"category",data:x},yAxis:{type:"value",name:"千元"},series:isLine?[{name:legend[0],type:"line",smooth:true,showSymbol:true,symbolSize:5,lineStyle:{width:2.4,color:colors[0]},itemStyle:{color:colors[0]},data:a},{name:legend[1],type:"line",smooth:true,showSymbol:true,symbolSize:5,lineStyle:{width:2.4,color:colors[1]},itemStyle:{color:colors[1]},data:b}]:[{name:legend[0],type:"bar",barMaxWidth:24,data:a},{name:legend[1],type:"bar",barMaxWidth:24,data:b},{name:diffLabel,type:"line",smooth:true,itemStyle:{color:"#7c3aed"},lineStyle:{color:"#7c3aed"},data:diff}]}, true); chart.resize(); chart.off("click"); chart.on("click",p=>{ if(state.year==="all")return; const mm=String(p.name).slice(0,2); state.selectedMonths=[`${state.year}-${mm}`]; state.page=1; renderMonthSelect(); renderAll();}); }
+  function renderChart(id,side,m,legend,colors,aKey,bKey,chartType){ const el=$(id); if(!el)return; el.classList.remove("is-crossyear-layered"); if(!window.echarts){el.innerHTML='<div class="ds3-chart-loading">图表加载中</div>';ensureEcharts();return;} const chart=getChartInstance(id,el); const x=m.map(r=>state.year==="all"?r.month.replace("-","年")+"月":r.month.slice(5)+"月"); const a=m.map(r=>r[aKey]); const b=m.map(r=>r[bKey]); const diff=a.map((v,i)=>+(v-b[i]).toFixed(1)); const isLine=(chartType||state.chartType)==="line", diffLabel=diffInfo(side).label, isMainMonthly=id==="ds3InChart"||id==="ds3OutChart", gridTop=isMainMonthly?28:38, gridBottom=isMainMonthly?18:58, zoomBottom=isMainMonthly?-2:12, zoomHeight=isMainMonthly?10:18; chart.setOption({color:colors,tooltip:{trigger:"axis",confine:true,formatter:params=>{const idx=params[0]?.dataIndex||0;return `<div class="ds3-tip-card"><b>${params[0]?.axisValue||""}</b><div>${legend[0]}：${fmt(a[idx])}</div><div>${legend[1]}：${fmt(b[idx])}</div><div>${diffLabel}：${fmt(diff[idx])}</div><div>账期口径：${periodName()}</div></div>`;}},legend:{top:0,itemHeight:8,itemWidth:12,textStyle:{fontSize:11},data:legend},grid:{left:50,right:14,top:gridTop,bottom:gridBottom},dataZoom:[{type:"slider",height:zoomHeight,bottom:zoomBottom,start:0,end:x.length>12?42:100,brushSelect:false,showDetail:false},{type:"inside"}],xAxis:{type:"category",data:x},yAxis:{type:"value",name:"千元"},series:isLine?[{name:legend[0],type:"line",smooth:true,showSymbol:true,symbolSize:5,lineStyle:{width:2.4,color:colors[0]},itemStyle:{color:colors[0]},data:a},{name:legend[1],type:"line",smooth:true,showSymbol:true,symbolSize:5,lineStyle:{width:2.4,color:colors[1]},itemStyle:{color:colors[1]},data:b}]:[{name:legend[0],type:"bar",barMaxWidth:22,data:a},{name:legend[1],type:"bar",barMaxWidth:22,data:b},{name:diffLabel,type:"line",smooth:true,itemStyle:{color:"#7c3aed"},lineStyle:{color:"#7c3aed"},data:diff}]}, true); chart.resize(); chart.off("click"); chart.on("click",p=>{ if(state.year==="all")return; const mm=String(p.name).slice(0,2); state.selectedMonths=[`${state.year}-${mm}`]; state.page=1; renderMonthSelect(); renderAll();}); }
   function crossYearMonthlyData(rowsArg=baseRows(), selectedYearsArg=state.crossYears){
     const rows = rowsArg;
     const selectedYears = selectedYearsArg.slice(0,3);
@@ -627,6 +629,68 @@
       });
       return [y,map];
     }));
+  }
+  function crossYearMetricColors(metricKey, yearCount){
+    const palettes = {
+      inflow:["#bfdbfe","#60a5fa","#1d4ed8"],
+      salesVat:["#bbf7d0","#34d399","#047857"],
+      outflow:["#fecdd3","#fb7185","#be185d"],
+      purchaseVat:["#fed7aa","#fb923c","#c2410c"]
+    };
+    const p = palettes[metricKey] || ["#dbeafe","#60a5fa","#2563eb"];
+    return yearCount === 2 ? [p[0],p[2]] : p.slice(0, yearCount);
+  }
+  function renderLayeredCrossYearChart(id,legend,aKey,bKey,side,rowsArg=baseRows(),selectedYearsArg=state.crossYears){
+    const el=$(id); if(!el)return;
+    el.classList.add("is-crossyear-layered");
+    if(!window.echarts){el.innerHTML='<div class="ds3-chart-loading">图表加载中</div>';ensureEcharts();return;}
+    const chart=getChartInstance(id,el);
+    const isDetailChart=id.startsWith("ds3Detail");
+    const selectedYears=selectedYearsArg.slice(0,3).sort((a,b)=>a.localeCompare(b));
+    const yearMaps=crossYearMonthlyData(rowsArg, selectedYears);
+    const x=months.map(m=>`${m}月`);
+    const aColors=crossYearMetricColors(aKey, selectedYears.length);
+    const bColors=crossYearMetricColors(bKey, selectedYears.length);
+    const diffLabel=side==="in"?"流入票差":"流出票差";
+    const makeData=(year,key)=>months.map(m=>{
+      const r=yearMaps.get(year)?.get(m)||{};
+      const a=+(r[aKey]||0).toFixed(1);
+      const b=+(r[bKey]||0).toFixed(1);
+      return {value:key===aKey?a:b,year,monthNo:m,a,b,diff:+(a-b).toFixed(1)};
+    });
+    const series=selectedYears.flatMap((year,i)=>[
+      {name:`${year}年 ${legend[0]}`,type:"bar",xAxisIndex:0,yAxisIndex:0,barMaxWidth:11,barGap:"18%",barCategoryGap:"38%",itemStyle:{color:aColors[i],borderRadius:[4,4,0,0]},emphasis:{focus:"series"},data:makeData(year,aKey)},
+      {name:`${year}年 ${legend[1]}`,type:"bar",xAxisIndex:1,yAxisIndex:1,barMaxWidth:11,barGap:"18%",barCategoryGap:"38%",itemStyle:{color:bColors[i],borderRadius:[4,4,0,0]},emphasis:{focus:"series"},data:makeData(year,bKey)}
+    ]);
+    chart.setOption({
+      animationDuration:360,
+      tooltip:{trigger:"item",confine:true,formatter:p=>{const r=p.data||{};return `<div class="ds3-tip-card"><b>${r.year}年${r.monthNo}月</b><div>${legend[0]}：${fmt(r.a)}</div><div>${legend[1]}：${fmt(r.b)}</div><div>${diffLabel}：${fmt(r.diff)}</div><div>账期口径：${periodName()}</div></div>`;}},
+      title:[
+        {text:legend[0],left:10,top:18,textStyle:{fontSize:12,fontWeight:600,color:"#334155"}},
+        {text:legend[1],left:4,top:"76%",textStyle:{fontSize:12,fontWeight:600,color:"#334155"}}
+      ],
+      graphic:[{type:"text",right:16,top:6,style:{text:`${selectedYears.join(" / ")}｜深色为较近年份`,fill:"#64748b",font:"12px sans-serif"}}],
+      legend:{show:false},
+      grid:[
+        {left:62,right:22,top:isDetailChart?48:54,height:isDetailChart?"29%":"30%",containLabel:false},
+        {left:62,right:22,top:isDetailChart?"54%":"52%",height:isDetailChart?"21%":"22%",containLabel:false}
+      ],
+      dataZoom:[
+        {type:"slider",xAxisIndex:[0,1],height:14,bottom:isDetailChart?28:40,left:74,right:34,start:0,end:100,brushSelect:false,showDetail:false},
+        {type:"inside",xAxisIndex:[0,1],start:0,end:100}
+      ],
+      xAxis:[
+        {type:"category",gridIndex:0,data:x,position:"bottom",axisTick:{show:false},axisLabel:{show:false},axisLine:{show:false}},
+        {type:"category",gridIndex:1,data:x,position:"top",axisTick:{alignWithLabel:true,length:5,lineStyle:{color:"#cbd5e1"}},axisLabel:{fontSize:11,color:"#475569",margin:isDetailChart?12:12,hideOverlap:false},axisLine:{lineStyle:{color:"#cbd5e1",width:1.2}}}
+      ],
+      yAxis:[
+        {type:"value",gridIndex:0,splitNumber:3,axisLabel:{color:"#64748b",fontSize:10,margin:8,hideOverlap:true},axisLine:{show:false},axisTick:{show:false},splitLine:{lineStyle:{color:"#eef2f7"}}},
+        {type:"value",gridIndex:1,inverse:true,splitNumber:3,axisLabel:{color:"#64748b",fontSize:10,margin:8,hideOverlap:true,showMinLabel:false},axisLine:{show:false},axisTick:{show:false},splitLine:{lineStyle:{color:"#eef2f7"}}}
+      ],
+      series
+    }, true);
+    chart.resize();
+    chart.off("click");
   }
   function renderCrossYearChart(id,legend,colors,aKey,bKey,rowsArg=baseRows(),selectedYearsArg=state.crossYears,chartType=state.chartType){
     const el=$(id); if(!el)return;
@@ -646,12 +710,12 @@
   }
 
   function detailCrossYearOptions(rows=currentDetail.vatRows){
-    return [...new Set(rows.map(r=>r.month.slice(0,4)))].sort((a,b)=>b.localeCompare(a));
+    return [...new Set(rows.map(r=>r.month.slice(0,4)))].sort((a,b)=>a.localeCompare(b));
   }
   function syncDetailCrossYears(rows=currentDetail.vatRows){
     const opts=detailCrossYearOptions(rows);
-    const kept=state.detailCrossYears.filter(y=>opts.includes(y)).slice(0,3);
-    state.detailCrossYears=kept.length>=2?kept:opts.slice(0,2);
+    const kept=state.detailCrossYears.filter(y=>opts.includes(y)).sort((a,b)=>a.localeCompare(b)).slice(0,3);
+    state.detailCrossYears=kept.length>=2?kept:opts.slice(-2);
     return opts;
   }
   function renderDetailChartToolbar(rows){
@@ -661,13 +725,13 @@
     const yearPicker=state.detailTrendMode==="crossYear"&&opts.length>=2
       ? `<div class="ds3-crossyear-picker ds3-detail-crossyear-picker" id="ds3DetailCrossYearPicker">${opts.map(y=>{const checked=state.detailCrossYears.includes(y),disabled=(!checked&&state.detailCrossYears.length>=3)||(checked&&state.detailCrossYears.length<=2);return `<label class="ds3-year-chip ${checked?"is-active":""} ${disabled?"is-disabled":""}"><input type="checkbox" value="${y}" ${checked?"checked":""} ${disabled?"disabled":""}/> ${y}年</label>`;}).join("")}</div>`
       : "";
-    host.innerHTML=`<div class="ds3-segment ds3-trend-mode-tabs" id="ds3DetailTrendModeTabs"><button class="${state.detailTrendMode==="timeline"?"is-active":""}" data-detail-trend-mode="timeline" type="button">时序趋势</button><button class="${state.detailTrendMode==="crossYear"?"is-active":""}" data-detail-trend-mode="crossYear" type="button">同月跨年对比</button></div><div class="ds3-detail-chart-tools"><div class="ds3-segment ds3-chart-type-switch" id="ds3DetailChartTypeSwitch"><button class="${state.detailChartType==="bar"?"is-active":""}" data-chart-type="bar" type="button">柱状图</button><button class="${state.detailChartType==="line"?"is-active":""}" data-chart-type="line" type="button">折线图</button></div>${yearPicker}</div>`;
+    host.innerHTML=`<div class="ds3-segment ds3-trend-mode-tabs" id="ds3DetailTrendModeTabs"><button class="${state.detailTrendMode==="timeline"?"is-active":""}" data-detail-trend-mode="timeline" type="button">时序趋势</button><button class="${state.detailTrendMode==="crossYear"?"is-active":""}" data-detail-trend-mode="crossYear" type="button">同月跨年对比</button></div><div class="ds3-detail-chart-tools"><div class="ds3-segment ds3-chart-type-switch ${state.detailTrendMode==="crossYear"?"is-hidden":""}" id="ds3DetailChartTypeSwitch"><button class="${state.detailChartType==="bar"?"is-active":""}" data-chart-type="bar" type="button">柱状图</button><button class="${state.detailChartType==="line"?"is-active":""}" data-chart-type="line" type="button">折线图</button></div>${yearPicker}</div>`;
     host.querySelectorAll("[data-detail-trend-mode]").forEach(b=>b.onclick=()=>{state.detailTrendMode=b.dataset.detailTrendMode;renderDetailCharts(rows);});
     host.querySelectorAll("#ds3DetailChartTypeSwitch [data-chart-type]").forEach(b=>b.onclick=()=>{state.detailChartType=b.dataset.chartType;renderDetailCharts(rows);});
     host.querySelectorAll("#ds3DetailCrossYearPicker input").forEach(input=>input.onchange=()=>{
       const selected=Array.from(host.querySelectorAll("#ds3DetailCrossYearPicker input:checked")).map(x=>x.value);
       if(selected.length<2||selected.length>3)return;
-      state.detailCrossYears=selected;
+      state.detailCrossYears=selected.sort((a,b)=>a.localeCompare(b));
       renderDetailCharts(rows);
     });
   }
@@ -764,7 +828,7 @@ function renderComposition(rows){ const rank=state.compositionRank||"inflow"; do
   function bindDetailHeaderActions(){document.querySelectorAll(".ds3-detail-sort").forEach(b=>b.onclick=e=>{e.stopPropagation();const st=detailState[b.dataset.table],k=b.dataset.key;if(st.sort.key!==k)st.sort={key:k,order:"asc"};else if(st.sort.order==="asc")st.sort.order="desc";else st.sort={key:"",order:""};b.dataset.table==="txn"?renderTxnDetail(currentDetail.rows):renderVatDetail(currentDetail.vatRows);});document.querySelectorAll(".ds3-detail-filter").forEach(b=>b.onclick=e=>{e.stopPropagation();const st=detailState[b.dataset.table],k=b.dataset.key;const v=prompt("请输入筛选条件",st.filters[k]||"");if(v===null)return;if(v.trim())st.filters[k]=v.trim();else delete st.filters[k];b.dataset.table==="txn"?renderTxnDetail(currentDetail.rows):renderVatDetail(currentDetail.vatRows);});}
   function bindVatDetailTabs(){document.querySelectorAll("#ds3VatDetailTabs [data-vat-type]").forEach(b=>b.onclick=()=>{detailState.vat.type=b.dataset.vatType;document.querySelectorAll("#ds3VatDetailTabs [data-vat-type]").forEach(x=>x.classList.toggle("is-active",x===b));renderVatDetail(currentDetail.vatRows);});}
 
-  function openDetail(cp){const source=baseRows().filter(r=>r.counterparty===cp);const rows=comparable(state.period,source);currentDetail.cp=cp;currentDetail.rows=rows;currentDetail.vatRows=source;const t=sum(rows);$("ds3DetailTitle").textContent=`${cp} - 交易对手方详情`;$("ds3DetailSummary").innerHTML=`<div class="ds3-detail-context">${[["对手方名称",cp],["对手方类型",source[0]?.type||"其他"],["默认账期口径",periodName()],["对手方账期",cpPeriodText(cp)]].map(([k,v])=>`<div class="ds3-detail-card"><div class="ds3-detail-card-label">${k}</div><div class="ds3-detail-card-value">${v}</div></div>`).join("")}</div><div class="ds3-kpi-strip">${[["流入金额",t.inflow,"inflow"],["销项税价合计",t.salesVat,"output"],[diffTitle("in"),t.inflow-t.salesVat,"neutral"],["流出金额",t.outflow,"outflow"],["进项税价合计",t.purchaseVat,"input"],[diffTitle("out"),t.outflow-t.purchaseVat,"neutral"]].map(([k,v,c])=>`<div class="ds3-detail-kpi is-${c}"><span>${k}</span><b>${fmt(v)}</b><em>千元</em></div>`).join("")}</div>`;renderTxnDetail(rows);renderVatDetail(source);$("ds3DetailRemark").value=remarks[cp]?.text||"";$("ds3SaveRemarkBtn").onclick=()=>{remarks[cp]={text:$("ds3DetailRemark").value,time:new Date().toLocaleString("zh-CN"),user:"项目组"};renderAll();};openDrawer("ds3DetailModal");setTimeout(()=>{renderDetailCharts(rows);resizeCharts();},80);}
+  function openDetail(cp){const source=baseRows().filter(r=>r.counterparty===cp);const rows=comparable(state.period,source);currentDetail.cp=cp;currentDetail.rows=rows;currentDetail.vatRows=source;const t=sum(rows);$("ds3DetailTitle").textContent=`${cp} - 交易对手方详情`;$("ds3DetailSummary").innerHTML=`<div class="ds3-detail-context">${[["对手方名称",cp],["对手方类型",source[0]?.type||"其他"],["默认账期口径",periodName()],["对手方账期",cpPeriodText(cp)]].map(([k,v])=>`<div class="ds3-detail-card"><div class="ds3-detail-card-label">${k}</div><div class="ds3-detail-card-value">${v}</div></div>`).join("")}</div><div class="ds3-kpi-strip">${[["流入金额",t.inflow,"inflow"],["销项税价合计",t.salesVat,"output"],[diffTitle("in"),t.inflow-t.salesVat,"neutral"],["流出金额",t.outflow,"outflow"],["进项税价合计",t.purchaseVat,"input"],[diffTitle("out"),t.outflow-t.purchaseVat,"neutral"]].map(([k,v,c])=>`<div class="ds3-detail-kpi is-${c}"><span>${k}</span><b><strong>${fmt(v)}</strong><em>千元</em></b></div>`).join("")}</div>`;renderTxnDetail(rows);renderVatDetail(source);$("ds3DetailRemark").value=remarks[cp]?.text||"";$("ds3SaveRemarkBtn").onclick=()=>{remarks[cp]={text:$("ds3DetailRemark").value,time:new Date().toLocaleString("zh-CN"),user:"项目组"};renderAll();};openDrawer("ds3DetailModal");setTimeout(()=>{renderDetailCharts(rows);resizeCharts();},80);}
   function renderDetailCharts(rows){
     renderDetailChartToolbar(rows);
     if(state.detailTrendMode==="crossYear"){
@@ -774,8 +838,8 @@ function renderComposition(rows){ const rank=state.compositionRank||"inflow"; do
         showChartEmpty("ds3DetailOutChart","同月跨年对比至少需要两个年份的数据");
         return;
       }
-      renderCrossYearChart("ds3DetailInChart",["银行流入","销项税价合计"],["#2f6fed","#0f9f8a"],"inflow","salesVat",currentDetail.vatRows,state.detailCrossYears,state.detailChartType);
-      renderCrossYearChart("ds3DetailOutChart",["银行流出","进项税价合计"],["#d9466f","#d97706"],"outflow","purchaseVat",currentDetail.vatRows,state.detailCrossYears,state.detailChartType);
+      renderLayeredCrossYearChart("ds3DetailInChart",["银行流入","销项税价合计"],"inflow","salesVat","in",currentDetail.vatRows,state.detailCrossYears);
+      renderLayeredCrossYearChart("ds3DetailOutChart",["银行流出","进项税价合计"],"outflow","purchaseVat","out",currentDetail.vatRows,state.detailCrossYears);
       return;
     }
     const m=byMonth(rows);
