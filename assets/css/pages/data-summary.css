@@ -6527,39 +6527,46 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   text-overflow:ellipsis;
 }
 
-/* 筛选条件控件按内容宽度收缩 */
+/* 筛选条件控件均衡分配宽度 */
 .ds3-vat-page .ds3-vat-filter-grid{
-  display:flex;
+  display:grid;
+  grid-template-columns:
+    minmax(150px,1fr)
+    minmax(136px,.95fr)
+    minmax(126px,.85fr)
+    minmax(96px,.62fr)
+    minmax(136px,.9fr)
+    minmax(136px,.9fr)
+    max-content;
   align-items:center;
-  flex-wrap:wrap;
-  gap:5px 8px;
+  gap:5px;
 }
 
 .ds3-vat-page .ds3-vat-filter-grid .ds3-field{
-  flex:0 0 auto;
+  flex:initial;
+  min-width:0;
 }
 
-.ds3-vat-page .ds3-vat-filter-grid .ds3-field:nth-child(1) select{ width:82px; }
-.ds3-vat-page .ds3-vat-filter-grid .ds3-field:nth-child(2) select{ width:82px; }
-.ds3-vat-page .ds3-vat-filter-grid .ds3-field:nth-child(3) select{ width:70px; }
-.ds3-vat-page .ds3-vat-filter-grid .ds3-field:nth-child(4) select{ width:62px; }
-.ds3-vat-page .ds3-vat-filter-grid .ds3-field:nth-child(5) input{ width:82px; }
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field select,
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field input{
+  width:100%;
+}
 
 .ds3-vat-page .ds3-vat-filter-grid .ds3-month-field{
-  width:auto;
+  width:100%;
 }
 
 .ds3-vat-page .ds3-vat-filter-grid .ds3-month-field > div,
 .ds3-vat-page .ds3-vat-filter-grid .ds3-month-picker{
-  flex:0 0 auto;
-  width:auto;
+  flex:1 1 auto;
+  width:100%;
 }
 
 .ds3-vat-page .ds3-vat-filter-grid .ds3-month-picker-btn{
   display:inline-flex;
   align-items:center;
-  width:auto;
-  min-width:68px;
+  width:100%;
+  min-width:76px;
   max-width:none;
   min-height:22px;
   height:22px;
@@ -6576,9 +6583,9 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 }
 
 .ds3-vat-page .ds3-vat-filter-grid .ds3-month-picker-btn span:first-child{
-  min-width:max-content;
-  overflow:visible;
-  text-overflow:clip;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
   white-space:nowrap;
 }
 
@@ -6588,4 +6595,17 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   color:#64748b;
   font-size:10px;
   line-height:1;
+}
+
+@media (max-width: 1280px){
+  .ds3-vat-page .ds3-vat-filter-grid{
+    grid-template-columns:
+      minmax(142px,1fr)
+      minmax(128px,.95fr)
+      minmax(118px,.85fr)
+      minmax(88px,.62fr)
+      minmax(128px,.9fr)
+      minmax(128px,.9fr)
+      max-content;
+  }
 }
