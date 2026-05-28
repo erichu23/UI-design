@@ -4497,6 +4497,41 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   margin:0;
 }
 
+.ds3-vat-page .ds3-chart{
+  position:relative;
+}
+
+.ds3-vat-page .ds3-crossyear-summary{
+  position:absolute;
+  top:4px;
+  right:8px;
+  z-index:4;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  max-width:calc(100% - 92px);
+  padding:4px 7px;
+  border:0;
+  border-radius:7px;
+  background:rgba(255,255,255,.72);
+  color:#475569;
+  font-size:10.5px;
+  line-height:1;
+  pointer-events:none;
+  box-shadow:none;
+  backdrop-filter:blur(4px);
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-crossyear-summary-years{
+  color:#64748b;
+}
+
+.ds3-vat-page .ds3-crossyear-summary b{
+  color:#0f172a;
+  font-weight:800;
+}
+
 .ds3-vat-page .ds3-chart-empty{
   height:100%;
   min-height:220px;
@@ -6298,7 +6333,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   gap:8px;
   height:38px;
   min-height:38px;
-  padding:0 8px;
+  padding:0 7px;
   box-sizing:border-box;
 }
 
@@ -6595,6 +6630,141 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   color:#64748b;
   font-size:10px;
   line-height:1;
+}
+
+/* 本次局部优化：金额构成数量、明细表行高、结构卡密度 */
+.ds3-vat-page .ds3-composition-tools{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:6px;
+  min-width:0;
+}
+
+.ds3-vat-page .ds3-rank-limit{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  height:26px;
+  padding:0 8px;
+  border:1px solid #dbe5f0;
+  border-radius:7px;
+  background:#f8fbff;
+  color:#475569;
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-rank-limit input{
+  width:46px;
+  min-width:46px;
+  height:20px;
+  padding:0 5px;
+  border:1px solid #cbd9ea;
+  border-radius:6px;
+  background:#fff;
+  color:#0f172a;
+  font-size:12px;
+  font-weight:800;
+  text-align:center;
+  outline:none;
+  box-sizing:border-box;
+}
+
+.ds3-vat-page .ds3-rank-limit input:focus{
+  border-color:#93c5fd;
+  box-shadow:0 0 0 2px rgba(59,130,246,.10);
+}
+
+.ds3-vat-page #ds3FilterTable th,
+.ds3-vat-page #ds3FilterTable td{
+  height:26px !important;
+  padding:3px 6px !important;
+  font-size:11px !important;
+  line-height:1.15 !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-year-group-head th,
+.ds3-vat-page #ds3FilterTable .ds3-monthly-head th{
+  height:28px !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-year-sub-head th{
+  top:28px !important;
+  height:26px !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-group-toggle-btn,
+.ds3-vat-page #ds3FilterTable .ds3-eye-btn.ds3-detail-btn,
+.ds3-vat-page #ds3FilterTable .ds3-note-input{
+  height:22px !important;
+}
+
+.ds3-vat-page #ds3FilterTable td.ds3-type-cell.is-customer{
+  background:#f1f5f9 !important;
+}
+
+.ds3-vat-page #ds3FilterTable td.ds3-type-cell.is-supplier{
+  background:#f8f3ea !important;
+}
+
+.ds3-vat-page #ds3FilterTable tbody tr:hover td.ds3-type-cell.is-customer{
+  background:#e8eef5 !important;
+}
+
+.ds3-vat-page #ds3FilterTable tbody tr:hover td.ds3-type-cell.is-supplier{
+  background:#f1eadf !important;
+}
+
+.ds3-vat-page .ds3-structure-strip{
+  grid-template-columns:repeat(7,minmax(0,1fr)) !important;
+  justify-content:stretch;
+  gap:5px !important;
+}
+
+.ds3-vat-page .ds3-structure-card{
+  display:grid;
+  position:relative;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  align-items:center;
+  column-gap:5px;
+  width:100%;
+  min-width:0;
+  min-height:38px !important;
+  padding:0 30px 0 7px !important;
+}
+
+.ds3-vat-page .ds3-structure-label{
+  margin:0 !important;
+  font-size:10px !important;
+  line-height:1;
+}
+
+.ds3-vat-page .ds3-structure-card strong{
+  font-size:12px !important;
+  line-height:1;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-structure-card em{
+  font-size:9px !important;
+  line-height:1;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-structure-ring{
+  position:absolute;
+  top:50%;
+  right:7px !important;
+  transform:translateY(-50%);
+  width:22px !important;
+  height:22px !important;
+}
+
+.ds3-vat-page .ds3-structure-ring::after{
+  width:12px !important;
+  height:12px !important;
 }
 
 @media (max-width: 1280px){
