@@ -17,7 +17,9 @@
     unit:"全部", account:"全部", type:"全部", keyword:"",
     year:"all", view:"all", period:"same", basis:"all", customShift:1,
     selectedMonths:[], selectedCounterparty:"",
+    analysisTab:"compare",
     tableView:"summary", yearExpanded:true, page:1, pageSize:20, compositionRank:"inflow", compositionLimit:20, chartType:"bar", trendMode:"timeline", crossYears:[], structureFilter:"all", periodPreview:"same", ruleSource:"all",
+    invoicePage:1, invoicePageSize:20, invoiceSort:{key:"",order:""}, invoiceFilters:{},
     detailChartType:"bar", detailTrendMode:"timeline", detailCrossYears:[],
     sort:{ key:"", order:"" }, filters:{}
   };
@@ -664,6 +666,28 @@
     node.innerHTML=`<span class="ds3-crossyear-summary-years">${selectedYears.join(" / ")}｜深色为较近年份</span><span>${legend[0].replace("银行","")}中位数：<b>${fmt(stats.aMedian)}</b></span><span>${legend[1].replace("税价合计","")}中位数：<b>${fmt(stats.bMedian)}</b></span><span>最高月份：<b>${stats.highestMonth}</b></span>`;
     el.appendChild(node);
   }
+  function medianMarkLine(label,value,color){
+    return {
+      symbol:"none",
+      silent:false,
+      tooltip:{formatter:()=>`${label}中位数：${fmt(value)}`},
+      label:{
+        show:true,
+        formatter:`${label}中位数 ${fmt(value)}`,
+        position:"end",
+        distance:4,
+        color:"#475569",
+        fontSize:10,
+        fontWeight:700,
+        backgroundColor:"rgba(255,255,255,.82)",
+        borderRadius:4,
+        padding:[2,4]
+      },
+      lineStyle:{color,type:"dashed",width:1.4,opacity:.78},
+      emphasis:{label:{color:"#0f172a"},lineStyle:{width:2,opacity:1}},
+      data:[{name:`${label}中位数`,yAxis:+(+value||0).toFixed(1)}]
+    };
+  }
   function renderLayeredCrossYearChart(id,legend,aKey,bKey,side,rowsArg=baseRows(),selectedYearsArg=state.crossYears){
     const el=$(id); if(!el)return;
     el.classList.add("is-crossyear-layered");
@@ -684,9 +708,12 @@
       const b=+(r[bKey]||0).toFixed(1);
       return {value:key===aKey?a:b,year,monthNo:m,a,b,diff:+(a-b).toFixed(1)};
     });
+    const lastYearIndex=Math.max(0,selectedYears.length-1);
+    const lineLabelA=legend[0].replace("银行","");
+    const lineLabelB=legend[1].replace("税价合计","");
     const series=selectedYears.flatMap((year,i)=>[
-      {name:`${year}年 ${legend[0]}`,type:"bar",xAxisIndex:0,yAxisIndex:0,barMaxWidth:11,barGap:"18%",barCategoryGap:"38%",itemStyle:{color:aColors[i],borderRadius:[4,4,0,0]},emphasis:{focus:"series"},data:makeData(year,aKey)},
-      {name:`${year}年 ${legend[1]}`,type:"bar",xAxisIndex:1,yAxisIndex:1,barMaxWidth:11,barGap:"18%",barCategoryGap:"38%",itemStyle:{color:bColors[i],borderRadius:[4,4,0,0]},emphasis:{focus:"series"},data:makeData(year,bKey)}
+      {name:`${year}年 ${legend[0]}`,type:"bar",xAxisIndex:0,yAxisIndex:0,barMaxWidth:11,barGap:"18%",barCategoryGap:"38%",itemStyle:{color:aColors[i],borderRadius:[4,4,0,0]},emphasis:{focus:"series"},data:makeData(year,aKey),...(showCrossYearAssist&&i===lastYearIndex?{markLine:medianMarkLine(lineLabelA,stats.aMedian,aColors[i])}:{})},
+      {name:`${year}年 ${legend[1]}`,type:"bar",xAxisIndex:1,yAxisIndex:1,barMaxWidth:11,barGap:"18%",barCategoryGap:"38%",itemStyle:{color:bColors[i],borderRadius:[4,4,0,0]},emphasis:{focus:"series"},data:makeData(year,bKey),...(showCrossYearAssist&&i===lastYearIndex?{markLine:medianMarkLine(lineLabelB,stats.bMedian,bColors[i])}:{})}
     ]);
     chart.setOption({
       animationDuration:360,
@@ -776,7 +803,7 @@
 function renderComposition(rows){ const rank=state.compositionRank||"inflow"; const limit=Math.max(1,Math.min(100,+state.compositionLimit||20)); if($("ds3CompositionLimit"))$("ds3CompositionLimit").value=limit; document.querySelectorAll("#ds3CompositionMetric [data-composition-rank]").forEach(b=>b.classList.toggle("is-active",b.dataset.compositionRank===rank)); const list=byCp(rows).map(c=>({...c,name:c.counterparty})).sort((a,b)=>(b[rank]||0)-(a[rank]||0)).slice(0,limit); const max=Math.max(...list.flatMap(x=>[x.inflow,x.salesVat,x.outflow,x.purchaseVat]),1); const bar=(row,field,label,cls,side)=>`<div class="ds3-centipede-bar is-${side}"><span class="ds3-centipede-label">${label}</span><div class="ds3-centipede-track"><i class="is-${cls}" style="width:${Math.max(3,(row[field]||0)/max*100)}%"></i></div><b>${fmt(row[field])}</b></div>`; $("ds3Composition").innerHTML=`<div class="ds3-centipede-head"><span>流入 / 销项</span><span>对手方</span><span>流出 / 进项</span></div><div class="ds3-centipede-list">${list.map((row,i)=>`<div class="ds3-centipede-row" data-cp="${row.name}"><div class="ds3-centipede-side">${bar(row,"inflow","流入","inflow","left")}${bar(row,"salesVat","销项","output","left")}</div><div class="ds3-centipede-name"><em>${String(i+1).padStart(2,"0")}</em><strong>${row.name}</strong>${cpShift(row.name)!==null?`<span>${shiftLabel(cpShift(row.name))}</span>`:""}</div><div class="ds3-centipede-side">${bar(row,"outflow","流出","outflow","right")}${bar(row,"purchaseVat","进项","input","right")}</div></div>`).join("")}</div>`; $("ds3Composition").querySelectorAll(".ds3-centipede-row").forEach(el=>el.onclick=()=>{state.selectedCounterparty=el.dataset.cp; renderAll(); openDetail(el.dataset.cp);}); }
 
   function iconSort(mode="default"){return `<span class="ds3-sort-stack ${mode}"><span>▲</span><span>▼</span></span>`;}
-  function iconFilter(){return "⌕";}
+  function iconFilter(){return `<span class="ds3-filter-glyph"></span>`;}
   function getSortIcon(key){return state.sort.key===key?iconSort(state.sort.order):iconSort();}
   function headerTools(label,key,align="center"){return `<div class="ds3-th-tools is-${align}"><span class="ds3-th-label">${label}</span><span class="ds3-th-actions"><button class="ds3-th-action ds3-sort-btn ${state.sort.key===key?"is-active":""}" data-key="${key}" type="button">${getSortIcon(key)}</button><button class="ds3-th-action ds3-filter-btn ${state.filters[key]?"is-active":""}" data-key="${key}" type="button">${iconFilter()}</button></span></div>`;}
   const ticketDiff = {
@@ -876,9 +903,107 @@ function renderComposition(rows){ const rank=state.compositionRank||"inflow"; co
   }
   function renderTxnDetail(rows){const detail=rows.map((r,i)=>({unit:r.unit,account:r.account||`6222****${8800+i}`,counterparty:r.counterparty,date:`${r.month}-15`,time:"14:22:11",currency:"CNY",inflow:r.inflow,outflow:r.outflow,balance:1000+i*45,txnType:r.inflow>=r.outflow?"收款":"付款",summary:r.inflow>=r.outflow?"销售回款":"采购付款",type:r.type}));const list=detailSortFilter(detail,"txn");$("ds3TxnDetailHead").innerHTML=`<tr><th>${detailHeader("本方名称","unit","txn")}</th><th>${detailHeader("本方账号","account","txn")}</th><th>${detailHeader("对方名称","counterparty","txn")}</th><th>${detailHeader("交易日期","date","txn")}</th><th>${detailHeader("交易时间","time","txn")}</th><th>${detailHeader("币种","currency","txn")}</th><th class="is-num">${detailHeader("流入金额","inflow","txn")}</th><th class="is-num">${detailHeader("流出金额","outflow","txn")}</th><th class="is-num">${detailHeader("交易后余额","balance","txn")}</th><th>${detailHeader("交易类型","txnType","txn")}</th><th>${detailHeader("摘要","summary","txn")}</th><th>${detailHeader("对手方类型","type","txn")}</th></tr>`;$("ds3TxnDetailBody").innerHTML=list.map(r=>`<tr><td>${r.unit}</td><td>${r.account}</td><td>${r.counterparty}</td><td>${r.date}</td><td>${r.time}</td><td>${r.currency}</td><td class="is-num ds3-num-inflow">${fmt(r.inflow)}</td><td class="is-num ds3-num-outflow">${fmt(r.outflow)}</td><td class="is-num">${fmt(r.balance)}</td><td>${r.txnType}</td><td>${r.summary}</td><td>${r.type}</td></tr>`).join("");bindDetailHeaderActions();}
   function renderVatDetail(rows){const wantSales=detailState.vat.type==="sales";document.querySelectorAll("#ds3VatDetailTabs [data-vat-type]").forEach(b=>b.classList.toggle("is-active",b.dataset.vatType===detailState.vat.type));const detail=rows.map((r,i)=>{const salesTotal=+r.salesVat||0,purchaseTotal=+r.purchaseVat||0,isSales=wantSales,total=wantSales?salesTotal:purchaseTotal,amount=+(total/1.13).toFixed(1),tax=+(total-amount).toFixed(1),originalMonth=wantSales?(r.salesMonth||r.month):(r.purchaseMonth||r.month),assignedMonth=shiftMonth(originalMonth,taxShiftFor(r.counterparty,wantSales?"receipt":"payment",periodShift(state.period)));return {date:`${originalMonth}-18`,assignedMonth,invoice:`FP${wantSales?"XS":"JX"}${100000+i}`,invoiceType:wantSales?"销项税票":"进项税票",counterparty:r.counterparty,amount,tax,total,isSales};}).filter(r=>r.total>0);const list=detailSortFilter(detail,"vat");$("ds3VatDetailHead").innerHTML=`<tr><th>${detailHeader(wantSales?"开票日期":"收票日期","date","vat")}</th><th>${detailHeader("归属月份","assignedMonth","vat")}</th><th>${detailHeader("发票号码","invoice","vat")}</th><th>${detailHeader("发票类型","invoiceType","vat")}</th><th>${detailHeader("对手方名称","counterparty","vat")}</th><th class="is-num">${detailHeader("金额","amount","vat")}</th><th class="is-num">${detailHeader("税额","tax","vat")}</th><th class="is-num">${detailHeader("价税合计","total","vat")}</th></tr>`;$("ds3VatDetailBody").innerHTML=list.length?list.map(r=>`<tr><td>${r.date}</td><td>${r.assignedMonth}</td><td>${r.invoice}</td><td>${r.invoiceType}</td><td>${r.counterparty}</td><td class="is-num">${fmt(r.amount)}</td><td class="is-num">${fmt(r.tax)}</td><td class="is-num ${r.isSales?"ds3-num-output":"ds3-num-input"}">${fmt(r.total)}</td></tr>`).join(""):`<tr><td colspan="8" class="ds3-empty-cell">当前无${wantSales?"销项税":"进项税"}明细</td></tr>`;bindDetailHeaderActions();bindVatDetailTabs();}
+  function syncAnalysisTabs(){
+    document.querySelectorAll("[data-analysis-tab]").forEach(b=>b.classList.toggle("is-active",b.dataset.analysisTab===state.analysisTab));
+    document.querySelectorAll("[data-analysis-panel]").forEach(p=>p.classList.toggle("is-hidden",p.dataset.analysisPanel!==state.analysisTab));
+  }
+  function invoiceMatchStatus(seed){
+    if(seed%17===0)return {status:"长期未匹配",ratio:0,days:96+(seed%45)};
+    if(seed%11===0)return {status:"账期内暂未匹配",ratio:0,days:18+(seed%42)};
+    if(seed%7===0)return {status:"部分对应",ratio:.45+(seed%4)*.12,days:6+(seed%20)};
+    return {status:"已对应",ratio:1,days:2+(seed%12)};
+  }
+  function invoiceFundingRows(rows=baseRows()){
+    const allowed=new Set(yearMonths());
+    const out=[];
+    rows.forEach((r,idx)=>{
+      [["sales","销项发票","银行流入","salesVat","inflow","salesMonth","receipt"],["purchase","进项发票","银行流出","purchaseVat","outflow","purchaseMonth","payment"]].forEach(([dir,invoiceType,bankDirection,vatKey,bankKey,monthKey,chain])=>{
+        const total=+r[vatKey]||0; if(!total)return;
+        const assignedMonth=shiftMonth(r[monthKey]||r.month,taxShiftFor(r.counterparty,chain,periodShift(state.period)));
+        if(!allowed.has(assignedMonth) || (state.year!=="all"&&assignedMonth.slice(0,4)!==state.year) || (state.selectedMonths.length&&!state.selectedMonths.includes(assignedMonth)))return;
+        const seed=idx+(dir==="sales"?3:9)+Number(assignedMonth.replace("-",""));
+        const m=invoiceMatchStatus(seed);
+        const matched=+(total*m.ratio).toFixed(1);
+        const unmatched=+(total-matched).toFixed(1);
+        const amount=+(total/1.13).toFixed(1);
+        out.push({
+          invoice:`${dir==="sales"?"XS":"JX"}-${assignedMonth.replace("-","")}-${String(idx+1).padStart(4,"0")}`,
+          date:`${r[monthKey]||r.month}-${String(8+(idx%18)).padStart(2,"0")}`,
+          assignedMonth, invoiceType, direction:dir, bankDirection, counterparty:r.counterparty, type:r.type, unit:r.unit,
+          amount, tax:+(total-amount).toFixed(1), total, matched, unmatched, status:m.status, days:m.days,
+          nearestBankDate:matched?`${shiftMonth(assignedMonth,seed%5===0?1:0)}-${String(10+(seed%16)).padStart(2,"0")}`:"-", note:m.status==="已对应"?"窗口内存在对应资金记录":m.status==="部分对应"?"存在部分金额对应资金记录":"当前观察窗口内暂未匹配资金记录"
+        });
+      });
+    });
+    return out.sort((a,b)=>b.unmatched-a.unmatched||b.total-a.total);
+  }
+  function invoiceSum(list){
+    return list.reduce((a,r)=>{a.total+=r.total;a.matched+=r.matched;a.unmatched+=r.unmatched;a.count++;if(r.status!=="已对应")a.openCount++;if(r.status==="长期未匹配")a.longCount++;a.cps.add(r.counterparty);return a;},{total:0,matched:0,unmatched:0,count:0,openCount:0,longCount:0,cps:new Set()});
+  }
+  function renderInvoiceKpis(rows){
+    const s=invoiceSum(rows),rate=s.total?s.matched/s.total*100:0;
+    $("ds3InvoiceKpiGrid").innerHTML=[
+      ["税票价税合计",s.total,"output"],["已对应资金",s.matched,"inflow"],["未对应资金",s.unmatched,"compare"],["对应覆盖率",rate,"count","%"],
+      ["未完全对应票据",s.openCount,"outflow","张"],["长期未匹配票据",s.longCount,"input","张"],["涉及对手方",s.cps.size,"count","家"]
+    ].map(([k,v,c,u])=>`<div class="ds3-vat-kpi is-${c}"><span>${k}</span><b><strong>${fmt(v)}</strong><em>${u||"千元"}</em></b></div>`).join("");
+  }
+  function invoiceMonthly(rows,dir){
+    const map=new Map(yearMonths().map(m=>[m,{month:m,total:0,matched:0,unmatched:0}]));
+    rows.filter(r=>r.direction===dir).forEach(r=>{const x=map.get(r.assignedMonth);if(!x)return;x.total+=r.total;x.matched+=r.matched;x.unmatched+=r.unmatched;});
+    return [...map.values()].filter(r=>!state.selectedMonths.length||state.selectedMonths.includes(r.month));
+  }
+  function renderInvoiceFundingChart(id,titleA,titleB,rows,colors){
+    const el=$(id);if(!el)return;clearCrossYearSummary(el);el.classList.remove("is-crossyear-layered");if(!window.echarts){el.innerHTML='<div class="ds3-chart-loading">图表加载中</div>';ensureEcharts();return;}const chart=getChartInstance(id,el),x=rows.map(r=>state.year==="all"?r.month.replace("-","年")+"月":r.month.slice(5)+"月"),total=rows.map(r=>+r.total.toFixed(1)),matched=rows.map(r=>+r.matched.toFixed(1)),unmatched=rows.map(r=>+r.unmatched.toFixed(1));chart.setOption({color:colors,tooltip:{trigger:"axis",confine:true,formatter:p=>{const i=p[0]?.dataIndex||0;return `<div class="ds3-tip-card"><b>${p[0]?.axisValue||""}</b><div>${titleA}：${fmt(total[i])}</div><div>${titleB}：${fmt(matched[i])}</div><div>未对应金额：${fmt(unmatched[i])}</div></div>`;}},legend:{top:0,itemHeight:8,itemWidth:12,textStyle:{fontSize:11},data:[titleA,titleB,"未对应金额"]},grid:{left:54,right:18,top:32,bottom:24},dataZoom:[{type:"slider",height:10,bottom:0,start:0,end:x.length>12?42:100,brushSelect:false,showDetail:false},{type:"inside"}],xAxis:{type:"category",data:x},yAxis:{type:"value",name:"千元"},series:[{name:titleA,type:"bar",barMaxWidth:20,data:total},{name:titleB,type:"bar",barMaxWidth:20,data:matched},{name:"未对应金额",type:"line",smooth:true,symbolSize:5,lineStyle:{width:2,color:colors[2]},itemStyle:{color:colors[2]},data:unmatched}]},true);chart.resize();
+  }
+  function renderInvoiceCharts(rows){
+    renderInvoiceFundingChart("ds3InvoiceSalesChart","销项价税合计","已对应银行流入",invoiceMonthly(rows,"sales"),["#0f9f8a","#2f6fed","#64748b"]);
+    renderInvoiceFundingChart("ds3InvoicePurchaseChart","进项价税合计","已对应银行流出",invoiceMonthly(rows,"purchase"),["#d97706","#d9466f","#64748b"]);
+  }
+  function renderInvoiceSummary(rows){
+    const s=invoiceSum(rows),status=["已对应","部分对应","账期内暂未匹配","长期未匹配"].map(x=>({name:x,count:rows.filter(r=>r.status===x).length,amount:rows.filter(r=>r.status===x).reduce((a,r)=>a+r.total,0)}));
+    const top=rows.filter(r=>r.unmatched>0).slice().sort((a,b)=>b.unmatched-a.unmatched).slice(0,3);
+    $("ds3InvoiceSummary").innerHTML=`<div class="ds3-panel"><div class="ds3-panel-title">当前查看摘要</div><div class="ds3-invoice-facts"><span>年份：<b>${state.year==="all"?"全年":state.year+"年"}</b></span><span>月份：<b>${state.selectedMonths.length?state.selectedMonths.map(x=>x.slice(5)+"月").join("、"):"全部月份"}</b></span><span>账期口径：<b>${periodName()}</b></span><span>票据数量：<b>${s.count}张</b></span></div></div><div class="ds3-panel"><div class="ds3-panel-title">对应状态分布</div><div class="ds3-invoice-status-list">${status.map(x=>`<div><span>${x.name}</span><b>${x.count}张</b><em>${fmt(x.amount)}千元</em></div>`).join("")}</div></div><div class="ds3-panel"><div class="ds3-panel-title">未对应金额较高对手方</div><div class="ds3-invoice-top-list">${top.length?invoiceByCounterparty(rows).filter(x=>x.unmatchedTotal>0).slice(0,3).map(x=>`<div><span>${x.counterparty}</span><b>${fmt(x.unmatchedTotal)}</b><em>${x.invoiceCount}张</em></div>`).join(""):`<div class="ds3-empty-cell">当前范围内暂无未对应票据</div>`}</div></div>`;
+  }
+  function invoiceStatusRank(status){return {"长期未匹配":4,"账期内暂未匹配":3,"部分对应":2,"已对应":1}[status]||0;}
+  function aggregateInvoiceStatus(row){
+    if(row.longCount>0)return "长期未匹配";
+    if(row.openCount>0)return "账期内暂未匹配";
+    if(row.partialCount>0)return "部分对应";
+    return "已对应";
+  }
+  function invoiceByCounterparty(rows){
+    const map=new Map();
+    rows.forEach(r=>{
+      if(!map.has(r.counterparty))map.set(r.counterparty,{counterparty:r.counterparty,type:r.type,invoiceCount:0,salesTotal:0,salesMatched:0,salesUnmatched:0,purchaseTotal:0,purchaseMatched:0,purchaseUnmatched:0,total:0,matched:0,unmatchedTotal:0,partialCount:0,openCount:0,longCount:0,maxDays:0,latestBankDate:"-",note:""});
+      const x=map.get(r.counterparty);
+      x.invoiceCount++;
+      if(r.direction==="sales"){x.salesTotal+=r.total;x.salesMatched+=r.matched;x.salesUnmatched+=r.unmatched;}
+      else{x.purchaseTotal+=r.total;x.purchaseMatched+=r.matched;x.purchaseUnmatched+=r.unmatched;}
+      x.total+=r.total;x.matched+=r.matched;x.unmatchedTotal+=r.unmatched;
+      if(r.status==="部分对应")x.partialCount++;
+      if(r.status==="账期内暂未匹配")x.openCount++;
+      if(r.status==="长期未匹配")x.longCount++;
+      if(r.status!=="已对应")x.maxDays=Math.max(x.maxDays,+r.days||0);
+      if(r.nearestBankDate!=="-"&&(x.latestBankDate==="-"||r.nearestBankDate>x.latestBankDate))x.latestBankDate=r.nearestBankDate;
+    });
+    return [...map.values()].map(x=>({...x,status:aggregateInvoiceStatus(x),coverageRate:x.total?x.matched/x.total*100:0,remark:remarks[x.counterparty]?.text||""})).sort((a,b)=>b.unmatchedTotal-a.unmatchedTotal||b.total-a.total);
+  }
+  function invoiceHeader(label,key,align="center"){const st=state.invoiceSort;return `<div class="ds3-th-tools is-${align}"><span class="ds3-th-label">${label}</span><span class="ds3-th-actions"><button class="ds3-th-action ds3-invoice-sort ${st.key===key?"is-active":""}" data-key="${key}" type="button">${st.key===key?iconSort(st.order):iconSort()}</button><button class="ds3-th-action ds3-invoice-filter ${state.invoiceFilters[key]?"is-active":""}" data-key="${key}" type="button">${iconFilter()}</button></span></div>`;}
+  function invoiceSortFilter(list){let out=list.filter(r=>Object.entries(state.invoiceFilters).every(([k,v])=>String(r[k]??"").toLowerCase().includes(String(v).toLowerCase())));if(state.invoiceSort.key){const k=state.invoiceSort.key,dir=state.invoiceSort.order==="asc"?1:-1;out=out.slice().sort((a,b)=>{const av=a[k]??"",bv=b[k]??"",an=+av,bn=+bv;const res=!isNaN(an)&&!isNaN(bn)?an-bn:String(av).localeCompare(String(bv),"zh-Hans-CN");return res*dir;});}return out;}
+  function bindInvoiceTableActions(){document.querySelectorAll(".ds3-invoice-sort").forEach(b=>b.onclick=e=>{e.stopPropagation();const k=b.dataset.key;if(state.invoiceSort.key!==k)state.invoiceSort={key:k,order:"asc"};else if(state.invoiceSort.order==="asc")state.invoiceSort.order="desc";else state.invoiceSort={key:"",order:""};state.invoicePage=1;renderInvoiceTable(invoiceFundingRows());});document.querySelectorAll(".ds3-invoice-filter").forEach(b=>b.onclick=e=>{e.stopPropagation();const k=b.dataset.key,v=prompt("请输入筛选条件",state.invoiceFilters[k]||"");if(v===null)return;if(v.trim())state.invoiceFilters[k]=v.trim();else delete state.invoiceFilters[k];state.invoicePage=1;renderInvoiceTable(invoiceFundingRows());});document.querySelectorAll(".ds3-invoice-detail-btn").forEach(b=>b.onclick=()=>openDetail(b.dataset.cp));document.querySelectorAll("[data-invoice-note]").forEach(i=>i.oninput=()=>remarks[i.dataset.invoiceNote]={text:i.value,time:new Date().toLocaleString("zh-CN"),user:"项目组"});}
+  function renderInvoiceTable(rows){
+    const cpRows=invoiceByCounterparty(rows),full=invoiceSortFilter(cpRows),total=full.length,pages=Math.max(1,Math.ceil(total/state.invoicePageSize));if(state.invoicePage>pages)state.invoicePage=pages;const list=full.slice((state.invoicePage-1)*state.invoicePageSize,state.invoicePage*state.invoicePageSize);
+    $("ds3InvoiceTableContext").textContent=`当前查看：${state.year==="all"?"全年":state.year+"年"}｜对手方：${total}家｜未完全对应：${full.filter(r=>r.status!=="已对应").length}家｜账期口径：${periodName()}`;
+    $("ds3InvoiceTableHead").innerHTML=`<tr><th class="ds3-sticky-cp" style="left:0;min-width:180px;text-align:left;">${invoiceHeader("对手方名称","counterparty","left")}</th><th>${invoiceHeader("对手方类型","type")}</th><th class="is-num">${invoiceHeader("销项价税合计","salesTotal")}</th><th class="is-num">${invoiceHeader("已对应流入","salesMatched")}</th><th class="is-num">${invoiceHeader("未对应流入","salesUnmatched")}</th><th class="is-num">${invoiceHeader("进项价税合计","purchaseTotal")}</th><th class="is-num">${invoiceHeader("已对应流出","purchaseMatched")}</th><th class="is-num">${invoiceHeader("未对应流出","purchaseUnmatched")}</th><th class="is-num">${invoiceHeader("对应覆盖率","coverageRate")}</th><th>${invoiceHeader("匹配状态","status")}</th><th class="is-num">${invoiceHeader("票据数量","invoiceCount")}</th><th class="is-num">${invoiceHeader("最长未匹配天数","maxDays")}</th><th class="ds3-sticky-action">操作</th><th class="ds3-remark-cell ds3-sticky-remark">${invoiceHeader("备注","remark")}</th></tr>`;
+    $("ds3InvoiceTableBody").innerHTML=list.length?list.map(r=>`<tr><td class="ds3-sticky-cp" style="left:0"><span class="ds3-row-main-name">${r.counterparty}</span></td>${typeCell(r.type)}<td class="is-num ds3-num-output">${fmt(r.salesTotal)}</td><td class="is-num">${fmt(r.salesMatched)}</td><td class="is-num">${fmt(r.salesUnmatched)}</td><td class="is-num ds3-num-input">${fmt(r.purchaseTotal)}</td><td class="is-num">${fmt(r.purchaseMatched)}</td><td class="is-num">${fmt(r.purchaseUnmatched)}</td><td class="is-num">${fmt(r.coverageRate)}%</td><td><span class="ds3-invoice-status is-${r.status==="已对应"?"matched":r.status==="部分对应"?"partial":r.status==="长期未匹配"?"long":"open"}">${r.status}</span></td><td class="is-num">${r.invoiceCount}</td><td class="is-num">${r.maxDays||"-"}</td><td class="ds3-sticky-action"><button class="ds3-eye-btn ds3-detail-btn ds3-invoice-detail-btn" data-cp="${r.counterparty}" type="button">查看详情</button></td><td class="ds3-remark-cell ds3-sticky-remark"><input class="ds3-note-input" data-invoice-note="${r.counterparty}" value="${r.remark||""}" placeholder="填写备注"/></td></tr>`).join(""):`<tr><td colspan="14" class="ds3-empty-cell">当前筛选范围暂无对手方票据数据</td></tr>`;
+    $("ds3InvoicePagination").innerHTML=`<span class="ds3-page-info">第 ${state.invoicePage} / ${pages} 页，共 ${total} 条</span><button class="ds3-page-btn" data-p="prev" ${state.invoicePage===1?"disabled":""}>上一页</button><button class="ds3-page-btn" data-p="next" ${state.invoicePage===pages?"disabled":""}>下一页</button>`;
+    $("ds3InvoicePagination").querySelectorAll("button").forEach(b=>b.onclick=()=>{state.invoicePage+=b.dataset.p==="prev"?-1:1;renderInvoiceTable(invoiceFundingRows());});
+    bindInvoiceTableActions();
+  }
+  function renderInvoiceAnalysis(){const rows=invoiceFundingRows();renderInvoiceKpis(rows);renderInvoiceCharts(rows);renderInvoiceSummary(rows);renderInvoiceTable(rows);}
   function resizeCharts(){Object.values(charts).forEach(c=>{try{c&&c.resize();}catch(e){}});}
   function syncChartTypeSwitch(){document.querySelectorAll("#ds3ChartTypeSwitch [data-chart-type]").forEach(b=>b.classList.toggle("is-active",b.dataset.chartType===state.chartType));}
-  function renderAll(){readFilters();renderCustomPeriod();renderMonthSelect();syncChartTypeSwitch();syncTrendModeTabs();renderRuleSettings();const rows=comparable();renderMonthToolbar();renderKpis(rows);renderStructureCards(rows);renderCharts(rows);renderAnalysisSummary(rows);renderComposition(rows);renderTable(filterStructureRows(rows));document.querySelectorAll("[data-view-panel]").forEach(p=>p.classList.toggle("is-hidden",state.view!=="all"&&state.view!==p.dataset.viewPanel));setTimeout(resizeCharts,40);}
+  function renderAll(){readFilters();renderCustomPeriod();renderMonthSelect();syncChartTypeSwitch();syncTrendModeTabs();syncAnalysisTabs();renderRuleSettings();const rows=comparable();if(state.analysisTab==="invoice"){renderInvoiceAnalysis();}else{renderMonthToolbar();renderKpis(rows);renderStructureCards(rows);renderCharts(rows);renderAnalysisSummary(rows);renderComposition(rows);renderTable(filterStructureRows(rows));document.querySelectorAll("[data-view-panel]").forEach(p=>p.classList.toggle("is-hidden",state.view!=="all"&&state.view!==p.dataset.viewPanel));}setTimeout(resizeCharts,40);}
   function bind(){
     bindInfoTooltip();
     document.addEventListener("click",e=>{if(!e.target.closest(".ds3-month-picker"))$("ds3MonthPicker")?.classList.remove("is-open");});
@@ -886,7 +1011,7 @@ function renderComposition(rows){ const rank=state.compositionRank||"inflow"; co
     $("ds3Unit").onchange=()=>{state.unit=$("ds3Unit").value;state.account="全部";refreshAccounts();renderAll();};
     $("ds3Year").onchange=()=>{state.year=$("ds3Year").value;state.selectedMonths=[];state.page=1;renderAll();};
     $("ds3ApplyBtn").onclick=()=>{state.page=1;renderAll();};
-    $("ds3ResetBtn").onclick=()=>{Object.assign(state,{unit:"全部",account:"全部",type:"全部",keyword:"",year:"all",view:"all",period:"same",basis:"all",customShift:1,selectedMonths:[],selectedCounterparty:"",tableView:"summary",yearExpanded:true,page:1,compositionRank:"inflow",compositionLimit:20,chartType:"bar",trendMode:"timeline",crossYears:[],structureFilter:"all",periodPreview:"same",ruleSource:"all",sort:{key:"",order:""},filters:{}});selectedRows.clear();Object.keys(counterpartyPeriodOverrides).forEach(k=>delete counterpartyPeriodOverrides[k]);syncFilterControls();refreshAccounts();renderAll();};
+    $("ds3ResetBtn").onclick=()=>{Object.assign(state,{unit:"全部",account:"全部",type:"全部",keyword:"",year:"all",view:"all",period:"same",basis:"all",customShift:1,selectedMonths:[],selectedCounterparty:"",tableView:"summary",yearExpanded:true,page:1,compositionRank:"inflow",compositionLimit:20,chartType:"bar",trendMode:"timeline",crossYears:[],structureFilter:"all",periodPreview:"same",ruleSource:"all",invoicePage:1,invoiceSort:{key:"",order:""},invoiceFilters:{},sort:{key:"",order:""},filters:{}});selectedRows.clear();Object.keys(counterpartyPeriodOverrides).forEach(k=>delete counterpartyPeriodOverrides[k]);syncFilterControls();refreshAccounts();renderAll();};
     document.querySelectorAll("#ds3RulePeriodTabs [data-rule-period]").forEach(b=>b.onclick=()=>{state.period=b.dataset.rulePeriod;state.periodPreview=state.period;renderAll();alert(`已切换默认账期口径为“${periodName()}”`);});
     $("ds3RuleMonthInput")&&($("ds3RuleMonthInput").onchange=()=>{state.customShift=Math.max(1,Math.min(12,+$("ds3RuleMonthInput").value||1));renderAll();});
     $("ds3OpenRuleManager")&&($("ds3OpenRuleManager").onclick=()=>openRuleManager("all"));
@@ -896,6 +1021,9 @@ function renderComposition(rows){ const rank=state.compositionRank||"inflow"; co
     $("ds3ViewSelectedBtn")&&($("ds3ViewSelectedBtn").onclick=openSelected);
     $("ds3BatchShiftBtn")&&($("ds3BatchShiftBtn").onclick=openBatchShift);
     $("ds3ExportBtn").onclick=()=>alert("导出当前结果：已按当前筛选条件生成导出任务。");
+    document.querySelectorAll("[data-analysis-tab]").forEach(b=>b.onclick=()=>{state.analysisTab=b.dataset.analysisTab;state.page=1;state.invoicePage=1;renderAll();});
+    $("ds3InvoiceClearFiltersBtn")&&($("ds3InvoiceClearFiltersBtn").onclick=()=>{state.invoiceFilters={};state.invoiceSort={key:"",order:""};state.invoicePage=1;renderInvoiceTable(invoiceFundingRows());});
+    $("ds3InvoiceExportBtn")&&($("ds3InvoiceExportBtn").onclick=()=>alert("导出当前票据结果：已按当前筛选条件生成导出任务。"));
     document.querySelectorAll("#ds3ChartTypeSwitch [data-chart-type]").forEach(b=>b.onclick=()=>{state.chartType=b.dataset.chartType;syncChartTypeSwitch();renderCharts(comparable());});
     document.querySelectorAll("#ds3CompositionMetric [data-composition-rank]").forEach(b=>b.onclick=()=>{state.compositionRank=b.dataset.compositionRank;renderAll();});
     $("ds3CompositionLimit")&&($("ds3CompositionLimit").onchange=()=>{state.compositionLimit=Math.max(1,Math.min(100,+$("ds3CompositionLimit").value||20));renderAll();});

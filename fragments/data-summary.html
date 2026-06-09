@@ -38,9 +38,12 @@
       </div>
     </section>
 
-    <section class="ds3-block">
+    <section class="ds3-block ds3-filter-block">
       <div class="ds3-block-head">
-        <div class="ds3-block-title">筛选条件</div>
+        <div class="ds3-page-tabs">
+          <button class="is-active" data-analysis-tab="compare" type="button">银行流水与增值税对比分析</button>
+          <button data-analysis-tab="invoice" type="button">票据资金对应分析</button>
+        </div>
         <button class="ds3-fold" type="button">收起</button>
       </div>
       <div class="ds3-block-body">
@@ -59,17 +62,15 @@
       </div>
     </section>
 
-    <section class="ds3-block">
+    <section class="ds3-block" data-analysis-panel="compare">
       <div class="ds3-block-head"><div class="ds3-block-title">核心指标概览</div><button class="ds3-fold" type="button">收起</button></div>
-      <div class="ds3-block-body"><div class="ds3-vat-kpi-grid" id="ds3KpiGrid"></div></div>
+      <div class="ds3-block-body">
+        <div class="ds3-vat-kpi-grid" id="ds3KpiGrid"></div>
+        <div class="ds3-structure-strip ds3-kpi-structure-strip" id="ds3StructureCards"></div>
+      </div>
     </section>
 
-    <section class="ds3-block ds3-structure-block">
-      <div class="ds3-block-head"><div class="ds3-block-title">对手方结构分布</div><button class="ds3-fold" type="button">收起</button></div>
-      <div class="ds3-block-body"><div class="ds3-structure-strip" id="ds3StructureCards"></div></div>
-    </section>
-
-    <section class="ds3-block">
+    <section class="ds3-block" data-analysis-panel="compare">
       <div class="ds3-block-head">
         <div class="ds3-block-title">月度对比</div>
         <div class="ds3-block-actions">
@@ -96,7 +97,7 @@
       </div>
     </section>
 
-    <section class="ds3-block">
+    <section class="ds3-block" data-analysis-panel="compare">
       <div class="ds3-block-head"><div class="ds3-block-title">对比分析摘要</div><button class="ds3-fold" type="button">收起</button></div>
       <div class="ds3-block-body">
         <div class="ds3-vat-summary-grid">
@@ -106,7 +107,7 @@
       </div>
     </section>
 
-    <section class="ds3-block">
+    <section class="ds3-block" data-analysis-panel="compare">
       <div class="ds3-block-head"><div class="ds3-block-title">对手方对比明细</div><button class="ds3-fold" type="button">收起</button></div>
       <div class="ds3-block-body">
         <div class="ds3-section-head ds3-vat-table-head">
@@ -129,6 +130,48 @@
           </table>
         </div>
         <div class="ds3-pagination" id="ds3Pagination"></div>
+      </div>
+    </section>
+
+    <section class="ds3-block is-hidden" data-analysis-panel="invoice">
+      <div class="ds3-block-head"><div class="ds3-block-title">票据资金核心指标</div><button class="ds3-fold" type="button">收起</button></div>
+      <div class="ds3-block-body"><div class="ds3-vat-kpi-grid" id="ds3InvoiceKpiGrid"></div></div>
+    </section>
+
+    <section class="ds3-block is-hidden" data-analysis-panel="invoice">
+      <div class="ds3-block-head"><div class="ds3-block-title">票据资金月度对应</div><button class="ds3-fold" type="button">收起</button></div>
+      <div class="ds3-block-body">
+        <div class="ds3-grid-2">
+          <div class="ds3-panel"><div class="ds3-panel-title">销项发票 vs 已对应银行流入（月度）</div><div class="ds3-chart" id="ds3InvoiceSalesChart"></div></div>
+          <div class="ds3-panel"><div class="ds3-panel-title">进项发票 vs 已对应银行流出（月度）</div><div class="ds3-chart" id="ds3InvoicePurchaseChart"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ds3-block is-hidden" data-analysis-panel="invoice">
+      <div class="ds3-block-head"><div class="ds3-block-title">票据资金对应摘要</div><button class="ds3-fold" type="button">收起</button></div>
+      <div class="ds3-block-body"><div class="ds3-invoice-summary-grid" id="ds3InvoiceSummary"></div></div>
+    </section>
+
+    <section class="ds3-block is-hidden" data-analysis-panel="invoice">
+      <div class="ds3-block-head"><div class="ds3-block-title">票据资金对应明细</div><button class="ds3-fold" type="button">收起</button></div>
+      <div class="ds3-block-body">
+        <div class="ds3-section-head ds3-vat-table-head">
+          <div class="ds3-table-view-line">
+            <div class="ds3-section-desc" id="ds3InvoiceTableContext"></div>
+          </div>
+          <div class="ds3-section-actions">
+            <button class="ds3-btn" id="ds3InvoiceClearFiltersBtn" type="button">清除表头筛选</button>
+            <button class="ds3-btn is-primary" id="ds3InvoiceExportBtn" type="button">导出当前票据结果</button>
+          </div>
+        </div>
+        <div class="ds3-table-wrap">
+          <table class="ds3-table ds3-table-compact" id="ds3InvoiceTable">
+            <thead id="ds3InvoiceTableHead"></thead>
+            <tbody id="ds3InvoiceTableBody"></tbody>
+          </table>
+        </div>
+        <div class="ds3-pagination" id="ds3InvoicePagination"></div>
       </div>
     </section>
 
