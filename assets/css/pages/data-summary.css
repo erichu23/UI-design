@@ -6679,6 +6679,28 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   height:370px !important;
 }
 
+.ds3-vat-page #ds3DetailModal .ds3-crossyear-summary{
+  right:4px;
+  top:2px;
+  max-width:calc(100% - 76px);
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:3px 7px;
+  padding:3px 4px;
+  font-size:9.5px;
+  line-height:1.15;
+  white-space:normal;
+  text-align:right;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-crossyear-summary span{
+  white-space:nowrap;
+}
+
+.ds3-vat-page #ds3DetailModal .ds3-crossyear-summary-years{
+  flex-basis:100%;
+}
+
 .ds3-vat-page #ds3DetailModal .ds3-mt16{
   margin-top:8px !important;
 }
@@ -6722,16 +6744,100 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   text-overflow:ellipsis;
 }
 
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap:5px;
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field > label:first-child{
+  flex:0 0 auto;
+  margin:0;
+  color:#475569;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field > label:first-child::after{
+  content:"：";
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field select,
+.ds3-vat-page .ds3-vat-filter-grid .ds3-field input{
+  flex:1 1 auto;
+  min-width:0;
+}
+
+.ds3-vat-page .ds3-field-with-exclude{
+  min-width:0;
+}
+
+.ds3-vat-page .ds3-exclude-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  flex:0 0 auto;
+  color:#64748b;
+  font-size:10px;
+  font-weight:700;
+  white-space:nowrap;
+  cursor:pointer;
+}
+
+.ds3-vat-page .ds3-exclude-toggle input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+
+.ds3-vat-page .ds3-exclude-toggle span{
+  width:10px;
+  height:10px;
+  border:1px solid #94a3b8;
+  border-radius:50%;
+  background:#fff;
+  box-sizing:border-box;
+}
+
+.ds3-vat-page .ds3-exclude-toggle input:checked + span{
+  border-color:#2563eb;
+  box-shadow:inset 0 0 0 3px #fff;
+  background:#2563eb;
+}
+
+.ds3-vat-page .ds3-analysis-time-field{
+  grid-column:span 2;
+}
+
+.ds3-vat-page .ds3-month-range{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  align-items:center;
+  gap:5px;
+  flex:1 1 auto;
+  min-width:0;
+}
+
+.ds3-vat-page .ds3-month-range em{
+  color:#64748b;
+  font-size:11px;
+  font-style:normal;
+  font-weight:700;
+}
+
+.ds3-vat-page .ds3-month-range input:invalid,
+.ds3-vat-page .ds3-month-range input:placeholder-shown{
+  color:#94a3b8;
+}
+
 /* 筛选条件控件均衡分配宽度 */
 .ds3-vat-page .ds3-vat-filter-grid{
   display:grid;
   grid-template-columns:
-    minmax(150px,1fr)
-    minmax(136px,.95fr)
-    minmax(126px,.85fr)
-    minmax(96px,.62fr)
-    minmax(136px,.9fr)
-    minmax(136px,.9fr)
+    minmax(210px,1.05fr)
+    minmax(200px,1fr)
+    minmax(270px,1.35fr)
+    minmax(150px,.85fr)
     max-content;
   align-items:center;
   gap:5px;
@@ -7068,4 +7174,45 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
       minmax(128px,.9fr)
       max-content;
   }
+}
+
+/* 保持新版筛选条件始终单行展示 */
+.ds3-vat-page .ds3-vat-filter-grid{
+  grid-template-columns:
+    minmax(178px,.95fr)
+    minmax(170px,.9fr)
+    minmax(246px,1.25fr)
+    minmax(132px,.72fr)
+    max-content !important;
+  grid-auto-flow:column;
+  grid-auto-rows:min-content;
+  overflow-x:auto;
+  overflow-y:visible;
+  flex-wrap:nowrap;
+}
+
+@media (max-width: 1280px){
+  .ds3-vat-page .ds3-vat-filter-grid{
+    grid-template-columns:
+      minmax(178px,.95fr)
+      minmax(170px,.9fr)
+      minmax(246px,1.25fr)
+      minmax(132px,.72fr)
+      max-content !important;
+    grid-auto-flow:column;
+    grid-auto-rows:min-content;
+    overflow-x:auto;
+    overflow-y:visible;
+    flex-wrap:nowrap;
+  }
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-actions{
+  display:flex;
+  flex-wrap:nowrap;
+  white-space:nowrap;
+}
+
+.ds3-vat-page .ds3-vat-filter-grid .ds3-actions .ds3-btn{
+  flex:0 0 auto;
 }

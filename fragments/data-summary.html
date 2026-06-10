@@ -48,12 +48,10 @@
       </div>
       <div class="ds3-block-body">
         <div class="ds3-filter-grid ds3-vat-filter-grid">
-          <div class="ds3-field"><label>被审计单位公司</label><select id="ds3Unit"></select></div>
-          <div class="ds3-field"><label>银行账户</label><select id="ds3Account"></select></div>
-          <div class="ds3-field"><label>对手方类型</label><select id="ds3Type"></select></div>
-          <div class="ds3-field"><label>年份</label><select id="ds3Year"></select></div>
-          <div class="ds3-field"><label>对手方名称</label><input id="ds3Keyword" placeholder="名称关键词"/></div>
-          <div class="ds3-field ds3-month-field"><label>月份范围</label><div id="ds3MonthSelect"></div></div>
+          <div class="ds3-field ds3-field-with-exclude"><label>被审计单位公司</label><select id="ds3Unit"></select><label class="ds3-exclude-toggle"><input id="ds3UnitExclude" type="checkbox"/><span></span>不包含</label></div>
+          <div class="ds3-field ds3-field-with-exclude"><label>银行账户</label><select id="ds3Account"></select><label class="ds3-exclude-toggle"><input id="ds3AccountExclude" type="checkbox"/><span></span>不包含</label></div>
+          <div class="ds3-field ds3-analysis-time-field"><label>分析时间</label><div class="ds3-month-range"><input id="ds3StartMonth" data-month-input placeholder="请选择月份" type="text"/><em>到</em><input id="ds3EndMonth" data-month-input placeholder="请选择月份" type="text"/></div></div>
+          <div class="ds3-field"><label>对手方筛选类型</label><select id="ds3Type"></select></div>
           <div class="ds3-actions">
             <button class="ds3-btn is-primary" id="ds3ApplyBtn" type="button">查询</button>
             <button class="ds3-btn" id="ds3ResetBtn" type="button">重置</button>
@@ -75,8 +73,8 @@
         <div class="ds3-block-title">月度对比</div>
         <div class="ds3-block-actions">
           <div class="ds3-segment ds3-trend-mode-tabs" id="ds3TrendModeTabs">
-            <button class="is-active" data-trend-mode="timeline" type="button">时序趋势</button>
-            <button data-trend-mode="crossYear" type="button">同月跨年对比</button>
+            <button class="is-active" data-trend-mode="crossYear" type="button">同月跨年对比</button>
+            <button data-trend-mode="timeline" type="button">时序趋势</button>
           </div>
           <button class="ds3-fold" type="button">收起</button>
         </div>
