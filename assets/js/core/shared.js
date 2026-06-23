@@ -62,30 +62,27 @@
 
     /* =============== 顶部筛选下拉：外置并填充选项 =============== */
     const auditedCompanies = [
-      '被审计单位A集团有限公司','被审计单位B科技股份有限公司','被审计单位C实业发展有限公司','被审计单位D信息技术有限公司'
+      '华东制造集团有限公司','上海星河科技有限公司','深圳启明电子有限公司','广州远航贸易有限公司','苏州精密制造有限公司','华南物流服务有限公司'
     ];
+    const bankAccountOptions = ['全部','工行上海分行 1001***0821','建行上海分行 1002***4186','招行上海分行 2001***7739','平安深圳分行 3001***6290','中行深圳分行 3002***9052','广发广州分行 4001***1578','农行苏州分行 5001***6426','浦发广州分行 6001***3385'];
     function initFilters(){
       const fCompany=document.getElementById('fCompany');
       const fBank=document.getElementById('fBank');
-      const fFunc=document.getElementById('fFunc');
-      fCompany.innerHTML = ['<option value="all">全部</option>',...auditedCompanies.map(x=>`<option>${x}</option>`)].join('');
-      const bankOpts = ['全部',...new Set(companies.map(x=>x.bank))];
-      fBank.innerHTML = bankOpts.map(x=>`<option>${x}</option>`).join('');
-      fFunc.innerHTML = ['全部',...funcs].map(x=>`<option>${x}</option>`).join('');
+      if (fCompany) fCompany.innerHTML = ['<option value="all">全部</option>',...auditedCompanies.map(x=>`<option>${x}</option>`)].join('');
+      if (fBank) fBank.innerHTML = bankAccountOptions.map(x=>`<option>${x}</option>`).join('');
     }
     initFilters();
 
     // 顶部 tab 切换
     const TAB_INTROS = {
-      account:"本页为用户提供资金总览、账户交易按月分布、缺失同名账户三大功能模块，旨在帮助用户全面了解已上传并执行分析的银行流水的资金规模、各银行账号交易分布情况，同时识别出未获取流水的银行账号。",
-      biz:"本页为用户提供已上传并执行分析的银行流水的多维度分析，包括：资金流水余额、流入流出趋势、流入流出构成，通过时间序列分析、交易性质和对手方性质等分析，旨在帮助用户识别到与被审计单位的资金规模与运营模式预期不符的情况。(本页的所有金额，已按照用户上传的汇率主档或系统默认PBOC汇率进行转换，均以人民币显示)",
+      account:"本页展示资金余额变动趋势和原资金总览，帮助用户了解银行账户规模、月度流入流出及流水校验情况。",
+      verify:"本页集中展示缺失同名账户、总账核对和分账号核对，帮助用户完成银行流水完整性测试。",
+      biz:"本页从余额、流入流出趋势、交易结构及对手方结构等维度展示流水画像，页面金额统一折算为人民币。",
       relation:"本页展示和分析：(1)关联方主档中的对手方，和(2)于“经营实质>流入流出构成”中手工标记为关联方的对手方的交易，旨在帮助用户全面了解被审计单位与关联方的资金往来，协助用户进行关联方披露。如用户暂未上传关联方主档或未手工打标，则本页展示内容为空。",
-      transaction:"本页展示和分析：(1)员工主档中的对手方，和(2)其他个人(小于或等于四个字符)的对手方交易，旨在帮助用户全面了解被审计单位与个人的资金往来，协助用户进行关联个人和董监高的识别与披露、个人交易的合理性分析及风险识别。如用户暂未上传员工主档，则本页仅展示与其他个人对手方交易。",
-      
+      "personal—transaction":"本页展示员工及其他个人对手方交易，支持查看个人交易规模、频次和明细。",
+      transaction:"本页汇总高风险资金流水核查程序及识别结果，支持进一步查看和形成核查底稿。",
       routine:"聚合工商信息并与交易规模联动校验企业真实性与风险。",
       statement:"用户可对本页的多维筛选器设置筛选条件，系统将在已上传并执行分析的银行流水中选出符合筛选条件的异常交易流水，并支持流水导出，旨在帮助用户根据项目需求，全面、快速、精准地筛选出异常银行流水，协助用户进一步执行审计程序。",
-      verify:"本页汇总已上传并执行分析的电子银行流水的期初金额、借方发生额、贷方发生额及期末余额，并将其与上传的银行科目总账/分账号余额表进行比对，并展示两者差异，协助用户完成银行流水的完整性测试。"
-
     };
     
     function setTabIntro(key){
@@ -146,6 +143,8 @@
       // 下一帧再计算，避免布局还未完成
       requestAnimationFrame(()=>moveInkbar(tab));
       setTimeout(()=>window.dispatchEvent(new Event('resize')),50);
+      window.dispatchEvent(new Event('bank-analysis:tab-change'));
+      if (key === 'account') setTimeout(()=>window.bankAccountBalanceChart?.resize(), 60);
     }
 
     // 绑定顶部 Tab：切页面、刷新后保持当前页、同步说明条与底线
@@ -165,6 +164,188 @@
     }
     
     document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('pane-biz-legacy')?.remove();
+      document.getElementById('pane-transaction-legacy')?.remove();
+      document.querySelector('#pane-transaction .risk-page[hidden]')?.remove();
+      const missingCard = document.getElementById('missingSameNameCard');
+      const verifyScroll = document.querySelector('#pane-verify .tab-scroll');
+      if (missingCard && verifyScroll) verifyScroll.prepend(missingCard);
+
+      const accountBody = document.getElementById('accountSummaryBody');
+      if (accountBody) {
+        const auditYears = [2023, 2024, 2025];
+        const auditMonths = Array.from({ length: 12 }, (_, index) => index + 1);
+        const summaryTotals = {
+          inflow: 790259,
+          outflow: 725311,
+          total: 1515570,
+          txCount: 26301,
+          cpCount: 100,
+          fileCount: 8
+        };
+        const accountRows = [
+          ['1001***0821','工行上海分行',140680,128640,269320,4280,57,3],
+          ['1002***4186','建行上海分行',112430,103260,215690,3650,46,3],
+          ['2001***7739','招行上海分行',96540,88420,184960,3220,38,3],
+          ['3001***6290','平安深圳分行',126870,116340,243210,4050,52,3],
+          ['3002***9052','中行深圳分行',102960,94480,197440,3440,41,3],
+          ['4001***1578','广发广州分行',82670,75960,158630,2870,35,3],
+          ['5001***6426','农行苏州分行',73420,67430,140850,2520,31,3],
+          ['6001***3385','浦发广州分行',54689,50781,105470,2271,28,3]
+        ];
+        const statusClass = (row, month)=>{
+          if ((month + row * 3) % 11 === 0) return 'chk-err';
+          if ((month + row * 2) % 7 === 0) return 'chk-warn';
+          if ((month + row) % 13 === 0) return 'chk-none';
+          return 'chk-ok';
+        };
+        const yearDots = (row, year)=>auditMonths.map(month=>
+          `<i class="chk-dot ${statusClass(row,month + (year-2023)*2)} col-year-${year}" title="${year}-${String(month).padStart(2,'0')}"></i>`
+        ).join('');
+        const yearSeparators = '<span class="col-sep"></span>';
+        const yearsHtml = auditYears.map(year=>`<span class="y y-${year}">${year}</span>`).join(yearSeparators);
+        const monthNums = auditYears.map(year=>auditMonths.map(month=>`<span class="month-num col-year-${year}">${month}</span>`).join('')).join(yearSeparators);
+        const formatK = value => `${Number(value).toLocaleString('zh-CN')}K`;
+        const ratioOfTotal = value => `${((value / summaryTotals.total) * 100).toFixed(2)}%`;
+        const yearLabels = document.querySelector('#tblAccountSummary .y-labels');
+        if (yearLabels) yearLabels.innerHTML = yearsHtml;
+        const sumRow = accountBody.querySelector('.sum-row');
+        if (sumRow) {
+          const cells = sumRow.children;
+          if (cells[4]) cells[4].innerHTML = `<strong>${formatK(summaryTotals.inflow)}</strong>`;
+          if (cells[5]) cells[5].innerHTML = `<strong>${formatK(summaryTotals.outflow)}</strong>`;
+          if (cells[6]) cells[6].innerHTML = `<strong>${formatK(summaryTotals.total)}</strong>`;
+          if (cells[7]) cells[7].innerHTML = '<strong>100.00%</strong>';
+          if (cells[8]) cells[8].innerHTML = `<strong>${summaryTotals.txCount.toLocaleString('zh-CN')}</strong>`;
+          if (cells[9]) cells[9].innerHTML = `<strong>${summaryTotals.cpCount}</strong>`;
+          if (cells[10]) cells[10].innerHTML = `<strong>${summaryTotals.fileCount}</strong>`;
+          const sumMonthGrid = sumRow.querySelector('.months-grid');
+          if (sumMonthGrid) sumMonthGrid.innerHTML = monthNums;
+        }
+        accountBody.querySelectorAll('tr:not(.sum-row)').forEach(row=>row.remove());
+        accountBody.insertAdjacentHTML('beforeend', accountRows.map((row,index)=>{
+          const [account,bank,inflow,outflow,total,txCount,cpCount,fileCount] = row;
+          return `<tr>
+            <td>${auditedCompanies[index % auditedCompanies.length]}</td><td>${account}</td><td>${bank}</td>
+            <td class="monthly-flow-cell"><div class="monthly-flow-bars" aria-label="${bank}月度流入流出分布"></div></td>
+            <td class="flow-in">${inflow.toLocaleString()}K</td><td class="flow-out">${outflow.toLocaleString()}K</td>
+            <td><b>${total.toLocaleString()}K</b></td><td>${ratioOfTotal(total)}</td><td>${txCount.toLocaleString()}</td><td>${cpCount}</td><td>${fileCount}</td>
+            <td class="actions"><a href="javascript:void(0)" title="账号详情"><i class="fa-solid fa-eye"></i></a><a href="javascript:void(0)" title="文件详情"><i class="fa-regular fa-file-lines"></i></a></td>
+            <td class="check-col"><div class="check-window"><div class="months-grid check-row">${auditYears.map(year=>yearDots(index,year)).join(yearSeparators)}</div></div></td>
+          </tr>`;
+        }).join(''));
+      }
+
+      document.querySelectorAll('.monthly-flow-bars').forEach((wrap, rowIndex)=>{
+        const inflow = [72,58,84,65,91,77,69,88,74,96,82,90];
+        const outflow = [54,68,61,79,63,72,86,67,81,70,92,76];
+        wrap.innerHTML = inflow.map((value, month)=>`
+          <span class="monthly-flow-pair" title="${month + 1}月 流入 ${value + rowIndex * 3} / 流出 ${outflow[month]}">
+            <i class="flow-in-bar" style="height:${value}%"></i>
+            <i class="flow-out-bar" style="height:${outflow[month]}%"></i>
+          </span>`).join('');
+      });
+
+      const checkWindows = [...document.querySelectorAll('#tblAccountSummary .check-window')];
+      let syncingCheckWindows = false;
+      checkWindows.forEach(windowEl=>windowEl.addEventListener('scroll', ()=>{
+        if (syncingCheckWindows) return;
+        syncingCheckWindows = true;
+        checkWindows.forEach(other=>{ if (other !== windowEl) other.scrollLeft = windowEl.scrollLeft; });
+        requestAnimationFrame(()=>{ syncingCheckWindows = false; });
+      }, { passive:true }));
+      let checkWheelTarget = 0;
+      let checkWheelFrame = 0;
+      const animateCheckScroll = ()=>{
+        const source = checkWindows[0];
+        if (!source) return;
+        const max = Math.max(0,source.scrollWidth-source.clientWidth);
+        checkWheelTarget = Math.max(0,Math.min(max,checkWheelTarget));
+        const next = source.scrollLeft + (checkWheelTarget-source.scrollLeft)*.34;
+        checkWindows.forEach(windowEl=>{ windowEl.scrollLeft = next; });
+        if (Math.abs(checkWheelTarget-next) > .5) {
+          checkWheelFrame = requestAnimationFrame(animateCheckScroll);
+        } else {
+          checkWindows.forEach(windowEl=>{ windowEl.scrollLeft = checkWheelTarget; });
+          checkWheelFrame = 0;
+        }
+      };
+      checkWindows.forEach(windowEl=>windowEl.addEventListener('wheel', event=>{
+        event.preventDefault();
+        const horizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY);
+        let delta = horizontal ? event.deltaX : event.deltaY;
+        if (event.deltaMode === 1) delta *= 16;
+        if (event.deltaMode === 2) delta *= windowEl.clientWidth;
+        const source = checkWindows[0];
+        if (!checkWheelFrame) checkWheelTarget = source?.scrollLeft || 0;
+        checkWheelTarget += delta * (horizontal ? 2.4 : 1.8);
+        if (!checkWheelFrame) checkWheelFrame = requestAnimationFrame(animateCheckScroll);
+      }, { passive:false }));
+
+      checkWindows.forEach(windowEl=>{
+        let dragging = false;
+        let startX = 0;
+        let startScroll = 0;
+        windowEl.addEventListener('pointerdown', event=>{
+          dragging = true;
+          startX = event.clientX;
+          startScroll = windowEl.scrollLeft;
+          windowEl.classList.add('is-dragging');
+          windowEl.setPointerCapture?.(event.pointerId);
+        });
+        windowEl.addEventListener('pointermove', event=>{
+          if (!dragging) return;
+          event.preventDefault();
+          windowEl.scrollLeft = startScroll - (event.clientX - startX)*1.25;
+        });
+        const stopDragging = event=>{
+          if (!dragging) return;
+          dragging = false;
+          windowEl.classList.remove('is-dragging');
+          windowEl.releasePointerCapture?.(event.pointerId);
+        };
+        windowEl.addEventListener('pointerup', stopDragging);
+        windowEl.addEventListener('pointercancel', stopDragging);
+      });
+
+      const scrollChecks = amount=>{
+        const source = checkWindows[0];
+        if (!source) return;
+        checkWheelTarget = Math.max(0,Math.min(source.scrollWidth-source.clientWidth,source.scrollLeft+amount));
+        if (!checkWheelFrame) checkWheelFrame = requestAnimationFrame(animateCheckScroll);
+      };
+      document.getElementById('checkScrollPrev')?.addEventListener('click',()=>scrollChecks(-220));
+      document.getElementById('checkScrollNext')?.addEventListener('click',()=>scrollChecks(220));
+
+      const balanceEl = document.getElementById('chart-account-balance');
+      if (balanceEl && window.echarts) {
+        const chart = echarts.init(balanceEl);
+        const balanceMonths = [2023, 2024, 2025].flatMap(year => Array.from({ length: 12 }, (_, index) => `${year}年${String(index + 1).padStart(2, '0')}月`));
+        const balanceData = [
+          1218, 1262, 1236, 1308, 1346, 1324, 1395, 1438, 1412, 1486, 1520, 1558,
+          1516, 1582, 1608, 1662, 1698, 1715, 1768, 1812, 1784, 1866, 1902, 1940,
+          1896, 1962, 1998, 2050, 2096, 2078, 2146, 2210, 2185, 2260, 2318, 2366
+        ];
+        chart.setOption({
+          animationDuration: 450,
+          color: ['#2f6fed'],
+          tooltip: { trigger:'axis', valueFormatter:value=>`${Number(value).toLocaleString()} 万元` },
+          grid: { left:70, right:28, top:24, bottom:48, containLabel:false },
+          xAxis: { type:'category', boundaryGap:false, data:balanceMonths, axisLine:{lineStyle:{color:'#cbd5e1'}}, axisLabel:{color:'#64748b',fontSize:10,interval:2,hideOverlap:true,margin:8} },
+          yAxis: { type:'value', name:'账户余额（万元）', nameLocation:'end', nameGap:8, nameTextStyle:{color:'#475569',fontSize:11,fontWeight:600,padding:[0,0,0,24]}, splitLine:{lineStyle:{color:'#eef2f7'}}, axisLabel:{color:'#64748b',fontSize:10,formatter:value=>Number(value).toLocaleString()} },
+          dataZoom: [{ type:'inside', start:0, end:100 }, { type:'slider', height:12, bottom:4, borderColor:'transparent', backgroundColor:'#eef2f7', fillerColor:'rgba(47,111,237,.18)', handleSize:0, showDetail:false }],
+          series: [{ name:'账户余额', type:'line', smooth:true, symbolSize:4, lineStyle:{width:2}, areaStyle:{color:'rgba(47,111,237,.08)'}, data:balanceData }]
+        });
+        window.bankAccountBalanceChart = chart;
+      }
+
+      const materiality = document.getElementById('bankMateriality');
+      materiality?.addEventListener('blur', ()=>{
+        const value = Number(materiality.value.replace(/,/g,''));
+        if (Number.isFinite(value) && value > 0) materiality.value = value.toLocaleString('zh-CN');
+      });
+      materiality?.addEventListener('focus', ()=>{ materiality.value = materiality.value.replace(/,/g,''); });
+
       bindTabs();
       const savedKey = localStorage.getItem(TAB_KEY);
       const active = document.querySelector(`#topTabs .tab[data-top="${savedKey}"]`)
@@ -262,12 +443,12 @@
     materiality: "",
     fyEnd: "12-31",
     accounts: [
-      { id: 1, org: "abc有限公司", bankNo: "243300333", bank: "中国银行", total: 1.1, tx: 2, method: "", updatedBy: "", updatedAt: "", sample: null },
-      { id: 2, org: "abc有限公司", bankNo: "331141******4172", bank: "中国银行宁波分行", total: 555838.5, tx: 85, method: "", updatedBy: "", updatedAt: "", sample: null },
-      { id: 3, org: "abc有限公司", bankNo: "394020******1807", bank: "农业银行", total: 52909.6, tx: 455, method: "", updatedBy: "", updatedAt: "", sample: null },
-      { id: 4, org: "abc有限公司", bankNo: "574902******0555", bank: "招商银行", total: 116413.4, tx: 367, method: "", updatedBy: "", updatedAt: "", sample: null },
-      { id: 5, org: "abc有限公司", bankNo: "574902******0601", bank: "招商银行", total: 750668.4, tx: 1482, method: "", updatedBy: "", updatedAt: "", sample: null },
-      { id: 6, org: "bcd有限公司", bankNo: "45079******2033", bank: "中国银行", total: 10, tx: 1, method: "", updatedBy: "", updatedAt: "", sample: null }
+      { id: 1, org: "华东制造集团有限公司", bankNo: "1001***0821", bank: "工行上海分行", total: 269320, tx: 4280, method: "", updatedBy: "", updatedAt: "", sample: null },
+      { id: 2, org: "上海星河科技有限公司", bankNo: "1002***4186", bank: "建行上海分行", total: 215690, tx: 3650, method: "", updatedBy: "", updatedAt: "", sample: null },
+      { id: 3, org: "深圳启明电子有限公司", bankNo: "2001***7739", bank: "招行上海分行", total: 184960, tx: 3220, method: "", updatedBy: "", updatedAt: "", sample: null },
+      { id: 4, org: "广州远航贸易有限公司", bankNo: "3001***6290", bank: "平安深圳分行", total: 243210, tx: 4050, method: "", updatedBy: "", updatedAt: "", sample: null },
+      { id: 5, org: "苏州精密制造有限公司", bankNo: "3002***9052", bank: "中行深圳分行", total: 197440, tx: 3440, method: "", updatedBy: "", updatedAt: "", sample: null },
+      { id: 6, org: "华南物流服务有限公司", bankNo: "4001***1578", bank: "广发广州分行", total: 158630, tx: 2870, method: "", updatedBy: "", updatedAt: "", sample: null }
     ]
   };
 
@@ -695,4 +876,154 @@
   renderTopBar();
   updateWorkingPaperSections();
   bindFold();
+})();
+
+// 银行流水分析通用表格表头增强：排序 + 列值筛选
+(function(){
+  const tableFilters = new WeakMap();
+
+  function getCellText(row, index) {
+    return (row.children[index]?.innerText || '').trim();
+  }
+
+  function compareCell(a, b, dir) {
+    const na = Number(a.replace(/[^\d.-]/g, ''));
+    const nb = Number(b.replace(/[^\d.-]/g, ''));
+    const bothNumber = a && b && !Number.isNaN(na) && !Number.isNaN(nb);
+    if (bothNumber && na !== nb) return dir === 'asc' ? na - nb : nb - na;
+    return dir === 'asc'
+      ? a.localeCompare(b, 'zh-CN', { numeric: true })
+      : b.localeCompare(a, 'zh-CN', { numeric: true });
+  }
+
+  function applyTableFilters(table) {
+    const filters = tableFilters.get(table);
+    const rows = Array.from(table.tBodies[0]?.rows || []);
+    rows.forEach(row => {
+      let visible = true;
+      if (filters) {
+        filters.forEach((selected, index) => {
+          if (selected.size && !selected.has(getCellText(row, index))) visible = false;
+        });
+      }
+      row.style.display = visible ? '' : 'none';
+    });
+  }
+
+  function sortTableByColumn(table, index, dir, th) {
+    const tbody = table.tBodies[0];
+    if (!tbody) return;
+    const rows = Array.from(tbody.rows);
+    rows.sort((a, b) => compareCell(getCellText(a, index), getCellText(b, index), dir));
+    rows.forEach(row => tbody.appendChild(row));
+    table.querySelectorAll('th').forEach(item => item.classList.remove('ba-sort-asc', 'ba-sort-desc'));
+    th.classList.add(dir === 'asc' ? 'ba-sort-asc' : 'ba-sort-desc');
+    applyTableFilters(table);
+  }
+
+  function closeFilterPopovers() {
+    document.querySelectorAll('.ba-table-filter-popover').forEach(el => el.remove());
+  }
+
+  function openFilterPopover(event, table, index, th) {
+    event.stopPropagation();
+    closeFilterPopovers();
+    const values = Array.from(new Set(Array.from(table.tBodies[0]?.rows || [])
+      .map(row => getCellText(row, index))
+      .filter(Boolean))).slice(0, 80);
+    const filters = tableFilters.get(table) || new Map();
+    const selected = filters.get(index) || new Set(values);
+
+    const pop = document.createElement('div');
+    pop.className = 'ba-table-filter-popover';
+    pop.innerHTML = `
+      <div class="ba-filter-title">${(th.childNodes[0]?.textContent || th.innerText || '筛选').trim()}</div>
+      <div class="ba-filter-options">
+        ${values.map(v => `
+          <label>
+            <input type="checkbox" value="${v.replace(/"/g, '&quot;')}" ${selected.has(v) ? 'checked' : ''}>
+            <span>${v}</span>
+          </label>
+        `).join('') || '<div class="ba-filter-empty">暂无可筛选内容</div>'}
+      </div>
+      <div class="ba-filter-actions">
+        <button type="button" data-action="clear">清空</button>
+        <button type="button" data-action="all">全选</button>
+        <button type="button" data-action="apply">确定</button>
+      </div>
+    `;
+    document.body.appendChild(pop);
+    const rect = th.getBoundingClientRect();
+    pop.style.left = Math.min(rect.left, window.innerWidth - 240) + 'px';
+    pop.style.top = (rect.bottom + 4) + 'px';
+
+    pop.querySelector('[data-action="clear"]').addEventListener('click', () => {
+      pop.querySelectorAll('input').forEach(input => input.checked = false);
+    });
+    pop.querySelector('[data-action="all"]').addEventListener('click', () => {
+      pop.querySelectorAll('input').forEach(input => input.checked = true);
+    });
+    pop.querySelector('[data-action="apply"]').addEventListener('click', () => {
+      const next = new Set(Array.from(pop.querySelectorAll('input:checked')).map(input => input.value));
+      filters.set(index, next);
+      tableFilters.set(table, filters);
+      th.classList.toggle('ba-filtered', next.size !== values.length);
+      applyTableFilters(table);
+      pop.remove();
+    });
+
+    setTimeout(() => {
+      document.addEventListener('click', function handler(ev) {
+        if (!pop.contains(ev.target)) {
+          pop.remove();
+          document.removeEventListener('click', handler);
+        }
+      });
+    }, 0);
+  }
+
+  function enhanceTable(table) {
+    if (table.dataset.baEnhanced === '1') return;
+    table.dataset.baEnhanced = '1';
+    const headerRows = Array.from(table.tHead?.rows || []);
+    const targetRows = headerRows.length > 1 ? [headerRows[headerRows.length - 1]] : headerRows;
+    targetRows.forEach(row => {
+      Array.from(row.cells).forEach(th => {
+        if (th.classList.contains('no-sort') || th.querySelector('.ba-th-tools') || th.colSpan > 1) return;
+        const index = th.cellIndex;
+        const tools = document.createElement('span');
+        tools.className = 'ba-th-tools';
+        tools.innerHTML = `
+          <span class="ba-sort-icons" aria-label="排序">
+            <button type="button" class="ba-sort-up" title="升序"></button>
+            <button type="button" class="ba-sort-down" title="降序"></button>
+          </span>
+          <button type="button" class="ba-filter-btn" title="筛选"></button>
+        `;
+        th.appendChild(tools);
+        tools.querySelector('.ba-sort-up').addEventListener('click', ev => {
+          ev.stopPropagation();
+          sortTableByColumn(table, index, 'asc', th);
+        });
+        tools.querySelector('.ba-sort-down').addEventListener('click', ev => {
+          ev.stopPropagation();
+          sortTableByColumn(table, index, 'desc', th);
+        });
+        tools.querySelector('.ba-filter-btn').addEventListener('click', ev => {
+          openFilterPopover(ev, table, index, th);
+        });
+      });
+    });
+  }
+
+  function initBankTableTools() {
+    document.querySelectorAll('.tab-pane table.table').forEach(enhanceTable);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBankTableTools);
+  } else {
+    initBankTableTools();
+  }
+  window.addEventListener('bank-analysis:tab-change', initBankTableTools);
 })();

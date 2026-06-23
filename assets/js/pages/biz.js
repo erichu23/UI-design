@@ -1,6 +1,6 @@
 /* =============== 经营实质：图表 =============== */
     /* =============== 经营实质：通用（日粒度） =============== */
-    /* 1) 生成 2023-01-01 ~ 2024-12-31 的每日日期 */
+    /* 1) 生成 2023-01-01 ~ 2025-12-31 的每日日期 */
     function genDays(start, end){
       const out = [];
       const s = new Date(start), e = new Date(end);
@@ -9,7 +9,14 @@
       }
       return out;
     }
-    const days = genDays('2023-01-01','2024-12-31'); // 共 731 天（含闰年 2024）
+    const years = ['2023', '2024', '2025'];
+    const days = genDays('2023-01-01','2025-12-31');
+    const yearRanges = years.reduce((acc, year) => {
+      const start = days.findIndex(day => day.startsWith(`${year}-`));
+      const end = days.findIndex(day => day.startsWith(`${Number(year) + 1}-`));
+      acc[year] = [start, end === -1 ? days.length : end];
+      return acc;
+    }, {});
     
     /* 2) 生成“尖峰型”日级示例数据（接入真实数据时替换 dataInDaily / dataOutDaily） */
     function genSpikyDaily(len, baseMin, baseMax, spikeProb=0.06, spikeMin=6e6, spikeMax=8e7){
@@ -36,25 +43,19 @@
     const fmtK = n => (n||0).toLocaleString('zh-CN');
     
     function pickByYearDays(year, arr){   // 从日级数组中截取年段
-      if (year==='2023'){
-        return arr.slice(0, 365);
-      }
-      if (year==='2024'){
-        return arr.slice(365);
-      }
-      return arr; // 2023-2024
+      if (yearRanges[year]) return arr.slice(...yearRanges[year]);
+      return arr; // 2023-2025
     }
     function pickDaysX(year){             // 取对应的 X 轴（日期）
-      if (year==='2023') return days.slice(0,365);
-      if (year==='2024') return days.slice(365);
+      if (yearRanges[year]) return days.slice(...yearRanges[year]);
       return days;
     }
     
     const palette = {
-      blue:  '#2563eb',
-      blueA: 'rgba(37,99,235,0.14)',
-      red:   '#ef4444',
-      redA:  'rgba(239,68,68,0.10)',
+      blue:  '#2f6fed',
+      blueA: 'rgba(47,111,237,0.14)',
+      red:   '#d9466f',
+      redA:  'rgba(217,70,111,0.10)',
       axis:  '#cbd5e1',
       text:  '#334155',
       grid:  '#e9eef7'
@@ -96,7 +97,7 @@
     
     /* ========= 资金流水余额：单蓝线（阶梯）+ 角标 + 缩放 ========= */
     function renderBalance(){
-      const y    = document.getElementById('yearBalance')?.value || '2023-2024';
+      const y    = document.getElementById('yearBalance')?.value || '2023-2025';
       const xSel = pickDaysX(y);
     
       // 用“日流入-日流出”的累计近似余额（>0 约束）；如有真实余额，替换 balanceData/xSel 即可
@@ -156,7 +157,7 @@
     
     /* ========= 流入流出趋势：蓝/红双线 + 缩放（无面积） ========= */
     function renderIO(){
-      const y    = document.getElementById('yearIO')?.value || '2023-2024';
+      const y    = document.getElementById('yearIO')?.value || '2023-2025';
       const xSel = pickDaysX(y);
       const inSel  = pickByYearDays(y, dataInDaily);
       const outSel = pickByYearDays(y, dataOutDaily);
@@ -204,10 +205,9 @@
 
 
     /* ===== 依赖与占位（若你项目里已有 months / dataIn / dataOut / ez 就会自动复用） ===== */
-    const C_BLUE='#2563eb', C_RED='#ef4444';
+    const C_BLUE='#2f6fed', C_RED='#d9466f';
     if(typeof window.months==='undefined'){
-      window.months=[...Array.from({length:12},(_,i)=>`2023-${String(i+1).padStart(2,'0')}`),
-                     ...Array.from({length:12},(_,i)=>`2024-${String(i+1).padStart(2,'0')}`)];
+      window.months=years.flatMap(year=>Array.from({length:12},(_,i)=>`${year}-${String(i+1).padStart(2,'0')}`));
     }
     if(typeof window.dataIn==='undefined' || typeof window.dataOut==='undefined'){
       window.dataIn = months.map(()=>Math.round(2e6+Math.random()*8e6));
@@ -530,12 +530,8 @@
         // 显隐 pane
         showPane(key);
 
-        // ✅ 自定义显示筛选条
-        const FILTER_PAGES = ['biz', 'relation','personal—transaction'];
-
-        if (bizFilterBar) {
-          bizFilterBar.classList.toggle('hide', !FILTER_PAGES.includes(key));
-        }
+        // 七个分析页共用同一组筛选状态，切换 Tab 时始终保留。
+        if (bizFilterBar) bizFilterBar.classList.remove('hide');
 
 
     
@@ -557,7 +553,7 @@
       // ✅ 首次恢复（刷新后关键一步）
       const savedKey  = sessionStorage.getItem(STORAGE_KEYS.topTab);
       const domActive = topTabs.querySelector('.tab.active');
-      const initialKey = savedKey || domActive?.dataset.top || 'biz';
+      const initialKey = savedKey || domActive?.dataset.top || 'account';
       activateTopTab(initialKey);
     
       // 初次布局后同步一次 inkbar

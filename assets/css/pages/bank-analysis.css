@@ -4,11 +4,11 @@
 
 /* ===== 顶部 KPI + 数据问题分析 ===== */
 :root{
-  --kpi-row: 48px;
-  --kpi-gap: 8px;
+  --kpi-row: 36px;
+  --kpi-gap: 5px;
   --bank-page-x: 12px;
-  --flow-in: #2563eb;
-  --flow-out: #ef4444;
+  --flow-in: #2f6fed;
+  --flow-out: #d9466f;
 }
 
 html,
@@ -26,7 +26,7 @@ body{
 
 .kpi-and-issue{
   display:grid;
-  grid-template-columns: minmax(480px, 1fr) 420px;
+  grid-template-columns: minmax(560px, 1fr) clamp(340px, 29vw, 380px);
   gap: var(--kpi-gap);
   flex:0 0 auto;
   margin:10px var(--bank-page-x) 0;
@@ -51,22 +51,22 @@ body{
 .kpi{
   background:#f8fafc;
   border:1px solid #e6edf5;
-  border-radius:8px;
-  padding:4px 8px;
+  border-radius:6px;
+  padding:2px 7px;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:flex-start;
 }
 .kpi-label{
-  font-size:14px;
+  font-size:11px;
   color:#0e3469;
   font-weight:600;
-  margin-bottom:2px;
+  margin-bottom:1px;
   white-space:nowrap;
 }
 .kpi-value{
-  font-size:14px;
+  font-size:11px;
   font-weight:700;
   color:#1b2c53;
   line-height:1.1;
@@ -119,8 +119,8 @@ body{
   position: relative;
   background: #fffaf0;
   border: 1px solid #f2d7a6;
-  border-radius: 10px;
-  padding: 10px 14px 34px;
+  border-radius: 8px;
+  padding: 5px 10px 22px;
   height: calc(var(--kpi-row) * 2 + var(--kpi-gap));
   display: flex;
   flex-direction: column;
@@ -135,9 +135,9 @@ body{
 }
 
 .issue-note{
-  margin: 0 0 10px;
-  font-size: 12px;
-  line-height: 1.55;
+  margin: 0 0 4px;
+  font-size: 11px;
+  line-height: 1.3;
   color: #7a5a12;
 }
 
@@ -152,7 +152,7 @@ body{
   grid-template-columns: 12px 1fr auto;
   align-items: start;
   column-gap: 8px;
-  margin: 0 0 8px;
+  margin: 0 0 3px;
   padding: 0;
 }
 
@@ -167,8 +167,8 @@ body{
 
 .issue-inline span{
   color: #a61b1b;
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 11px;
+  line-height: 1.25;
   font-weight: 500;
   display: block;
 }
@@ -190,8 +190,8 @@ body{
 .issue-toggle{
   position: absolute;
   right: 10px;
-  bottom: 8px;
-  font-size: 12px;
+  bottom: 5px;
+  font-size: 11px;
   color: #475569;
   text-decoration: none;
   background: transparent;
@@ -237,9 +237,9 @@ body{
   display:flex;
   align-items:center;
   flex-wrap:nowrap;
-  gap:10px;
+  gap:6px;
 
-  padding:8px 16px;
+  padding:5px 12px;
   margin:0 !important;
 
   border-bottom:1px solid #e6edf5;
@@ -255,9 +255,11 @@ body{
 
 .tab-container .tab{
   flex:0 0 auto;
-  padding:5px 10px;
+  padding:3px 8px;
   cursor:pointer;
   color:#475569;
+  font-size:12px;
+  line-height:20px;
   border:none;
   background:transparent;
   white-space:nowrap;
@@ -265,6 +267,84 @@ body{
 }
 .tab-container .tab:hover{ background:transparent; color:#1e40af; }
 .tab-container .tab.active{ color:#003366; font-weight:600; background:transparent; }
+
+.tab-materiality{
+  position:sticky;
+  right:0;
+  z-index:3;
+  margin-left:auto;
+  padding-left:14px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex:0 0 auto;
+  white-space:nowrap;
+  color:#475569;
+  font-size:12px;
+  background:#fff;
+  box-shadow:-10px 0 12px #fff;
+}
+
+.tab-materiality label{ color:#334155; font-weight:600; }
+.tab-materiality input{
+  width:112px;
+  height:28px;
+  padding:0 9px;
+  border:1px solid #cfd9e5;
+  border-radius:6px;
+  color:#0f172a;
+  text-align:right;
+  font-size:12px;
+  outline:none;
+}
+.tab-materiality input:focus{ border-color:#2563eb; box-shadow:0 0 0 2px rgba(37,99,235,.1); }
+
+.bank-balance-trend-card .chart-md{ height:190px; min-height:190px; }
+
+.monthly-flow-head,
+.monthly-flow-cell{ min-width:156px; width:156px; }
+
+.monthly-flow-bars{
+  display:grid;
+  grid-template-columns:repeat(12,minmax(7px,1fr));
+  align-items:end;
+  gap:2px;
+  height:30px;
+  padding:2px 0;
+}
+
+.monthly-flow-pair{
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:1px;
+  height:26px;
+  border-bottom:1px solid #dbe4ef;
+}
+
+.monthly-flow-pair i{ display:block; width:3px; min-height:2px; border-radius:2px 2px 0 0; }
+.monthly-flow-pair .flow-in-bar{ background:var(--flow-in); }
+.monthly-flow-pair .flow-out-bar{ background:var(--flow-out); }
+
+.bank-reconcile-table{ min-width:1180px; }
+.bank-reconcile-table th,
+.bank-reconcile-table td{ padding:7px 8px; white-space:nowrap; }
+.bank-reconcile-table .amount-in{ color:var(--flow-in); text-align:right; }
+.bank-reconcile-table .amount-out{ color:var(--flow-out); text-align:right; }
+.bank-reconcile-table .difference{ color:#9f1239; background:#fff5f7; text-align:right; }
+
+.bank-analysis-placeholder{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:10px;
+}
+.bank-analysis-placeholder .top-item{ min-height:62px; padding:10px 12px; }
+
+@media (max-width:1100px){
+  .tab-materiality{ position:static; }
+  .bank-analysis-placeholder{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
 
 .tab-container .inkbar{
   position:absolute;
@@ -279,15 +359,38 @@ body{
   display:flex;
   align-items:center;
   gap:8px;
-  padding:8px 16px 12px;
+  padding:5px 12px 3px;
   color:#334155;
-  font-size:11.5px;
-  line-height:2;
+  font-size:11px;
+  line-height:1.45;
   width:100%;
   box-sizing:border-box;
 }
 .tab-container .ti-icon{ width:14px; height:14px; margin-top:2px; color:#1e40af;flex-shrink:0; }
 .tab-container .ti-title{ font-weight:600; margin-right:6px; }
+
+/* 页面说明与共享筛选器连续排布，减少无效纵向留白。 */
+.tab-container .biz-filter-bar{
+  padding:0 12px 6px;
+}
+
+.tab-container .biz-filter-bar .filter-area{
+  gap:6px 10px;
+  padding:2px 0 0;
+}
+
+.tab-container .biz-filter-bar .filter-area label{
+  font-size:11px;
+  line-height:28px;
+}
+
+.tab-container .biz-filter-bar select,
+.tab-container .biz-filter-bar input[type="text"],
+.tab-container .biz-filter-bar input[type="date"],
+.tab-container .biz-filter-bar button{
+  height:30px;
+  font-size:12px;
+}
 
 /* ===== 银行流水页：Tab 内容区 ===== */
 .tab-pane{

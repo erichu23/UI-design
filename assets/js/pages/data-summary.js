@@ -44,14 +44,22 @@
   function ensureEcharts(){
     if(window.echarts)return Promise.resolve(window.echarts);
     if(echartsLoadPromise)return echartsLoadPromise;
-    echartsLoadPromise = new Promise((resolve,reject)=>{
+    const sources=["../assets/vendor/echarts/echarts.min.js?v=5.6.0-local","https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"];
+    const load=(index)=>new Promise((resolve,reject)=>{
+      if(window.echarts){resolve(window.echarts);return;}
+      if(index>=sources.length){reject(new Error("ECharts load failed"));return;}
       const script=document.createElement("script");
-      script.src="https://unpkg.com/echarts@5/dist/echarts.min.js";
+      script.src=sources[index];
       script.async=true;
-      script.onload=()=>resolve(window.echarts);
-      script.onerror=reject;
+      script.onload=()=>window.echarts?resolve(window.echarts):load(index+1).then(resolve,reject);
+      script.onerror=()=>load(index+1).then(resolve,reject);
       document.head.appendChild(script);
-    }).then(x=>{setTimeout(refreshVisibleCharts,0);return x;}).catch(()=>null);
+    });
+    echartsLoadPromise=load(0).then(x=>{setTimeout(refreshVisibleCharts,0);return x;}).catch(()=>{
+      echartsLoadPromise=null;
+      document.querySelectorAll(".ds3-chart-loading").forEach(el=>{el.textContent="图表资源加载失败，请刷新页面重试";el.classList.add("is-error");});
+      return null;
+    });
     return echartsLoadPromise;
   }
 
