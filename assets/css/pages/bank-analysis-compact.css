@@ -44,16 +44,16 @@ body .tab-pane .btn,
 body .tab-pane button.btn,
 body .tab-pane .btn-ghost,
 body .tab-pane .action-btn{
-  min-height:30px;
-  height:30px;
-  padding:0 10px;
-  border:1px solid #e6edf5;
-  border-radius:7px;
+  min-height:26px;
+  height:26px;
+  padding:0 9px;
+  border:1px solid #dbe5f0;
+  border-radius:6px;
   background:#fff;
   box-shadow:none;
   color:#334155;
-  font-size:12px;
-  line-height:28px;
+  font-size:11px;
+  line-height:24px;
   white-space:nowrap;
 }
 
@@ -106,6 +106,262 @@ body .tab-pane .wp-tools-right{
   gap:6px !important;
 }
 
+body .tab-pane .bank-help-actions{
+  display:inline-flex;
+  align-items:center;
+  gap:6px !important;
+  margin-left:6px;
+  flex:0 0 auto;
+}
+
+body .tab-pane .bank-help-actions .btn{
+  margin-left:0 !important;
+}
+
+body .tab-pane .account-help-btn{
+  border-color:#dbe5f0;
+  background:#f8fafc;
+  color:#475569;
+  font-weight:500;
+}
+
+body .tab-pane .account-help-btn::before{
+  content:none !important;
+}
+
+body .tab-pane .bank-help-actions .btn i{
+  color:#1d4ed8 !important;
+  margin-right:3px;
+  font-size:11px;
+}
+
+body .tab-pane .account-help-btn:hover{
+  border-color:#b9cbe3;
+  background:#eef4ff;
+  color:#1d4ed8;
+}
+
+body .bank-balance-trend-card > .head{
+  justify-content:flex-start !important;
+}
+
+body .bank-balance-trend-card .bank-help-actions{
+  margin-left:6px !important;
+  margin-right:auto;
+}
+
+body .tab-pane .bank-head-push,
+body .tab-pane .bank-help-actions + .portrait-legend,
+body .tab-pane .bank-help-actions + .portrait-segment{
+  margin-left:auto !important;
+}
+
+body .tab-pane .bank-head-meta-hidden{
+  display:none !important;
+}
+
+/* 与数据综合分析统一：筛选控件、输入框、按钮规格 */
+body .tab-container .biz-filter-bar{
+  padding:4px 10px 7px;
+  background:#fff;
+  border-color:#e2e8f0;
+}
+
+body .tab-container .biz-filter-bar .filter-card{
+  padding:0;
+  margin:0;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+}
+
+body .tab-container .biz-filter-bar .filter-area{
+  display:flex;
+  flex-wrap:nowrap;
+  align-items:center;
+  gap:5px;
+  padding:3px 0 0;
+  overflow:hidden;
+}
+
+body .tab-container .biz-filter-bar .filter-area > label:not(.negate){
+  margin:0;
+  color:#475569;
+  font-size:10px;
+  font-weight:600;
+  line-height:24px;
+  white-space:nowrap;
+}
+
+body .tab-container .biz-filter-bar .select-wrap{
+  display:inline-flex;
+  align-items:center;
+  width:126px;
+  min-width:0;
+  flex:0 1 126px;
+}
+
+body .tab-container .biz-filter-bar select,
+body .tab-container .biz-filter-bar input[type="text"],
+body .tab-container .biz-filter-bar input[type="date"],
+body .tab-pane select,
+body .tab-pane input[type="text"],
+body .tab-pane input[type="date"],
+body .tab-pane input[type="number"],
+body .tab-pane .pill-select{
+  width:100%;
+  min-width:0;
+  min-height:24px;
+  height:24px;
+  padding:0 7px;
+  border:1px solid #dbe5f0;
+  border-radius:6px;
+  background:#fff;
+  color:#334155;
+  box-shadow:none;
+  box-sizing:border-box;
+  font-size:11px;
+  line-height:22px;
+  outline:none;
+  transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+body .tab-container .biz-filter-bar input[type="date"]{
+  width:124px;
+  flex:0 0 124px;
+}
+
+body .tab-container .biz-filter-bar .select-wrap select{
+  padding-right:24px;
+}
+
+body .tab-container .biz-filter-bar .select-wrap .chev{
+  right:7px;
+  width:13px;
+  height:13px;
+  color:#64748b;
+  opacity:.8;
+}
+
+body .tab-container .biz-filter-bar select:hover,
+body .tab-container .biz-filter-bar input:hover,
+body .tab-pane select:hover,
+body .tab-pane input[type="text"]:hover,
+body .tab-pane input[type="date"]:hover,
+body .tab-pane input[type="number"]:hover,
+body .tab-pane .pill-select:hover{
+  border-color:#b9cbe3;
+  box-shadow:none;
+}
+
+body .tab-container .biz-filter-bar select:focus,
+body .tab-container .biz-filter-bar input:focus,
+body .tab-pane select:focus,
+body .tab-pane input[type="text"]:focus,
+body .tab-pane input[type="date"]:focus,
+body .tab-pane input[type="number"]:focus,
+body .tab-pane .pill-select:focus{
+  border-color:#1d4ed8;
+  box-shadow:0 0 0 2px rgba(29,78,216,.1);
+}
+
+body .tab-container .biz-filter-bar .range-sep{
+  margin:0 2px;
+  color:#64748b;
+  font-size:11px;
+  font-weight:700;
+  line-height:24px;
+}
+
+body .tab-container .biz-filter-bar .negate{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  margin:0;
+  color:#64748b;
+  font-size:10px;
+  font-weight:700;
+  line-height:24px;
+  white-space:nowrap;
+}
+
+body .tab-container .biz-filter-bar .negate input{
+  appearance:none;
+  width:10px;
+  height:10px;
+  margin:0;
+  border:1px solid #94a3b8;
+  border-radius:50%;
+  background:#fff;
+  box-sizing:border-box;
+}
+
+body .tab-container .biz-filter-bar .negate input:checked{
+  border-color:#2563eb;
+  box-shadow:inset 0 0 0 3px #fff;
+  background:#2563eb;
+}
+
+body .tab-container .biz-filter-bar .negate input:checked::after{
+  content:none;
+}
+
+body .tab-container .biz-filter-bar button,
+body .tab-pane button,
+body .tab-pane .btn,
+body .tab-pane .btn-ghost,
+body .tab-pane .action-btn{
+  min-height:26px;
+  height:26px;
+  padding:0 9px;
+  border:1px solid #dbe5f0;
+  border-radius:6px;
+  background:#fff;
+  color:#334155;
+  box-shadow:none;
+  box-sizing:border-box;
+  font-size:11px;
+  line-height:24px;
+  font-weight:500;
+}
+
+body .tab-container .biz-filter-bar .query,
+body .tab-pane .btn.primary,
+body .tab-pane .btn-primary,
+body .tab-pane .action-btn.btn-primary,
+body .tab-pane button.primary{
+  border-color:#1d4ed8;
+  background:#1d4ed8;
+  color:#fff;
+}
+
+body .tab-container .biz-filter-bar .reset{
+  border-color:#dbe5f0;
+  background:#f8fafc;
+  color:#475569;
+}
+
+body .tab-container .biz-filter-bar button:hover,
+body .tab-pane button:hover,
+body .tab-pane .btn:hover,
+body .tab-pane .btn-ghost:hover,
+body .tab-pane .action-btn:hover{
+  border-color:#9eb8dc;
+  background:#f7faff;
+  color:#1d4ed8;
+  box-shadow:none;
+}
+
+body .tab-container .biz-filter-bar .query:hover,
+body .tab-pane .btn.primary:hover,
+body .tab-pane .btn-primary:hover,
+body .tab-pane .action-btn.btn-primary:hover,
+body .tab-pane button.primary:hover{
+  border-color:#173dc0;
+  background:#173dc0;
+  color:#fff;
+}
+
 body .tab-pane .table{
   font-size:12px;
 }
@@ -138,38 +394,22 @@ body .bank-balance-trend-card .chart-md{
   min-height:178px;
 }
 
-body #pane-account .account-help-btn{
-  border-color:#dbe5f0;
-  background:#f8fafc;
-  color:#475569;
-  font-weight:500;
-}
-
-body #pane-account .account-help-btn::before{
-  content:none !important;
-}
-
-body #pane-account .account-help-btn i{
-  color:#1d4ed8;
-  font-size:12px;
-}
-
-body #pane-account .account-help-btn:hover{
-  border-color:#b9cbe3;
-  background:#eef4ff;
-  color:#1d4ed8;
-}
-
 body .account-summary-table-wrap{
   width:100%;
-  overflow:hidden;
+  overflow:auto;
   border:1px solid #e2e8f0;
   border-radius:7px;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+
+body .account-summary-table-wrap::-webkit-scrollbar{
+  display:none;
 }
 
 body #tblAccountSummary{
   width:100%;
-  min-width:0;
+  min-width:1180px;
   table-layout:fixed;
   border-collapse:separate;
   border-spacing:0;
@@ -189,10 +429,10 @@ body #tblAccountSummary th:nth-child(4), body #tblAccountSummary td:nth-child(4)
 body #tblAccountSummary th:nth-child(5), body #tblAccountSummary td:nth-child(5),
 body #tblAccountSummary th:nth-child(6), body #tblAccountSummary td:nth-child(6),
 body #tblAccountSummary th:nth-child(7), body #tblAccountSummary td:nth-child(7){ width:82px; }
-body #tblAccountSummary th:nth-child(8), body #tblAccountSummary td:nth-child(8){ width:82px; }
-body #tblAccountSummary th:nth-child(9), body #tblAccountSummary td:nth-child(9){ width:60px; }
-body #tblAccountSummary th:nth-child(10), body #tblAccountSummary td:nth-child(10){ width:68px; }
-body #tblAccountSummary th:nth-child(11), body #tblAccountSummary td:nth-child(11){ width:54px; }
+body #tblAccountSummary th:nth-child(8), body #tblAccountSummary td:nth-child(8){ width:104px; }
+body #tblAccountSummary th:nth-child(9), body #tblAccountSummary td:nth-child(9){ width:82px; }
+body #tblAccountSummary th:nth-child(10), body #tblAccountSummary td:nth-child(10){ width:92px; }
+body #tblAccountSummary th:nth-child(11), body #tblAccountSummary td:nth-child(11){ width:78px; }
 body #tblAccountSummary th:nth-child(12), body #tblAccountSummary td:nth-child(12){ width:58px; }
 
 body #tblAccountSummary .monthly-flow-head,
@@ -255,6 +495,16 @@ body #tblAccountSummary .arrow-btn{
   width:22px;
   height:20px;
   border-radius:5px;
+}
+
+body #tblAccountSummary .arrow-btn svg,
+body #tblAccountSummary .arrow-btn svg path{
+  fill:#334155 !important;
+}
+
+body #tblAccountSummary .arrow-btn:hover svg,
+body #tblAccountSummary .arrow-btn:hover svg path{
+  fill:#1d4ed8 !important;
 }
 
 body #tblAccountSummary .check-window{
@@ -366,27 +616,48 @@ body .wp-bottom-actions{
 }
 
 body .tab-pane table.table th{
+  position:relative;
   white-space:nowrap;
+  padding-right:32px !important;
 }
 
 body .tab-pane .ba-th-tools{
+  position:absolute;
+  right:6px;
+  top:50%;
+  transform:translateY(-50%);
   display:inline-flex;
   align-items:center;
+  justify-content:center;
   gap:3px;
-  margin-left:5px;
-  vertical-align:middle;
+  margin-left:0;
+  vertical-align:top;
+  z-index:1;
+  width:28px;
+  height:16px;
+  pointer-events:auto;
+}
+
+body .tab-pane table.table th.no-sort{
+  padding-right:7px !important;
+}
+
+body .tab-pane table.table th.no-sort .ba-th-tools{
+  display:none !important;
 }
 
 body #tblAccountSummary thead th.sortable:not(.check-col),
 body #tblMissingSameName thead th.sortable:not(.check-col),
 body .portrait-table-wrap th[data-sort]{
-  padding-right:7px !important;
+  padding-right:32px !important;
 }
 
 body #tblAccountSummary thead th.sortable:not(.check-col)::before,
 body #tblAccountSummary thead th.sortable:not(.check-col)::after,
 body #tblMissingSameName thead th.sortable:not(.check-col)::before,
 body #tblMissingSameName thead th.sortable:not(.check-col)::after,
+body .tab-pane table.table th.sortable::before,
+body .tab-pane table.table th.sortable::after,
 body .portrait-table-wrap th.is-asc::after,
 body .portrait-table-wrap th.is-desc::after{
   content:none !important;
@@ -396,27 +667,39 @@ body .portrait-table-wrap th.is-desc::after{
 body .tab-pane .ba-sort-icons{
   width:12px;
   height:16px;
+  min-width:12px;
+  min-height:16px;
   display:inline-flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
+  flex:0 0 12px;
 }
 
 body .tab-pane .ba-sort-icons button,
 body .tab-pane .ba-filter-btn{
   appearance:none;
-  border:0;
-  background:transparent;
-  padding:0;
-  margin:0;
+  min-width:0 !important;
+  min-height:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  margin:0 !important;
   cursor:pointer;
+  font-size:0 !important;
 }
 
 body .tab-pane .ba-sort-icons button{
-  width:12px;
-  height:7px;
-  line-height:7px;
+  width:12px !important;
+  height:7px !important;
+  min-height:7px !important;
+  max-height:7px !important;
+  line-height:7px !important;
   position:relative;
+  border-radius:0 !important;
+  color:transparent !important;
+  flex:0 0 7px;
 }
 
 body .tab-pane .ba-sort-icons button::before{
@@ -441,12 +724,16 @@ body .tab-pane th.ba-sort-asc .ba-sort-up::before{ border-bottom-color:#2f6fed; 
 body .tab-pane th.ba-sort-desc .ba-sort-down::before{ border-top-color:#2f6fed; }
 
 body .tab-pane .ba-filter-btn{
-  width:13px;
-  height:13px;
+  width:13px !important;
+  height:13px !important;
+  min-height:13px !important;
+  max-height:13px !important;
   display:inline-flex;
   align-items:center;
   justify-content:center;
   border-radius:3px;
+  flex:0 0 13px;
+  color:transparent !important;
 }
 
 body .tab-pane .ba-filter-btn::before{
@@ -461,6 +748,31 @@ body .tab-pane .ba-filter-btn::before{
 body .tab-pane .ba-filter-btn:hover::before,
 body .tab-pane th.ba-filtered .ba-filter-btn::before{
   background:#2f6fed;
+}
+
+body .tab-pane .ba-note-input{
+  width:100%;
+  min-width:120px;
+  height:24px;
+  min-height:24px;
+  padding:0 7px;
+  border:1px solid #dbe5f0;
+  border-radius:6px;
+  background:#fff;
+  color:#334155;
+  box-sizing:border-box;
+  font-size:11px;
+  line-height:22px;
+  outline:none;
+}
+
+body .tab-pane .ba-note-input:hover{
+  border-color:#b9cbe3;
+}
+
+body .tab-pane .ba-note-input:focus{
+  border-color:#1d4ed8;
+  box-shadow:0 0 0 2px rgba(29,78,216,.1);
 }
 
 .ba-table-filter-popover{

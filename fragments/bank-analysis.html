@@ -17,9 +17,9 @@
   <link rel="stylesheet" href="../assets/css/pages/biz.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/routine.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260507-routine"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260623-data3y1"/>
-  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260623-data3y1"/>
-  <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260622-polish1"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260624-overlapfix1"/>
+  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260624-overlapfix1"/>
+  <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260624-riskflow1"/>
 </head>
 <body>
   <!-- 2) KPI + 数据问题分析（整块） -->
@@ -136,7 +136,7 @@
 <section class="tab-pane active" id="pane-account">
 <div class="tab-scroll">
 <div class="card bank-balance-trend-card">
-<div class="head"><div class="title">资金余额变动趋势</div><div style="margin-left:auto" class="small">横轴：年月　｜　纵轴：账户余额（万元）</div></div>
+<div class="head"><div class="title">资金余额变动趋势</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div></div>
 <div class="content"><div class="chart-md" id="chart-account-balance"></div></div>
 </div>
 <!-- ========== 资金总览 ========== -->
@@ -144,7 +144,7 @@
 <div class="head">
 <div class="title">资金总览</div>
 <!-- 紧跟标题：业务逻辑 / 操作提示 -->
-<div class="head-inline" style="margin-left:8px;display:flex;gap:8px;">
+<div class="head-inline bank-help-actions">
 <button class="btn account-help-btn" id="btnAccountLogic"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button>
 <button class="btn account-help-btn" id="btnAccountTips"><i class="fa-regular fa-circle-question"></i>操作提示</button>
 </div>
@@ -179,8 +179,8 @@
 <th>交易笔数</th>
 <th>对手方数量</th>
 <th>流水文件</th>
-<th>操作</th>
-<th class="check-col">
+<th class="no-sort">操作</th>
+<th class="check-col no-sort">
 <div class="check-head">
 <button class="arrow-btn" id="btnToggleCheck" title="展开/收起三年校验月份">
 <svg aria-hidden="true" viewbox="0 0 16 16">
@@ -292,9 +292,9 @@
 <div class="card" id="missingSameNameCard">
 <div class="head">
 <div class="title">缺失同名账户</div>
-<div class="head-inline" style="margin-left:8px;display:flex;gap:8px;">
-<button class="btn" id="btnAccountLogic">业务逻辑</button>
-<button class="btn" id="btnAccountTips">操作提示</button>
+<div class="head-inline bank-help-actions">
+<button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button>
+<button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button>
 </div>
 <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
 <button class="btn primary" id="btnAnalyze">生成分析结果</button>
@@ -323,9 +323,9 @@
 <th>占比</th>
 <th>交易次数</th>
 <th>占比</th>
-<th>缺失原因</th>
-<th>支持性文件索引</th>
-<th>操作</th>
+<th class="no-sort">缺失原因</th>
+<th class="no-sort">支持性文件索引</th>
+<th class="no-sort">操作</th>
 </tr>
 </thead>
 <tbody>
@@ -342,7 +342,7 @@
 <td><strong>100.00%</strong></td>
 <td><strong>45</strong></td>
 <td><strong>100.00%</strong></td>
-<td></td>
+<td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
 <td></td>
 <td></td>
 </tr>
@@ -356,7 +356,7 @@
 <td>0.00%</td>
 <td>37</td>
 <td>82.22%</td>
-<td></td>
+<td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
 <td></td>
 <td class="actions">
 <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
@@ -371,7 +371,7 @@
 <td>1.90%</td>
 <td>6</td>
 <td>13.33%</td>
-<td></td>
+<td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
 <td></td>
 <td class="actions">
 <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
@@ -386,7 +386,7 @@
 <td>7.62%</td>
 <td>1</td>
 <td>2.22%</td>
-<td></td>
+<td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
 <td></td>
 <td class="actions">
 <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
@@ -401,7 +401,7 @@
 <td>90.48%</td>
 <td>1</td>
 <td>2.22%</td>
-<td></td>
+<td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
 <td></td>
 <td class="actions">
 <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
@@ -417,16 +417,16 @@
 <div class="tab-scroll">
 <!-- 缺失同名账户卡片由 shared.js 从账户总览移动到这里 -->
 <div class="card">
-<div class="head"><div class="title">总账核对</div><div class="small" style="margin-left:8px">银行流水与银行科目总账汇总口径核对</div><button class="btn" style="margin-left:auto">导出清单</button></div>
+<div class="head"><div class="title">总账核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><button class="btn bank-head-push">导出清单</button></div>
 <div class="content"><div style="overflow:auto"><table class="table bank-reconcile-table">
-<thead><tr><th rowspan="2">公司名称</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">银行流水数据</th><th colspan="4">科目余额表数据</th><th colspan="2">差异对比</th><th rowspan="2">差异说明</th></tr><tr><th>期初金额</th><th>流入金额</th><th>流出金额</th><th>期末金额</th><th>账面期初</th><th>账面借方</th><th>账面贷方</th><th>账面期末</th><th>发生额差异</th><th>期末差异</th></tr></thead>
-<tbody><tr><td>华东制造集团有限公司</td><td>2023</td><td>RMB</td><td>1,218,000</td><td class="amount-in">243,344</td><td class="amount-out">221,614</td><td>1,239,730</td><td>1,218,000</td><td>243,344</td><td>221,614</td><td>1,239,730</td><td>0</td><td>0</td><td>核对一致</td></tr><tr><td>华东制造集团有限公司</td><td>2025</td><td>RMB</td><td>1,896,000</td><td class="amount-in">282,511</td><td class="amount-out">261,319</td><td>1,917,192</td><td>1,896,000</td><td>282,511</td><td>261,319</td><td>1,917,192</td><td>0</td><td>0</td><td>核对一致</td></tr></tbody>
+<thead><tr><th rowspan="2">公司名称</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">银行流水数据</th><th colspan="4">科目余额表数据</th><th colspan="2">差异对比</th><th rowspan="2" class="no-sort">差异说明</th></tr><tr><th>期初金额</th><th>流入金额</th><th>流出金额</th><th>期末金额</th><th>账面期初</th><th>账面借方</th><th>账面贷方</th><th>账面期末</th><th>发生额差异</th><th>期末差异</th></tr></thead>
+<tbody><tr><td>华东制造集团有限公司</td><td>2023</td><td>RMB</td><td>1,218,000</td><td class="amount-in">243,344</td><td class="amount-out">221,614</td><td>1,239,730</td><td>1,218,000</td><td>243,344</td><td>221,614</td><td>1,239,730</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td></tr><tr><td>华东制造集团有限公司</td><td>2025</td><td>RMB</td><td>1,896,000</td><td class="amount-in">282,511</td><td class="amount-out">261,319</td><td>1,917,192</td><td>1,896,000</td><td>282,511</td><td>261,319</td><td>1,917,192</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td></tr></tbody>
 </table></div></div></div>
 <div class="card">
-<div class="head"><div class="title">分账号核对</div><div class="small" style="margin-left:8px">按银行账号核对流水与余额表</div><button class="btn" style="margin-left:auto">导出清单</button></div>
+<div class="head"><div class="title">分账号核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><button class="btn bank-head-push">导出清单</button></div>
 <div class="content"><div style="overflow:auto"><table class="table bank-reconcile-table">
-<thead><tr><th>公司名称</th><th>银行账号</th><th>开户银行</th><th>期间</th><th>币种</th><th>流水期初</th><th>流入金额</th><th>流出金额</th><th>流水期末</th><th>账面期末</th><th>期末差异</th><th>差异说明</th></tr></thead>
-<tbody><tr><td>华东制造集团有限公司</td><td>1001***0821</td><td>工行上海分行</td><td>2025</td><td>RMB</td><td>1,128,000</td><td class="amount-in">140,680</td><td class="amount-out">128,640</td><td>1,140,040</td><td>1,140,040</td><td>0</td><td>核对一致</td></tr><tr><td>上海星河科技有限公司</td><td>1002***4186</td><td>建行上海分行</td><td>2025</td><td>RMB</td><td>915,000</td><td class="amount-in">112,430</td><td class="amount-out">103,260</td><td>924,170</td><td>924,170</td><td>0</td><td>核对一致</td></tr></tbody>
+<thead><tr><th>公司名称</th><th>银行账号</th><th>开户银行</th><th>期间</th><th>币种</th><th>流水期初</th><th>流入金额</th><th>流出金额</th><th>流水期末</th><th>账面期末</th><th>期末差异</th><th class="no-sort">差异说明</th></tr></thead>
+<tbody><tr><td>华东制造集团有限公司</td><td>1001***0821</td><td>工行上海分行</td><td>2025</td><td>RMB</td><td>1,128,000</td><td class="amount-in">140,680</td><td class="amount-out">128,640</td><td>1,140,040</td><td>1,140,040</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td></tr><tr><td>上海星河科技有限公司</td><td>1002***4186</td><td>建行上海分行</td><td>2025</td><td>RMB</td><td>915,000</td><td class="amount-in">112,430</td><td class="amount-out">103,260</td><td>924,170</td><td>924,170</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td></tr></tbody>
 </table></div></div></div>
 </div></section>
 <!-- ===================== 流水画像 ===================== -->
@@ -473,11 +473,11 @@
   </div>
 
   <div class="portrait-chart-grid">
-    <div class="card portrait-chart-card"><div class="head"><div class="title">月度收支构成分析</div><div class="portrait-legend"><span class="is-in">流入</span><span class="is-out">流出</span><span>单位：万元</span></div></div><div class="content"><div class="portrait-chart" id="portraitMonthlyChart"></div></div></div>
-    <div class="card portrait-chart-card"><div class="head"><div class="title">对手方交易特征分析</div><div class="portrait-segment" id="portraitBubbleTabs"><button class="is-active" data-mode="inflow" type="button">流入</button><button data-mode="outflow" type="button">流出</button><button data-mode="total" type="button">交易总额</button></div></div><div class="content"><div class="portrait-chart" id="portraitBubbleChart"></div><div class="portrait-range"><label>金额范围<input id="portraitXMin" type="number" value="0"/><span>至</span><input id="portraitXMax" type="number" value="40000"/></label><label>交易次数<input id="portraitYMin" type="number" value="0"/><span>至</span><input id="portraitYMax" type="number" value="100"/></label></div></div></div>
+    <div class="card portrait-chart-card"><div class="head"><div class="title">月度收支构成分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-legend"><span class="is-in">流入</span><span class="is-out">流出</span><span>单位：万元</span></div></div><div class="content"><div class="portrait-chart" id="portraitMonthlyChart"></div></div></div>
+    <div class="card portrait-chart-card"><div class="head"><div class="title">对手方交易特征分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-segment" id="portraitBubbleTabs"><button class="is-active" data-mode="inflow" type="button">流入</button><button data-mode="outflow" type="button">流出</button><button data-mode="total" type="button">交易总额</button></div></div><div class="content"><div class="portrait-chart" id="portraitBubbleChart"></div><div class="portrait-range"><label>金额范围<input id="portraitXMin" type="number" value="0"/><span>至</span><input id="portraitXMax" type="number" value="40000"/></label><label>交易次数<input id="portraitYMin" type="number" value="0"/><span>至</span><input id="portraitYMax" type="number" value="100"/></label></div></div></div>
   </div>
 
-  <div class="card portrait-table-card"><div class="head"><div class="title">对手方汇总清单</div><div class="portrait-table-count" id="portraitTableCount"></div><button class="btn" id="portraitColumnsBtn" type="button">自定义表头</button><button class="btn primary" id="portraitExportBtn" type="button">导出清单</button></div><div class="content"><div class="portrait-table-wrap"><table class="table" id="portraitCounterpartyTable"><thead><tr><th data-sort="name">对手方名称</th><th>月度分布</th><th data-sort="type">对手方类型</th><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="count">交易笔数</th><th data-sort="sameRatio">同进同出比例（%）</th><th data-sort="industry">行业</th><th data-sort="duration">经营时长</th><th>董监高</th></tr></thead><tbody id="portraitCounterpartyBody"></tbody></table></div><div class="pagination portrait-pagination" id="portraitPager"></div></div></div>
+  <div class="card portrait-table-card"><div class="head"><div class="title">对手方汇总清单</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-table-count bank-head-meta-hidden" id="portraitTableCount"></div><button class="btn bank-head-push" id="portraitColumnsBtn" type="button">自定义表头</button><button class="btn primary" id="portraitExportBtn" type="button">导出清单</button></div><div class="content"><div class="portrait-table-wrap"><table class="table" id="portraitCounterpartyTable"><thead><tr><th data-sort="name">对手方名称</th><th>月度分布</th><th data-sort="type">对手方类型</th><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="count">交易笔数</th><th data-sort="sameRatio">同进同出比例（%）</th><th data-sort="industry">行业</th><th data-sort="duration">经营时长</th><th>董监高</th></tr></thead><tbody id="portraitCounterpartyBody"></tbody></table></div><div class="pagination portrait-pagination" id="portraitPager"></div></div></div>
 </div>
 </section>
 
@@ -642,21 +642,21 @@
 </section>
 <!-- ===================== 关联方交易 ===================== -->
 <section class="tab-pane hide" id="pane-relation"><div class="tab-scroll">
-<div class="card"><div class="head"><div class="title">关联方交易概览</div><button class="btn" style="margin-left:auto">导出当前结果</button></div><div class="content">
+<div class="card"><div class="head"><div class="title">关联方交易概览</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><button class="btn bank-head-push">导出当前结果</button></div><div class="content">
 <div class="bank-analysis-placeholder"><div class="top-item"><div class="small">关联方数量</div><div class="num">36 家</div></div><div class="top-item"><div class="small">流入金额</div><div class="num" style="color:var(--flow-in)">188,460 K</div></div><div class="top-item"><div class="small">流出金额</div><div class="num" style="color:var(--flow-out)">164,280 K</div></div><div class="top-item"><div class="small">交易笔数</div><div class="num">2,146 笔</div></div></div>
-<div style="overflow:auto"><table class="table"><thead><tr><th>关联方名称</th><th>关联关系</th><th>银行账号</th><th>流入金额</th><th>流出金额</th><th>交易总额</th><th>交易笔数</th><th>备注说明</th><th>操作</th></tr></thead><tbody><tr><td>上海凌云工业控制有限公司</td><td>同一控制方</td><td>1001***0821</td><td style="color:var(--flow-in)">24,802.9 K</td><td style="color:var(--flow-out)">694.4 K</td><td>25,497.3 K</td><td>294</td><td>三年销售回款及少量往来款</td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr><tr><td>贵阳恒通运输有限公司</td><td>联营企业</td><td>4001***1578</td><td style="color:var(--flow-in)">870.4 K</td><td style="color:var(--flow-out)">24,869.6 K</td><td>25,740.0 K</td><td>297</td><td>运输服务结算</td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr></tbody></table></div>
+<div style="overflow:auto"><table class="table"><thead><tr><th>关联方名称</th><th>关联关系</th><th>银行账号</th><th>流入金额</th><th>流出金额</th><th>交易总额</th><th>交易笔数</th><th class="no-sort">备注说明</th><th class="no-sort">操作</th></tr></thead><tbody><tr><td>上海凌云工业控制有限公司</td><td>同一控制方</td><td>1001***0821</td><td style="color:var(--flow-in)">24,802.9 K</td><td style="color:var(--flow-out)">694.4 K</td><td>25,497.3 K</td><td>294</td><td><input class="ba-note-input" value="三年销售回款及少量往来款"/></td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr><tr><td>贵阳恒通运输有限公司</td><td>联营企业</td><td>4001***1578</td><td style="color:var(--flow-in)">870.4 K</td><td style="color:var(--flow-out)">24,869.6 K</td><td>25,740.0 K</td><td>297</td><td><input class="ba-note-input" value="运输服务结算"/></td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr></tbody></table></div>
 </div></div></div></section>
 
 <!-- ===================== 个人交易 ===================== -->
 <section class="tab-pane hide" id="pane-personal—transaction"><div class="tab-scroll">
-<div class="card"><div class="head"><div class="title">个人交易分析</div><button class="btn" style="margin-left:auto">导出当前结果</button></div><div class="content">
+<div class="card"><div class="head"><div class="title">个人交易分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><button class="btn bank-head-push">导出当前结果</button></div><div class="content">
 <div class="bank-analysis-placeholder"><div class="top-item"><div class="small">个人对手方</div><div class="num">24 人</div></div><div class="top-item"><div class="small">个人流入</div><div class="num" style="color:var(--flow-in)">32,640 K</div></div><div class="top-item"><div class="small">个人流出</div><div class="num" style="color:var(--flow-out)">29,510 K</div></div><div class="top-item"><div class="small">交易笔数</div><div class="num">1,036 笔</div></div></div>
-<div style="overflow:auto"><table class="table"><thead><tr><th>个人对手方</th><th>人员类型</th><th>与被审计单位关系</th><th>流入金额</th><th>流出金额</th><th>交易笔数</th><th>最近交易日期</th><th>备注说明</th><th>操作</th></tr></thead><tbody><tr><td>张明远（个人）</td><td>其他个人</td><td>待确认</td><td style="color:var(--flow-in)">14,197.0 K</td><td style="color:var(--flow-out)">15,803.5 K</td><td>87</td><td>2025-12-18</td><td>个人往来需补充说明</td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr><tr><td>李佳琪（个人）</td><td>员工</td><td>销售人员</td><td style="color:var(--flow-in)">2,905.0 K</td><td style="color:var(--flow-out)">3,405.5 K</td><td>156</td><td>2025-12-09</td><td>佣金及备用金往来</td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr></tbody></table></div>
+<div style="overflow:auto"><table class="table"><thead><tr><th>个人对手方</th><th>人员类型</th><th>与被审计单位关系</th><th>流入金额</th><th>流出金额</th><th>交易笔数</th><th>最近交易日期</th><th class="no-sort">备注说明</th><th class="no-sort">操作</th></tr></thead><tbody><tr><td>张明远（个人）</td><td>其他个人</td><td>待确认</td><td style="color:var(--flow-in)">14,197.0 K</td><td style="color:var(--flow-out)">15,803.5 K</td><td>87</td><td>2025-12-18</td><td><input class="ba-note-input" value="个人往来需补充说明"/></td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr><tr><td>李佳琪（个人）</td><td>员工</td><td>销售人员</td><td style="color:var(--flow-in)">2,905.0 K</td><td style="color:var(--flow-out)">3,405.5 K</td><td>156</td><td>2025-12-09</td><td><input class="ba-note-input" value="佣金及备用金往来"/></td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr></tbody></table></div>
 </div></div></div></section>
 
 <!-- ===================== 流水查询 ===================== -->
 <section class="tab-pane hide" id="pane-statement"><div class="tab-scroll">
-<div class="card"><div class="head"><div class="title">流水查询结果</div><button class="btn" style="margin-left:auto">自定义表头</button><button class="btn primary">导出流水</button></div><div class="content"><div style="overflow:auto"><table class="table"><thead><tr><th>交易日期</th><th>被审计单位公司</th><th>银行账户</th><th>对手方名称</th><th>收付方向</th><th>交易金额</th><th>交易摘要</th><th>币种</th><th>备注说明</th><th>操作</th></tr></thead><tbody><tr><td>2025-12-26</td><td>华东制造集团有限公司</td><td>1001***0821</td><td>廊坊中晟包装有限公司</td><td>流出</td><td style="color:var(--flow-out)">4,860,000</td><td>包装材料采购款</td><td>RMB</td><td>三年供应商付款样例</td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr><tr><td>2025-12-25</td><td>上海星河科技有限公司</td><td>2001***7739</td><td>郑州华辰电气有限公司</td><td>流入</td><td style="color:var(--flow-in)">5,120,000</td><td>销售回款</td><td>RMB</td><td>三年客户回款样例</td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr></tbody></table></div><div class="pagination"><button class="btn btn-primary">1</button><button class="btn">2</button><button class="btn">下一页</button></div></div></div>
+<div class="card"><div class="head"><div class="title">流水查询结果</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-table-count bank-head-meta-hidden" id="statementFlowCount">共 26,301 条，当前展示 1-20 / 26,301</div><button class="btn bank-head-push">自定义表头</button><button class="btn primary">导出流水</button></div><div class="content"><div style="overflow:auto"><table class="table"><thead><tr><th>交易日期</th><th>被审计单位公司</th><th>银行账户</th><th>对手方名称</th><th>收付方向</th><th>交易金额</th><th>交易摘要</th><th>币种</th><th class="no-sort">备注说明</th><th class="no-sort">操作</th></tr></thead><tbody id="statementFlowBody"><tr><td>2025-12-26</td><td>华东制造集团有限公司</td><td>1001***0821</td><td>廊坊中晟包装有限公司</td><td>流出</td><td style="color:var(--flow-out)">4,860,000</td><td>包装材料采购款</td><td>RMB</td><td><input class="ba-note-input" value="三年供应商付款样例"/></td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr><tr><td>2025-12-25</td><td>上海星河科技有限公司</td><td>2001***7739</td><td>郑州华辰电气有限公司</td><td>流入</td><td style="color:var(--flow-in)">5,120,000</td><td>销售回款</td><td>RMB</td><td><input class="ba-note-input" value="三年客户回款样例"/></td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr></tbody></table></div><div class="pagination" id="statementFlowPager"><button class="btn" disabled>上一页</button><span>1 / 1316</span><button class="btn">下一页</button></div></div></div>
 </div></section>
 
 <!-- =====================已知关联交易 面板 ===================== -->
@@ -848,7 +848,7 @@
 </section>
 <!-- ===================== 资金流水核查底稿导出 ===================== -->
 <section class="tab-pane hide" id="pane-transaction">
-<iframe class="risk-reference-frame" src="./fund-flow-check.html?v=20260623-riskfix22" title="高风险核查"></iframe>
+<iframe class="risk-reference-frame" src="./fund-flow-check.html?v=20260624-checkfilter1" title="高风险核查"></iframe>
 <div class="risk-page" hidden>
   <aside class="risk-sidebar" id="riskSidebar"><div class="risk-sidebar-head"><div><b>核查程序</b><span id="riskProcedureCount">29 项</span></div><button id="riskSidebarToggle" type="button" title="收起核查程序">‹</button></div><div class="risk-procedure-list" id="riskProcedureList"></div><button class="risk-add-btn" id="riskAddProcedure" type="button">+ 新增核查程序</button></aside>
   <div class="risk-main">
@@ -1164,9 +1164,9 @@
 </section></div>
 
 
-<script defer src="../assets/js/core/shared.js?v=20260623-data3y1"></script>
+<script defer src="../assets/js/core/shared.js?v=20260624-tabletools1"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260508-fast2"></script>
-<script defer src="../assets/js/pages/portrait.js?v=20260623-data3y1"></script>
+<script defer src="../assets/js/pages/portrait.js?v=20260624-overlapfix1"></script>
 <script defer src="../assets/js/pages/routine.js?v=20260508-fast2"></script>
 </body>
 </html>

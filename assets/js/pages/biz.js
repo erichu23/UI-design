@@ -376,7 +376,7 @@
           <td>${(r.total/totalSum*100).toFixed(2)}%</td>
           <td>${r.txCnt}</td>
           <td>${r.sales}</td><td>${r.purchase}</td><td>${r.job}</td>
-          <td>${r.note}</td>
+          <td><input class="ba-note-input" value="${r.note || ''}"/></td>
           <td><button class="btn">查看详情</button></td>
         </tr>`).join('');
       renderPagination('pagination-deal',list.length,currentPageDeal,'gotoDeal');

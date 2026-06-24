@@ -246,6 +246,20 @@
           </span>`).join('');
       });
 
+      const statementBody = document.getElementById('statementFlowBody');
+      if (statementBody) {
+        const statementCounterparties = ['廊坊中晟包装有限公司','郑州华辰电气有限公司','天津远泽汽车零部件有限公司','重庆云峰智能装备有限公司','绍兴恒越纺织材料有限公司','昆明启明商贸有限公司','贵阳恒通运输有限公司','上海凌云工业控制有限公司','昆山精达模具有限公司','厦门瀚宇信息服务有限公司','石家庄北辰机电有限公司','北京恒瑞医疗设备有限公司','南京海纳精密科技有限公司','长沙万通食品有限公司','青岛立新橡塑有限公司','宁波嘉源能源有限公司','成都瑞科生物科技有限公司','合肥正元电子有限公司','武汉天成自动化有限公司','南昌锦程供应链有限公司'];
+        const accounts = ['1001***0821','1002***4186','2001***7739','3001***6290','3002***9052','4001***1578','5001***6426','6001***3385'];
+        statementBody.innerHTML = statementCounterparties.map((cp,index)=>{
+          const isIn = index % 2 === 0;
+          const amount = (4860000 + index * 173000).toLocaleString('zh-CN');
+          const year = 2025 - (index % 3);
+          const month = String(12 - (index % 12)).padStart(2,'0');
+          const day = String(26 - (index % 20)).padStart(2,'0');
+          return `<tr><td>${year}-${month}-${day}</td><td>${auditedCompanies[index % auditedCompanies.length]}</td><td>${accounts[index % accounts.length]}</td><td>${cp}</td><td>${isIn?'流入':'流出'}</td><td style="color:${isIn?'var(--flow-in)':'var(--flow-out)'}">${amount}</td><td>${isIn?'销售回款':'采购/服务付款'}</td><td>RMB</td><td><input class="ba-note-input" value="三年银行流水样例"/></td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr>`;
+        }).join('');
+      }
+
       const checkWindows = [...document.querySelectorAll('#tblAccountSummary .check-window')];
       let syncingCheckWindows = false;
       checkWindows.forEach(windowEl=>windowEl.addEventListener('scroll', ()=>{
@@ -985,10 +999,13 @@
   function enhanceTable(table) {
     if (table.dataset.baEnhanced === '1') return;
     table.dataset.baEnhanced = '1';
+    const skipHeaderLabels = new Set(['操作', '备注', '备注说明', '缺失原因', '支持性文件索引', '差异说明', '校验情况']);
     const headerRows = Array.from(table.tHead?.rows || []);
     const targetRows = headerRows.length > 1 ? [headerRows[headerRows.length - 1]] : headerRows;
     targetRows.forEach(row => {
       Array.from(row.cells).forEach(th => {
+        const label = (th.childNodes[0]?.textContent || th.innerText || '').trim();
+        if (skipHeaderLabels.has(label)) th.classList.add('no-sort');
         if (th.classList.contains('no-sort') || th.querySelector('.ba-th-tools') || th.colSpan > 1) return;
         const index = th.cellIndex;
         const tools = document.createElement('span');

@@ -1356,6 +1356,15 @@
       transition: all .1s;
     }
     .th-filter-icon:hover, .th-sort-icons:hover { background: var(--gray-100); color: var(--gray-600); }
+    .th-filter-icon.is-active { background:#eaf1ff; color:var(--primary); }
+    .th-filter-icon:empty::before {
+      content: "";
+      display: block;
+      width: 9px;
+      height: 9px;
+      background: currentColor;
+      clip-path: polygon(8% 16%, 92% 16%, 58% 52%, 58% 86%, 42% 86%, 42% 52%);
+    }
     .th-sort-icons { flex-direction: column; height: 16px; }
     .th-sort-arrow {
       font-size: 8px;
@@ -1931,7 +1940,7 @@
   /* ─── END CFO DASHBOARD ─────────────────────────────────────────────────── */
 
   </style>
-  <link rel="stylesheet" href="../assets/css/pages/risk-reference-override.css?v=20260623-riskfix22">
+  <link rel="stylesheet" href="../assets/css/pages/risk-reference-override.css?v=20260624-riskflow1">
 </head>
 <body>
 
@@ -2520,11 +2529,11 @@
     <div class="tabs-bar">
       <div class="tab active" id="tab-cp" onclick="switchTab('cp')">
         对手方汇总
-        <span class="tab-count danger" id="tc-cp">12</span>
+        <span class="tab-count danger" id="tc-cp">100</span>
       </div>
       <div class="tab" id="tab-tx" onclick="switchTab('tx')">
         流水明细
-        <span class="tab-count danger" id="tc-tx">31</span>
+        <span class="tab-count danger" id="tc-tx">26301</span>
       </div>
       <div class="tabs-spacer"></div>
     </div>
@@ -2602,8 +2611,8 @@
                 <th data-col="currency">币种 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('tx','currency','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('tx','currency','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showTxColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th data-col="type">交易类型 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('tx','type','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('tx','type','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showTxColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th data-col="dir">方向 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('tx','dir','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('tx','dir','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showTxColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
-                <th data-col="inflowAmt">流入金额（元） <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('tx','inflowAmt','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('tx','inflowAmt','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showTxColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
-                <th data-col="outflowAmt" class="sort-desc">流出金额（元） <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('tx','outflowAmt','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('tx','outflowAmt','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showTxColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
+                <th data-col="inflowAmt">流入金额<span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('tx','inflowAmt','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('tx','inflowAmt','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showTxColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
+                <th data-col="outflowAmt" class="sort-desc">流出金额<span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('tx','outflowAmt','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('tx','outflowAmt','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showTxColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th class="no-sort">摘要</th>
                 <th data-col="flag">标记状态 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('tx','flag','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('tx','flag','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showTxColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
               </tr>
@@ -2905,23 +2914,60 @@ const unifiedThreeYearCounterparties = [
   ['佛山南粤机电有限公司','客户','机电贸易','7年2个月',226,16590.3,385.2,15880.6,0]
 ];
 
-cpData.forEach((row, index) => {
-  const profile = unifiedThreeYearCounterparties[index % unifiedThreeYearCounterparties.length];
+const generatedRiskNames = unifiedThreeYearCounterparties.map(item => item[0]);
+const generatedRiskCities = ['上海','南京','杭州','深圳','广州','佛山','厦门','无锡','重庆','天津','郑州','合肥','长沙','西安','南通','嘉兴','宁波','青岛','昆明','沈阳','北京','苏州','成都','武汉','常州','福州','太原','南昌','石家庄','哈尔滨','南宁','兰州','乌鲁木齐','长春','徐州','湖州','泉州','中山','东莞','烟台'];
+const generatedRiskMains = ['启辰贸易','卓越电子','科锐科技','远景服务','锦程商贸','凯鸿商贸','瀚宇信息','蓝海电子','星驰新能源','明德精密仪器','博瑞信息技术','瑞诚家电','远林包装','东策供应链','海拓工程设备','北方自动化','恒瑞医疗设备','凌云工业控制','智联机器人','万成电子商务','新程汽车系统','天府软件服务','光谷通信技术','远航新能源材料','铭诚电机','海峡贸易','晋科自动化','启程家居','北辰机电','森远装备','桂海商贸','西域工程技术','天山物流科技','华远汽车电子','瑞联工程机械','南太湖电子','海丝服饰','粤科照明','星河智能制造','蓝湾海工装备'];
+while (generatedRiskNames.length < 100) {
+  const i = generatedRiskNames.length;
+  const name = `${generatedRiskCities[i % generatedRiskCities.length]}${generatedRiskMains[i % generatedRiskMains.length]}有限公司`;
+  if (!generatedRiskNames.includes(name)) generatedRiskNames.push(name);
+  else generatedRiskNames.push(`${name.replace('有限公司','')}第${i}分公司`);
+}
+
+cpData.length = 0;
+generatedRiskNames.forEach((cpName, index) => {
+  const profile = unifiedThreeYearCounterparties[index % unifiedThreeYearCounterparties.length].slice();
+  profile[0] = cpName;
+  if (index >= unifiedThreeYearCounterparties.length) {
+    const isSupplier = index % 2 === 1;
+    const scale = Math.max(.32, 1.05 - index * .006 + (index % 7) * .018);
+    const mainAmount = +(16800 * scale + (index * 137) % 2800).toFixed(1);
+    const minorAmount = +(420 + (index * 61) % 960).toFixed(1);
+    profile[1] = isSupplier ? '供应商' : (index % 10 === 0 ? '其他' : '客户');
+    profile[2] = ['制造业','批发零售业','信息服务','交通运输','包装材料','电子元件','新能源材料','仓储服务'][index % 8];
+    profile[3] = `${3 + index % 10}年${1 + index % 11}个月`;
+    profile[4] = 180 + (index * 17) % 160;
+    profile[5] = isSupplier ? minorAmount : mainAmount;
+    profile[6] = isSupplier ? mainAmount : minorAmount;
+    profile[7] = isSupplier ? 0 : +(profile[5] * (0.94 + (index % 3) * .012)).toFixed(1);
+    profile[8] = isSupplier ? +(profile[6] * (0.93 + (index % 4) * .014)).toFixed(1) : 0;
+  }
   const [name, cpType, industry, bizAge, txCount, inflow, outflow, salesTax, inputTax] = profile;
-  Object.assign(row, {
+  cpData.push({
+    id: `cp${index + 1}`,
     name,
     abbr: name.slice(0, 2),
+    type: cpType === '个人' ? '个人账户' : '企业账户',
+    typeTag: index % 9 === 0 ? '关联方' : '普通',
+    relType: index % 9 === 0 ? ['子公司','联营企业','共同控制投资方'][index % 3] : undefined,
     cpType,
     industry,
     bizAge,
+    executives: ['王某（法人）、陈某（监事）','赵某（法人）、李某（董事）','孙某（法人）、周某（总经理）','吴某（法人）、高某（财务负责人）'][index % 4],
     txCount,
     inflow,
     outflow,
+    net: +(outflow - inflow).toFixed(1),
+    freq: +((txCount / 36).toFixed(1)),
+    maxSingle: Math.round(Math.max(inflow, outflow) * 1000 / Math.max(1, Math.ceil(txCount / 18))),
+    currency: 'CNY',
     salesTax,
     inputTax,
-    net: +(outflow - inflow).toFixed(1),
-    maxSingle: Math.round(Math.max(inflow, outflow) * 1000 / Math.max(1, Math.ceil(txCount / 18))),
-    account: `${['1001','1002','2001','3001','3002','4001','5001','6001'][index % 8]} **** **** ${String(8200 + index * 37).slice(-4)}`
+    hits: index % 5 === 0 ? ['大额交易','期末集中'] : index % 4 === 0 ? ['同对手方收付并存'] : index % 3 === 0 ? ['大额交易'] : [],
+    risk: index % 5 === 0 ? 'high' : index % 3 === 0 ? 'mid' : 'low',
+    account: `${['1001','1002','2001','3001','3002','4001','5001','6001'][index % 8]} **** **** ${String(8200 + index * 37).slice(-4)}`,
+    markStatus: index % 6 === 0 ? 'flagged' : index % 7 === 0 ? 'explained' : index % 11 === 0 ? 'cleared' : 'none',
+    remark: ''
   });
 });
 
@@ -2970,14 +3016,39 @@ const auditUnitAccounts = [
   ['苏州精密制造有限公司', '3002***9052'],
   ['华南物流服务有限公司', '4001***1578']
 ];
-txData.forEach((row, index) => {
-  const cp = cpData.find(item => item.id === row.cpId) || cpData[index % cpData.length];
+const txTemplates = txData.slice();
+const targetTxTotal = 26301;
+txData.length = 0;
+for (let index = 0; index < targetTxTotal; index++) {
+  const cp = cpData[index % cpData.length];
+  const template = txTemplates[index % txTemplates.length] || {};
   const [unitName, unitAccount] = auditUnitAccounts[index % auditUnitAccounts.length];
-  row.selfName = unitName;
-  row.selfAccount = unitAccount;
-  row.cp = cp.name;
-  row.account = cp.account.replace(/\s+/g, '');
-});
+  const year = 2023 + (index % 3);
+  const month = String((index % 12) + 1).padStart(2, '0');
+  const day = String((index % 27) + 1).padStart(2, '0');
+  const dir = index % 2 === 0 ? '流入' : '流出';
+  const amountBase = dir === '流入' ? cp.inflow : cp.outflow;
+  const amount = Math.max(12000, Math.round((amountBase * 1000) / Math.max(8, cp.txCount / 12) * (0.72 + (index % 9) * .045)));
+  const flags = index % 13 === 0 ? ['大额流出','期末集中'] : index % 17 === 0 ? ['同对手方收付并存'] : index % 19 === 0 ? ['摘要异常'] : (template.flags || []);
+  txData.push({
+    txId: `TXN-${year}${month}${day}-${String(index + 1).padStart(6, '0')}`,
+    date: `${year}-${month}-${day}`,
+    time: `${String(8 + index % 12).padStart(2, '0')}:${String((index * 7) % 60).padStart(2, '0')}:${String((index * 11) % 60).padStart(2, '0')}`,
+    selfName: unitName,
+    selfAccount: unitAccount,
+    cp: cp.name,
+    cpId: cp.id,
+    account: cp.account.replace(/\s+/g, ''),
+    currency: 'CNY',
+    type: cp.cpType === '个人' ? '个人转账' : '对公转账',
+    dir,
+    amount,
+    balance: 28000000 + (index % 500) * 160000,
+    remark: dir === '流入' ? `${cp.name}销售回款` : `${cp.name}采购/服务付款`,
+    flags,
+    markStatus: index % 13 === 0 ? 'flagged' : index % 17 === 0 ? 'explained' : 'none'
+  });
+}
 
 const checkMeta = {
   // ── 第1类：定量考虑因素 ──
@@ -3108,10 +3179,11 @@ let txSearchText = '';
 let cpNameFilterSelected = [];
 let cpNameFilterVisible = false;
 let txColumnFilters = {};
+let checkColumnFilters = {};
 let materialityLevel = 100; // 重要性水平（万元）
 let cpPage = 1;
 let txPage = 1;
-const riskPageSize = 8;
+const riskPageSize = 20;
 
 function paginateRows(data, page) {
   const totalPages = Math.max(1, Math.ceil(data.length / riskPageSize));
@@ -3747,6 +3819,74 @@ function applyTxColumnFilters(data) {
   return data.filter(row => entries.every(([col, values]) => values.includes(getTxColumnValue(row, col))));
 }
 
+function isCheckHitForRow(row, checkId, kind) {
+  const ids = kind === 'tx' ? getTxCheckIds(row.flags) : getHitCheckIds(row.hits);
+  if (!ids.has(checkId)) return false;
+  const clearKey = `${kind === 'tx' ? row.cpId : row.id}_${checkId}`;
+  return !manualClears[clearKey];
+}
+
+function applyCheckColumnFilters(data, kind) {
+  const entries = Object.entries(checkColumnFilters).filter(([, value]) => value === 'hit' || value === 'empty');
+  if (!entries.length) return data;
+  return data.filter(row => entries.every(([checkId, value]) => {
+    const hit = isCheckHitForRow(row, checkId, kind);
+    return value === 'hit' ? hit : !hit;
+  }));
+}
+
+function showCheckColumnFilter(event, checkId) {
+  event.stopPropagation();
+  document.querySelectorAll('.check-column-filter-popover').forEach(el => el.remove());
+  const title = checkMeta[checkId]?.title || checkId;
+  const current = checkColumnFilters[checkId] || 'all';
+  const pop = document.createElement('div');
+  pop.className = 'check-column-filter-popover mark-menu';
+  pop.style.minWidth = '180px';
+  pop.style.padding = '10px';
+  pop.innerHTML = `
+    <div style="font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:8px">${title}</div>
+    <label style="display:flex;align-items:center;gap:6px;min-height:26px;font-size:11px;color:var(--gray-600)"><input type="radio" name="checkFilter-${checkId}" value="all" ${current==='all'?'checked':''}> 全部</label>
+    <label style="display:flex;align-items:center;gap:6px;min-height:26px;font-size:11px;color:var(--gray-600)"><input type="radio" name="checkFilter-${checkId}" value="hit" ${current==='hit'?'checked':''}> 已命中</label>
+    <label style="display:flex;align-items:center;gap:6px;min-height:26px;font-size:11px;color:var(--gray-600)"><input type="radio" name="checkFilter-${checkId}" value="empty" ${current==='empty'?'checked':''}> 未命中</label>
+    <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:8px">
+      <button type="button" class="btn-reset" id="checkFilterClear">清除</button>
+      <button type="button" class="btn-run" id="checkFilterApply">应用</button>
+    </div>
+  `;
+  document.body.appendChild(pop);
+  const rect = event.target.getBoundingClientRect();
+  pop.style.position = 'fixed';
+  pop.style.left = `${Math.min(rect.left, window.innerWidth - 200)}px`;
+  pop.style.top = `${rect.bottom + 6}px`;
+  pop.querySelector('#checkFilterClear').onclick = e => {
+    e.stopPropagation();
+    delete checkColumnFilters[checkId];
+    cpPage = 1; txPage = 1;
+    pop.remove();
+    rebuildSubHeaders();
+    activeTab === 'tx' ? renderTxTable() : renderCpTable();
+  };
+  pop.querySelector('#checkFilterApply').onclick = e => {
+    e.stopPropagation();
+    const value = pop.querySelector(`input[name="checkFilter-${checkId}"]:checked`)?.value || 'all';
+    if (value === 'all') delete checkColumnFilters[checkId];
+    else checkColumnFilters[checkId] = value;
+    cpPage = 1; txPage = 1;
+    pop.remove();
+    rebuildSubHeaders();
+    activeTab === 'tx' ? renderTxTable() : renderCpTable();
+  };
+  setTimeout(() => {
+    document.addEventListener('click', function handler(ev) {
+      if (!pop.contains(ev.target)) {
+        pop.remove();
+        document.removeEventListener('click', handler);
+      }
+    });
+  }, 0);
+}
+
 function showTxColumnFilter(event, col) {
   event.stopPropagation();
   document.querySelectorAll('.tx-column-filter-popover').forEach(el => el.remove());
@@ -3822,6 +3962,7 @@ function renderCpTable() {
     );
   }
   data = applyCpFilters(data);
+  data = applyCheckColumnFilters(data, 'cp');
   data = sortData(data, cpSortCol, cpSortDir);
   const totalRows = data.length;
   const pageResult = paginateRows(data, cpPage);
@@ -3916,6 +4057,7 @@ function renderTxTable(subtitle) {
   }
 
   data = applyTxColumnFilters(data);
+  data = applyCheckColumnFilters(data, 'tx');
   data = sortData(data, txSortCol, txSortDir);
   const totalRows = data.length;
   const pageResult = paginateRows(data, txPage);
@@ -4111,6 +4253,7 @@ function renderCpTableWithHighlight(matchIds) {
     );
   }
   data = applyCpFilters(data);
+  data = applyCheckColumnFilters(data, 'cp');
   data = sortData(data, cpSortCol, cpSortDir);
   const totalRows = data.length;
   const pageResult = paginateRows(data, cpPage);
@@ -4750,19 +4893,27 @@ function rebuildSubHeaders() {
         const isLastInGroup = ci === group.checks.length - 1;
         const borderStyle = isLastInGroup && !isLastGroup
           ? 'border-right:1px solid var(--gray-200)' : '';
+        const activeFilter = checkColumnFilters[chk.id] ? ' is-active' : '';
         checkSubHTML += `<th data-check="${chk.id}" data-check-group="${group.groupKey}" data-col-index="${colIndex}"
           onmouseenter="showCheckTooltip(event,'${chk.id}')"
           onmouseleave="hideCheckTooltip()"
           onclick="selectCheck('${chk.id}')"
-          style="${borderStyle}">${chk.abbr}</th>`;
+          style="${borderStyle}">
+            <span>${chk.abbr}</span>
+            <span class="th-filter-icon${activeFilter}" title="筛选命中状态" onclick="showCheckColumnFilter(event,'${chk.id}')"></span>
+          </th>`;
         colIndex++;
       });
     } else {
       const firstCheck = group.checks[0];
       const borderStyle = !isLastGroup ? 'border-right:1px solid var(--gray-200)' : '';
+      const activeFilter = checkColumnFilters[firstCheck.id] ? ' is-active' : '';
       checkSubHTML += `<th data-check="${firstCheck.id}" data-check-group="${group.groupKey}" data-col-index="${colIndex}"
         onclick="toggleCheckGroup('${group.groupKey}')"
-        style="${borderStyle};cursor:pointer">${firstCheck.abbr}</th>`;
+        style="${borderStyle};cursor:pointer">
+          <span>${firstCheck.abbr}</span>
+          <span class="th-filter-icon${activeFilter}" title="筛选命中状态" onclick="showCheckColumnFilter(event,'${firstCheck.id}')"></span>
+        </th>`;
       colIndex++;
     }
   });

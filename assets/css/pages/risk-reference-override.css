@@ -604,15 +604,15 @@ tbody tr.flagged:hover td{
 }
 .amount.inflow,
 .inflow{
-  color:#2f6fed !important;
+  color:#108dff !important;
 }
 .amount.outflow,
 .outflow{
-  color:#d9466f !important;
+  color:#ff5733 !important;
 }
 .amount.tax-sales{
-  color:#2f6fed !important;
+  color:#0f9f8a !important;
 }
 .amount.tax-purchase{
-  color:#d9466f !important;
+  color:#d97706 !important;
 }
