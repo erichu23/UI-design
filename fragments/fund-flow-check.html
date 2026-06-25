@@ -1940,7 +1940,7 @@
   /* ─── END CFO DASHBOARD ─────────────────────────────────────────────────── */
 
   </style>
-  <link rel="stylesheet" href="../assets/css/pages/risk-reference-override.css?v=20260625-table-skin1">
+  <link rel="stylesheet" href="../assets/css/pages/risk-reference-override.css?v=20260625-risk-zoom2">
 </head>
 <body>
 
@@ -2521,6 +2521,10 @@
           执行筛查
         </button>
         <button class="btn-export" onclick="exportDemo()">导出</button>
+        <button class="btn-table-zoom" type="button" onclick="openRiskTableZoom()" title="放大查看当前表格">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5"/><path d="M3 3l7 7"/><path d="M16 3h5v5"/><path d="M21 3l-7 7"/><path d="M8 21H3v-5"/><path d="M3 21l7-7"/><path d="M16 21h5v-5"/><path d="M21 21l-7-7"/></svg>
+          放大
+        </button>
       </div>
 
     </div><!-- /check-context-bar -->
@@ -2629,8 +2633,21 @@
       </div>
 
     </div><!-- /table-area -->
-  </div><!-- /content-area -->
+</div><!-- /content-area -->
 </div><!-- /main-layout -->
+
+<div class="risk-table-zoom-modal" id="riskTableZoomModal" aria-hidden="true">
+  <div class="risk-table-zoom-panel" role="dialog" aria-modal="true" aria-labelledby="riskTableZoomTitle">
+    <div class="risk-table-zoom-head">
+      <div class="risk-table-zoom-title">
+        <span id="riskTableZoomTitle">表格放大查看</span>
+        <small id="riskTableZoomSub">当前页数据</small>
+      </div>
+      <button class="risk-table-zoom-close" type="button" onclick="closeRiskTableZoom()" aria-label="关闭">×</button>
+    </div>
+    <div class="risk-table-zoom-body" id="riskTableZoomBody"></div>
+  </div>
+</div>
 
 <!-- TOAST CONTAINER -->
 <div class="toast-container" id="toastContainer"></div>
@@ -4828,6 +4845,56 @@ function runCheck() {
 function exportDemo() {
   showToast('info', 'Demo 模式下导出功能仅做展示');
 }
+
+function openRiskTableZoom() {
+  const modal = document.getElementById('riskTableZoomModal');
+  const body = document.getElementById('riskTableZoomBody');
+  const title = document.getElementById('riskTableZoomTitle');
+  const sub = document.getElementById('riskTableZoomSub');
+  const sourceId = activeTab === 'tx' ? 'txTable' : 'cpTable';
+  const source = document.getElementById(sourceId);
+  if (!modal || !body || !source) return;
+
+  const clone = source.cloneNode(true);
+  clone.removeAttribute('id');
+  clone.classList.add('zoom-table-clone');
+  clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+  const zoomTitle = activeTab === 'tx' ? '流水明细放大查看' : '对手方汇总放大查看';
+  const zoomSub = activeTab === 'tx' ? '当前筛查结果 · 流水明细' : '当前筛查结果 · 对手方汇总';
+
+  if (window.parent && window.parent !== window && typeof window.parent.openBankRiskTableZoom === 'function') {
+    window.parent.openBankRiskTableZoom(clone.outerHTML, zoomTitle, zoomSub);
+    return;
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'risk-table-zoom-scroll';
+  wrap.appendChild(clone);
+  body.innerHTML = '';
+  body.appendChild(wrap);
+
+  if (title) title.textContent = zoomTitle;
+  if (sub) sub.textContent = zoomSub;
+  modal.classList.add('is-open');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeRiskTableZoom() {
+  const modal = document.getElementById('riskTableZoomModal');
+  const body = document.getElementById('riskTableZoomBody');
+  if (!modal) return;
+  modal.classList.remove('is-open');
+  modal.setAttribute('aria-hidden', 'true');
+  if (body) body.innerHTML = '';
+}
+
+document.getElementById('riskTableZoomModal')?.addEventListener('click', (event) => {
+  if (event.target?.id === 'riskTableZoomModal') closeRiskTableZoom();
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') closeRiskTableZoom();
+});
 
 // ─── CHECK GROUP COLLAPSE STATE ────────────────────────────────────────────────
 // 记录每个大类组是否展开（默认全部收起）

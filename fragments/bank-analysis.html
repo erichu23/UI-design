@@ -17,8 +17,8 @@
   <link rel="stylesheet" href="../assets/css/pages/biz.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/routine.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260507-routine"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260625-table-skin4"/>
-  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260624-overlapfix1"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260625-portrait-color2"/>
+  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260625-meter-muted1"/>
   <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260624-riskflow1"/>
 </head>
 <body>
@@ -103,6 +103,7 @@
 <div class="tab" data-top="transaction">高风险核查</div>
 <div class="tab" data-top="statement">流水查询</div>
 <div class="tab-materiality"><label for="bankMateriality">重要性水平</label><input id="bankMateriality" placeholder="请输入" type="text"/><span>元</span></div>
+<button class="tab-guide-btn" id="bankOperationGuideBtn" type="button">操作指引</button>
 <i class="inkbar" id="inkbar"></i>
 </div>
 <div class="tab-intro" id="tabIntro"></div>
@@ -434,14 +435,14 @@
 <div class="tab-scroll portrait-page">
   <div class="portrait-metrics">
     <div class="portrait-metric is-related">
-      <div class="portrait-metric-head"><span>关联交易占比</span><b>12.4%</b></div>
+      <div class="portrait-metric-head"><span>关联交易占比 <b class="portrait-inline-value">188,460K / 12.4%</b></span></div>
       <div class="portrait-metric-value">188,460K</div>
       <div class="portrait-meter"><i style="width:12.4%"></i></div>
       <div class="portrait-metric-foot"><span>被审计单位间往来</span><strong>64,820K / 4.3%</strong></div>
     </div>
     <div class="portrait-metric is-customer">
       <div class="portrait-metric-head">
-        <span>客户交易占比</span>
+        <span>客户交易占比 <b class="portrait-inline-value">790,259K / 52.1%</b></span>
         <label class="portrait-rank-control">集中度
           <select id="portraitCustomerTopN">
             <option value="5">前5大</option>
@@ -456,7 +457,7 @@
     </div>
     <div class="portrait-metric is-supplier">
       <div class="portrait-metric-head">
-        <span>供应商交易占比</span>
+        <span>供应商交易占比 <b class="portrait-inline-value">725,311K / 47.9%</b></span>
         <label class="portrait-rank-control">集中度
           <select id="portraitSupplierTopN">
             <option value="5">前5大</option>
@@ -848,7 +849,7 @@
 </section>
 <!-- ===================== 资金流水核查底稿导出 ===================== -->
 <section class="tab-pane hide" id="pane-transaction">
-<iframe class="risk-reference-frame" src="./fund-flow-check.html?v=20260625-table-skin1" title="高风险核查"></iframe>
+<iframe class="risk-reference-frame" src="./fund-flow-check.html?v=20260625-risk-zoom2" title="高风险核查"></iframe>
 <div class="risk-page" hidden>
   <aside class="risk-sidebar" id="riskSidebar"><div class="risk-sidebar-head"><div><b>核查程序</b><span id="riskProcedureCount">29 项</span></div><button id="riskSidebarToggle" type="button" title="收起核查程序">‹</button></div><div class="risk-procedure-list" id="riskProcedureList"></div><button class="risk-add-btn" id="riskAddProcedure" type="button">+ 新增核查程序</button></aside>
   <div class="risk-main">
@@ -1164,9 +1165,9 @@
 </section></div>
 
 
-<script defer src="../assets/js/core/shared.js?v=20260625-verifytools1"></script>
+<script defer src="../assets/js/core/shared.js?v=20260625-risk-zoom2"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260508-fast2"></script>
-<script defer src="../assets/js/pages/portrait.js?v=20260624-overlapfix1"></script>
+<script defer src="../assets/js/pages/portrait.js?v=20260625-color-sync1"></script>
 <script defer src="../assets/js/pages/routine.js?v=20260508-fast2"></script>
 </body>
 </html>

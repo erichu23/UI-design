@@ -422,6 +422,68 @@
         modal.classList.add('is-open');
       });
     });
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const guideBtn = document.getElementById('bankOperationGuideBtn');
+      if (!guideBtn) return;
+      const modal = document.createElement('div');
+      modal.className = 'issue-detail-modal bank-guide-modal';
+      modal.innerHTML = `
+        <div class="issue-detail-panel" role="dialog" aria-modal="true" aria-label="操作指引">
+          <div class="issue-detail-head">
+            <div class="issue-detail-title">操作指引</div>
+            <button class="issue-detail-close" type="button" aria-label="关闭">×</button>
+          </div>
+          <div class="issue-detail-body">
+            <p class="issue-note">当前页面用于银行流水核查与底稿预览，建议先确认全局筛选条件，再按 Tab 查看账户、完整性、画像和高风险核查结果。</p>
+            <div class="issue-inline"><b>查看路径</b><span>账户总览 → 账号完整性 → 流水画像 → 高风险核查 → 流水查询</span></div>
+            <div class="issue-inline"><b>操作建议</b><span>表格支持排序、筛选、分页和导出；高风险核查可使用“放大”查看更完整的表格内容。</span></div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      const close = ()=>modal.classList.remove('is-open');
+      modal.querySelector('.issue-detail-close')?.addEventListener('click', close);
+      modal.addEventListener('click', event=>{
+        if (event.target === modal) close();
+      });
+      guideBtn.addEventListener('click', ()=>modal.classList.add('is-open'));
+    });
+
+    window.openBankRiskTableZoom = function(tableHtml, title = '表格放大查看', sub = '当前筛查结果'){
+      let modal = document.getElementById('bankRiskTableZoomModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.className = 'bank-risk-zoom-modal';
+        modal.id = 'bankRiskTableZoomModal';
+        modal.innerHTML = `
+          <div class="bank-risk-zoom-panel" role="dialog" aria-modal="true" aria-labelledby="bankRiskZoomTitle">
+            <div class="bank-risk-zoom-head">
+              <div class="bank-risk-zoom-title">
+                <span id="bankRiskZoomTitle">表格放大查看</span>
+                <small id="bankRiskZoomSub">当前筛查结果</small>
+              </div>
+              <button class="bank-risk-zoom-close" type="button" aria-label="关闭">×</button>
+            </div>
+            <div class="bank-risk-zoom-body">
+              <div class="bank-risk-zoom-scroll"></div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        modal.querySelector('.bank-risk-zoom-close')?.addEventListener('click', ()=>modal.classList.remove('is-open'));
+        modal.addEventListener('click', event=>{
+          if (event.target === modal) modal.classList.remove('is-open');
+        });
+        document.addEventListener('keydown', event=>{
+          if (event.key === 'Escape') modal.classList.remove('is-open');
+        });
+      }
+      modal.querySelector('#bankRiskZoomTitle').textContent = title;
+      modal.querySelector('#bankRiskZoomSub').textContent = sub;
+      modal.querySelector('.bank-risk-zoom-scroll').innerHTML = tableHtml || '<div style="padding:16px;color:#64748b;">暂无可放大的表格内容</div>';
+      modal.classList.add('is-open');
+    };
     
      //账户总览展开收起
     document.addEventListener("DOMContentLoaded",()=>{
