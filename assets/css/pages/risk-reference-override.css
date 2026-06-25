@@ -291,7 +291,7 @@ body{ background:#f7f9fc; font-size:12px; }
   min-height:334px !important;
   padding:0 !important;
   overflow:auto !important;
-  border:1px solid #d8e2ee;
+  border:.5px solid #edf2f7;
   border-radius:7px;
   scrollbar-width:none !important;
   -ms-overflow-style:none;
@@ -310,7 +310,7 @@ table{
   width:max-content !important;
   min-width:100% !important;
 }
-thead th{ height:29px !important; padding:4px 6px !important; border-right:1px solid #cbd8e7 !important; border-bottom:1px solid #cbd8e7 !important; background:#eef5ff !important; color:#334155 !important; position:static !important; }
+thead th{ height:29px !important; padding:4px 6px !important; border-right:.5px solid #dce6f1 !important; border-bottom:.5px solid #dce6f1 !important; background:#f4f8fd !important; color:#334155 !important; position:static !important; }
 thead th:last-child{ border-right:0 !important; }
 thead tr.group-header:first-child th,
 thead tr.group-header:nth-child(2) th,
@@ -328,7 +328,7 @@ thead .gq-qualitative{ box-shadow:inset 0 -2px 0 #9fd8ca !important; }
 thead .gq-abnormal{ box-shadow:inset 0 -2px 0 #efb3c4 !important; }
 thead .gq-bizinfo{ box-shadow:inset 0 -2px 0 #e8c98f !important; }
 thead .gq-other{ box-shadow:inset 0 -2px 0 #c9bdf2 !important; }
-tbody td{ height:29px !important; padding:4px 6px !important; border-right:1px solid #e0e8f1 !important; border-bottom:1px solid #e6edf5 !important; background:#fff; }
+tbody td{ height:29px !important; padding:4px 6px !important; border-right:.5px solid #edf2f7 !important; border-bottom:.5px solid #f0f4f8 !important; background:#fff; }
 tbody td:last-child{ border-right:0 !important; }
 tbody tr:hover td{ background:#f7faff !important; }
 tbody tr:hover td.risk-cp-type-cell.is-customer{ background:#e8eef5 !important; }
@@ -347,7 +347,7 @@ tbody tr:hover td.risk-cp-type-cell.is-personal{ background:#f0ebff !important; 
 .risk-cp-type-cell.is-customer{ background:#f1f5f9 !important; }
 .risk-cp-type-cell.is-supplier{ background:#f8f3ea !important; }
 .risk-cp-type-cell.is-personal{ background:#f5f1ff !important; }
-.detail-table{ border:1px solid #d8e2ee !important; border-radius:7px !important; border-collapse:separate !important; }
+.detail-table{ border:.5px solid #edf2f7 !important; border-radius:7px !important; border-collapse:separate !important; }
 .detail-table th,.detail-table td{ border-right:1px solid #e0e8f1 !important; border-bottom:1px solid #e6edf5 !important; }
 .detail-table th:last-child,.detail-table td:last-child{ border-right:0 !important; }
 .check-cell{

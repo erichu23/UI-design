@@ -88,11 +88,7 @@
     function setTabIntro(key){
       const el = document.getElementById('tabIntro');
       if(!el) return;
-      el.innerHTML = `
-        <svg class="ti-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm0 14a1 1 0 1 1 0 2 1 1 0 0 1 0-2Zm1-9h-2a1 1 0 0 0-1 1v1h2v6h2V8a2 2 0 0 0-2-2Z"/>
-        </svg>
-        <div><span class="ti-title">页面说明：</span>${TAB_INTROS[key]||''}</div>`;
+      el.innerHTML = '';
     }
     
     function moveInkbar(activeEl){
@@ -397,6 +393,35 @@
     }
 
     document.addEventListener('DOMContentLoaded', initCardCollapse);
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const issueCard = document.querySelector('.issue-card');
+      const issueToggle = issueCard?.querySelector('.issue-toggle');
+      if (!issueCard || !issueToggle) return;
+      const modal = document.createElement('div');
+      modal.className = 'issue-detail-modal';
+      modal.innerHTML = `
+        <div class="issue-detail-panel" role="dialog" aria-modal="true" aria-label="数据问题详情">
+          <div class="issue-detail-head">
+            <div class="issue-detail-title">数据问题详情</div>
+            <button class="issue-detail-close" type="button" aria-label="关闭">×</button>
+          </div>
+          <div class="issue-detail-body"></div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      const body = modal.querySelector('.issue-detail-body');
+      const close = ()=>modal.classList.remove('is-open');
+      modal.querySelector('.issue-detail-close')?.addEventListener('click', close);
+      modal.addEventListener('click', event=>{
+        if (event.target === modal) close();
+      });
+      issueToggle.addEventListener('click', event=>{
+        event.preventDefault();
+        body.innerHTML = issueCard.querySelector('.issue-body-simple')?.innerHTML || '';
+        modal.classList.add('is-open');
+      });
+    });
     
      //账户总览展开收起
     document.addEventListener("DOMContentLoaded",()=>{
@@ -1001,13 +1026,32 @@
     table.dataset.baEnhanced = '1';
     const skipHeaderLabels = new Set(['操作', '备注', '备注说明', '缺失原因', '支持性文件索引', '差异说明', '校验情况']);
     const headerRows = Array.from(table.tHead?.rows || []);
-    const targetRows = headerRows.length > 1 ? [headerRows[headerRows.length - 1]] : headerRows;
-    targetRows.forEach(row => {
+    const headerGrid = [];
+    const leafHeaders = [];
+    headerRows.forEach((row, rowIndex) => {
+      headerGrid[rowIndex] ||= [];
+      let colIndex = 0;
       Array.from(row.cells).forEach(th => {
-        const label = (th.childNodes[0]?.textContent || th.innerText || '').trim();
+        while (headerGrid[rowIndex][colIndex]) colIndex += 1;
+        const rowSpan = th.rowSpan || 1;
+        const colSpan = th.colSpan || 1;
+        for (let r = 0; r < rowSpan; r += 1) {
+          headerGrid[rowIndex + r] ||= [];
+          for (let c = 0; c < colSpan; c += 1) {
+            headerGrid[rowIndex + r][colIndex + c] = true;
+          }
+        }
+        if (colSpan === 1 && rowIndex + rowSpan >= headerRows.length) {
+          leafHeaders.push({ th, index: colIndex });
+        }
+        colIndex += colSpan;
+      });
+    });
+    leafHeaders.forEach(({ th, index }) => {
+        const labelSource = th.querySelector('span') || th;
+        const label = (labelSource.textContent || '').trim();
         if (skipHeaderLabels.has(label)) th.classList.add('no-sort');
         if (th.classList.contains('no-sort') || th.querySelector('.ba-th-tools') || th.colSpan > 1) return;
-        const index = th.cellIndex;
         const tools = document.createElement('span');
         tools.className = 'ba-th-tools';
         tools.innerHTML = `
@@ -1017,6 +1061,19 @@
           </span>
           <button type="button" class="ba-filter-btn" title="筛选"></button>
         `;
+        if (table.classList.contains('bank-reconcile-table') && !th.querySelector('.ba-th-title')) {
+          const titleNodes = Array.from(th.childNodes).filter(node => {
+            if (node.nodeType === Node.TEXT_NODE) return node.textContent.trim();
+            if (node.nodeType === Node.ELEMENT_NODE) return !node.matches('em');
+            return false;
+          });
+          if (titleNodes.length) {
+            const titleWrap = document.createElement('span');
+            titleWrap.className = 'ba-th-title';
+            th.insertBefore(titleWrap, th.firstChild);
+            titleNodes.forEach(node => titleWrap.appendChild(node));
+          }
+        }
         th.appendChild(tools);
         tools.querySelector('.ba-sort-up').addEventListener('click', ev => {
           ev.stopPropagation();
@@ -1029,7 +1086,6 @@
         tools.querySelector('.ba-filter-btn').addEventListener('click', ev => {
           openFilterPopover(ev, table, index, th);
         });
-      });
     });
   }
 
