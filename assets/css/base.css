@@ -2,9 +2,10 @@ html,body{width:100%;height:100%}
   *,*:before,*:after{box-sizing:border-box}
   html{font-family:sans-serif;line-height:1.15;-webkit-text-size-adjust:100%}
   body{margin:0;color:#000000d9;font-size:14px;
-    font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";
+    font-family:var(--platform-font-family);
     line-height:1.5715;background:var(--body-background)}
   :root{
+    --platform-font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";
     --primary-color:#1e49e2; --primary-color-opacity:rgba(30,73,226,.4);
     --deep-blue:#00338d; --base-space:16px;
     --table-head-background:#F6F8FE; --table-border:1px solid #f0f0f0;
@@ -12,6 +13,40 @@ html,body{width:100%;height:100%}
     /* 兼容内容页自用变量 */
     --primary:#2563eb; --primary-600:#1e40af; --muted:#64748b; --text:#0f172a;
     --bg:#f5f7fa; --card:#fff; --border:#e8e8ed; --shadow:0 6px 18px rgba(17,24,39,.08);
+  }
+
+  body,
+  button,
+  input,
+  select,
+  textarea,
+  table,
+  .btn{
+    font-family:var(--platform-font-family);
+  }
+
+  /* 平台统一轻量滚动条 */
+  *{
+    scrollbar-width:thin;
+    scrollbar-color:rgba(148,163,184,.46) transparent;
+  }
+
+  *::-webkit-scrollbar{
+    width:6px;
+    height:6px;
+  }
+
+  *::-webkit-scrollbar-track{
+    background:transparent;
+  }
+
+  *::-webkit-scrollbar-thumb{
+    border-radius:999px;
+    background:rgba(148,163,184,.42);
+  }
+
+  *::-webkit-scrollbar-thumb:hover{
+    background:rgba(100,116,139,.58);
   }
 
   .content-scroll{flex:1;overflow:auto}

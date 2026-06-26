@@ -1940,7 +1940,7 @@
   /* ─── END CFO DASHBOARD ─────────────────────────────────────────────────── */
 
   </style>
-  <link rel="stylesheet" href="../assets/css/pages/risk-reference-override.css?v=20260626-risk-zoom-context1">
+  <link rel="stylesheet" href="../assets/css/pages/risk-reference-override.css?v=20260626-risk-final1">
 </head>
 <body>
 
@@ -3201,7 +3201,7 @@ let checkColumnFilters = {};
 let materialityLevel = 100; // 重要性水平（万元）
 let cpPage = 1;
 let txPage = 1;
-const riskPageSize = 20;
+let riskPageSize = 20;
 
 function paginateRows(data, page) {
   const totalPages = Math.max(1, Math.ceil(data.length / riskPageSize));
@@ -3220,14 +3220,24 @@ function renderRiskPager(kind, total, page, totalPages) {
   const to = Math.min(page * riskPageSize, total);
   const prevDisabled = page <= 1 ? 'disabled' : '';
   const nextDisabled = page >= totalPages ? 'disabled' : '';
+  const sizeOptions = [10,20,30,40,50].map(size => `<option value="${size}" ${riskPageSize === size ? 'selected' : ''}>${size}</option>`).join('');
   pager.innerHTML = `
     <span class="risk-pager-info">共 ${total} 条 · ${from}-${to}</span>
     <div class="risk-pager-actions">
+      <label class="risk-page-size">每页<select onchange="changeRiskPageSize(this.value)">${sizeOptions}</select>条</label>
       <button type="button" ${prevDisabled} onclick="changeRiskPage('${kind}', -1)">上一页</button>
       <span>${page} / ${totalPages}</span>
       <button type="button" ${nextDisabled} onclick="changeRiskPage('${kind}', 1)">下一页</button>
     </div>
   `;
+}
+
+function changeRiskPageSize(value) {
+  riskPageSize = Number(value) || 20;
+  cpPage = 1;
+  txPage = 1;
+  renderCpTable();
+  renderTxTable();
 }
 
 function changeRiskPage(kind, delta) {

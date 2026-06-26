@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <link rel="stylesheet" href="../assets/css/pages/data-summary.css?v=20260626-filter-bankstyle2"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-summary.css?v=20260626-ds-position1"/>
 </head>
 <body>
   <div class="ds3-page ds3-vat-page">
     <section class="ds3-block ds3-rule-block">
       <div class="ds3-block-head">
         <div class="ds3-block-title">账期规则设置</div>
+        <div class="ds3-help-actions"><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-logic">i</span>业务逻辑</button><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-tip">?</span>操作提示</button></div>
         <div class="ds3-rule-note ds3-rule-note-head" id="ds3RuleNote">当前生效逻辑：全部使用默认口径</div>
         <button class="ds3-fold" type="button">收起</button>
       </div>
@@ -50,7 +51,6 @@
           <div class="ds3-field ds3-field-with-exclude"><label>被审计单位公司</label><select id="ds3Unit"></select><label class="ds3-exclude-toggle"><input id="ds3UnitExclude" type="checkbox"/><span></span>不包含</label></div>
           <div class="ds3-field ds3-field-with-exclude"><label>银行账户</label><select id="ds3Account"></select><label class="ds3-exclude-toggle"><input id="ds3AccountExclude" type="checkbox"/><span></span>不包含</label></div>
           <div class="ds3-field ds3-analysis-time-field"><label>分析时间</label><div class="ds3-month-range"><input id="ds3StartMonth" data-month-input placeholder="请选择月份" type="text"/><em>到</em><input id="ds3EndMonth" data-month-input placeholder="请选择月份" type="text"/></div></div>
-          <div class="ds3-field"><label>对手方筛选类型</label><select id="ds3Type"></select></div>
           <div class="ds3-actions">
             <button class="ds3-btn is-primary" id="ds3ApplyBtn" type="button">查询</button>
             <button class="ds3-btn" id="ds3ResetBtn" type="button">重置</button>
@@ -60,7 +60,7 @@
     </section>
 
     <section class="ds3-block" data-analysis-panel="compare">
-      <div class="ds3-block-head"><div class="ds3-block-title">核心指标概览</div><button class="ds3-fold" type="button">收起</button></div>
+      <div class="ds3-block-head"><div class="ds3-block-title">核心指标概览</div><div class="ds3-help-actions"><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-logic">i</span>业务逻辑</button><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-tip">?</span>操作提示</button></div><button class="ds3-fold" type="button">收起</button></div>
       <div class="ds3-block-body">
         <div class="ds3-vat-kpi-grid" id="ds3KpiGrid"></div>
         <div class="ds3-structure-strip ds3-kpi-structure-strip" id="ds3StructureCards"></div>
@@ -70,6 +70,7 @@
     <section class="ds3-block" data-analysis-panel="compare">
       <div class="ds3-block-head">
         <div class="ds3-block-title">月度对比</div>
+        <div class="ds3-help-actions"><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-logic">i</span>业务逻辑</button><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-tip">?</span>操作提示</button></div>
         <div class="ds3-block-actions">
           <div class="ds3-segment ds3-trend-mode-tabs" id="ds3TrendModeTabs">
             <button class="is-active" data-trend-mode="crossYear" type="button">同月跨年对比</button>
@@ -95,7 +96,7 @@
     </section>
 
     <section class="ds3-block" data-analysis-panel="compare">
-      <div class="ds3-block-head"><div class="ds3-block-title">对比分析摘要</div><button class="ds3-fold" type="button">收起</button></div>
+      <div class="ds3-block-head"><div class="ds3-block-title">对比分析摘要</div><div class="ds3-help-actions"><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-logic">i</span>业务逻辑</button><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-tip">?</span>操作提示</button></div><button class="ds3-fold" type="button">收起</button></div>
       <div class="ds3-block-body">
         <div class="ds3-vat-summary-grid">
           <div class="ds3-panel ds3-analysis-summary-panel" id="ds3AnalysisSummaryPanel"></div>
@@ -105,7 +106,7 @@
     </section>
 
     <section class="ds3-block" data-analysis-panel="compare">
-      <div class="ds3-block-head"><div class="ds3-block-title">对手方对比明细</div><button class="ds3-fold" type="button">收起</button></div>
+      <div class="ds3-block-head"><div class="ds3-block-title">对手方对比明细</div><div class="ds3-help-actions"><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-logic">i</span>业务逻辑</button><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-tip">?</span>操作提示</button></div><button class="ds3-fold" type="button">收起</button></div>
       <div class="ds3-block-body">
         <div class="ds3-section-head ds3-vat-table-head">
           <div class="ds3-table-view-line">
@@ -131,12 +132,12 @@
     </section>
 
     <section class="ds3-block is-hidden" data-analysis-panel="invoice">
-      <div class="ds3-block-head"><div class="ds3-block-title">票据资金核心指标</div><button class="ds3-fold" type="button">收起</button></div>
+      <div class="ds3-block-head"><div class="ds3-block-title">票据资金核心指标</div><div class="ds3-help-actions"><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-logic">i</span>业务逻辑</button><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-tip">?</span>操作提示</button></div><button class="ds3-fold" type="button">收起</button></div>
       <div class="ds3-block-body"><div class="ds3-vat-kpi-grid" id="ds3InvoiceKpiGrid"></div></div>
     </section>
 
     <section class="ds3-block is-hidden" data-analysis-panel="invoice">
-      <div class="ds3-block-head"><div class="ds3-block-title">票据资金月度对应</div><button class="ds3-fold" type="button">收起</button></div>
+      <div class="ds3-block-head"><div class="ds3-block-title">票据资金月度对应</div><div class="ds3-help-actions"><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-logic">i</span>业务逻辑</button><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-tip">?</span>操作提示</button></div><button class="ds3-fold" type="button">收起</button></div>
       <div class="ds3-block-body">
         <div class="ds3-grid-2">
           <div class="ds3-panel"><div class="ds3-panel-title">销项发票 vs 已对应银行流入（月度）</div><div class="ds3-chart" id="ds3InvoiceSalesChart"></div></div>
@@ -146,12 +147,12 @@
     </section>
 
     <section class="ds3-block is-hidden" data-analysis-panel="invoice">
-      <div class="ds3-block-head"><div class="ds3-block-title">票据资金对应摘要</div><button class="ds3-fold" type="button">收起</button></div>
+      <div class="ds3-block-head"><div class="ds3-block-title">票据资金对应摘要</div><div class="ds3-help-actions"><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-logic">i</span>业务逻辑</button><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-tip">?</span>操作提示</button></div><button class="ds3-fold" type="button">收起</button></div>
       <div class="ds3-block-body"><div class="ds3-invoice-summary-grid" id="ds3InvoiceSummary"></div></div>
     </section>
 
     <section class="ds3-block is-hidden" data-analysis-panel="invoice">
-      <div class="ds3-block-head"><div class="ds3-block-title">票据资金对应明细</div><button class="ds3-fold" type="button">收起</button></div>
+      <div class="ds3-block-head"><div class="ds3-block-title">票据资金对应明细</div><div class="ds3-help-actions"><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-logic">i</span>业务逻辑</button><button class="ds3-help-btn" type="button"><span class="ds3-help-icon is-tip">?</span>操作提示</button></div><button class="ds3-fold" type="button">收起</button></div>
       <div class="ds3-block-body">
         <div class="ds3-section-head ds3-vat-table-head">
           <div class="ds3-table-view-line">
@@ -340,6 +341,6 @@
     </div>
   </div>
   <script src="../assets/vendor/echarts/echarts.min.js?v=5.6.0-local"></script>
-  <script src="../assets/js/pages/data-summary.js?v=20260622-chart-fix"></script>
+  <script src="../assets/js/pages/data-summary.js?v=20260626-ds-position1"></script>
 </body>
 </html>

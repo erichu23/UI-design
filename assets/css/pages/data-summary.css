@@ -7450,3 +7450,915 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   line-height:24px;
   box-shadow:none;
 }
+
+/* =========================================================
+   专业版统一色板与控件：数据综合分析
+   - 表格正文金额使用浅色，合计/分组行稍深
+   - 按钮与银行流水分析保持一致
+   ========================================================= */
+.ds3-vat-page{
+  --audit-pro-in:#3b82f6;
+  --audit-pro-sales:#14b8a6;
+  --audit-pro-out:#ec4899;
+  --audit-pro-purchase:#f59e0b;
+  --audit-pro-in-strong:#1d4ed8;
+  --audit-pro-sales-strong:#0f766e;
+  --audit-pro-out-strong:#be185d;
+  --audit-pro-purchase-strong:#b45309;
+  --audit-pro-border:#dbe5f0;
+  --audit-pro-btn:#1d4ed8;
+}
+
+.ds3-vat-page .ds3-table td.ds3-num-inflow,
+.ds3-vat-page .ds3-table td .ds3-num-inflow,
+.ds3-vat-page #ds3DetailModal .ds3-table td.ds3-num-inflow,
+.ds3-vat-page #ds3SelectedTable td.ds3-num-inflow{
+  color:var(--audit-pro-in) !important;
+  font-weight:700 !important;
+}
+
+.ds3-vat-page .ds3-table td.ds3-num-output,
+.ds3-vat-page .ds3-table td .ds3-num-output,
+.ds3-vat-page #ds3DetailModal .ds3-table td.ds3-num-output,
+.ds3-vat-page #ds3SelectedTable td.ds3-num-output{
+  color:var(--audit-pro-sales) !important;
+  font-weight:700 !important;
+}
+
+.ds3-vat-page .ds3-table td.ds3-num-outflow,
+.ds3-vat-page .ds3-table td .ds3-num-outflow,
+.ds3-vat-page #ds3DetailModal .ds3-table td.ds3-num-outflow,
+.ds3-vat-page #ds3SelectedTable td.ds3-num-outflow{
+  color:var(--audit-pro-out) !important;
+  font-weight:700 !important;
+}
+
+.ds3-vat-page .ds3-table td.ds3-num-input,
+.ds3-vat-page .ds3-table td .ds3-num-input,
+.ds3-vat-page #ds3DetailModal .ds3-table td.ds3-num-input,
+.ds3-vat-page #ds3SelectedTable td.ds3-num-input{
+  color:var(--audit-pro-purchase) !important;
+  font-weight:700 !important;
+}
+
+.ds3-vat-page #ds3FilterTable:has(.ds3-year-group-head) tbody tr:not(.ds3-subrow) > td.ds3-num-inflow,
+.ds3-vat-page #ds3SelectedTable:has(.ds3-year-group-head) tbody tr:not(.ds3-subrow) > td.ds3-num-inflow{
+  color:var(--audit-pro-in-strong) !important;
+  font-weight:800 !important;
+}
+
+.ds3-vat-page #ds3FilterTable:has(.ds3-year-group-head) tbody tr:not(.ds3-subrow) > td.ds3-num-output,
+.ds3-vat-page #ds3SelectedTable:has(.ds3-year-group-head) tbody tr:not(.ds3-subrow) > td.ds3-num-output{
+  color:var(--audit-pro-sales-strong) !important;
+  font-weight:800 !important;
+}
+
+.ds3-vat-page #ds3FilterTable:has(.ds3-year-group-head) tbody tr:not(.ds3-subrow) > td.ds3-num-outflow,
+.ds3-vat-page #ds3SelectedTable:has(.ds3-year-group-head) tbody tr:not(.ds3-subrow) > td.ds3-num-outflow{
+  color:var(--audit-pro-out-strong) !important;
+  font-weight:800 !important;
+}
+
+.ds3-vat-page #ds3FilterTable:has(.ds3-year-group-head) tbody tr:not(.ds3-subrow) > td.ds3-num-input,
+.ds3-vat-page #ds3SelectedTable:has(.ds3-year-group-head) tbody tr:not(.ds3-subrow) > td.ds3-num-input{
+  color:var(--audit-pro-purchase-strong) !important;
+  font-weight:800 !important;
+}
+
+.ds3-vat-page .ds3-btn,
+.ds3-vat-page .ds3-page-btn,
+.ds3-vat-page .ds3-segment button,
+.ds3-vat-page .ds3-trend-mode-tabs button,
+.ds3-vat-page .ds3-rule-period-tabs button,
+.ds3-vat-page .ds3-composition-switch button,
+.ds3-vat-page .ds3-vat-detail-tabs button{
+  border-color:var(--audit-pro-border) !important;
+  background:#fff !important;
+  color:#334155 !important;
+  box-shadow:none !important;
+}
+
+.ds3-vat-page .ds3-btn.is-primary,
+.ds3-vat-page .ds3-page-btn.is-active,
+.ds3-vat-page .ds3-segment button.is-active,
+.ds3-vat-page .ds3-trend-mode-tabs button.is-active,
+.ds3-vat-page .ds3-rule-period-tabs button.is-active,
+.ds3-vat-page .ds3-composition-switch button.is-active,
+.ds3-vat-page .ds3-vat-detail-tabs button.is-active{
+  border-color:var(--audit-pro-btn) !important;
+  background:var(--audit-pro-btn) !important;
+  color:#fff !important;
+}
+
+.ds3-vat-page .ds3-btn:hover,
+.ds3-vat-page .ds3-page-btn:hover,
+.ds3-vat-page .ds3-segment button:hover,
+.ds3-vat-page .ds3-trend-mode-tabs button:hover,
+.ds3-vat-page .ds3-rule-period-tabs button:hover,
+.ds3-vat-page .ds3-composition-switch button:hover,
+.ds3-vat-page .ds3-vat-detail-tabs button:hover{
+  border-color:#b9cbe3 !important;
+  background:#f7faff !important;
+  color:#1d4ed8 !important;
+}
+
+/* =========================================================
+   专业版最终统一：数据综合分析表格色号、细线与按钮
+   与银行流水分析保持同一套浅色金额和细边框语言。
+   ========================================================= */
+.ds3-vat-page{
+  --audit-pro-in:#4f8df7;
+  --audit-pro-sales:#2aa99a;
+  --audit-pro-out:#d95785;
+  --audit-pro-purchase:#dd8b22;
+  --audit-pro-in-strong:#1d4ed8;
+  --audit-pro-sales-strong:#0f766e;
+  --audit-pro-out-strong:#be185d;
+  --audit-pro-purchase-strong:#b45309;
+  --bank-table-border-outer:#edf2f7;
+  --bank-table-border-head:#dce6f1;
+  --bank-table-border-cell:#edf2f7;
+  --bank-table-border-row:#f0f4f8;
+  --bank-table-head-bg:#f4f8fd;
+  --bank-table-head-group-bg:#eef5fc;
+  --bank-table-body-bg:#fff;
+  --bank-table-hover-bg:#f8fbff;
+  --bank-table-text:#334155;
+}
+
+.ds3-vat-page .ds3-table-wrap,
+.ds3-vat-page .ds3-selected-table-wrap,
+.ds3-vat-page #ds3DetailModal .ds3-detail-table-wrap{
+  border:.5px solid var(--bank-table-border-outer) !important;
+  border-radius:7px !important;
+  background:var(--bank-table-body-bg) !important;
+  box-shadow:none !important;
+}
+
+.ds3-vat-page .ds3-table,
+.ds3-vat-page #ds3DetailModal table{
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+  color:var(--bank-table-text) !important;
+}
+
+.ds3-vat-page .ds3-table th,
+.ds3-vat-page #ds3DetailModal table th{
+  border-right:1px solid var(--bank-table-border-head) !important;
+  border-bottom:1px solid var(--bank-table-border-head) !important;
+  background:var(--bank-table-head-bg) !important;
+  color:var(--bank-table-text) !important;
+  font-weight:700 !important;
+}
+
+.ds3-vat-page .ds3-table thead tr:first-child th[colspan],
+.ds3-vat-page .ds3-table .ds3-group-toggle-cell,
+.ds3-vat-page #ds3DetailModal table thead tr:first-child th[colspan]{
+  background:var(--bank-table-head-group-bg) !important;
+  color:#263a57 !important;
+  font-weight:800 !important;
+}
+
+.ds3-vat-page .ds3-table td,
+.ds3-vat-page #ds3DetailModal table td{
+  border-right:1px solid var(--bank-table-border-cell) !important;
+  border-bottom:1px solid var(--bank-table-border-row) !important;
+  background:#fff !important;
+  color:var(--bank-table-text);
+}
+
+.ds3-vat-page .ds3-table th:last-child,
+.ds3-vat-page .ds3-table td:last-child,
+.ds3-vat-page #ds3DetailModal table th:last-child,
+.ds3-vat-page #ds3DetailModal table td:last-child{
+  border-right:0 !important;
+}
+
+.ds3-vat-page .ds3-table tbody tr:hover td,
+.ds3-vat-page #ds3DetailModal table tbody tr:hover td{
+  background:var(--bank-table-hover-bg) !important;
+}
+
+.ds3-vat-page .ds3-table td.ds3-num-inflow,
+.ds3-vat-page #ds3DetailModal .ds3-table td.ds3-num-inflow,
+.ds3-vat-page #ds3SelectedTable td.ds3-num-inflow{
+  color:var(--audit-pro-in) !important;
+  font-weight:700 !important;
+}
+
+.ds3-vat-page .ds3-table td.ds3-num-output,
+.ds3-vat-page #ds3DetailModal .ds3-table td.ds3-num-output,
+.ds3-vat-page #ds3SelectedTable td.ds3-num-output{
+  color:var(--audit-pro-sales) !important;
+  font-weight:700 !important;
+}
+
+.ds3-vat-page .ds3-table td.ds3-num-outflow,
+.ds3-vat-page #ds3DetailModal .ds3-table td.ds3-num-outflow,
+.ds3-vat-page #ds3SelectedTable td.ds3-num-outflow{
+  color:var(--audit-pro-out) !important;
+  font-weight:700 !important;
+}
+
+.ds3-vat-page .ds3-table td.ds3-num-input,
+.ds3-vat-page #ds3DetailModal .ds3-table td.ds3-num-input,
+.ds3-vat-page #ds3SelectedTable td.ds3-num-input{
+  color:var(--audit-pro-purchase) !important;
+  font-weight:700 !important;
+}
+
+.ds3-vat-page .ds3-table tbody tr.sum-row td.ds3-num-inflow,
+.ds3-vat-page .ds3-table tbody tr.group-row td.ds3-num-inflow,
+.ds3-vat-page .ds3-table tbody tr.ds3-total-row td.ds3-num-inflow{
+  color:var(--audit-pro-in-strong) !important;
+  font-weight:800 !important;
+}
+
+.ds3-vat-page .ds3-table tbody tr.sum-row td.ds3-num-output,
+.ds3-vat-page .ds3-table tbody tr.group-row td.ds3-num-output,
+.ds3-vat-page .ds3-table tbody tr.ds3-total-row td.ds3-num-output{
+  color:var(--audit-pro-sales-strong) !important;
+  font-weight:800 !important;
+}
+
+.ds3-vat-page .ds3-table tbody tr.sum-row td.ds3-num-outflow,
+.ds3-vat-page .ds3-table tbody tr.group-row td.ds3-num-outflow,
+.ds3-vat-page .ds3-table tbody tr.ds3-total-row td.ds3-num-outflow{
+  color:var(--audit-pro-out-strong) !important;
+  font-weight:800 !important;
+}
+
+.ds3-vat-page .ds3-table tbody tr.sum-row td.ds3-num-input,
+.ds3-vat-page .ds3-table tbody tr.group-row td.ds3-num-input,
+.ds3-vat-page .ds3-table tbody tr.ds3-total-row td.ds3-num-input{
+  color:var(--audit-pro-purchase-strong) !important;
+  font-weight:800 !important;
+}
+
+/* 全平台字体统一：以银行流水分析继承的系统字体栈为准。 */
+.ds3-vat-page,
+.ds3-vat-page *,
+.ds3-vat-page button,
+.ds3-vat-page input,
+.ds3-vat-page select,
+.ds3-vat-page textarea,
+.ds3-vat-page table,
+.ds3-vat-page .ds3-help-dot{
+  font-family:var(--platform-font-family, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji") !important;
+}
+
+.ds3-vat-page .ds3-btn.is-primary:hover,
+.ds3-vat-page .ds3-page-btn.is-active:hover,
+.ds3-vat-page .ds3-segment button.is-active:hover,
+.ds3-vat-page .ds3-trend-mode-tabs button.is-active:hover,
+.ds3-vat-page .ds3-rule-period-tabs button.is-active:hover,
+.ds3-vat-page .ds3-composition-switch button.is-active:hover,
+.ds3-vat-page .ds3-vat-detail-tabs button.is-active:hover{
+  border-color:#1749b7 !important;
+  background:#1749b7 !important;
+  color:#fff !important;
+}
+
+/* 对手方对比明细：普通明细行使用银行流水分析同款浅色，避免被旧合计表规则压成深色。 */
+.ds3-vat-page #ds3FilterTable tbody tr:not(.sum-row):not(.group-row):not(.ds3-total-row) > td.ds3-num-inflow,
+.ds3-vat-page #ds3SelectedTable tbody tr:not(.sum-row):not(.group-row):not(.ds3-total-row) > td.ds3-num-inflow{
+  color:var(--audit-pro-in) !important;
+  font-weight:700 !important;
+}
+
+.ds3-vat-page #ds3FilterTable tbody tr:not(.sum-row):not(.group-row):not(.ds3-total-row) > td.ds3-num-output,
+.ds3-vat-page #ds3SelectedTable tbody tr:not(.sum-row):not(.group-row):not(.ds3-total-row) > td.ds3-num-output{
+  color:var(--audit-pro-sales) !important;
+  font-weight:700 !important;
+}
+
+.ds3-vat-page #ds3FilterTable tbody tr:not(.sum-row):not(.group-row):not(.ds3-total-row) > td.ds3-num-outflow,
+.ds3-vat-page #ds3SelectedTable tbody tr:not(.sum-row):not(.group-row):not(.ds3-total-row) > td.ds3-num-outflow{
+  color:var(--audit-pro-out) !important;
+  font-weight:700 !important;
+}
+
+.ds3-vat-page #ds3FilterTable tbody tr:not(.sum-row):not(.group-row):not(.ds3-total-row) > td.ds3-num-input,
+.ds3-vat-page #ds3SelectedTable tbody tr:not(.sum-row):not(.group-row):not(.ds3-total-row) > td.ds3-num-input{
+  color:var(--audit-pro-purchase) !important;
+  font-weight:700 !important;
+}
+
+/* 数据综合分析统一轻量滚动条 */
+.ds3-vat-page,
+.ds3-vat-page *,
+.ds3-vat-page .ds3-table-wrap,
+.ds3-vat-page .ds3-selected-table-wrap,
+.ds3-vat-page .ds3-drawer-body,
+.ds3-vat-page #ds3DetailModal,
+.ds3-vat-page #ds3DetailModal *,
+.ds3-vat-page .ds3-centipede-list,
+.ds3-vat-page .ds3-vat-filter-grid{
+  scrollbar-width:thin !important;
+  scrollbar-color:rgba(148,163,184,.42) transparent !important;
+}
+
+.ds3-vat-page ::-webkit-scrollbar,
+.ds3-vat-page .ds3-table-wrap::-webkit-scrollbar,
+.ds3-vat-page .ds3-selected-table-wrap::-webkit-scrollbar,
+.ds3-vat-page .ds3-drawer-body::-webkit-scrollbar,
+.ds3-vat-page #ds3DetailModal ::-webkit-scrollbar,
+.ds3-vat-page .ds3-centipede-list::-webkit-scrollbar,
+.ds3-vat-page .ds3-vat-filter-grid::-webkit-scrollbar{
+  width:6px !important;
+  height:6px !important;
+  display:block !important;
+}
+
+.ds3-vat-page ::-webkit-scrollbar-track,
+.ds3-vat-page .ds3-table-wrap::-webkit-scrollbar-track,
+.ds3-vat-page .ds3-selected-table-wrap::-webkit-scrollbar-track,
+.ds3-vat-page .ds3-drawer-body::-webkit-scrollbar-track,
+.ds3-vat-page #ds3DetailModal ::-webkit-scrollbar-track,
+.ds3-vat-page .ds3-centipede-list::-webkit-scrollbar-track,
+.ds3-vat-page .ds3-vat-filter-grid::-webkit-scrollbar-track{
+  background:transparent !important;
+}
+
+.ds3-vat-page ::-webkit-scrollbar-thumb,
+.ds3-vat-page .ds3-table-wrap::-webkit-scrollbar-thumb,
+.ds3-vat-page .ds3-selected-table-wrap::-webkit-scrollbar-thumb,
+.ds3-vat-page .ds3-drawer-body::-webkit-scrollbar-thumb,
+.ds3-vat-page #ds3DetailModal ::-webkit-scrollbar-thumb,
+.ds3-vat-page .ds3-centipede-list::-webkit-scrollbar-thumb,
+.ds3-vat-page .ds3-vat-filter-grid::-webkit-scrollbar-thumb{
+  border-radius:999px !important;
+  background:rgba(148,163,184,.42) !important;
+}
+
+.ds3-vat-page ::-webkit-scrollbar-thumb:hover,
+.ds3-vat-page .ds3-table-wrap::-webkit-scrollbar-thumb:hover,
+.ds3-vat-page #ds3DetailModal ::-webkit-scrollbar-thumb:hover{
+  background:rgba(100,116,139,.58) !important;
+}
+
+.ds3-vat-page .ds3-table-wrap,
+.ds3-vat-page .ds3-selected-table-wrap,
+.ds3-vat-page #ds3DetailModal .ds3-detail-table-wrap{
+  overflow-x:auto !important;
+}
+
+/* 数据综合分析：补齐与银行流水分析一致的业务逻辑 / 操作提示入口 */
+.ds3-vat-page .ds3-help-actions{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-left:4px;
+  margin-right:auto;
+  flex:0 0 auto;
+}
+
+.ds3-vat-page .ds3-help-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  height:26px;
+  padding:0 8px;
+  border:1px solid #dbe5f0;
+  border-radius:7px;
+  background:#fff;
+  color:#475569;
+  font-size:11px;
+  font-weight:500;
+  line-height:1;
+  cursor:pointer;
+  box-shadow:none;
+}
+
+.ds3-vat-page .ds3-help-icon{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:14px;
+  height:14px;
+  border:1px solid #bfdbfe;
+  border-radius:999px;
+  background:#eff6ff;
+  color:#1d4ed8;
+  font-size:9px;
+  font-weight:800;
+  line-height:1;
+}
+
+.ds3-vat-page .ds3-help-btn:hover{
+  border-color:#bfdbfe;
+  background:#f8fbff;
+  color:#1d4ed8;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-fold,
+.ds3-vat-page .ds3-block-head > .ds3-block-actions{
+  margin-left:0;
+}
+/* 数据综合分析分页条数选择器 */
+.ds3-page-size{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  height:26px;
+  color:#64748b;
+  font-size:11px;
+  font-weight:600;
+  white-space:nowrap;
+}
+
+.ds3-page-size select{
+  height:24px;
+  min-width:48px;
+  padding:0 20px 0 7px;
+  border:1px solid #dbe5f0;
+  border-radius:6px;
+  background:#fff;
+  color:#334155;
+  font-size:11px;
+  font-weight:700;
+  outline:none;
+}
+
+.ds3-page-size select:focus{
+  border-color:#9fc2f8;
+  box-shadow:0 0 0 2px rgba(47,111,237,.10);
+}
+
+/* 数据综合分析 card 标题样式对齐银行流水分析：左侧整高蓝色竖条 */
+.ds3-vat-page .ds3-block{
+  margin-top:6px !important;
+  border:1px solid #dfe7f1 !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  box-shadow:0 1px 3px rgba(15,23,42,.04) !important;
+  overflow:hidden !important;
+}
+
+.ds3-vat-page .ds3-block-head{
+  position:relative !important;
+  min-height:36px !important;
+  padding:5px 10px !important;
+  gap:6px !important;
+  border-bottom:1px solid #dfe7f1 !important;
+  background:#f8fafc !important;
+}
+
+.ds3-vat-page .ds3-block-head::before{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+  top:0 !important;
+  width:4px !important;
+  height:100% !important;
+  border-radius:0 !important;
+  background:var(--primary, #2563eb) !important;
+}
+
+.ds3-vat-page .ds3-block-title{
+  margin-left:8px !important;
+  margin-right:auto !important;
+  font-size:12px !important;
+  line-height:1.25 !important;
+  font-weight:600 !important;
+  color:#1e293b !important;
+}
+
+.ds3-vat-page .ds3-block-body{
+  padding:8px 10px 9px !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs{
+  margin-left:8px !important;
+  margin-right:auto !important;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-help-actions,
+.ds3-vat-page .ds3-block-head > .ds3-block-actions{
+  margin-left:auto !important;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-fold{
+  margin-left:6px !important;
+}
+
+/* 数据综合分析：顶部控制型 card 恢复原样，业务提示靠近标题 */
+.ds3-vat-page .ds3-block-head > .ds3-help-actions{
+  margin-left:4px !important;
+  margin-right:auto !important;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-block-actions{
+  margin-left:auto !important;
+}
+
+.ds3-vat-page .ds3-rule-note-head{
+  margin-left:auto !important;
+}
+
+.ds3-vat-page .ds3-rule-block,
+.ds3-vat-page .ds3-filter-block{
+  margin-top:7px !important;
+  border:1px solid var(--ds3-border) !important;
+  border-radius:10px !important;
+  background:#fff !important;
+  box-shadow:var(--ds3-shadow) !important;
+}
+
+.ds3-vat-page .ds3-rule-block .ds3-block-head,
+.ds3-vat-page .ds3-filter-block .ds3-block-head{
+  min-height:36px !important;
+  padding:7px 10px !important;
+  border-bottom:1px solid var(--ds3-border) !important;
+  background:#f9fbff !important;
+}
+
+.ds3-vat-page .ds3-rule-block .ds3-block-head::before,
+.ds3-vat-page .ds3-filter-block .ds3-block-head::before{
+  display:none !important;
+}
+
+.ds3-vat-page .ds3-rule-block .ds3-block-title{
+  margin-left:0 !important;
+  margin-right:0 !important;
+  font-size:14px !important;
+  font-weight:700 !important;
+  color:#0f172a !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs{
+  margin-left:0 !important;
+  margin-right:auto !important;
+}
+
+.ds3-vat-page .ds3-rule-block .ds3-block-body,
+.ds3-vat-page .ds3-filter-block .ds3-block-body{
+  padding:10px 12px 12px !important;
+}
+
+/* 数据综合分析最终标题区：业务按钮紧跟标题，右侧控件保持右对齐 */
+.ds3-vat-page .ds3-block-head{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-block-title{
+  flex:0 0 auto !important;
+  margin-left:8px !important;
+  margin-right:0 !important;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-help-actions{
+  flex:0 0 auto !important;
+  margin-left:4px !important;
+  margin-right:0 !important;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-block-actions,
+.ds3-vat-page .ds3-block-head > .ds3-fold,
+.ds3-vat-page .ds3-rule-note-head{
+  margin-left:auto !important;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-block-actions + .ds3-fold{
+  margin-left:6px !important;
+}
+
+.ds3-vat-page .ds3-rule-block .ds3-block-title{
+  margin-left:0 !important;
+}
+
+/* 数据综合分析顶部分析 Tab：对齐银行流水分析文字 Tab + 底部蓝色光标 */
+.ds3-vat-page .ds3-filter-block .ds3-block-head{
+  padding:0 10px !important;
+  min-height:34px !important;
+  background:#fff !important;
+  border-bottom:1px solid #e6edf5 !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  margin:0 auto 0 0 !important;
+  min-height:34px !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs button{
+  position:relative !important;
+  height:34px !important;
+  padding:0 8px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#475569 !important;
+  font-size:12px !important;
+  line-height:34px !important;
+  font-weight:500 !important;
+  box-shadow:none !important;
+  cursor:pointer !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs button:hover{
+  color:#1e40af !important;
+  background:transparent !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs button.is-active{
+  color:#003366 !important;
+  font-weight:600 !important;
+  background:transparent !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs button::after{
+  content:"" !important;
+  position:absolute !important;
+  left:8px !important;
+  right:8px !important;
+  bottom:0 !important;
+  height:2px !important;
+  border-radius:2px !important;
+  background:transparent !important;
+  transform:none !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs button.is-active::after{
+  background:#003366 !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-fold{
+  height:26px !important;
+  min-height:26px !important;
+  padding:0 9px !important;
+}
+
+/* 数据综合分析最终修正：标题按钮贴近、规则标题统一、筛选区对齐银行流水分析 */
+.ds3-vat-page .ds3-block-head{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-block-title{
+  flex:0 0 auto !important;
+  margin-left:8px !important;
+  margin-right:0 !important;
+  font-size:12px !important;
+  line-height:1.25 !important;
+  font-weight:600 !important;
+  color:#1e293b !important;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-help-actions{
+  flex:0 0 auto !important;
+  margin-left:4px !important;
+  margin-right:0 !important;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-block-actions,
+.ds3-vat-page .ds3-block-head > .ds3-fold,
+.ds3-vat-page .ds3-rule-note-head{
+  margin-left:auto !important;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-block-actions + .ds3-fold{
+  margin-left:6px !important;
+}
+
+.ds3-vat-page .ds3-rule-block .ds3-block-title{
+  margin-left:0 !important;
+  font-size:12px !important;
+  line-height:1.25 !important;
+  font-weight:600 !important;
+  color:#1e293b !important;
+}
+
+.ds3-vat-page .ds3-rule-block .ds3-block-head::before,
+.ds3-vat-page .ds3-filter-block .ds3-block-head::before{
+  display:none !important;
+}
+
+.ds3-vat-page .ds3-filter-block{
+  border:1px solid #e6edf5 !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  box-shadow:0 1px 3px rgba(0,0,0,.04) !important;
+  overflow:hidden !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-block-head{
+  min-height:34px !important;
+  padding:0 10px !important;
+  border-bottom:1px solid #e6edf5 !important;
+  background:#fff !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  min-height:34px !important;
+  margin:0 auto 0 0 !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs button{
+  position:relative !important;
+  height:34px !important;
+  padding:0 8px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#475569 !important;
+  font-size:12px !important;
+  line-height:34px !important;
+  font-weight:500 !important;
+  box-shadow:none !important;
+  white-space:nowrap !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs button:hover{
+  color:#1e40af !important;
+  background:transparent !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs button.is-active{
+  color:#003366 !important;
+  font-weight:600 !important;
+  background:transparent !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs button::after{
+  content:"" !important;
+  position:absolute !important;
+  left:8px !important;
+  right:8px !important;
+  bottom:0 !important;
+  height:2px !important;
+  border-radius:2px !important;
+  background:transparent !important;
+  transform:none !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs button.is-active::after{
+  background:#003366 !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-block-body{
+  padding:4px 10px 7px !important;
+  background:#fff !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-vat-filter-grid{
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  gap:5px !important;
+  padding:3px 0 0 !important;
+  overflow:hidden !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-field{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:5px !important;
+  min-width:0 !important;
+  margin:0 !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-field > label:first-child{
+  margin:0 !important;
+  color:#475569 !important;
+  font-size:12px !important;
+  font-weight:600 !important;
+  line-height:24px !important;
+  white-space:nowrap !important;
+}
+
+.ds3-vat-page .ds3-filter-block select,
+.ds3-vat-page .ds3-filter-block input[type="text"],
+.ds3-vat-page .ds3-filter-block input[type="month"]{
+  width:126px !important;
+  min-width:0 !important;
+  height:24px !important;
+  min-height:24px !important;
+  padding:0 7px !important;
+  border:1px solid #dbe5f0 !important;
+  border-radius:6px !important;
+  background:#fff !important;
+  color:#334155 !important;
+  box-shadow:none !important;
+  box-sizing:border-box !important;
+  font-size:12px !important;
+  line-height:22px !important;
+  outline:none !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-month-range{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:4px !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-month-range input{
+  width:124px !important;
+  flex:0 0 124px !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-month-range em{
+  margin:0 2px !important;
+  color:#64748b !important;
+  font-size:12px !important;
+  font-style:normal !important;
+  font-weight:700 !important;
+  line-height:24px !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-exclude-toggle{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:3px !important;
+  margin:0 !important;
+  color:#64748b !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  line-height:24px !important;
+  white-space:nowrap !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-exclude-toggle input{
+  appearance:none !important;
+  width:10px !important;
+  height:10px !important;
+  margin:0 !important;
+  border:1px solid #94a3b8 !important;
+  border-radius:50% !important;
+  background:#fff !important;
+  box-sizing:border-box !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-exclude-toggle input:checked{
+  border-color:#2563eb !important;
+  box-shadow:inset 0 0 0 3px #fff !important;
+  background:#2563eb !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-actions{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:5px !important;
+  margin-left:auto !important;
+  flex:0 0 auto !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-btn{
+  min-height:26px !important;
+  height:26px !important;
+  padding:0 9px !important;
+  border:1px solid #dbe5f0 !important;
+  border-radius:6px !important;
+  background:#fff !important;
+  color:#334155 !important;
+  box-shadow:none !important;
+  box-sizing:border-box !important;
+  font-size:12px !important;
+  line-height:24px !important;
+  font-weight:500 !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-btn.is-primary{
+  border-color:#1d4ed8 !important;
+  background:#1d4ed8 !important;
+  color:#fff !important;
+}
+
+/* 数据综合分析位置微调：账期说明靠近收起按钮，查询重置紧跟分析时间 */
+.ds3-vat-page .ds3-rule-block .ds3-block-head > .ds3-help-actions{
+  margin-left:4px !important;
+  margin-right:0 !important;
+}
+
+.ds3-vat-page .ds3-rule-block .ds3-rule-note-head{
+  margin-left:auto !important;
+  margin-right:0 !important;
+  flex:0 0 auto !important;
+  white-space:nowrap !important;
+}
+
+.ds3-vat-page .ds3-rule-block .ds3-fold{
+  margin-left:6px !important;
+  flex:0 0 auto !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-actions{
+  margin-left:0 !important;
+  flex:0 0 auto !important;
+}

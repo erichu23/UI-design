@@ -339,10 +339,10 @@
         chart.setOption({
           animationDuration: 450,
           color: ['#2f6fed'],
-          tooltip: { trigger:'axis', valueFormatter:value=>`${Number(value).toLocaleString()} 万元` },
+          tooltip: { trigger:'axis', valueFormatter:value=>`${Number(value).toLocaleString()} 千元` },
           grid: { left:70, right:28, top:24, bottom:48, containLabel:false },
           xAxis: { type:'category', boundaryGap:false, data:balanceMonths, axisLine:{lineStyle:{color:'#cbd5e1'}}, axisLabel:{color:'#64748b',fontSize:10,interval:2,hideOverlap:true,margin:8} },
-          yAxis: { type:'value', name:'账户余额（万元）', nameLocation:'end', nameGap:8, nameTextStyle:{color:'#475569',fontSize:11,fontWeight:600,padding:[0,0,0,24]}, splitLine:{lineStyle:{color:'#eef2f7'}}, axisLabel:{color:'#64748b',fontSize:10,formatter:value=>Number(value).toLocaleString()} },
+          yAxis: { type:'value', name:'账户余额（千元）', nameLocation:'end', nameGap:8, nameTextStyle:{color:'#475569',fontSize:11,fontWeight:600,padding:[0,0,0,24]}, splitLine:{lineStyle:{color:'#eef2f7'}}, axisLabel:{color:'#64748b',fontSize:10,formatter:value=>Number(value).toLocaleString()} },
           dataZoom: [{ type:'inside', start:0, end:100 }, { type:'slider', height:12, bottom:4, borderColor:'transparent', backgroundColor:'#eef2f7', fillerColor:'rgba(47,111,237,.18)', handleSize:0, showDetail:false }],
           series: [{ name:'账户余额', type:'line', smooth:true, symbolSize:4, lineStyle:{width:2}, areaStyle:{color:'rgba(47,111,237,.08)'}, data:balanceData }]
         });
@@ -687,7 +687,7 @@
     });
 
     function initReconcilePagination(){
-      const fmt = value => Number(value).toLocaleString('zh-CN');
+      const fmt = value => `${Number(value).toLocaleString('zh-CN')}K`;
       const companies = [
         ['华东制造集团有限公司','发行人'],
         ['上海星河科技有限公司','输入人'],
@@ -739,20 +739,21 @@
       const generalRows = Array.from({length:24}, (_,i)=>makeRow(1086000, i, false));
       const accountRows = Array.from({length:36}, (_,i)=>makeRow(836000, i, true));
       const pagers = {
-        general: { body: document.getElementById('generalLedgerReconcileBody'), pager: document.getElementById('generalLedgerReconcilePager'), rows: generalRows, page: 1 },
-        account: { body: document.getElementById('accountReconcileBody'), pager: document.getElementById('accountReconcilePager'), rows: accountRows, page: 1 }
+        general: { body: document.getElementById('generalLedgerReconcileBody'), pager: document.getElementById('generalLedgerReconcilePager'), rows: generalRows, page: 1, pageSize: 20 },
+        account: { body: document.getElementById('accountReconcileBody'), pager: document.getElementById('accountReconcilePager'), rows: accountRows, page: 1, pageSize: 20 }
       };
-      const pageSize = 8;
+      const pageSizeControl = (value) => `<label class="ba-page-size">每页<select data-page-size>${[10,20,30,40,50].map(n=>`<option value="${n}" ${value===n?'selected':''}>${n}</option>`).join('')}</select>条</label>`;
       const render = key => {
         const state = pagers[key];
         if (!state.body || !state.pager) return;
-        const pages = Math.max(1, Math.ceil(state.rows.length / pageSize));
+        const pages = Math.max(1, Math.ceil(state.rows.length / state.pageSize));
         state.page = Math.min(Math.max(1, state.page), pages);
-        const start = (state.page - 1) * pageSize;
-        state.body.innerHTML = state.rows.slice(start, start + pageSize).join('');
-        state.pager.innerHTML = `<button class="btn" data-page="prev" ${state.page <= 1 ? 'disabled' : ''}>上一页</button><span>共 ${state.rows.length} 条 · ${start + 1}-${Math.min(start + pageSize, state.rows.length)} / ${state.rows.length}</span><span>${state.page} / ${pages}</span><button class="btn" data-page="next" ${state.page >= pages ? 'disabled' : ''}>下一页</button>`;
+        const start = (state.page - 1) * state.pageSize;
+        state.body.innerHTML = state.rows.slice(start, start + state.pageSize).join('');
+        state.pager.innerHTML = `<button class="btn" data-page="prev" ${state.page <= 1 ? 'disabled' : ''}>上一页</button><span>共 ${state.rows.length} 条 · ${start + 1}-${Math.min(start + state.pageSize, state.rows.length)} / ${state.rows.length}</span>${pageSizeControl(state.pageSize)}<span>${state.page} / ${pages}</span><button class="btn" data-page="next" ${state.page >= pages ? 'disabled' : ''}>下一页</button>`;
         state.pager.querySelector('[data-page="prev"]')?.addEventListener('click',()=>{ state.page -= 1; render(key); });
         state.pager.querySelector('[data-page="next"]')?.addEventListener('click',()=>{ state.page += 1; render(key); });
+        state.pager.querySelector('[data-page-size]')?.addEventListener('change',e=>{ state.pageSize = Number(e.target.value) || 20; state.page = 1; render(key); });
       };
       render('general');
       render('account');
@@ -1408,7 +1409,7 @@
   };
 
   function statementMoney(n) {
-    return Number(n || 0).toLocaleString('zh-CN', { maximumFractionDigits: 0 });
+    return `${Number(n || 0).toLocaleString('zh-CN', { maximumFractionDigits: 0 })}K`;
   }
 
   function escapeHtml(value) {
@@ -1507,8 +1508,8 @@
         <td>${row.date}</td>
         <td>${row.time}</td>
         <td>${row.currency}</td>
-        <td class="amount-in">${row.inflow ? statementMoney(row.inflow) : '0'}</td>
-        <td class="amount-out">${row.outflow ? statementMoney(row.outflow) : '0'}</td>
+        <td class="amount-in">${row.inflow ? statementMoney(row.inflow) : '0K'}</td>
+        <td class="amount-out">${row.outflow ? statementMoney(row.outflow) : '0K'}</td>
         <td>${statementMoney(row.balance)}</td>
         <td>${statementMoney(row.rmbBalance)}</td>
         <td>${escapeHtml(row.txType)}</td>
@@ -1533,6 +1534,7 @@
     if (count) count.textContent = `共 ${total.toLocaleString('zh-CN')} 条，当前展示 ${start + 1}-${Math.min(start + statementFlowState.pageSize, total)} / ${total.toLocaleString('zh-CN')}`;
     pager.innerHTML = `
       <button class="btn" data-page="prev" ${statementFlowState.page === 1 ? 'disabled' : ''}>上一页</button>
+      <label class="ba-page-size">每页<select data-page-size>${[10,20,30,40,50].map(n=>`<option value="${n}" ${statementFlowState.pageSize===n?'selected':''}>${n}</option>`).join('')}</select>条</label>
       <span>${statementFlowState.page} / ${totalPages}</span>
       <button class="btn" data-page="next" ${statementFlowState.page === totalPages ? 'disabled' : ''}>下一页</button>
     `;
@@ -1542,6 +1544,11 @@
     });
     pager.querySelector('[data-page="next"]')?.addEventListener('click', () => {
       statementFlowState.page += 1;
+      renderStatementFlowTable();
+    });
+    pager.querySelector('[data-page-size]')?.addEventListener('change', (e) => {
+      statementFlowState.pageSize = Number(e.target.value) || 20;
+      statementFlowState.page = 1;
       renderStatementFlowTable();
     });
   }

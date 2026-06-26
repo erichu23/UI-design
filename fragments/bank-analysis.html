@@ -11,13 +11,13 @@
   <!-- ECharts -->
   <script defer src="../assets/vendor/echarts/echarts.min.js?v=5.6.0-local"></script>
   <script defer src="../assets/vendor/leaflet/leaflet.js?v=1.9.4-local"></script>
-  <link rel="stylesheet" href="../assets/css/base.css?v=20260507-routine"/>
+  <link rel="stylesheet" href="../assets/css/base.css?v=20260626-ds-position1"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260622-tab-rebuild7"/>
   <link rel="stylesheet" href="../assets/css/pages/account.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/biz.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/routine.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260507-routine"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260626-statement-amount-color1"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260626-ds-position1"/>
   <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260625-meter-muted1"/>
   <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260624-riskflow1"/>
 </head>
@@ -421,13 +421,13 @@
 <div class="head"><div class="title">总账核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><button class="btn bank-head-push">导出清单</button></div>
 <div class="content"><div style="overflow:auto"><table class="table bank-reconcile-table">
 <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">与发行人的关系</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">银行流水数据</th><th colspan="4">科目余额表-总账数据</th><th colspan="2">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" class="no-sort">文档索引</th></tr><tr><th><span>期末金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>流入差异</span><em>b1-b2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
-<tbody id="generalLedgerReconcileBody"><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2023</td><td>RMB</td><td>1,218,000</td><td class="amount-in">243,344</td><td class="amount-out">221,614</td><td>1,239,730</td><td>1,218,000</td><td>221,614</td><td>243,344</td><td>1,239,730</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2025</td><td>RMB</td><td>1,896,000</td><td class="amount-in">282,511</td><td class="amount-out">261,319</td><td>1,917,192</td><td>1,896,000</td><td>261,319</td><td>282,511</td><td>1,917,192</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
+<tbody id="generalLedgerReconcileBody"><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2023</td><td>RMB</td><td>1,218,000</td><td class="amount-in">243,344K</td><td class="amount-out">221,614K</td><td>1,239,730</td><td>1,218,000</td><td>221,614</td><td>243,344</td><td>1,239,730</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2025</td><td>RMB</td><td>1,896,000</td><td class="amount-in">282,511K</td><td class="amount-out">261,319K</td><td>1,917,192</td><td>1,896,000</td><td>261,319</td><td>282,511</td><td>1,917,192</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
 </table></div><div class="pagination reconcile-pagination" id="generalLedgerReconcilePager"></div></div></div>
 <div class="card">
 <div class="head"><div class="title">分账号核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><button class="btn bank-head-push">导出清单</button></div>
 <div class="content"><div style="overflow:auto"><table class="table bank-reconcile-table">
 <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">银行账号</th><th rowspan="2">开户银行</th><th rowspan="2">账额来源</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">银行流水数据</th><th colspan="4">科目余额表-总账数据</th><th colspan="2">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" class="no-sort">文档索引</th></tr><tr><th><span>期末金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>流入差异</span><em>b1-b2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
-<tbody id="accountReconcileBody"><tr><td>华东制造集团有限公司</td><td>1001***0821</td><td>工行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>1,128,000</td><td class="amount-in">140,680</td><td class="amount-out">128,640</td><td>1,140,040</td><td>1,128,000</td><td>128,640</td><td>140,680</td><td>1,140,040</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>上海星河科技有限公司</td><td>1002***4186</td><td>建行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>915,000</td><td class="amount-in">112,430</td><td class="amount-out">103,260</td><td>924,170</td><td>915,000</td><td>103,260</td><td>112,430</td><td>924,170</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
+<tbody id="accountReconcileBody"><tr><td>华东制造集团有限公司</td><td>1001***0821</td><td>工行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>1,128,000</td><td class="amount-in">140,680K</td><td class="amount-out">128,640K</td><td>1,140,040</td><td>1,128,000</td><td>128,640</td><td>140,680</td><td>1,140,040</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>上海星河科技有限公司</td><td>1002***4186</td><td>建行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>915,000</td><td class="amount-in">112,430K</td><td class="amount-out">103,260K</td><td>924,170</td><td>915,000</td><td>103,260</td><td>112,430</td><td>924,170</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
 </table></div><div class="pagination reconcile-pagination" id="accountReconcilePager"></div></div></div>
 </div></section>
 <!-- ===================== 流水画像 ===================== -->
@@ -849,7 +849,7 @@
 </section>
 <!-- ===================== 资金流水核查底稿导出 ===================== -->
 <section class="tab-pane hide" id="pane-transaction">
-<iframe class="risk-reference-frame" src="./fund-flow-check.html?v=20260626-risk-zoom-context1" title="高风险核查"></iframe>
+<iframe class="risk-reference-frame" src="./fund-flow-check.html?v=20260626-ds-position1" title="高风险核查"></iframe>
 <div class="risk-page" hidden>
   <aside class="risk-sidebar" id="riskSidebar"><div class="risk-sidebar-head"><div><b>核查程序</b><span id="riskProcedureCount">29 项</span></div><button id="riskSidebarToggle" type="button" title="收起核查程序">‹</button></div><div class="risk-procedure-list" id="riskProcedureList"></div><button class="risk-add-btn" id="riskAddProcedure" type="button">+ 新增核查程序</button></aside>
   <div class="risk-main">
@@ -1165,9 +1165,9 @@
 </section></div>
 
 
-<script defer src="../assets/js/core/shared.js?v=20260626-risk-zoom-context1"></script>
+<script defer src="../assets/js/core/shared.js?v=20260626-ds-position1"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260508-fast2"></script>
-<script defer src="../assets/js/pages/portrait.js?v=20260625-color-sync1"></script>
+<script defer src="../assets/js/pages/portrait.js?v=20260626-ds-position1"></script>
 <script defer src="../assets/js/pages/routine.js?v=20260508-fast2"></script>
 </body>
 </html>

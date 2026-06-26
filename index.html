@@ -13,10 +13,10 @@
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/></noscript>
 
   <!-- 平台基础样式 -->
-  <link rel="stylesheet" href="./assets/css/base.css?v=20260507-routine"/>
+  <link rel="stylesheet" href="./assets/css/base.css?v=20260626-risk-unify1"/>
   <link rel="stylesheet" href="./assets/css/footer.css?v=20260507-routine"/>
 
-  <link rel="stylesheet" href="./assets/css/layout.css?v=20260626-header-icons1"/>
+  <link rel="stylesheet" href="./assets/css/layout.css?v=20260626-ds-position1"/>
 </head>
 
 <body>
@@ -145,7 +145,7 @@
           </li>
 
           <li class="sb-row active module-item bank-analysis"
-              onclick="switchFrame('./fragments/bank-analysis.html?v=20260626-risk-zoom-context1','银行流水分析',this)">
+              onclick="switchFrame('./fragments/bank-analysis.html?v=20260626-ds-position1','银行流水分析',this)">
             <i class="fa-regular fa-circle-check ico"></i>
             <span class="sb-txt">银行流水分析</span>
           </li>
@@ -163,7 +163,7 @@
           </li>
 
           <li class="sb-row active module-item data-summary"
-              onclick="switchFrame('./fragments/data-summary.html?v=20260626-filter-bankstyle2','数据综合分析',this)">
+              onclick="switchFrame('./fragments/data-summary.html?v=20260626-ds-position1','数据综合分析',this)">
             <i class="fa-regular fa-circle-check ico"></i>
             <span class="sb-txt">数据综合分析</span>
           </li>
@@ -179,12 +179,48 @@
 
         <ul class="sb-submenu">
           <li class="sb-row">
-
-            <span class="sb-txt">用户与权限</span>
+            <i class="fa-solid fa-arrow-trend-up sys-ico sys-ico-rate"></i>
+            <span class="sb-txt">系统汇率管理</span>
           </li>
           <li class="sb-row">
-
-            <span class="sb-txt">参数配置</span>
+            <i class="fa-regular fa-user sys-ico sys-ico-user"></i>
+            <span class="sb-txt">系统用户管理</span>
+          </li>
+          <li class="sb-row">
+            <i class="fa-regular fa-circle-check sys-ico sys-ico-white"></i>
+            <span class="sb-txt">白名单维护</span>
+          </li>
+          <li class="sb-row">
+            <i class="fa-solid fa-link sys-ico sys-ico-match"></i>
+            <span class="sb-txt">手工匹配</span>
+          </li>
+          <li class="sb-row">
+            <i class="fa-regular fa-chart-bar sys-ico sys-ico-board"></i>
+            <span class="sb-txt">项目看板</span>
+          </li>
+          <li class="sb-row">
+            <i class="fa-regular fa-message sys-ico sys-ico-feedback"></i>
+            <span class="sb-txt">问题反馈</span>
+          </li>
+          <li class="sb-row">
+            <i class="fa-regular fa-star sys-ico sys-ico-review"></i>
+            <span class="sb-txt">用户评价</span>
+          </li>
+          <li class="sb-row">
+            <i class="fa-solid fa-language sys-ico sys-ico-i18n"></i>
+            <span class="sb-txt">国际化配置</span>
+          </li>
+          <li class="sb-row">
+            <i class="fa-solid fa-ban sys-ico sys-ico-black"></i>
+            <span class="sb-txt">黑名单维护</span>
+          </li>
+          <li class="sb-row">
+            <i class="fa-solid fa-building-columns sys-ico sys-ico-bank"></i>
+            <span class="sb-txt">银行管理</span>
+          </li>
+          <li class="sb-row">
+            <i class="fa-regular fa-object-group sys-ico sys-ico-entity"></i>
+            <span class="sb-txt">主体类型管理</span>
           </li>
         </ul>
       </li>
@@ -220,6 +256,6 @@
 </footer>
 
 <!-- 平台外壳脚本 -->
-<script defer src="./assets/js/core/app-shell.js?v=20260625-sidebar-compact1"></script>
+<script defer src="./assets/js/core/app-shell.js?v=20260626-ds-position1"></script>
 </body>
 </html>

@@ -717,6 +717,159 @@ tbody tr:hover .cleared-cell{ background:#e2f4ee !important; }
   border-color:#1d4ed8 !important;
   box-shadow:0 0 0 2px rgba(29,78,216,.1) !important;
 }
+
+/* 专业版统一色板与控件：高风险核查 iframe */
+:root{
+  --audit-pro-in:#3b82f6;
+  --audit-pro-sales:#14b8a6;
+  --audit-pro-out:#ec4899;
+  --audit-pro-purchase:#f59e0b;
+  --audit-pro-in-strong:#1d4ed8;
+  --audit-pro-sales-strong:#0f766e;
+  --audit-pro-out-strong:#be185d;
+  --audit-pro-purchase-strong:#b45309;
+  --audit-pro-border:#dbe5f0;
+  --audit-pro-btn:#1d4ed8;
+}
+
+.amount.inflow,
+.inflow{
+  color:var(--audit-pro-in) !important;
+  font-weight:700 !important;
+}
+
+.amount.tax-sales,
+.tax-sales{
+  color:var(--audit-pro-sales) !important;
+  font-weight:700 !important;
+}
+
+.amount.outflow,
+.outflow{
+  color:var(--audit-pro-out) !important;
+  font-weight:700 !important;
+}
+
+.amount.tax-purchase,
+.tax-purchase{
+  color:var(--audit-pro-purchase) !important;
+  font-weight:700 !important;
+}
+
+.summary-card .inflow,
+.summary-card .amount.inflow{
+  color:var(--audit-pro-in-strong) !important;
+  font-weight:800 !important;
+}
+
+.summary-card .outflow,
+.summary-card .amount.outflow{
+  color:var(--audit-pro-out-strong) !important;
+  font-weight:800 !important;
+}
+
+.btn-run,
+.btn-reset,
+.btn-export,
+.btn-icon,
+.btn-table-zoom,
+.ce-confirm{
+  border-color:var(--audit-pro-border) !important;
+  background:#fff !important;
+  color:#334155 !important;
+  box-shadow:none !important;
+}
+
+.btn-run,
+.ce-confirm{
+  border-color:var(--audit-pro-btn) !important;
+  background:var(--audit-pro-btn) !important;
+  color:#fff !important;
+}
+
+.btn-run:hover,
+.ce-confirm:hover{
+  border-color:#1749b7 !important;
+  background:#1749b7 !important;
+  color:#fff !important;
+}
+
+/* 专业版最终统一：高风险核查 iframe 金额浅色与主系统一致。 */
+:root{
+  --audit-pro-in:#4f8df7;
+  --audit-pro-sales:#2aa99a;
+  --audit-pro-out:#d95785;
+  --audit-pro-purchase:#dd8b22;
+  --audit-pro-in-strong:#1d4ed8;
+  --audit-pro-sales-strong:#0f766e;
+  --audit-pro-out-strong:#be185d;
+  --audit-pro-purchase-strong:#b45309;
+}
+
+.amount.inflow,
+.inflow{
+  color:var(--audit-pro-in) !important;
+  font-weight:700 !important;
+}
+
+.amount.tax-sales,
+.tax-sales{
+  color:var(--audit-pro-sales) !important;
+  font-weight:700 !important;
+}
+
+.amount.outflow,
+.outflow{
+  color:var(--audit-pro-out) !important;
+  font-weight:700 !important;
+}
+
+.amount.tax-purchase,
+.tax-purchase{
+  color:var(--audit-pro-purchase) !important;
+  font-weight:700 !important;
+}
+
+.summary-card .inflow{
+  color:var(--audit-pro-in-strong) !important;
+}
+
+.summary-card .tax-sales{
+  color:var(--audit-pro-sales-strong) !important;
+}
+
+.summary-card .outflow{
+  color:var(--audit-pro-out-strong) !important;
+}
+
+.summary-card .tax-purchase{
+  color:var(--audit-pro-purchase-strong) !important;
+}
+
+/* 全平台字体统一：高风险核查 iframe 使用银行流水分析同款系统字体栈。 */
+:root{
+  --platform-font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";
+  --font:var(--platform-font-family);
+}
+
+body,
+body *,
+button,
+input,
+select,
+textarea,
+table{
+  font-family:var(--platform-font-family) !important;
+}
+
+.btn-reset:hover,
+.btn-export:hover,
+.btn-icon:hover,
+.btn-table-zoom:hover{
+  border-color:#b9cbe3 !important;
+  background:#f7faff !important;
+  color:#1d4ed8 !important;
+}
 .risk-table-pager{
   display:flex;
   align-items:center;
@@ -793,4 +946,642 @@ tbody tr.flagged:hover td{
 }
 .amount.tax-purchase{
   color:#d97706 !important;
+}
+
+/* =========================================================
+   高风险核查最终统一样式
+   与银行流水分析/数据综合分析保持一致的卡片、表格、按钮语言。
+   ========================================================= */
+:root{
+  --risk-pro-bg:#f5f7fa;
+  --risk-pro-card:#fff;
+  --risk-pro-border:#edf2f7;
+  --risk-pro-border-head:#dce6f1;
+  --risk-pro-border-cell:#edf2f7;
+  --risk-pro-border-row:#f0f4f8;
+  --risk-pro-head:#f4f8fd;
+  --risk-pro-head-group:#eef5fc;
+  --risk-pro-hover:#f8fbff;
+  --risk-pro-text:#334155;
+  --risk-pro-muted:#94a3b8;
+  --risk-pro-primary:#1d4ed8;
+  --risk-pro-primary-hover:#1749b7;
+  --audit-pro-in:#4f8df7;
+  --audit-pro-sales:#2aa99a;
+  --audit-pro-out:#d95785;
+  --audit-pro-purchase:#dd8b22;
+}
+
+body{
+  background:var(--risk-pro-bg) !important;
+  color:var(--risk-pro-text) !important;
+}
+
+.content-area{
+  padding:6px !important;
+  background:var(--risk-pro-bg) !important;
+}
+
+.sidebar,
+.cfo-dashboard,
+.check-context-bar,
+.tabs-bar,
+.table-area,
+.risk-table-zoom-panel{
+  border:.5px solid var(--risk-pro-border) !important;
+  border-radius:8px !important;
+  background:var(--risk-pro-card) !important;
+  box-shadow:none !important;
+}
+
+.sidebar-header,
+.cfo-dash-header,
+.check-context-header,
+.risk-table-zoom-head{
+  min-height:34px !important;
+  border-bottom:1px solid var(--risk-pro-border-head) !important;
+  background:var(--risk-pro-head) !important;
+  color:var(--risk-pro-text) !important;
+}
+
+.cfo-dashboard{
+  margin:0 0 7px !important;
+  overflow:hidden !important;
+}
+
+.cfo-card,
+.cfo-pie-card,
+.summary-card{
+  border:.5px solid var(--risk-pro-border) !important;
+  border-radius:7px !important;
+  background:#fff !important;
+  box-shadow:none !important;
+}
+
+.cfo-card-title,
+.cfo-pie-title,
+.summary-card .sc-label,
+.table-panel-header,
+.risk-table-zoom-title{
+  color:#1e293b !important;
+  font-weight:700 !important;
+}
+
+.check-context-bar{
+  margin:0 !important;
+  border-radius:8px 8px 0 0 !important;
+  border-bottom:0 !important;
+}
+
+.tabs-bar{
+  min-height:34px !important;
+  padding:0 8px !important;
+  border-top:0 !important;
+  border-bottom:0 !important;
+  border-radius:0 !important;
+}
+
+.tabs-bar .tab{
+  position:relative !important;
+  min-height:34px !important;
+  padding:0 10px !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#64748b !important;
+  font-size:11px !important;
+  font-weight:600 !important;
+}
+
+.tabs-bar .tab.active{
+  color:var(--risk-pro-primary) !important;
+  font-weight:800 !important;
+}
+
+.tabs-bar .tab.active::after{
+  content:"" !important;
+  position:absolute !important;
+  right:8px !important;
+  bottom:0 !important;
+  left:8px !important;
+  height:2px !important;
+  border-radius:999px !important;
+  background:var(--risk-pro-primary) !important;
+}
+
+.table-area{
+  margin:0 0 6px !important;
+  padding:6px !important;
+  border-radius:0 0 8px 8px !important;
+  background:#fff !important;
+}
+
+.table-panel{
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+.scroll-wrap,
+.risk-table-zoom-scroll,
+.detail-table{
+  border:.5px solid var(--risk-pro-border) !important;
+  border-radius:7px !important;
+  background:#fff !important;
+  box-shadow:none !important;
+}
+
+.scroll-wrap{
+  overflow:auto !important;
+  scrollbar-width:thin !important;
+  scrollbar-color:rgba(148,163,184,.42) transparent !important;
+}
+
+.scroll-wrap::-webkit-scrollbar{
+  width:6px !important;
+  height:6px !important;
+  display:block !important;
+}
+
+.scroll-wrap::-webkit-scrollbar-track{
+  background:transparent !important;
+}
+
+.scroll-wrap::-webkit-scrollbar-thumb{
+  border-radius:999px !important;
+  background:rgba(148,163,184,.42) !important;
+}
+
+table,
+.detail-table{
+  width:max-content !important;
+  min-width:100% !important;
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+  color:var(--risk-pro-text) !important;
+  font-size:10.8px !important;
+}
+
+thead th,
+.detail-table th,
+.risk-table-zoom-scroll thead th{
+  height:30px !important;
+  padding:4px 7px !important;
+  border-right:1px solid var(--risk-pro-border-head) !important;
+  border-bottom:1px solid var(--risk-pro-border-head) !important;
+  background:var(--risk-pro-head) !important;
+  color:var(--risk-pro-text) !important;
+  font-size:10.8px !important;
+  font-weight:700 !important;
+  white-space:nowrap !important;
+}
+
+thead tr.group-header:first-child th,
+thead tr.group-header:nth-child(2) th,
+thead tr.sub-header th,
+thead .gq-quantitative,
+thead .gq-qualitative,
+thead .gq-abnormal,
+thead .gq-bizinfo,
+thead .gq-other,
+#thGroupCpInfo,
+#thGroupAux{
+  background:var(--risk-pro-head-group) !important;
+  color:#263a57 !important;
+  box-shadow:none !important;
+}
+
+tbody td,
+.detail-table td,
+.risk-table-zoom-scroll tbody td{
+  height:30px !important;
+  padding:4px 7px !important;
+  border-right:1px solid var(--risk-pro-border-cell) !important;
+  border-bottom:1px solid var(--risk-pro-border-row) !important;
+  background:#fff !important;
+  color:var(--risk-pro-text) !important;
+  font-size:10.8px !important;
+  white-space:nowrap !important;
+}
+
+thead th:last-child,
+tbody td:last-child,
+.detail-table th:last-child,
+.detail-table td:last-child{
+  border-right:0 !important;
+}
+
+tbody tr:hover td,
+tbody tr.flagged:hover td,
+.risk-table-zoom-scroll tbody tr:hover td{
+  background:var(--risk-pro-hover) !important;
+}
+
+.hit-cell,
+tbody tr:hover .hit-cell,
+.cleared-cell,
+tbody tr:hover .cleared-cell,
+tbody tr.flagged td{
+  background:#fff !important;
+}
+
+.risk-cp-type-cell.is-customer,
+tbody tr:hover td.risk-cp-type-cell.is-customer{
+  background:#eef5ff !important;
+  color:#334155 !important;
+}
+
+.risk-cp-type-cell.is-supplier,
+tbody tr:hover td.risk-cp-type-cell.is-supplier{
+  background:#f8f3ea !important;
+  color:#334155 !important;
+}
+
+.risk-cp-type-cell.is-personal,
+tbody tr:hover td.risk-cp-type-cell.is-personal{
+  background:#f5f1ff !important;
+  color:#334155 !important;
+}
+
+.amount.inflow,
+.inflow{
+  color:var(--audit-pro-in) !important;
+  font-weight:700 !important;
+}
+
+.amount.tax-sales,
+.tax-sales{
+  color:var(--audit-pro-sales) !important;
+  font-weight:700 !important;
+}
+
+.amount.outflow,
+.outflow{
+  color:var(--audit-pro-out) !important;
+  font-weight:700 !important;
+}
+
+.amount.tax-purchase,
+.tax-purchase{
+  color:var(--audit-pro-purchase) !important;
+  font-weight:700 !important;
+}
+
+.btn-run,
+.btn-reset,
+.btn-export,
+.btn-icon,
+.btn-table-zoom,
+.risk-pager-actions button,
+.filter-menu button,
+.ce-confirm{
+  height:28px !important;
+  min-height:28px !important;
+  padding:0 10px !important;
+  border:1px solid #dbe5f0 !important;
+  border-radius:7px !important;
+  background:#fff !important;
+  color:#334155 !important;
+  font-size:11px !important;
+  font-weight:600 !important;
+  box-shadow:none !important;
+}
+
+.btn-run,
+.ce-confirm{
+  border-color:var(--risk-pro-primary) !important;
+  background:var(--risk-pro-primary) !important;
+  color:#fff !important;
+}
+
+.btn-run:hover,
+.ce-confirm:hover{
+  border-color:var(--risk-pro-primary-hover) !important;
+  background:var(--risk-pro-primary-hover) !important;
+  color:#fff !important;
+}
+
+.btn-export,
+.btn-table-zoom{
+  color:var(--risk-pro-primary) !important;
+}
+
+.btn-export:hover,
+.btn-table-zoom:hover,
+.btn-reset:hover,
+.btn-icon:hover,
+.risk-pager-actions button:not(:disabled):hover{
+  border-color:#bfdbfe !important;
+  background:#f8fbff !important;
+  color:var(--risk-pro-primary) !important;
+}
+
+.filter-chip,
+.badge-hits,
+.badge-filter,
+.hit-tag,
+.hit,
+.hit-warn,
+.hit-danger,
+.group-hit-count.has-hits{
+  border:1px solid #dbe5f0 !important;
+  border-radius:6px !important;
+  background:#f8fafc !important;
+  color:#475569 !important;
+  box-shadow:none !important;
+}
+
+.filter-chip.active-chip{
+  border-color:#bfdbfe !important;
+  background:#eef4ff !important;
+  color:var(--risk-pro-primary) !important;
+}
+
+/* iframe 内统一轻量滚动条 */
+*{
+  scrollbar-width:thin !important;
+  scrollbar-color:rgba(148,163,184,.42) transparent !important;
+}
+
+*::-webkit-scrollbar{
+  width:6px !important;
+  height:6px !important;
+  display:block !important;
+}
+
+*::-webkit-scrollbar-track{
+  background:transparent !important;
+}
+
+*::-webkit-scrollbar-thumb{
+  border-radius:999px !important;
+  background:rgba(148,163,184,.42) !important;
+}
+
+*::-webkit-scrollbar-thumb:hover{
+  background:rgba(100,116,139,.58) !important;
+}
+
+/* =========================================================
+   高风险核查最终统一层：放在文件末尾，确保覆盖旧版零散样式。
+   ========================================================= */
+html body{
+  background:#f5f7fa !important;
+  color:#334155 !important;
+}
+
+html body .content-area,
+html body .main-content{
+  background:#f5f7fa !important;
+}
+
+html body .sidebar,
+html body .cfo-dashboard,
+html body .table-area,
+html body .risk-table-zoom-panel{
+  border:1px solid #e3ebf5 !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  box-shadow:0 3px 10px rgba(15,23,42,.045) !important;
+  overflow:hidden !important;
+}
+
+html body .sidebar-header,
+html body .cfo-dashboard-header,
+html body .table-toolbar,
+html body .risk-table-zoom-head{
+  min-height:34px !important;
+  padding:7px 10px !important;
+  border-bottom:1px solid #e6edf5 !important;
+  background:#fff !important;
+  color:#263a57 !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+}
+
+html body .check-context-bar,
+html body .table-topline,
+html body .tabs-bar{
+  min-height:34px !important;
+  padding:6px 10px !important;
+  border-bottom:1px solid #e8eef6 !important;
+  background:#fff !important;
+}
+
+html body .cfo-card,
+html body .cfo-pie-card,
+html body .summary-card{
+  border:1px solid #e4edf7 !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  box-shadow:none !important;
+}
+
+html body .cfo-card-header,
+html body .cfo-pie-card-header,
+html body .summary-card-header{
+  padding:7px 9px !important;
+  border-bottom:1px solid #eef3f8 !important;
+  background:#fff !important;
+  color:#263a57 !important;
+  font-size:11.5px !important;
+  font-weight:700 !important;
+}
+
+html body .cfo-card-body,
+html body .cfo-pie-card-body,
+html body .summary-card-body{
+  padding:8px 9px !important;
+}
+
+html body .scroll-wrap,
+html body .risk-table-zoom-scroll{
+  border:1px solid #dfe9f5 !important;
+  border-radius:7px !important;
+  background:#fff !important;
+  box-shadow:none !important;
+}
+
+html body table,
+html body .detail-table{
+  width:max-content !important;
+  min-width:100% !important;
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+  background:#fff !important;
+  color:#334155 !important;
+  font-size:11px !important;
+}
+
+html body table thead th,
+html body .detail-table thead th,
+html body .risk-table-zoom-scroll table thead th{
+  height:30px !important;
+  padding:4px 8px !important;
+  border-right:1px solid #dce7f3 !important;
+  border-bottom:1px solid #d7e4f1 !important;
+  background:#f4f8fd !important;
+  color:#263a57 !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+  white-space:nowrap !important;
+  box-shadow:none !important;
+}
+
+html body table thead tr.group-header th,
+html body table thead tr.sub-header th,
+html body .risk-table-zoom-scroll thead tr.group-header th,
+html body .risk-table-zoom-scroll thead tr.sub-header th{
+  background:#eef5fc !important;
+}
+
+html body table tbody td,
+html body .detail-table tbody td,
+html body .risk-table-zoom-scroll table tbody td{
+  height:30px !important;
+  padding:4px 8px !important;
+  border-right:1px solid #e7eef7 !important;
+  border-bottom:1px solid #e9f0f7 !important;
+  background:#fff !important;
+  color:#334155 !important;
+  font-size:11px !important;
+  white-space:nowrap !important;
+  box-shadow:none !important;
+}
+
+html body table tbody tr:hover td,
+html body .risk-table-zoom-scroll table tbody tr:hover td{
+  background:#f8fbff !important;
+}
+
+html body table tbody td.hit-cell,
+html body table tbody tr:hover td.hit-cell,
+html body table tbody tr.flagged td{
+  background:#fff !important;
+}
+
+html body .risk-cp-type-cell.is-customer{
+  background:#eef5ff !important;
+  color:#334155 !important;
+}
+
+html body .risk-cp-type-cell.is-supplier{
+  background:#f8f3ea !important;
+  color:#334155 !important;
+}
+
+html body .risk-cp-type-cell.is-personal{
+  background:#f5f1ff !important;
+  color:#334155 !important;
+}
+
+html body .amount.inflow,
+html body .inflow{
+  color:#4f8df7 !important;
+  font-weight:700 !important;
+}
+
+html body .amount.tax-sales,
+html body .tax-sales{
+  color:#2aa99a !important;
+  font-weight:700 !important;
+}
+
+html body .amount.outflow,
+html body .outflow{
+  color:#d95785 !important;
+  font-weight:700 !important;
+}
+
+html body .amount.tax-purchase,
+html body .tax-purchase{
+  color:#dd8b22 !important;
+  font-weight:700 !important;
+}
+
+html body .btn-run,
+html body .btn-reset,
+html body .btn-export,
+html body .btn-icon,
+html body .btn-table-zoom,
+html body .risk-pager-actions button,
+html body .filter-menu button,
+html body .ce-confirm{
+  height:28px !important;
+  min-height:28px !important;
+  padding:0 10px !important;
+  border:1px solid #dbe5f0 !important;
+  border-radius:7px !important;
+  background:#fff !important;
+  color:#334155 !important;
+  font-size:11px !important;
+  font-weight:600 !important;
+  box-shadow:none !important;
+}
+
+html body .btn-run,
+html body .ce-confirm{
+  border-color:#1d4ed8 !important;
+  background:#1d4ed8 !important;
+  color:#fff !important;
+}
+
+html body .btn-export,
+html body .btn-table-zoom{
+  color:#1d4ed8 !important;
+}
+
+html body .btn-export:hover,
+html body .btn-table-zoom:hover,
+html body .btn-reset:hover,
+html body .btn-icon:hover,
+html body .risk-pager-actions button:not(:disabled):hover{
+  border-color:#bfdbfe !important;
+  background:#f8fbff !important;
+  color:#1d4ed8 !important;
+}
+
+html body .risk-table-pager{
+  min-height:32px !important;
+  padding:5px 2px 0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  color:#64748b !important;
+  font-size:11px !important;
+}
+
+html body .risk-pager-actions{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:6px !important;
+}
+
+html body .risk-page-size{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:4px !important;
+  height:26px !important;
+  color:#64748b !important;
+  font-size:11px !important;
+  font-weight:600 !important;
+  white-space:nowrap !important;
+}
+
+html body .risk-page-size select{
+  height:24px !important;
+  min-width:48px !important;
+  padding:0 20px 0 7px !important;
+  border:1px solid #dbe5f0 !important;
+  border-radius:6px !important;
+  background:#fff !important;
+  color:#334155 !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+  outline:none !important;
+}
+
+html body .risk-page-size select:focus{
+  border-color:#9fc2f8 !important;
+  box-shadow:0 0 0 2px rgba(47,111,237,.10) !important;
 }

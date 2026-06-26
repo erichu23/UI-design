@@ -2247,3 +2247,474 @@ body .statement-flow-table .ba-note-input{
 body .statement-pagination{
   margin-top:8px;
 }
+
+/* =========================================================
+   专业版统一色板与控件：银行流水分析
+   - 表格正文金额使用浅色，合计/分组行稍深
+   - 按钮与数据综合分析保持一致
+   ========================================================= */
+:root{
+  --flow-in:#3b82f6;
+  --flow-out:#ec4899;
+  --audit-pro-in:#3b82f6;
+  --audit-pro-sales:#14b8a6;
+  --audit-pro-out:#ec4899;
+  --audit-pro-purchase:#f59e0b;
+  --audit-pro-in-strong:#1d4ed8;
+  --audit-pro-sales-strong:#0f766e;
+  --audit-pro-out-strong:#be185d;
+  --audit-pro-purchase-strong:#b45309;
+  --audit-pro-border:#dbe5f0;
+  --audit-pro-btn:#1d4ed8;
+}
+
+body .tab-pane .table td.amount-in,
+body .tab-pane .table td .amount-in,
+body .tab-pane .table td.is-inflow,
+body #portraitCounterpartyTable tbody td.is-inflow,
+body .statement-flow-table td.amount-in{
+  color:var(--audit-pro-in) !important;
+  font-weight:700 !important;
+}
+
+body #portraitCounterpartyTable tbody td.is-sales-vat{
+  color:var(--audit-pro-sales) !important;
+  font-weight:700 !important;
+}
+
+body .tab-pane .table td.amount-out,
+body .tab-pane .table td .amount-out,
+body .tab-pane .table td.is-outflow,
+body #portraitCounterpartyTable tbody td.is-outflow,
+body .statement-flow-table td.amount-out{
+  color:var(--audit-pro-out) !important;
+  font-weight:700 !important;
+}
+
+body #portraitCounterpartyTable tbody td.is-purchase-vat{
+  color:var(--audit-pro-purchase) !important;
+  font-weight:700 !important;
+}
+
+body .tab-pane .table tbody tr.sum-row td .amount-in,
+body .tab-pane .table tbody tr.group-row td .amount-in,
+body .tab-pane .table tbody tr.sum-row td.amount-in,
+body .tab-pane .table tbody tr.group-row td.amount-in{
+  color:var(--audit-pro-in-strong) !important;
+  font-weight:800 !important;
+}
+
+body .tab-pane .table tbody tr.sum-row td .amount-out,
+body .tab-pane .table tbody tr.group-row td .amount-out,
+body .tab-pane .table tbody tr.sum-row td.amount-out,
+body .tab-pane .table tbody tr.group-row td.amount-out{
+  color:var(--audit-pro-out-strong) !important;
+  font-weight:800 !important;
+}
+
+body .tab-pane .btn,
+body .tab-pane button,
+body .tab-container .biz-filter-bar button,
+body .tab-pane .btn-ghost,
+body .tab-pane .action-btn{
+  border-color:var(--audit-pro-border) !important;
+  background:#fff !important;
+  color:#334155 !important;
+  box-shadow:none !important;
+}
+
+body .tab-pane .btn.primary,
+body .tab-pane .btn-primary,
+body .tab-pane .action-btn.btn-primary,
+body .tab-pane button.primary,
+body .tab-container .biz-filter-bar .query{
+  border-color:var(--audit-pro-btn) !important;
+  background:var(--audit-pro-btn) !important;
+  color:#fff !important;
+}
+
+body .tab-pane .btn:hover,
+body .tab-pane button:hover,
+body .tab-container .biz-filter-bar button:hover,
+body .tab-pane .btn-ghost:hover,
+body .tab-pane .action-btn:hover{
+  border-color:#b9cbe3 !important;
+  background:#f7faff !important;
+  color:#1d4ed8 !important;
+}
+
+body .tab-pane .btn.primary:hover,
+body .tab-pane .btn-primary:hover,
+body .tab-pane .action-btn.btn-primary:hover,
+body .tab-pane button.primary:hover,
+body .tab-container .biz-filter-bar .query:hover{
+  border-color:#1749b7 !important;
+  background:#1749b7 !important;
+  color:#fff !important;
+}
+
+body .tab-pane .ba-th-tools button,
+body .tab-pane .ba-sort-icons button,
+body .tab-pane .ba-filter-btn{
+  width:14px !important;
+  height:14px !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:3px !important;
+  background:transparent !important;
+  color:#94a3b8 !important;
+  box-shadow:none !important;
+}
+
+body .tab-pane .ba-th-tools button:hover,
+body .tab-pane .ba-sort-icons button:hover,
+body .tab-pane .ba-filter-btn:hover{
+  background:#eaf1ff !important;
+  color:#1d4ed8 !important;
+  box-shadow:none !important;
+}
+
+/* =========================================================
+   专业版最终统一：银行流水分析金额浅色与按钮/表格语言
+   与数据综合分析保持一致，合计/分组行稍深。
+   ========================================================= */
+body{
+  --flow-in:#4f8df7;
+  --flow-out:#d95785;
+  --audit-pro-in:#4f8df7;
+  --audit-pro-sales:#2aa99a;
+  --audit-pro-out:#d95785;
+  --audit-pro-purchase:#dd8b22;
+  --audit-pro-in-strong:#1d4ed8;
+  --audit-pro-sales-strong:#0f766e;
+  --audit-pro-out-strong:#be185d;
+  --audit-pro-purchase-strong:#b45309;
+}
+
+body .tab-pane .table td.amount-in,
+body .tab-pane .table td .amount-in,
+body .tab-pane .table td.is-inflow,
+body #portraitCounterpartyTable tbody td.is-inflow,
+body .statement-flow-table td.amount-in,
+body .tab-pane .flow-in{
+  color:var(--audit-pro-in) !important;
+  font-weight:700 !important;
+}
+
+body #portraitCounterpartyTable tbody td.is-sales-vat,
+body .tab-pane .table td.is-sales-vat{
+  color:var(--audit-pro-sales) !important;
+  font-weight:700 !important;
+}
+
+body .tab-pane .table td.amount-out,
+body .tab-pane .table td .amount-out,
+body .tab-pane .table td.is-outflow,
+body #portraitCounterpartyTable tbody td.is-outflow,
+body .statement-flow-table td.amount-out,
+body .tab-pane .flow-out{
+  color:var(--audit-pro-out) !important;
+  font-weight:700 !important;
+}
+
+body #portraitCounterpartyTable tbody td.is-purchase-vat,
+body .tab-pane .table td.is-purchase-vat{
+  color:var(--audit-pro-purchase) !important;
+  font-weight:700 !important;
+}
+
+body .tab-pane .table tbody tr.sum-row td .amount-in,
+body .tab-pane .table tbody tr.group-row td .amount-in,
+body .tab-pane .table tbody tr.sum-row td.amount-in,
+body .tab-pane .table tbody tr.group-row td.amount-in,
+body .tab-pane .table tbody tr.sum-row td.is-inflow,
+body .tab-pane .table tbody tr.group-row td.is-inflow{
+  color:var(--audit-pro-in-strong) !important;
+  font-weight:800 !important;
+}
+
+body .tab-pane .table tbody tr.sum-row td .amount-out,
+body .tab-pane .table tbody tr.group-row td .amount-out,
+body .tab-pane .table tbody tr.sum-row td.amount-out,
+body .tab-pane .table tbody tr.group-row td.amount-out,
+body .tab-pane .table tbody tr.sum-row td.is-outflow,
+body .tab-pane .table tbody tr.group-row td.is-outflow{
+  color:var(--audit-pro-out-strong) !important;
+  font-weight:800 !important;
+}
+
+/* 全平台字体统一：银行流水分析作为基准，也显式覆盖控件字体。 */
+body,
+body .bank-page,
+body .tab-container,
+body .tab-pane,
+body .tab-pane *,
+body button,
+body input,
+body select,
+body textarea,
+body table{
+  font-family:var(--platform-font-family, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji") !important;
+}
+
+/* 平台统一轻量滚动条，并修复资金总览校验情况无法横向滑动。 */
+body .tab-scroll,
+body .tab-pane .account-summary-table-wrap,
+body .tab-pane .portrait-table-wrap,
+body .tab-pane .wp-table-wrap,
+body .tab-pane .table-wrap,
+body .tab-pane .risk-table-wrap,
+body .tab-pane .statement-table-wrap,
+body #pane-verify .content > div[style*="overflow"],
+body .check-window{
+  scrollbar-width:thin !important;
+  scrollbar-color:rgba(148,163,184,.42) transparent !important;
+}
+
+body .tab-scroll::-webkit-scrollbar,
+body .tab-pane .account-summary-table-wrap::-webkit-scrollbar,
+body .tab-pane .portrait-table-wrap::-webkit-scrollbar,
+body .tab-pane .wp-table-wrap::-webkit-scrollbar,
+body .tab-pane .table-wrap::-webkit-scrollbar,
+body .tab-pane .risk-table-wrap::-webkit-scrollbar,
+body .tab-pane .statement-table-wrap::-webkit-scrollbar,
+body #pane-verify .content > div[style*="overflow"]::-webkit-scrollbar,
+body .check-window::-webkit-scrollbar{
+  width:6px !important;
+  height:6px !important;
+  display:block !important;
+}
+
+body .tab-scroll::-webkit-scrollbar-track,
+body .tab-pane .account-summary-table-wrap::-webkit-scrollbar-track,
+body .tab-pane .portrait-table-wrap::-webkit-scrollbar-track,
+body .tab-pane .wp-table-wrap::-webkit-scrollbar-track,
+body .tab-pane .table-wrap::-webkit-scrollbar-track,
+body .tab-pane .risk-table-wrap::-webkit-scrollbar-track,
+body .tab-pane .statement-table-wrap::-webkit-scrollbar-track,
+body #pane-verify .content > div[style*="overflow"]::-webkit-scrollbar-track,
+body .check-window::-webkit-scrollbar-track{
+  background:transparent !important;
+}
+
+body .tab-scroll::-webkit-scrollbar-thumb,
+body .tab-pane .account-summary-table-wrap::-webkit-scrollbar-thumb,
+body .tab-pane .portrait-table-wrap::-webkit-scrollbar-thumb,
+body .tab-pane .wp-table-wrap::-webkit-scrollbar-thumb,
+body .tab-pane .table-wrap::-webkit-scrollbar-thumb,
+body .tab-pane .risk-table-wrap::-webkit-scrollbar-thumb,
+body .tab-pane .statement-table-wrap::-webkit-scrollbar-thumb,
+body #pane-verify .content > div[style*="overflow"]::-webkit-scrollbar-thumb,
+body .check-window::-webkit-scrollbar-thumb{
+  border-radius:999px !important;
+  background:rgba(148,163,184,.42) !important;
+}
+
+body .tab-pane .account-summary-table-wrap{
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  -ms-overflow-style:auto !important;
+}
+
+body #tblAccountSummary{
+  min-width:1260px !important;
+}
+
+body #tblAccountSummary .check-window{
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  -ms-overflow-style:none !important;
+  scrollbar-width:none !important;
+  scrollbar-color:transparent transparent !important;
+}
+
+body #tblAccountSummary .check-window::-webkit-scrollbar{
+  width:0 !important;
+  height:0 !important;
+  display:none !important;
+}
+
+body #tblAccountSummary .check-window::-webkit-scrollbar-track{
+  background:transparent !important;
+}
+
+body #tblAccountSummary .check-window::-webkit-scrollbar-thumb{
+  border-radius:999px !important;
+  background:rgba(148,163,184,.42) !important;
+}
+
+/* 业务逻辑 / 操作提示：修复图标显示成方块的问题，统一为圆形轻量图标。 */
+body .tab-pane .account-help-btn{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:4px !important;
+  height:26px !important;
+  padding:0 8px !important;
+  border-radius:7px !important;
+  border:1px solid #dbe5f0 !important;
+  background:#fff !important;
+  color:#475569 !important;
+  font-size:11px !important;
+  line-height:1 !important;
+}
+
+body .tab-pane .account-help-btn i{
+  display:none !important;
+}
+
+body .tab-pane .account-help-btn::before{
+  content:"i" !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:14px !important;
+  height:14px !important;
+  border:1px solid #bfdbfe !important;
+  border-radius:999px !important;
+  background:#eff6ff !important;
+  color:#1d4ed8 !important;
+  font-size:9px !important;
+  font-weight:800 !important;
+  line-height:1 !important;
+  font-family:var(--platform-font-family, -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif) !important;
+}
+
+body .tab-pane .bank-help-tips::before,
+body .tab-pane #btnAccountTips::before{
+  content:"?" !important;
+}
+
+body .tab-pane .account-help-btn:hover{
+  border-color:#bfdbfe !important;
+  background:#f8fbff !important;
+  color:#1d4ed8 !important;
+}
+/* 银行流水分析分页条数选择器 */
+body .ba-page-size{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  height:26px;
+  color:#64748b;
+  font-size:11px;
+  font-weight:600;
+  white-space:nowrap;
+}
+
+body .ba-page-size select{
+  height:24px;
+  min-width:48px;
+  padding:0 20px 0 7px;
+  border:1px solid #dbe5f0;
+  border-radius:6px;
+  background:#fff;
+  color:#334155;
+  font-size:11px;
+  font-weight:700;
+  outline:none;
+}
+
+body .ba-page-size select:focus{
+  border-color:#9fc2f8;
+  box-shadow:0 0 0 2px rgba(47,111,237,.10);
+}
+
+/* 缺失同名账户操作列：独立线性文件图标，避免字体图标降级成方块 */
+body #tblMissingSameName td.actions{
+  text-align:center !important;
+}
+
+body #tblMissingSameName td.actions a{
+  width:26px !important;
+  height:26px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border:1px solid transparent !important;
+  border-radius:7px !important;
+  background:transparent !important;
+  color:#2f6fed !important;
+  text-decoration:none !important;
+  box-shadow:none !important;
+}
+
+body #tblMissingSameName td.actions a:hover{
+  border-color:#dbeafe !important;
+  background:#f5f9ff !important;
+}
+
+body #tblMissingSameName td.actions a i{
+  display:none !important;
+}
+
+body #tblMissingSameName td.actions a::before{
+  content:"" !important;
+  width:13px !important;
+  height:15px !important;
+  display:block !important;
+  border:1.6px solid currentColor !important;
+  border-radius:3px !important;
+  background:
+    linear-gradient(currentColor,currentColor) 3px 5px/7px 1.2px no-repeat,
+    linear-gradient(currentColor,currentColor) 3px 9px/6px 1.2px no-repeat,
+    #fff !important;
+  box-sizing:border-box !important;
+}
+
+/* 资金总览操作栏：轻量 CSS 图标，避免字体图标加载异常 */
+body #tblAccountSummary td.actions{
+  text-align:center !important;
+  white-space:nowrap !important;
+}
+
+body #tblAccountSummary td.actions a{
+  width:24px !important;
+  height:24px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  margin:0 1px !important;
+  border:1px solid transparent !important;
+  border-radius:7px !important;
+  background:transparent !important;
+  color:#2f6fed !important;
+  text-decoration:none !important;
+  box-shadow:none !important;
+  vertical-align:middle !important;
+}
+
+body #tblAccountSummary td.actions a:hover{
+  border-color:#dbeafe !important;
+  background:#f5f9ff !important;
+}
+
+body #tblAccountSummary td.actions a i{
+  display:none !important;
+}
+
+body #tblAccountSummary td.actions a[title*="账号"]::before{
+  content:"" !important;
+  width:15px !important;
+  height:10px !important;
+  display:block !important;
+  border:1.6px solid currentColor !important;
+  border-radius:999px / 72% !important;
+  box-sizing:border-box !important;
+  background:radial-gradient(circle at 50% 50%, currentColor 0 2px, transparent 2.4px) !important;
+}
+
+body #tblAccountSummary td.actions a[title*="文件"]::before{
+  content:"" !important;
+  width:13px !important;
+  height:15px !important;
+  display:block !important;
+  border:1.6px solid currentColor !important;
+  border-radius:3px !important;
+  background:
+    linear-gradient(currentColor,currentColor) 3px 5px/7px 1.2px no-repeat,
+    linear-gradient(currentColor,currentColor) 3px 9px/6px 1.2px no-repeat,
+    #fff !important;
+  box-sizing:border-box !important;
+}

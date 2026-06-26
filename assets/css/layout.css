@@ -411,6 +411,46 @@ body{
   font-size: 13px;
 }
 
+.sb-submenu .sb-row .sys-ico{
+  flex:0 0 18px;
+  width:18px;
+  height:18px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:0;
+  font-size:12px;
+  font-weight:600;
+  line-height:1;
+  color:#7b8aa0;
+  background:transparent;
+  border:0;
+  box-sizing:border-box;
+}
+
+.sb-submenu .sb-row:has(.sys-ico)::before{
+  display:none;
+}
+
+.sys-ico-rate,
+.sys-ico-user,
+.sys-ico-white,
+.sys-ico-match,
+.sys-ico-board,
+.sys-ico-feedback,
+.sys-ico-review,
+.sys-ico-i18n,
+.sys-ico-black,
+.sys-ico-bank,
+.sys-ico-entity{
+  color:#7b8aa0 !important;
+}
+
+.sb-submenu .sb-row:hover .sys-ico,
+.sb-submenu .sb-row.active .sys-ico{
+  color:#2f5ea8 !important;
+}
+
 .sb-submenu .sb-row:not(.active)::before{
   content: "";
   width: 18px;
