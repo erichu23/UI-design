@@ -84,13 +84,13 @@
       routine:"聚合工商信息并与交易规模联动校验企业真实性与风险。",
       statement:"用户可对本页的多维筛选器设置筛选条件，系统将在已上传并执行分析的银行流水中选出符合筛选条件的异常交易流水，并支持流水导出，旨在帮助用户根据项目需求，全面、快速、精准地筛选出异常银行流水，协助用户进一步执行审计程序。",
     };
-    
+
     function setTabIntro(key){
       const el = document.getElementById('tabIntro');
       if(!el) return;
       el.innerHTML = '';
     }
-    
+
     function moveInkbar(activeEl){
       const bar  = document.getElementById('inkbar');
       const wrap = document.getElementById('topTabs'); // 滚动容器
@@ -450,7 +450,118 @@
       guideBtn.addEventListener('click', ()=>modal.classList.add('is-open'));
     });
 
-    window.openBankRiskTableZoom = function(tableHtml, title = '表格放大查看', sub = '当前筛查结果'){
+    const getRiskZoomFrame = () => document.querySelector('.risk-reference-frame')?.contentWindow || null;
+    let bankRiskZoomState = null;
+    function riskZoomEscape(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[ch]);
+    }
+    function renderRiskZoomTitle(payload) {
+      const context = payload?.context;
+      if (!context) {
+        return `<span id="bankRiskZoomTitle">${riskZoomEscape(payload?.title || '表格放大查看')}</span><small id="bankRiskZoomSub">${riskZoomEscape(payload?.sub || '当前筛查结果')}</small>`;
+      }
+      const filters = Array.isArray(context.filters) ? context.filters : [];
+      return `
+        <div class="bank-risk-zoom-context-line">
+          <span class="bank-risk-zoom-group">${riskZoomEscape(context.group)}</span>
+          <span class="bank-risk-zoom-sep">›</span>
+          <span id="bankRiskZoomTitle" class="bank-risk-zoom-rule">${riskZoomEscape(context.title)}</span>
+          <span class="bank-risk-zoom-badge">${riskZoomEscape(context.badge)}</span>
+        </div>
+        <div class="bank-risk-zoom-filter-line" id="bankRiskZoomSub">
+          <span>筛选：</span>
+          ${filters.length ? filters.map(item => `<b>${riskZoomEscape(item)}</b>`).join('') : '<em>当前无筛选条件</em>'}
+        </div>
+      `;
+    }
+    function refreshBankRiskZoom(payload) {
+      const modal = document.getElementById('bankRiskTableZoomModal');
+      if (!modal || !payload) return;
+      bankRiskZoomState = { ...(bankRiskZoomState || {}), ...payload };
+      const titleWrap = modal.querySelector('.bank-risk-zoom-title');
+      if (titleWrap) titleWrap.innerHTML = renderRiskZoomTitle(payload);
+      modal.querySelectorAll('[data-risk-zoom-table]').forEach(btn => {
+        btn.classList.toggle('is-active', btn.dataset.riskZoomTable === (payload.table || 'cp'));
+      });
+      modal.querySelector('.bank-risk-zoom-scroll').innerHTML = payload.html || '<div style="padding:16px;color:#64748b;">暂无可放大的表格内容</div>';
+    }
+    function runRiskZoomAction(action) {
+      const frame = bankRiskZoomState?.frame || getRiskZoomFrame();
+      if (!frame || typeof frame.handleRiskZoomAction !== 'function') return;
+      const payload = frame.handleRiskZoomAction(action);
+      refreshBankRiskZoom(payload);
+    }
+    function closeRiskZoomFilter() {
+      document.querySelectorAll('.bank-risk-filter-popover').forEach(el => el.remove());
+    }
+    function openRiskZoomFilter(target, request) {
+      const frame = bankRiskZoomState?.frame || getRiskZoomFrame();
+      if (!frame || typeof frame.getRiskZoomFilterConfig !== 'function') return;
+      const config = frame.getRiskZoomFilterConfig(request);
+      if (!config) return;
+      closeRiskZoomFilter();
+      const pop = document.createElement('div');
+      pop.className = 'bank-risk-filter-popover';
+      const rect = target.getBoundingClientRect();
+      pop.style.left = `${Math.min(rect.left, window.innerWidth - 260)}px`;
+      pop.style.top = `${Math.min(rect.bottom + 6, window.innerHeight - 340)}px`;
+      if (config.filterType === 'check') {
+        pop.innerHTML = `
+          <div class="bank-risk-filter-title">${config.title || '筛选'}</div>
+          <div class="bank-risk-filter-options">
+            ${config.options.map(opt => `<label><input type="radio" name="riskZoomFilter" value="${opt.value}" ${config.value === opt.value ? 'checked' : ''}/><span>${opt.label}</span></label>`).join('')}
+          </div>
+          <div class="bank-risk-filter-actions"><button type="button" data-action="clear">清除</button><button type="button" data-action="apply">应用</button></div>
+        `;
+      } else {
+        const selected = new Set(config.selected || config.options || []);
+        pop.innerHTML = `
+          <div class="bank-risk-filter-title">${config.title || '筛选'}</div>
+          <label class="bank-risk-filter-all"><input type="checkbox" data-all ${selected.size >= (config.options || []).length ? 'checked' : ''}/><span>全选</span></label>
+          <div class="bank-risk-filter-options">
+            ${(config.options || []).map(value => `<label><input type="checkbox" value="${String(value).replace(/"/g,'&quot;')}" ${selected.has(value) ? 'checked' : ''}/><span>${value}</span></label>`).join('')}
+          </div>
+          <div class="bank-risk-filter-actions"><button type="button" data-action="clear">清除</button><button type="button" data-action="apply">应用</button></div>
+        `;
+      }
+      document.body.appendChild(pop);
+      pop.querySelector('[data-all]')?.addEventListener('change', event => {
+        pop.querySelectorAll('.bank-risk-filter-options input[type="checkbox"]').forEach(input => { input.checked = event.target.checked; });
+      });
+      pop.querySelector('[data-action="clear"]')?.addEventListener('click', event => {
+        event.stopPropagation();
+        closeRiskZoomFilter();
+        runRiskZoomAction({ type: 'applyFilter', table: bankRiskZoomState?.table, filterType: config.filterType, key: config.key, value: 'all', values: [], allSelected: true });
+      });
+      pop.querySelector('[data-action="apply"]')?.addEventListener('click', event => {
+        event.stopPropagation();
+        if (config.filterType === 'check') {
+          const value = pop.querySelector('input[name="riskZoomFilter"]:checked')?.value || 'all';
+          runRiskZoomAction({ type: 'applyFilter', table: bankRiskZoomState?.table, filterType: 'check', key: config.key, value });
+        } else {
+          const values = Array.from(pop.querySelectorAll('.bank-risk-filter-options input[type="checkbox"]:checked')).map(input => input.value);
+          const allSelected = values.length >= (config.options || []).length;
+          runRiskZoomAction({ type: 'applyFilter', table: bankRiskZoomState?.table, filterType: config.filterType, key: config.key, values, allSelected });
+        }
+        closeRiskZoomFilter();
+      });
+      setTimeout(() => {
+        document.addEventListener('click', function handler(event) {
+          if (!pop.contains(event.target)) {
+            closeRiskZoomFilter();
+            document.removeEventListener('click', handler);
+          }
+        });
+      }, 0);
+    }
+
+    window.openBankRiskTableZoom = function(tableHtml, title = '表格放大查看', sub = '当前筛查结果', meta = {}){
       let modal = document.getElementById('bankRiskTableZoomModal');
       if (!modal) {
         modal = document.createElement('div');
@@ -463,6 +574,10 @@
                 <span id="bankRiskZoomTitle">表格放大查看</span>
                 <small id="bankRiskZoomSub">当前筛查结果</small>
               </div>
+              <div class="bank-risk-zoom-tabs">
+                <button type="button" data-risk-zoom-table="cp">对手方汇总</button>
+                <button type="button" data-risk-zoom-table="tx">流水明细</button>
+              </div>
               <button class="bank-risk-zoom-close" type="button" aria-label="关闭">×</button>
             </div>
             <div class="bank-risk-zoom-body">
@@ -471,17 +586,73 @@
           </div>
         `;
         document.body.appendChild(modal);
-        modal.querySelector('.bank-risk-zoom-close')?.addEventListener('click', ()=>modal.classList.remove('is-open'));
+        modal.querySelector('.bank-risk-zoom-close')?.addEventListener('click', ()=>{
+          closeRiskZoomFilter();
+          modal.classList.remove('is-open');
+        });
         modal.addEventListener('click', event=>{
-          if (event.target === modal) modal.classList.remove('is-open');
+          const filterIcon = event.target.closest('.th-filter-icon');
+          if (filterIcon && modal.contains(filterIcon)) {
+            event.preventDefault();
+            event.stopPropagation();
+            const th = filterIcon.closest('th');
+            if (th?.dataset.check) openRiskZoomFilter(filterIcon, { filterType: 'check', key: th.dataset.check });
+            else if (th?.dataset.col) openRiskZoomFilter(filterIcon, { filterType: bankRiskZoomState?.table === 'tx' ? 'tx' : 'cp', key: th.dataset.col });
+            return;
+          }
+          const sortArrow = event.target.closest('.th-sort-arrow');
+          if (sortArrow && modal.contains(sortArrow)) {
+            event.preventDefault();
+            event.stopPropagation();
+            const attr = sortArrow.getAttribute('onclick') || '';
+            const match = attr.match(/sortTable\('([^']+)','([^']+)','([^']+)'\)/);
+            const table = sortArrow.dataset.riskSortTable || match?.[1];
+            const col = sortArrow.dataset.riskSortCol || match?.[2];
+            const dir = sortArrow.dataset.riskSortDir || match?.[3];
+            if (table && col && dir) runRiskZoomAction({ type: 'sort', table, col, dir });
+            return;
+          }
+          const groupHeader = event.target.closest('th.group-collapsible');
+          if (groupHeader && modal.contains(groupHeader)) {
+            event.preventDefault();
+            event.stopPropagation();
+            runRiskZoomAction({ type: 'toggleGroup', table: bankRiskZoomState?.table, groupKey: groupHeader.dataset.groupKey });
+            return;
+          }
+          if (event.target === modal) {
+            closeRiskZoomFilter();
+            modal.classList.remove('is-open');
+          }
+        });
+        modal.addEventListener('click', event=>{
+          const switchBtn = event.target.closest('[data-risk-zoom-table]');
+          if (switchBtn && modal.contains(switchBtn)) {
+            event.preventDefault();
+            event.stopPropagation();
+            runRiskZoomAction({ type: 'switchZoomTable', table: switchBtn.dataset.riskZoomTable });
+          }
+        });
+        modal.addEventListener('change', event=>{
+          const remarkInput = event.target.closest('[data-risk-cp-remark]');
+          if (remarkInput && modal.contains(remarkInput)) {
+            event.preventDefault();
+            event.stopPropagation();
+            runRiskZoomAction({
+              type: 'updateCpRemark',
+              cpId: remarkInput.dataset.riskCpRemark,
+              value: remarkInput.value
+            });
+          }
         });
         document.addEventListener('keydown', event=>{
-          if (event.key === 'Escape') modal.classList.remove('is-open');
+          if (event.key === 'Escape') {
+            closeRiskZoomFilter();
+            modal.classList.remove('is-open');
+          }
         });
       }
-      modal.querySelector('#bankRiskZoomTitle').textContent = title;
-      modal.querySelector('#bankRiskZoomSub').textContent = sub;
-      modal.querySelector('.bank-risk-zoom-scroll').innerHTML = tableHtml || '<div style="padding:16px;color:#64748b;">暂无可放大的表格内容</div>';
+      bankRiskZoomState = { frame: getRiskZoomFrame(), table: meta.table || 'cp', title, sub, context: meta.context, html: tableHtml };
+      refreshBankRiskZoom(bankRiskZoomState);
       modal.classList.add('is-open');
     };
     
@@ -515,6 +686,83 @@
       });
     });
 
+    function initReconcilePagination(){
+      const fmt = value => Number(value).toLocaleString('zh-CN');
+      const companies = [
+        ['华东制造集团有限公司','发行人'],
+        ['上海星河科技有限公司','输入人'],
+        ['深圳南山精密制造有限公司','发行人'],
+        ['北京恒瑞医疗设备有限公司','输入人'],
+        ['重庆云峰智能装备有限公司','发行人'],
+        ['郑州华辰电气有限公司','输入人'],
+        ['昆明启明商贸有限公司','发行人'],
+        ['天津远泽汽车零部件有限公司','输入人']
+      ];
+      const banks = ['工行上海分行','建行上海分行','招商银行深圳分行','中国银行北京分行','浦发银行重庆分行','交通银行郑州分行','民生银行昆明分行','农业银行天津分行'];
+      const accounts = ['1001***0821','1002***4186','6214****8890','3941****2193','2170****7797','5784****7907','4308****6621','8820****3519'];
+      const currencies = ['RMB','RMB','RMB','USD'];
+      const years = [2023,2024,2025];
+      const makeRow = (base, i, withAccount=false) => {
+        const company = companies[i % companies.length];
+        const year = years[i % years.length];
+        const currency = currencies[i % currencies.length];
+        const end = base + i * 37600;
+        const inflow = Math.round(end * (.16 + (i % 5) * .018));
+        const outflow = Math.round(end * (.145 + (i % 4) * .015));
+        const final = end + inflow - outflow;
+        const bookOpen = end;
+        const bookOut = outflow + (i % 6 === 0 ? 860 : 0);
+        const bookIn = inflow - (i % 7 === 0 ? 640 : 0);
+        const bookFinal = bookOpen + bookIn - bookOut;
+        const inDiff = inflow - bookOut;
+        const finalDiff = final - bookFinal;
+        const cells = [
+          company[0],
+          ...(withAccount ? [accounts[i % accounts.length], banks[i % banks.length], i % 4 === 2 ? '模拟回传' : '银行流水'] : [company[1]]),
+          year,
+          currency,
+          fmt(end),
+          `<span class="amount-in">${fmt(inflow)}</span>`,
+          `<span class="amount-out">${fmt(outflow)}</span>`,
+          fmt(final),
+          fmt(bookOpen),
+          fmt(bookOut),
+          fmt(bookIn),
+          fmt(bookFinal),
+          inDiff === 0 ? '0' : fmt(inDiff),
+          finalDiff === 0 ? '0' : fmt(finalDiff),
+          `<input class="ba-note-input" value="${Math.abs(finalDiff) > 1000 ? '差异待复核' : '核对一致'}"/>`,
+          ''
+        ];
+        return `<tr>${cells.map(v=>`<td>${v}</td>`).join('')}</tr>`;
+      };
+      const generalRows = Array.from({length:24}, (_,i)=>makeRow(1086000, i, false));
+      const accountRows = Array.from({length:36}, (_,i)=>makeRow(836000, i, true));
+      const pagers = {
+        general: { body: document.getElementById('generalLedgerReconcileBody'), pager: document.getElementById('generalLedgerReconcilePager'), rows: generalRows, page: 1 },
+        account: { body: document.getElementById('accountReconcileBody'), pager: document.getElementById('accountReconcilePager'), rows: accountRows, page: 1 }
+      };
+      const pageSize = 8;
+      const render = key => {
+        const state = pagers[key];
+        if (!state.body || !state.pager) return;
+        const pages = Math.max(1, Math.ceil(state.rows.length / pageSize));
+        state.page = Math.min(Math.max(1, state.page), pages);
+        const start = (state.page - 1) * pageSize;
+        state.body.innerHTML = state.rows.slice(start, start + pageSize).join('');
+        state.pager.innerHTML = `<button class="btn" data-page="prev" ${state.page <= 1 ? 'disabled' : ''}>上一页</button><span>共 ${state.rows.length} 条 · ${start + 1}-${Math.min(start + pageSize, state.rows.length)} / ${state.rows.length}</span><span>${state.page} / ${pages}</span><button class="btn" data-page="next" ${state.page >= pages ? 'disabled' : ''}>下一页</button>`;
+        state.pager.querySelector('[data-page="prev"]')?.addEventListener('click',()=>{ state.page -= 1; render(key); });
+        state.pager.querySelector('[data-page="next"]')?.addEventListener('click',()=>{ state.page += 1; render(key); });
+      };
+      render('general');
+      render('account');
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initReconcilePagination);
+    } else {
+      initReconcilePagination();
+    }
     // ===== 资金流水核查底稿导出：自检版 JS（作用域安全 + 延迟初始化） =====//
     (function () {
   const $ = (sel) => document.querySelector(sel);
@@ -1151,7 +1399,174 @@
     });
   }
 
+  const statementFlowState = {
+    initialized: false,
+    page: 1,
+    pageSize: 20,
+    total: 26301,
+    rows: []
+  };
+
+  function statementMoney(n) {
+    return Number(n || 0).toLocaleString('zh-CN', { maximumFractionDigits: 0 });
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[ch]);
+  }
+
+  function buildStatementFlowRows() {
+    const selfUnits = [
+      ['华东制造集团有限公司', '1001***0821'],
+      ['上海星河科技有限公司', '1002***4186'],
+      ['苏州精密装备有限公司', '2001***7739'],
+      ['宁波东海电子有限公司', '3001***2268'],
+      ['杭州云岭材料有限公司', '4001***1578']
+    ];
+    const counterparties = [
+      ['上海凌云工业控制有限公司', '客户', '华东智能制造集团', '战略客户', '', '2023-01-15', '', '', '', '', ''],
+      ['深圳恒创电子科技有限公司', '客户', '华南电子集团', '经销客户', '', '2023-03-08', '', '', '', '', ''],
+      ['廊坊中晟包装有限公司', '供应商', '北方包装集团', '', '原材料供应商', '', '', '2023-02-20', '', '', ''],
+      ['郑州华辰电气有限公司', '客户', '中原装备集团', '项目客户', '', '2024-01-12', '', '', '', '', ''],
+      ['贵阳恒通运输有限公司', '供应商', '西南物流集团', '', '运输服务商', '', '', '2023-06-05', '', '', ''],
+      ['张明远（个人）', '个人', '', '', '', '', '', '', '', '2022-07-01', ''],
+      ['成都明泰机械有限公司', '供应商', '西部机械集团', '', '设备供应商', '', '', '2024-04-18', '', '', ''],
+      ['青岛瑞海国际贸易有限公司', '客户', '沿海贸易集团', '出口客户', '', '2023-09-22', '', '', '', '', ''],
+      ['武汉科瑞自动化有限公司', '客户', '华中自动化集团', '长期客户', '', '2025-01-10', '', '', '', '', ''],
+      ['厦门海盛供应链有限公司', '供应商', '海峡供应链集团', '', '贸易供应商', '', '', '2024-08-14', '', '', '']
+    ];
+    const summaries = ['销售回款', '设备采购款', '材料采购款', '运输服务结算', '项目预付款', '技术服务费', '押金保证金', '往来款', '员工报销', '租赁费用'];
+    const txTypes = ['网银转账', '柜面转账', '银企直连', '承兑到期', '代发代扣'];
+    const rows = [];
+    for (let i = 0; i < statementFlowState.total; i += 1) {
+      const year = 2023 + (i % 3);
+      const month = String((i % 12) + 1).padStart(2, '0');
+      const day = String((i * 7) % 28 + 1).padStart(2, '0');
+      const hour = String(9 + (i % 9)).padStart(2, '0');
+      const minute = String((i * 11) % 60).padStart(2, '0');
+      const self = selfUnits[i % selfUnits.length];
+      const cp = counterparties[i % counterparties.length];
+      const isInflow = cp[1] === '客户' || (i % 5 === 0 && cp[1] !== '供应商');
+      const amount = 180000 + ((i * 37931) % 5200000);
+      const balance = 6800000 + ((i * 81427) % 48000000);
+      const currency = i % 19 === 0 ? 'USD' : 'RMB';
+      const rate = currency === 'USD' ? 7.12 : 1;
+      rows.push({
+        selfName: self[0],
+        selfAccount: self[1],
+        counterparty: cp[0],
+        date: `${year}-${month}-${day}`,
+        time: `${hour}:${minute}:${String((i * 17) % 60).padStart(2, '0')}`,
+        currency,
+        inflow: isInflow ? amount : 0,
+        outflow: isInflow ? 0 : amount,
+        balance,
+        rmbBalance: Math.round(balance * rate),
+        txType: txTypes[i % txTypes.length],
+        flowId: `BF${year}${month}${String(i + 1).padStart(7, '0')}`,
+        summary: summaries[i % summaries.length],
+        dueNote: i % 13 === 0 ? '需补充合同或发票匹配说明' : i % 17 === 0 ? '已与项目组说明用途' : '',
+        relation: cp[1] === '个人' ? '员工/个人往来' : (i % 9 === 0 ? '疑似关联方' : '非关联方'),
+        group: cp[2],
+        cpType: cp[1],
+        salesType: cp[3],
+        purchaseType: cp[4],
+        customerApprove: cp[5],
+        customerInvalid: cp[6],
+        supplierApprove: cp[7],
+        supplierInvalid: cp[8],
+        hireDate: cp[9],
+        leaveDate: cp[10]
+      });
+    }
+    return rows;
+  }
+
+  function renderStatementFlowTable() {
+    const body = document.getElementById('statementFlowBody');
+    const pager = document.getElementById('statementFlowPager');
+    const count = document.getElementById('statementFlowCount');
+    if (!body || !pager) return;
+    if (!statementFlowState.rows.length) statementFlowState.rows = buildStatementFlowRows();
+    const total = statementFlowState.rows.length;
+    const totalPages = Math.max(1, Math.ceil(total / statementFlowState.pageSize));
+    statementFlowState.page = Math.max(1, Math.min(statementFlowState.page, totalPages));
+    const start = (statementFlowState.page - 1) * statementFlowState.pageSize;
+    const list = statementFlowState.rows.slice(start, start + statementFlowState.pageSize);
+    body.innerHTML = list.map(row => `
+      <tr>
+        <td>${escapeHtml(row.selfName)}</td>
+        <td>${escapeHtml(row.selfAccount)}</td>
+        <td>${escapeHtml(row.counterparty)}</td>
+        <td>${row.date}</td>
+        <td>${row.time}</td>
+        <td>${row.currency}</td>
+        <td class="amount-in">${row.inflow ? statementMoney(row.inflow) : '0'}</td>
+        <td class="amount-out">${row.outflow ? statementMoney(row.outflow) : '0'}</td>
+        <td>${statementMoney(row.balance)}</td>
+        <td>${statementMoney(row.rmbBalance)}</td>
+        <td>${escapeHtml(row.txType)}</td>
+        <td>${row.flowId}</td>
+        <td>${escapeHtml(row.summary)}</td>
+        <td><input class="ba-note-input" value="${escapeHtml(row.dueNote)}" placeholder="填写尽调备注"/></td>
+        <td>${escapeHtml(row.relation)}</td>
+        <td>${escapeHtml(row.group || '—')}</td>
+        <td>${escapeHtml(row.cpType)}</td>
+        <td>${escapeHtml(row.salesType || '—')}</td>
+        <td>${escapeHtml(row.purchaseType || '—')}</td>
+        <td>${escapeHtml(row.customerApprove || '—')}</td>
+        <td>${escapeHtml(row.customerInvalid || '—')}</td>
+        <td>${escapeHtml(row.supplierApprove || '—')}</td>
+        <td>${escapeHtml(row.supplierInvalid || '—')}</td>
+        <td>${escapeHtml(row.hireDate || '—')}</td>
+        <td>${escapeHtml(row.leaveDate || '—')}</td>
+      </tr>
+    `).join('');
+    const table = document.getElementById('statementFlowTable');
+    if (table?.dataset.baEnhanced === '1') applyTableFilters(table);
+    if (count) count.textContent = `共 ${total.toLocaleString('zh-CN')} 条，当前展示 ${start + 1}-${Math.min(start + statementFlowState.pageSize, total)} / ${total.toLocaleString('zh-CN')}`;
+    pager.innerHTML = `
+      <button class="btn" data-page="prev" ${statementFlowState.page === 1 ? 'disabled' : ''}>上一页</button>
+      <span>${statementFlowState.page} / ${totalPages}</span>
+      <button class="btn" data-page="next" ${statementFlowState.page === totalPages ? 'disabled' : ''}>下一页</button>
+    `;
+    pager.querySelector('[data-page="prev"]')?.addEventListener('click', () => {
+      statementFlowState.page -= 1;
+      renderStatementFlowTable();
+    });
+    pager.querySelector('[data-page="next"]')?.addEventListener('click', () => {
+      statementFlowState.page += 1;
+      renderStatementFlowTable();
+    });
+  }
+
+  function initStatementFlowQuery() {
+    const table = document.getElementById('statementFlowTable');
+    if (!table) return;
+    renderStatementFlowTable();
+    if (statementFlowState.initialized) return;
+    statementFlowState.initialized = true;
+    document.getElementById('statementResetFilters')?.addEventListener('click', () => {
+      tableFilters.delete(table);
+      table.querySelectorAll('th').forEach(th => th.classList.remove('ba-filtered', 'ba-sort-asc', 'ba-sort-desc'));
+      renderStatementFlowTable();
+    });
+    document.getElementById('statementCustomizeCols')?.addEventListener('click', () => {
+      alert('自定义表头功能开发中');
+    });
+    document.getElementById('statementGenerateFlow')?.addEventListener('click', () => {
+      alert('已生成当前筛选范围流水');
+    });
+  }
+
   function initBankTableTools() {
+    initStatementFlowQuery();
     document.querySelectorAll('.tab-pane table.table').forEach(enhanceTable);
   }
 

@@ -28,8 +28,8 @@ function toggleSb(el){
 const APP_FRAME_STATE_KEY = 'auditCompass.currentFrameState';
 const DEFAULT_PROJECT = 'Test2';
 const DEFAULT_BOOK = '20251022';
-const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260625-risk-zoom2';
-const DATA_SUMMARY_SRC = './fragments/data-summary.html?v=20260508-vat-compare-13';
+const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260626-risk-zoom-context1';
+const DATA_SUMMARY_SRC = './fragments/data-summary.html?v=20260626-filter-bankstyle2';
 const PROJECT_LIST_SRC = './fragments/project-list.html';
 
 function normalizeFrameSrc(src){

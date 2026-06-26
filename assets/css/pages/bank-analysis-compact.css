@@ -270,17 +270,116 @@ body .bank-risk-zoom-head{
 
 body .bank-risk-zoom-title{
   display:flex;
-  align-items:baseline;
-  gap:8px;
+  flex:1 1 auto;
+  min-width:0;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:4px;
   color:#1e293b;
   font-size:13px;
   font-weight:800;
+}
+
+body .bank-risk-zoom-context-line{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-width:0;
+  white-space:nowrap;
+}
+
+body .bank-risk-zoom-group{
+  color:#94a3b8;
+  font-size:12px;
+  font-weight:800;
+}
+
+body .bank-risk-zoom-sep{
+  color:#cbd5e1;
+  font-size:14px;
+  font-weight:900;
+}
+
+body .bank-risk-zoom-rule{
+  color:#0f172a;
+  font-size:13px;
+  font-weight:900;
+}
+
+body .bank-risk-zoom-badge{
+  display:inline-flex;
+  align-items:center;
+  height:22px;
+  padding:0 8px;
+  border-radius:999px;
+  background:#fff1f5;
+  color:#e11d48;
+  font-size:12px;
+  font-weight:900;
 }
 
 body .bank-risk-zoom-title small{
   color:#64748b;
   font-size:11px;
   font-weight:600;
+}
+
+body .bank-risk-zoom-filter-line{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+  color:#94a3b8;
+  font-size:11px;
+  font-weight:700;
+}
+
+body .bank-risk-zoom-filter-line b{
+  display:inline-flex;
+  align-items:center;
+  height:22px;
+  max-width:360px;
+  padding:0 9px;
+  overflow:hidden;
+  border:1px solid #bfd0e7;
+  border-radius:7px;
+  background:#eef4ff;
+  color:#1d4ed8;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+body .bank-risk-zoom-filter-line em{
+  color:#94a3b8;
+  font-style:normal;
+}
+
+body .bank-risk-zoom-tabs{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:2px;
+  border:1px solid #dbe5f0;
+  border-radius:8px;
+  background:#fff;
+}
+
+body .bank-risk-zoom-tabs button{
+  height:24px;
+  min-height:24px;
+  padding:0 10px;
+  border:0;
+  border-radius:6px;
+  background:transparent;
+  color:#64748b;
+  font-size:11px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+body .bank-risk-zoom-tabs button.is-active{
+  background:#1d4ed8;
+  color:#fff;
 }
 
 body .bank-risk-zoom-close{
@@ -368,6 +467,194 @@ body .bank-risk-zoom-scroll .inflow{
 
 body .bank-risk-zoom-scroll .outflow{
   color:#d9466f !important;
+}
+
+body .bank-risk-zoom-scroll .th-icons{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:2px !important;
+  margin-left:4px !important;
+  vertical-align:middle !important;
+}
+
+body .bank-risk-zoom-scroll .th-filter-icon,
+body .bank-risk-zoom-scroll .th-sort-icons{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:16px !important;
+  height:16px !important;
+  border-radius:3px !important;
+  color:#94a3b8 !important;
+  cursor:pointer !important;
+  font-size:10px !important;
+  transition:all .12s ease !important;
+}
+
+body .bank-risk-zoom-scroll .th-filter-icon:hover,
+body .bank-risk-zoom-scroll .th-sort-icons:hover{
+  background:#eaf1ff !important;
+  color:#475569 !important;
+}
+
+body .bank-risk-zoom-scroll .th-filter-icon.is-active{
+  background:#eaf1ff !important;
+  color:#1d4ed8 !important;
+}
+
+body .bank-risk-zoom-scroll .th-filter-icon:empty::before{
+  content:"";
+  display:block;
+  width:9px;
+  height:9px;
+  background:currentColor;
+  clip-path:polygon(8% 16%,92% 16%,58% 52%,58% 86%,42% 86%,42% 52%);
+}
+
+body .bank-risk-zoom-scroll .th-sort-icons{
+  flex-direction:column !important;
+  gap:0 !important;
+}
+
+body .bank-risk-zoom-scroll .th-sort-arrow{
+  display:block !important;
+  height:7px !important;
+  color:#94a3b8 !important;
+  font-size:8px !important;
+  line-height:7px !important;
+  cursor:pointer !important;
+}
+
+body .bank-risk-zoom-scroll .th-sort-arrow:hover{
+  color:#475569 !important;
+}
+
+body .bank-risk-zoom-scroll th.sort-asc .th-sort-arrow:first-child,
+body .bank-risk-zoom-scroll th.sort-desc .th-sort-arrow:last-child{
+  color:#1d4ed8 !important;
+}
+
+body .bank-risk-zoom-scroll .group-hit-count{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:2px !important;
+  margin-left:4px !important;
+  padding:0 4px !important;
+  border-radius:3px !important;
+  background:rgba(255,255,255,.55) !important;
+  font-size:10px !important;
+  font-weight:700 !important;
+}
+
+body .bank-risk-zoom-scroll .group-hit-count.has-hits{
+  background:#fff1f4 !important;
+  color:#be3458 !important;
+}
+
+body .bank-risk-zoom-scroll .group-toggle-icon{
+  margin-left:2px !important;
+  color:#64748b !important;
+  font-size:8px !important;
+  opacity:.75 !important;
+}
+
+body .bank-risk-filter-popover{
+  position:fixed;
+  z-index:9100;
+  width:240px;
+  max-height:330px;
+  padding:9px;
+  border:1px solid #d8e2ee;
+  border-radius:8px;
+  background:#fff;
+  color:#334155;
+  box-shadow:0 14px 32px rgba(15,23,42,.16);
+  font-size:12px;
+}
+
+body .bank-risk-filter-title{
+  margin-bottom:7px;
+  color:#1e293b;
+  font-size:12px;
+  font-weight:800;
+}
+
+body .bank-risk-filter-all,
+body .bank-risk-filter-options label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-height:24px;
+  padding:2px 4px;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+body .bank-risk-filter-all:hover,
+body .bank-risk-filter-options label:hover{
+  background:#f7faff;
+}
+
+body .bank-risk-filter-options{
+  display:flex;
+  max-height:220px;
+  flex-direction:column;
+  gap:3px;
+  overflow:auto;
+}
+
+body .bank-risk-filter-options span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+body .bank-risk-filter-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:6px;
+  margin-top:8px;
+}
+
+body .bank-risk-filter-actions button{
+  height:26px;
+  padding:0 9px;
+  border:1px solid #d8e2ee;
+  border-radius:6px;
+  background:#fff;
+  color:#475569;
+  font-size:12px;
+  cursor:pointer;
+}
+
+body .bank-risk-filter-actions button[data-action="apply"]{
+  border-color:#2f6fed;
+  background:#2f6fed;
+  color:#fff;
+}
+
+body #pane-verify .reconcile-pagination{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:6px;
+  color:#64748b;
+  font-size:11px;
+}
+
+body #pane-verify .reconcile-pagination .btn{
+  height:26px;
+  min-height:26px;
+  padding:0 9px;
+  border-radius:6px;
+  font-size:11px;
+}
+
+body #pane-verify .reconcile-pagination .btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
 }
 
 body .tab-pane .card{
@@ -1904,4 +2191,59 @@ body #portraitCounterpartyTable tbody td.is-outflow{
 body #portraitCounterpartyTable tbody td.is-purchase-vat{
   color:#b45309 !important;
   font-weight:800 !important;
+}
+
+/* 流水查询宽表 */
+body .statement-query-card .head{
+  gap:8px;
+}
+
+body .statement-query-card .head .bank-head-push{
+  margin-left:auto;
+}
+
+body .statement-table-wrap{
+  width:100%;
+  overflow:auto;
+  scrollbar-width:none;
+}
+
+body .statement-table-wrap::-webkit-scrollbar{
+  display:none;
+}
+
+body .statement-flow-table{
+  table-layout:auto !important;
+  min-width:2580px;
+  width:max-content;
+}
+
+body .statement-flow-table th,
+body .statement-flow-table td{
+  white-space:nowrap;
+}
+
+body .statement-flow-table td:nth-child(7),
+body .statement-flow-table td:nth-child(8),
+body .statement-flow-table td:nth-child(9),
+body .statement-flow-table td:nth-child(10){
+  text-align:right;
+  font-weight:800;
+}
+
+body .statement-flow-table td.amount-in{
+  color:var(--flow-in, #1d4ed8) !important;
+}
+
+body .statement-flow-table td.amount-out{
+  color:var(--flow-out, #be185d) !important;
+}
+
+body .statement-flow-table .ba-note-input{
+  min-width:172px;
+  height:24px;
+}
+
+body .statement-pagination{
+  margin-top:8px;
 }

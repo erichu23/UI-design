@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="../assets/css/pages/biz.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/routine.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260507-routine"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260625-portrait-color2"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260626-statement-amount-color1"/>
   <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260625-meter-muted1"/>
   <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260624-riskflow1"/>
 </head>
@@ -421,14 +421,14 @@
 <div class="head"><div class="title">总账核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><button class="btn bank-head-push">导出清单</button></div>
 <div class="content"><div style="overflow:auto"><table class="table bank-reconcile-table">
 <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">与发行人的关系</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">银行流水数据</th><th colspan="4">科目余额表-总账数据</th><th colspan="2">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" class="no-sort">文档索引</th></tr><tr><th><span>期末金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>流入差异</span><em>b1-b2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
-<tbody><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2023</td><td>RMB</td><td>1,218,000</td><td class="amount-in">243,344</td><td class="amount-out">221,614</td><td>1,239,730</td><td>1,218,000</td><td>221,614</td><td>243,344</td><td>1,239,730</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2025</td><td>RMB</td><td>1,896,000</td><td class="amount-in">282,511</td><td class="amount-out">261,319</td><td>1,917,192</td><td>1,896,000</td><td>261,319</td><td>282,511</td><td>1,917,192</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
-</table></div></div></div>
+<tbody id="generalLedgerReconcileBody"><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2023</td><td>RMB</td><td>1,218,000</td><td class="amount-in">243,344</td><td class="amount-out">221,614</td><td>1,239,730</td><td>1,218,000</td><td>221,614</td><td>243,344</td><td>1,239,730</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2025</td><td>RMB</td><td>1,896,000</td><td class="amount-in">282,511</td><td class="amount-out">261,319</td><td>1,917,192</td><td>1,896,000</td><td>261,319</td><td>282,511</td><td>1,917,192</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
+</table></div><div class="pagination reconcile-pagination" id="generalLedgerReconcilePager"></div></div></div>
 <div class="card">
 <div class="head"><div class="title">分账号核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><button class="btn bank-head-push">导出清单</button></div>
 <div class="content"><div style="overflow:auto"><table class="table bank-reconcile-table">
 <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">银行账号</th><th rowspan="2">开户银行</th><th rowspan="2">账额来源</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">银行流水数据</th><th colspan="4">科目余额表-总账数据</th><th colspan="2">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" class="no-sort">文档索引</th></tr><tr><th><span>期末金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>流入差异</span><em>b1-b2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
-<tbody><tr><td>华东制造集团有限公司</td><td>1001***0821</td><td>工行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>1,128,000</td><td class="amount-in">140,680</td><td class="amount-out">128,640</td><td>1,140,040</td><td>1,128,000</td><td>128,640</td><td>140,680</td><td>1,140,040</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>上海星河科技有限公司</td><td>1002***4186</td><td>建行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>915,000</td><td class="amount-in">112,430</td><td class="amount-out">103,260</td><td>924,170</td><td>915,000</td><td>103,260</td><td>112,430</td><td>924,170</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
-</table></div></div></div>
+<tbody id="accountReconcileBody"><tr><td>华东制造集团有限公司</td><td>1001***0821</td><td>工行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>1,128,000</td><td class="amount-in">140,680</td><td class="amount-out">128,640</td><td>1,140,040</td><td>1,128,000</td><td>128,640</td><td>140,680</td><td>1,140,040</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>上海星河科技有限公司</td><td>1002***4186</td><td>建行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>915,000</td><td class="amount-in">112,430</td><td class="amount-out">103,260</td><td>924,170</td><td>915,000</td><td>103,260</td><td>112,430</td><td>924,170</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
+</table></div><div class="pagination reconcile-pagination" id="accountReconcilePager"></div></div></div>
 </div></section>
 <!-- ===================== 流水画像 ===================== -->
 <section class="tab-pane hide" id="pane-biz">
@@ -657,7 +657,7 @@
 
 <!-- ===================== 流水查询 ===================== -->
 <section class="tab-pane hide" id="pane-statement"><div class="tab-scroll">
-<div class="card"><div class="head"><div class="title">流水查询结果</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-table-count bank-head-meta-hidden" id="statementFlowCount">共 26,301 条，当前展示 1-20 / 26,301</div><button class="btn bank-head-push">自定义表头</button><button class="btn primary">导出流水</button></div><div class="content"><div style="overflow:auto"><table class="table"><thead><tr><th>交易日期</th><th>被审计单位公司</th><th>银行账户</th><th>对手方名称</th><th>收付方向</th><th>交易金额</th><th>交易摘要</th><th>币种</th><th class="no-sort">备注说明</th><th class="no-sort">操作</th></tr></thead><tbody id="statementFlowBody"><tr><td>2025-12-26</td><td>华东制造集团有限公司</td><td>1001***0821</td><td>廊坊中晟包装有限公司</td><td>流出</td><td style="color:var(--flow-out)">4,860,000</td><td>包装材料采购款</td><td>RMB</td><td><input class="ba-note-input" value="三年供应商付款样例"/></td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr><tr><td>2025-12-25</td><td>上海星河科技有限公司</td><td>2001***7739</td><td>郑州华辰电气有限公司</td><td>流入</td><td style="color:var(--flow-in)">5,120,000</td><td>销售回款</td><td>RMB</td><td><input class="ba-note-input" value="三年客户回款样例"/></td><td class="actions"><a href="javascript:void(0)">查看明细</a></td></tr></tbody></table></div><div class="pagination" id="statementFlowPager"><button class="btn" disabled>上一页</button><span>1 / 1316</span><button class="btn">下一页</button></div></div></div>
+<div class="card statement-query-card"><div class="head"><div class="title">流水查询结果</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-table-count bank-head-meta-hidden" id="statementFlowCount">共 26,301 条，当前展示 1-20 / 26,301</div><button class="btn bank-head-push" id="statementResetFilters" type="button">重置筛选</button><button class="btn" id="statementCustomizeCols" type="button">自定义表头</button><button class="btn primary" id="statementGenerateFlow" type="button">生成流水</button></div><div class="content"><div class="statement-table-wrap"><table class="table statement-flow-table" id="statementFlowTable"><thead><tr><th>本方名称</th><th>本方账号</th><th>对方名称</th><th>交易日期</th><th>交易时间</th><th>币种</th><th>流入金额</th><th>流出金额</th><th>交易后余额</th><th>等值人民币余额</th><th>交易类型</th><th>流水识别号</th><th>摘要</th><th>流水明细尽调备注</th><th>关联关系</th><th>所属集团</th><th>对手方类型</th><th>销售类别</th><th>采购类别</th><th>批准日期_客户</th><th>无效日期_客户</th><th>批准日期_供应商</th><th>无效日期_供应商</th><th>入职日期</th><th>离职日期</th></tr></thead><tbody id="statementFlowBody"></tbody></table></div><div class="pagination statement-pagination" id="statementFlowPager"></div></div></div>
 </div></section>
 
 <!-- =====================已知关联交易 面板 ===================== -->
@@ -849,7 +849,7 @@
 </section>
 <!-- ===================== 资金流水核查底稿导出 ===================== -->
 <section class="tab-pane hide" id="pane-transaction">
-<iframe class="risk-reference-frame" src="./fund-flow-check.html?v=20260625-risk-zoom2" title="高风险核查"></iframe>
+<iframe class="risk-reference-frame" src="./fund-flow-check.html?v=20260626-risk-zoom-context1" title="高风险核查"></iframe>
 <div class="risk-page" hidden>
   <aside class="risk-sidebar" id="riskSidebar"><div class="risk-sidebar-head"><div><b>核查程序</b><span id="riskProcedureCount">29 项</span></div><button id="riskSidebarToggle" type="button" title="收起核查程序">‹</button></div><div class="risk-procedure-list" id="riskProcedureList"></div><button class="risk-add-btn" id="riskAddProcedure" type="button">+ 新增核查程序</button></aside>
   <div class="risk-main">
@@ -1165,7 +1165,7 @@
 </section></div>
 
 
-<script defer src="../assets/js/core/shared.js?v=20260625-risk-zoom2"></script>
+<script defer src="../assets/js/core/shared.js?v=20260626-risk-zoom-context1"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260508-fast2"></script>
 <script defer src="../assets/js/pages/portrait.js?v=20260625-color-sync1"></script>
 <script defer src="../assets/js/pages/routine.js?v=20260508-fast2"></script>

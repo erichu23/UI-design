@@ -1940,7 +1940,7 @@
   /* ─── END CFO DASHBOARD ─────────────────────────────────────────────────── */
 
   </style>
-  <link rel="stylesheet" href="../assets/css/pages/risk-reference-override.css?v=20260625-risk-zoom2">
+  <link rel="stylesheet" href="../assets/css/pages/risk-reference-override.css?v=20260626-risk-zoom-context1">
 </head>
 <body>
 
@@ -2563,17 +2563,17 @@
                 <th colspan="9" class="gq-abnormal group-collapsible" data-group-key="abnormal" onclick="toggleCheckGroup('abnormal')" style="border-right:1px solid var(--gray-200)">重点关注异常 <span class="group-hit-count" id="ghc-abnormal"></span><span class="group-toggle-icon">▼</span></th>
                 <th colspan="9" class="gq-bizinfo group-collapsible" data-group-key="bizinfo" onclick="toggleCheckGroup('bizinfo')" style="border-right:1px solid var(--gray-200)">工商信息异常 <span class="group-hit-count" id="ghc-bizinfo"></span><span class="group-toggle-icon">▼</span></th>
                 <th colspan="2" class="gq-other group-collapsible" data-group-key="other" onclick="toggleCheckGroup('other')" style="border-right:2px solid var(--gray-300)">其他异常 <span class="group-hit-count" id="ghc-other"></span><span class="group-toggle-icon">▼</span></th>
-                <th class="cp-name-sticky" data-col="cpName">对手方名称 <span class="th-icons"><span class="th-filter-icon" onclick="toggleCpNameFilter(event)">⏺</span><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','name','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','name','desc')">▼</span></span></span></th>
-                <th data-col="cpType">对手方类型 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','cpType','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','cpType','desc')">▼</span></span></span></th>
-                <th data-col="inflow">流入金额 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','inflow','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','inflow','desc')">▼</span></span></span></th>
-                <th data-col="salesTax">销项税价合计 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','salesTax','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','salesTax','desc')">▼</span></span></span></th>
-                <th data-col="outflow">流出金额 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','outflow','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','outflow','desc')">▼</span></span></span></th>
-                <th data-col="inputTax">进项税价合计 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','inputTax','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','inputTax','desc')">▼</span></span></span></th>
-                <th style="border-right:2px solid var(--gray-300)" data-col="txCount">交易笔数 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','txCount','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','txCount','desc')">▼</span></span></span></th>
-                <th data-col="industry">行业 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','industry','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','industry','desc')">▼</span></span></span></th>
-                <th data-col="bizAge">经营时长 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','bizAge','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','bizAge','desc')">▼</span></span></span></th>
-                <th data-col="executives">董监高 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','executives','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','executives','desc')">▼</span></span></span></th>
-                <th data-col="markStatus">标记状态</th>
+                <th class="cp-name-sticky" data-col="cpName">对手方名称 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','name','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','name','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="toggleCpNameFilter(event)"></span></span></th>
+                <th data-col="cpType">对手方类型 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','cpType','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','cpType','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
+                <th data-col="inflow">流入金额 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','inflow','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','inflow','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
+                <th data-col="salesTax">销项税价合计 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','salesTax','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','salesTax','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
+                <th data-col="outflow">流出金额 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','outflow','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','outflow','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
+                <th data-col="inputTax">进项税价合计 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','inputTax','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','inputTax','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
+                <th style="border-right:2px solid var(--gray-300)" data-col="txCount">交易笔数 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','txCount','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','txCount','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
+                <th data-col="industry">行业 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','industry','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','industry','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
+                <th data-col="bizAge">经营时长 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','bizAge','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','bizAge','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
+                <th data-col="executives">董监高 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','executives','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','executives','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
+                <th data-col="markStatus">标记状态 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','markStatus','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','markStatus','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th>备注</th>
               </tr>
               <!-- 第2行：编号子列头 -->
@@ -3195,6 +3195,7 @@ let cpSearchText = '';
 let txSearchText = '';
 let cpNameFilterSelected = [];
 let cpNameFilterVisible = false;
+let cpColumnFilters = {};
 let txColumnFilters = {};
 let checkColumnFilters = {};
 let materialityLevel = 100; // 重要性水平（万元）
@@ -3728,15 +3729,31 @@ function fmtAmtFromYuan(n) {
 function fmtFull(n) {
   return '¥' + n.toLocaleString('zh-CN') + '元';
 }
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[ch]);
+}
 
 function getCpById(id) { return cpData.find(c => c.id === id); }
 function getTxById(id) { return txData.find(t => t.txId === id); }
+
+function updateCpRemark(cpId, value, rerender = false) {
+  const cp = getCpById(cpId);
+  if (!cp) return;
+  cp.remark = String(value ?? '');
+  if (rerender) renderCpTable();
+}
 
 // ─── SORTING ────────────────────────────────────────────────────────────────
 function getSortValue(obj, col) {
   const riskOrder = { high: 3, mid: 2, low: 1, none: 0 };
   if (col === 'risk') return riskOrder[obj.risk] || 0;
-  if (col === 'flag') {
+  if (col === 'flag' || col === 'markStatus') {
     const statusOrder = { flagged: 3, explained: 2, cleared: 1, none: 0 };
     const status = obj.markStatus || ((obj.flags && obj.flags.length) ? 'flagged' : 'none');
     return statusOrder[status] || 0;
@@ -3963,6 +3980,94 @@ function showTxColumnFilter(event, col) {
   }, 0);
 }
 
+function getCpColumnValue(row, col) {
+  const markStatusText = {
+    flagged: '需关注',
+    explained: '已说明',
+    cleared: '已排除',
+    none: '未标记'
+  };
+  const status = row.markStatus || ((row.hits && row.hits.length) ? 'flagged' : 'none');
+  const map = {
+    cpName: row.name,
+    cpType: row.cpType,
+    inflow: fmtFull(row.inflow),
+    salesTax: fmtFull(row.salesTax),
+    outflow: fmtFull(row.outflow),
+    inputTax: fmtFull(row.inputTax),
+    txCount: String(row.txCount),
+    industry: row.industry,
+    bizAge: row.bizAge,
+    executives: row.executives,
+    markStatus: markStatusText[status] || '未标记'
+  };
+  return String(map[col] ?? '').trim();
+}
+
+function showCpColumnFilter(event, col) {
+  event.stopPropagation();
+  if (col === 'cpName') {
+    toggleCpNameFilter(event);
+    return;
+  }
+  document.querySelectorAll('.cp-column-filter-popover').forEach(el => el.remove());
+  let source = [...cpData];
+  if (cpSearchText) {
+    source = source.filter(r =>
+      r.name.toLowerCase().includes(cpSearchText) ||
+      r.account.toLowerCase().includes(cpSearchText) ||
+      r.cpType.includes(cpSearchText) ||
+      r.industry.includes(cpSearchText)
+    );
+  }
+  const values = Array.from(new Set(source.map(row => getCpColumnValue(row, col)).filter(Boolean))).slice(0, 100);
+  const selected = new Set(cpColumnFilters[col] || values);
+  const th = event.target.closest('th');
+  const pop = document.createElement('div');
+  pop.className = 'cp-column-filter-popover mark-menu';
+  pop.style.minWidth = '220px';
+  pop.style.padding = '10px';
+  pop.innerHTML = `
+    <div style="font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:8px">${(th?.childNodes[0]?.textContent || '筛选').trim()}</div>
+    <div style="max-height:220px;overflow:auto;display:flex;flex-direction:column;gap:4px">
+      ${values.map(v => `
+        <label style="display:flex;align-items:center;gap:6px;min-height:24px;font-size:11px;color:var(--gray-600)">
+          <input type="checkbox" value="${v.replace(/"/g, '&quot;')}" ${selected.has(v) ? 'checked' : ''}>
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v}</span>
+        </label>
+      `).join('') || '<div style="padding:12px;text-align:center;color:var(--gray-400);font-size:11px">暂无可筛选内容</div>'}
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:8px">
+      <button type="button" data-action="clear" style="height:26px;padding:0 9px;border:1px solid var(--gray-200);border-radius:6px;background:#fff;color:var(--gray-500);font-size:11px">清空</button>
+      <button type="button" data-action="all" style="height:26px;padding:0 9px;border:1px solid var(--gray-200);border-radius:6px;background:#fff;color:var(--gray-500);font-size:11px">全选</button>
+      <button type="button" data-action="apply" style="height:26px;padding:0 9px;border:0;border-radius:6px;background:var(--primary);color:#fff;font-size:11px">确定</button>
+    </div>
+  `;
+  const rect = th.getBoundingClientRect();
+  pop.style.position = 'fixed';
+  pop.style.left = Math.min(rect.left, window.innerWidth - 240) + 'px';
+  pop.style.top = (rect.bottom + 4) + 'px';
+  document.body.appendChild(pop);
+  pop.querySelector('[data-action="clear"]').addEventListener('click', () => pop.querySelectorAll('input').forEach(input => input.checked = false));
+  pop.querySelector('[data-action="all"]').addEventListener('click', () => pop.querySelectorAll('input').forEach(input => input.checked = true));
+  pop.querySelector('[data-action="apply"]').addEventListener('click', () => {
+    const next = Array.from(pop.querySelectorAll('input:checked')).map(input => input.value);
+    if (!next.length || next.length === values.length) delete cpColumnFilters[col];
+    else cpColumnFilters[col] = next;
+    cpPage = 1;
+    renderCpTable();
+    pop.remove();
+  });
+  setTimeout(() => {
+    document.addEventListener('click', function handler(ev) {
+      if (!pop.contains(ev.target)) {
+        pop.remove();
+        document.removeEventListener('click', handler);
+      }
+    });
+  }, 0);
+}
+
 // ─── RENDER COUNTERPARTY TABLE ───────────────────────────────────────────────
 function renderCpTable() {
   let data = [...cpData];
@@ -4010,11 +4115,7 @@ function renderCpTable() {
     const mk = markMap[ms] || markMap.none;
     const markHTML = `<span class="mark-status ${mk.cls}" onclick="showMarkMenu(event, '${row.id}')"><span class="risk-mark-dot"></span>${mk.label}</span>`;
 
-    // 备注列渲染
-    const remarkText = row.remark || '';
-    const remarkHTML = remarkText
-      ? `<span style="font-size:11px;color:var(--gray-600)" title="${remarkText}">${remarkText}</span>`
-      : '<span style="color:var(--gray-300);font-size:11px">—</span>';
+    const remarkHTML = `<input class="risk-remark-input" data-risk-cp-remark="${row.id}" value="${escapeHtml(row.remark || '')}" placeholder="填写备注" onchange="updateCpRemark('${row.id}', this.value)">`;
 
     // 核查程序各编号列
     let checkTDs = '';
@@ -4044,7 +4145,7 @@ function renderCpTable() {
       <td style="min-width:180px;white-space:normal;line-height:1.35;font-size:11px">${remarkHTML}</td>
     `;
     tr.addEventListener('click', (e) => {
-      if (e.target.closest('.mark-status')) return;
+      if (e.target.closest('.mark-status') || e.target.closest('.risk-remark-input')) return;
       selectCp(row.id);
     });
     body.appendChild(tr);
@@ -4301,10 +4402,7 @@ function renderCpTableWithHighlight(matchIds) {
     const mk = markMap[ms] || markMap.none;
     const markHTML = `<span class="mark-status ${mk.cls}" onclick="showMarkMenu(event, '${row.id}')"><span class="risk-mark-dot"></span>${mk.label}</span>`;
 
-    const remarkText = row.remark || '';
-    const remarkHTML = remarkText
-      ? `<span style="font-size:11px;color:var(--gray-600)" title="${remarkText}">${remarkText}</span>`
-      : '<span style="color:var(--gray-300);font-size:11px">—</span>';
+    const remarkHTML = `<input class="risk-remark-input" data-risk-cp-remark="${row.id}" value="${escapeHtml(row.remark || '')}" placeholder="填写备注" onchange="updateCpRemark('${row.id}', this.value)">`;
 
     // 核查程序各编号列
     let checkTDs = '';
@@ -4335,7 +4433,7 @@ function renderCpTableWithHighlight(matchIds) {
       <td style="min-width:180px;white-space:normal;line-height:1.35;font-size:11px">${remarkHTML}</td>
     `;
     tr.addEventListener('click', (e) => {
-      if (e.target.closest('.mark-status')) return;
+      if (e.target.closest('.mark-status') || e.target.closest('.risk-remark-input')) return;
       selectCp(row.id);
     });
     body.appendChild(tr);
@@ -4851,33 +4949,187 @@ function openRiskTableZoom() {
   const body = document.getElementById('riskTableZoomBody');
   const title = document.getElementById('riskTableZoomTitle');
   const sub = document.getElementById('riskTableZoomSub');
-  const sourceId = activeTab === 'tx' ? 'txTable' : 'cpTable';
-  const source = document.getElementById(sourceId);
-  if (!modal || !body || !source) return;
-
-  const clone = source.cloneNode(true);
-  clone.removeAttribute('id');
-  clone.classList.add('zoom-table-clone');
-  clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
-  const zoomTitle = activeTab === 'tx' ? '流水明细放大查看' : '对手方汇总放大查看';
-  const zoomSub = activeTab === 'tx' ? '当前筛查结果 · 流水明细' : '当前筛查结果 · 对手方汇总';
+  const payload = getRiskZoomTablePayload();
+  if (!payload.html) return;
 
   if (window.parent && window.parent !== window && typeof window.parent.openBankRiskTableZoom === 'function') {
-    window.parent.openBankRiskTableZoom(clone.outerHTML, zoomTitle, zoomSub);
+    window.parent.openBankRiskTableZoom(payload.html, payload.title, payload.sub, { table: payload.table, context: payload.context });
     return;
   }
 
   const wrap = document.createElement('div');
   wrap.className = 'risk-table-zoom-scroll';
-  wrap.appendChild(clone);
+  wrap.innerHTML = payload.html;
   body.innerHTML = '';
   body.appendChild(wrap);
 
-  if (title) title.textContent = zoomTitle;
-  if (sub) sub.textContent = zoomSub;
+  if (title) title.textContent = payload.title;
+  if (sub) sub.textContent = payload.sub;
   modal.classList.add('is-open');
   modal.setAttribute('aria-hidden', 'false');
 }
+
+function getRiskZoomContext(table) {
+  const filters = Array.from(document.querySelectorAll('#filterConditions .filter-chip > span'))
+    .map(el => el.textContent.trim())
+    .filter(Boolean);
+  return {
+    group: document.getElementById('fpGroup')?.textContent.trim() || '',
+    title: document.getElementById('fpTitle')?.textContent.trim() || '',
+    badge: document.getElementById('fpBadge')?.textContent.trim() || '',
+    filters,
+    tableLabel: table === 'tx' ? '流水明细' : '对手方汇总'
+  };
+}
+
+function getRiskZoomTablePayload(preferredTable) {
+  const table = preferredTable || (activeTab === 'tx' ? 'tx' : 'cp');
+  const sourceId = table === 'tx' ? 'txTable' : 'cpTable';
+  if (table === 'tx') renderTxTable(undefined);
+  else renderCpTable();
+  const source = document.getElementById(sourceId);
+  if (!source) return { table, title: '', sub: '', html: '' };
+  const clone = source.cloneNode(true);
+  clone.removeAttribute('id');
+  clone.classList.add('zoom-table-clone');
+  clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+  clone.querySelectorAll('.th-sort-arrow[onclick]').forEach(el => {
+    const match = el.getAttribute('onclick')?.match(/sortTable\('([^']+)','([^']+)','([^']+)'\)/);
+    if (match) {
+      el.dataset.riskSortTable = match[1];
+      el.dataset.riskSortCol = match[2];
+      el.dataset.riskSortDir = match[3];
+    }
+  });
+  if (table === 'cp') {
+    clone.querySelectorAll('thead th[data-col]').forEach(th => {
+      if (th.dataset.col === 'markStatus') return;
+      const icons = th.querySelector('.th-icons');
+      if (icons && !icons.querySelector('.th-filter-icon')) {
+        icons.insertAdjacentHTML('beforeend', '<span class="th-filter-icon" title="筛选"></span>');
+      }
+    });
+  }
+  clone.querySelectorAll('[onclick]').forEach(el => el.removeAttribute('onclick'));
+  clone.querySelectorAll('[onchange]').forEach(el => el.removeAttribute('onchange'));
+  const context = getRiskZoomContext(table);
+  return {
+    table,
+    title: `${context.group} › ${context.title}`,
+    sub: `${context.badge}${context.filters.length ? ' · 筛选：' + context.filters.join('、') : ''}`,
+    context,
+    html: clone.outerHTML
+  };
+}
+
+window.getRiskZoomTablePayload = getRiskZoomTablePayload;
+
+window.handleRiskZoomAction = function(action = {}) {
+  if (action.type === 'switchZoomTable' && action.table) {
+    return getRiskZoomTablePayload(action.table);
+  }
+  if (action.type === 'toggleGroup' && action.groupKey) {
+    toggleCheckGroup(action.groupKey);
+  }
+  if (action.type === 'sort' && action.table && action.col && action.dir) {
+    sortTable(action.table, action.col, action.dir);
+  }
+  if (action.type === 'updateCpRemark' && action.cpId) {
+    updateCpRemark(action.cpId, action.value, false);
+    renderCpTable();
+  }
+  if (action.type === 'applyFilter') {
+    if (action.filterType === 'check' && action.key) {
+      if (!action.value || action.value === 'all') delete checkColumnFilters[action.key];
+      else checkColumnFilters[action.key] = action.value;
+      cpPage = 1;
+      txPage = 1;
+      rebuildSubHeaders();
+      activeTab === 'tx' ? renderTxTable() : renderCpTable();
+    }
+    if (action.filterType === 'tx' && action.key) {
+      if (!Array.isArray(action.values) || action.values.length === 0 || action.allSelected) delete txColumnFilters[action.key];
+      else txColumnFilters[action.key] = action.values;
+      txPage = 1;
+      renderTxTable();
+    }
+    if (action.filterType === 'cp' && action.key) {
+      if (action.key === 'cpName') {
+        cpNameFilterSelected = action.allSelected ? [] : (Array.isArray(action.values) ? action.values : []);
+      } else if (!Array.isArray(action.values) || action.values.length === 0 || action.allSelected) {
+        delete cpColumnFilters[action.key];
+      } else {
+        cpColumnFilters[action.key] = action.values;
+      }
+      cpPage = 1;
+      renderCpTable();
+    }
+    if (action.filterType === 'cpName') {
+      cpNameFilterSelected = action.allSelected ? [] : (Array.isArray(action.values) ? action.values : []);
+      cpPage = 1;
+      renderCpTable();
+    }
+  }
+  return getRiskZoomTablePayload(action.table);
+};
+
+window.getRiskZoomFilterConfig = function(request = {}) {
+  if (request.filterType === 'check') {
+    const key = request.key;
+    return {
+      filterType: 'check',
+      key,
+      title: checkMeta[key]?.title || key,
+      value: checkColumnFilters[key] || 'all',
+      options: [
+        { value: 'all', label: '全部' },
+        { value: 'hit', label: '已命中' },
+        { value: 'empty', label: '未命中' }
+      ]
+    };
+  }
+  if (request.filterType === 'tx') {
+    const col = request.key;
+    let source = [...txData];
+    if (selectedCpId && activeTab === 'cp') source = source.filter(t => t.cpId === selectedCpId);
+    if (txSearchText) {
+      source = source.filter(r =>
+        r.remark.toLowerCase().includes(txSearchText) ||
+        r.account.toLowerCase().includes(txSearchText) ||
+        r.cp.toLowerCase().includes(txSearchText) ||
+        r.txId.toLowerCase().includes(txSearchText)
+      );
+    }
+    const values = Array.from(new Set(source.map(row => getTxColumnValue(row, col)).filter(Boolean))).slice(0, 80);
+    const selected = txColumnFilters[col] || values;
+    return { filterType: 'tx', key: col, title: col, options: values, selected };
+  }
+  if (request.filterType === 'cp') {
+    const col = request.key;
+    const titles = {
+      cpName: '对手方名称',
+      cpType: '对手方类型',
+      inflow: '流入金额',
+      salesTax: '销项税价合计',
+      outflow: '流出金额',
+      inputTax: '进项税价合计',
+      txCount: '交易笔数',
+      industry: '行业',
+      bizAge: '经营时长',
+      executives: '董监高',
+      markStatus: '标记状态'
+    };
+    const values = Array.from(new Set(cpData.map(row => getCpColumnValue(row, col)).filter(Boolean))).slice(0, 100);
+    const selected = col === 'cpName' && cpNameFilterSelected.length ? cpNameFilterSelected : (cpColumnFilters[col] || values);
+    return { filterType: 'cp', key: col, title: titles[col] || col, options: values, selected };
+  }
+  if (request.filterType === 'cpName') {
+    const values = Array.from(new Set(cpData.map(r => r.name))).slice(0, 100);
+    const selected = cpNameFilterSelected.length ? cpNameFilterSelected : values;
+    return { filterType: 'cpName', key: 'cpName', title: '对手方名称', options: values, selected };
+  }
+  return null;
+};
 
 function closeRiskTableZoom() {
   const modal = document.getElementById('riskTableZoomModal');
@@ -5190,6 +5442,10 @@ function applyCpFilters(data) {
   if (cpNameFilter) {
     data = data.filter(r => r.name.toLowerCase().includes(cpNameFilter));
   }
+  Object.entries(cpColumnFilters).forEach(([col, values]) => {
+    if (!Array.isArray(values) || !values.length) return;
+    data = data.filter(row => values.includes(getCpColumnValue(row, col)));
+  });
   if (cpAmtFilters.inflow !== null && !isNaN(cpAmtFilters.inflow)) {
     data = data.filter(r => r.inflow >= cpAmtFilters.inflow);
   }
