@@ -2640,6 +2640,7 @@
         <span class="tab-count danger" id="tc-tx">26301</span>
       </div>
       <div class="tabs-spacer"></div>
+      <div class="check-group-display" id="checkGroupDisplay"></div>
     </div>
 
     <!-- TABLE AREA -->
@@ -3786,6 +3787,29 @@ const CHECK_COLUMNS = [
 
 // 计算5个分组的 colspan
 const CHECK_COL_TOTAL = CHECK_COLUMNS.reduce((s, g) => s + g.checks.length, 0);
+const ALL_CHECK_IDS = CHECK_COLUMNS.flatMap(group => group.checks.map(check => check.id));
+
+function getCheckGroupKey(checkId) {
+  const group = CHECK_COLUMNS.find(item => item.checks.some(check => check.id === checkId));
+  return group ? group.groupKey : CHECK_COLUMNS[0]?.groupKey;
+}
+
+function getDefaultExpandedGroups(checkId = activeCheck) {
+  const activeGroupKey = getCheckGroupKey(checkId) || CHECK_COLUMNS[0]?.groupKey;
+  return CHECK_COLUMNS.reduce((acc, group) => {
+    acc[group.groupKey] = group.groupKey === activeGroupKey;
+    return acc;
+  }, {});
+}
+
+function getDefaultVisibleCheckGroups(checkId = activeCheck) {
+  const activeGroupKey = getCheckGroupKey(checkId) || CHECK_COLUMNS[0]?.groupKey;
+  return new Set(activeGroupKey ? [activeGroupKey] : CHECK_COLUMNS.map(group => group.groupKey));
+}
+
+function getVisibleCheckGroups() {
+  return CHECK_COLUMNS.filter(group => selectedCheckGroupKeys.has(group.groupKey));
+}
 
 // hits 文字 → checkId 映射
 const HIT_TO_CHECK_ID = {
@@ -3834,6 +3858,14 @@ function getHitCheckIds(hits) {
   return ids;
 }
 
+function getGroupHitChecks(groupDef, hitIds, cpId) {
+  if (!groupDef || !Array.isArray(groupDef.checks)) return [];
+  return groupDef.checks.filter(chk => {
+    const clearKey = `${cpId}_${chk.id}`;
+    return hitIds.has(chk.id) && !manualClears[clearKey];
+  });
+}
+
 // 渲染单个分组下所有核查程序编号列的 TD
 // groupDef: CHECK_COLUMNS 中的某一项, hitIds: Set<checkId>, cpId: 对手方ID, colIndex: 起始列索引
 function buildCheckGroupTDs(groupDef, hitIds, cpId, colIndex) {
@@ -3841,37 +3873,14 @@ function buildCheckGroupTDs(groupDef, hitIds, cpId, colIndex) {
 
   if (!expanded) {
     // 收起状态：只保留第1列，显示该组命中总数
-    const firstCheck = groupDef.checks[0];
-    if (!firstCheck) return { html: '', newColIndex: colIndex };
-
-    // 计算该组中命中的个数（不含已手工去除的）
-    let hitCount = 0;
-    groupDef.checks.forEach(chk => {
-      const clearKey = `${cpId}_${chk.id}`;
-      const cleared = manualClears[clearKey];
-      if (hitIds.has(chk.id) && !cleared) hitCount++;
-    });
-
-    const clearKey = `${cpId}_${firstCheck.id}`;
-    const cleared = manualClears[clearKey];
-
-    // 根据命中数和是否已手工去除返回不同样式
-    let html;
-    if (hitCount > 0 && !cleared) {
-      html = `<td class="check-cell hit-cell" data-cp="${cpId}" data-check="${firstCheck.id}" data-check-group="${groupDef.groupKey}" data-col-index="${colIndex}"
-        style="cursor:pointer" onclick="toggleCheckGroup('${groupDef.groupKey}')">
-        <span class="check-hit-icon">${hitCount}</span>
-      </td>`;
-    } else if (cleared) {
-      html = `<td class="check-cell cleared-cell" data-cp="${cpId}" data-check="${firstCheck.id}" data-check-group="${groupDef.groupKey}" data-col-index="${colIndex}"
-        onmouseenter="showClearTooltip(event,'${clearKey}')" onmouseleave="hideClearTooltip()"
-        style="cursor:pointer" onclick="toggleCheckGroup('${groupDef.groupKey}')">
-        <span class="check-cleared-icon">○</span>
-      </td>`;
-    } else {
-      html = `<td class="check-cell empty-cell" data-cp="${cpId}" data-check="${firstCheck.id}" data-check-group="${groupDef.groupKey}" data-col-index="${colIndex}"
-        style="cursor:pointer" onclick="toggleCheckGroup('${groupDef.groupKey}')"></td>`;
-    }
+    if (!groupDef.checks.length) return { html: '', newColIndex: colIndex };
+    const hitChecks = getGroupHitChecks(groupDef, hitIds, cpId);
+    const hitCount = hitChecks.length;
+    const tooltip = hitCount ? `已命中：${hitChecks.map(chk => chk.abbr || chk.id).join('、')}` : '未命中该分类标准';
+    const summaryCls = hitCount > 0 ? 'is-hit' : 'is-empty';
+    const html = `<td class="check-cell group-summary-cell ${summaryCls}" data-cp="${cpId}" data-check-group="${groupDef.groupKey}" data-col-index="${colIndex}" title="${tooltip}">
+      <span class="group-summary-count">${hitCount}</span>
+    </td>`;
     return { html, newColIndex: colIndex + 1 };
   }
 
@@ -4324,7 +4333,7 @@ function renderCpTable() {
     // 核查程序各编号列
     let checkTDs = '';
     let colIndex = 0;
-    CHECK_COLUMNS.forEach(group => {
+    getVisibleCheckGroups().forEach(group => {
       const result = buildCheckGroupTDs(group, hitIds, row.id, colIndex);
       checkTDs += result.html;
       colIndex = result.newColIndex;
@@ -4414,7 +4423,7 @@ function renderTxTable(subtitle) {
     const hitCount = hitIds.size;
     let checkTDs = '';
     let colIndex = 0;
-    CHECK_COLUMNS.forEach(group => {
+    getVisibleCheckGroups().forEach(group => {
       const result = buildCheckGroupTDs(group, hitIds, row.cpId, colIndex);
       checkTDs += result.html;
       colIndex = result.newColIndex;
@@ -4615,7 +4624,7 @@ function renderCpTableWithHighlight(matchIds) {
     // 核查程序各编号列
     let checkTDs = '';
     let colIndex = 0;
-    CHECK_COLUMNS.forEach(group => {
+    getVisibleCheckGroups().forEach(group => {
       const result = buildCheckGroupTDs(group, hitIds, row.id, colIndex);
       checkTDs += result.html;
       colIndex = result.newColIndex;
@@ -4670,6 +4679,8 @@ function selectCheck(id) {
   document.getElementById('fpTitle').textContent = meta.title;
   document.getElementById('fpBadge').textContent = meta.badge;
   document.querySelectorAll('.condition-editor').forEach(e => e.classList.remove('show'));
+  resetCheckGroupExpanded(id);
+  resetVisibleCheckGroups(id);
 
   // 动态生成筛选条件 chips 和 editors
   renderFilterPanel(id, meta);
@@ -5112,6 +5123,12 @@ function resetFilters() {
     c.classList.remove('active-chip');
     c.classList.add('inactive-chip');
   });
+  document.querySelectorAll('#filterConditions input').forEach(input => {
+    input.value = '';
+  });
+  resetCheckGroupExpanded(activeCheck);
+  resetVisibleCheckGroups(activeCheck);
+  applyCheckGroupVisibility();
   openEditor = null;
   showToast('info', '已重置所有筛选条件');
 }
@@ -5381,19 +5398,112 @@ document.addEventListener('keydown', (event) => {
 });
 
 // ─── CHECK GROUP COLLAPSE STATE ────────────────────────────────────────────────
-// 记录每个大类组是否展开（默认全部收起）
+// 记录每个大类组是否展开；默认展开当前核查程序所属分类，其他分类收起。
 const checkGroupExpanded = {};
-CHECK_COLUMNS.forEach(g => { checkGroupExpanded[g.groupKey] = false; });
+let selectedCheckIds = new Set(ALL_CHECK_IDS);
+let selectedCheckGroupKeys = getDefaultVisibleCheckGroups(activeCheck);
+
+function resetCheckGroupExpanded(checkId = activeCheck) {
+  const defaults = getDefaultExpandedGroups(checkId);
+  CHECK_COLUMNS.forEach(g => {
+    checkGroupExpanded[g.groupKey] = Boolean(defaults[g.groupKey]);
+  });
+}
+resetCheckGroupExpanded(activeCheck);
+
+function resetVisibleCheckGroups(checkId = activeCheck) {
+  selectedCheckGroupKeys = getDefaultVisibleCheckGroups(checkId);
+  renderCheckGroupDisplayControls();
+}
+
+function toggleCheckGroupVisible(event, groupKey) {
+  event.stopPropagation();
+  const nextChecked = event.target.checked;
+  if (!nextChecked && selectedCheckGroupKeys.size <= 1 && selectedCheckGroupKeys.has(groupKey)) {
+    event.target.checked = true;
+    showToast('warning', '至少保留一个核查标准分类');
+    return;
+  }
+  if (nextChecked) selectedCheckGroupKeys.add(groupKey);
+  else selectedCheckGroupKeys.delete(groupKey);
+  if (nextChecked && checkGroupExpanded[groupKey] === undefined) checkGroupExpanded[groupKey] = false;
+  renderCheckGroupDisplayControls();
+  applyCheckGroupVisibility();
+}
+
+function renderCheckGroupDisplayControls() {
+  const box = document.getElementById('checkGroupDisplay');
+  if (!box) return;
+  box.innerHTML = `
+    <span class="check-display-label">显示核查标准</span>
+    ${CHECK_COLUMNS.map(group => {
+      const checked = selectedCheckGroupKeys.has(group.groupKey) ? 'checked' : '';
+      const count = group.checks.length;
+      return `<label class="check-display-option ${checked ? 'is-active' : ''}">
+        <input type="checkbox" ${checked} onchange="toggleCheckGroupVisible(event,'${group.groupKey}')">
+        <span>${group.label}</span>
+        <em>${count}</em>
+      </label>`;
+    }).join('')}
+  `;
+}
 
 function toggleCheckGroup(groupKey) {
   checkGroupExpanded[groupKey] = !checkGroupExpanded[groupKey];
   applyCheckGroupVisibility();
 }
 
+function toggleCheckGroupSelection(event, groupKey) {
+  event.stopPropagation();
+  const group = CHECK_COLUMNS.find(g => g.groupKey === groupKey);
+  if (!group) return;
+  const checked = event.target.checked;
+  group.checks.forEach(check => {
+    if (checked) selectedCheckIds.add(check.id);
+    else selectedCheckIds.delete(check.id);
+  });
+  updateCheckGroupHeaderState();
+}
+
+function getGroupSelectionState(group) {
+  const total = group.checks.length;
+  const selected = group.checks.filter(check => selectedCheckIds.has(check.id)).length;
+  return {
+    total,
+    selected,
+    checked: total > 0 && selected === total,
+    indeterminate: selected > 0 && selected < total,
+  };
+}
+
+function renderCheckGroupHeader(group) {
+  const expanded = checkGroupExpanded[group.groupKey];
+  const state = getGroupSelectionState(group);
+  const arrow = expanded ? '▼' : '▶';
+  const title = expanded ? `收起${group.label}` : `展开${group.label}`;
+  return `
+    <span class="group-title">${group.label}</span>
+    <span class="group-hit-count">${state.selected}</span>
+    <span class="group-toggle-icon" title="${title}">${arrow}</span>
+  `;
+}
+
+function updateCheckGroupHeaderState() {
+  document.querySelectorAll('th.group-collapsible').forEach(th => {
+    const groupKey = th.getAttribute('data-group-key');
+    const group = CHECK_COLUMNS.find(g => g.groupKey === groupKey);
+    if (!group) return;
+    th.style.display = selectedCheckGroupKeys.has(groupKey) ? '' : 'none';
+    th.innerHTML = renderCheckGroupHeader(group);
+    th.classList.toggle('is-collapsed', !checkGroupExpanded[groupKey]);
+    th.classList.toggle('is-expanded', Boolean(checkGroupExpanded[groupKey]));
+  });
+}
+
 function applyCheckGroupVisibility() {
   // 计算核查标准总列数
   let checkTotalCols = 0;
-  CHECK_COLUMNS.forEach(group => {
+  getVisibleCheckGroups().forEach(group => {
     checkTotalCols += checkGroupExpanded[group.groupKey] ? group.checks.length : 1;
   });
 
@@ -5401,14 +5511,19 @@ function applyCheckGroupVisibility() {
   document.querySelectorAll('th.group-collapsible').forEach(th => {
     const groupKey = th.getAttribute('data-group-key');
     if (!groupKey) return;
-    const expanded = checkGroupExpanded[groupKey];
     const group = CHECK_COLUMNS.find(g => g.groupKey === groupKey);
     if (!group) return;
+    if (!selectedCheckGroupKeys.has(groupKey)) {
+      th.style.display = 'none';
+      return;
+    }
 
-    const icon = th.querySelector('.group-toggle-icon');
-    if (icon) icon.textContent = expanded ? '▲' : '▼';
+    const expanded = checkGroupExpanded[groupKey];
+    th.style.display = '';
     th.setAttribute('colspan', expanded ? group.checks.length : 1);
+    th.innerHTML = renderCheckGroupHeader(group);
   });
+  updateCheckGroupHeaderState();
 
   // 动态更新两个表的第0行总组头 colspan
   ['thGroupCheck', 'thTxGroupCheck'].forEach(id => {
@@ -5435,9 +5550,10 @@ function rebuildSubHeaders() {
   let checkSubHTML = '';
   let colIndex = 0;
 
-  CHECK_COLUMNS.forEach((group, gi) => {
+  const visibleGroups = getVisibleCheckGroups();
+  visibleGroups.forEach((group, gi) => {
     const expanded = checkGroupExpanded[group.groupKey];
-    const isLastGroup = gi === CHECK_COLUMNS.length - 1;
+    const isLastGroup = gi === visibleGroups.length - 1;
 
     if (expanded) {
       group.checks.forEach((chk, ci) => {
@@ -5456,14 +5572,11 @@ function rebuildSubHeaders() {
         colIndex++;
       });
     } else {
-      const firstCheck = group.checks[0];
       const borderStyle = !isLastGroup ? 'border-right:1px solid var(--gray-200)' : '';
-      const activeFilter = checkColumnFilters[firstCheck.id] ? ' is-active' : '';
-      checkSubHTML += `<th data-check="${firstCheck.id}" data-check-group="${group.groupKey}" data-col-index="${colIndex}"
+      checkSubHTML += `<th class="group-summary-head" data-check-group="${group.groupKey}" data-col-index="${colIndex}"
         onclick="toggleCheckGroup('${group.groupKey}')"
         style="${borderStyle};cursor:pointer">
-          <span>${firstCheck.abbr}</span>
-          <span class="th-filter-icon${activeFilter}" title="筛选命中状态" onclick="showCheckColumnFilter(event,'${firstCheck.id}')"></span>
+          <span>汇总</span>
         </th>`;
       colIndex++;
     }
@@ -5515,25 +5628,9 @@ function updateStickyLeft() {
   });
 }
 
-// 计算5个核查标准大组的命中计数并更新组头标签（同时更新 cp 和 tx 表）
+// 更新5个核查标准大组的已选数量、复选框和展开箭头（同时更新 cp 和 tx 表）
 function updateCheckGroupHitCounts() {
-  CHECK_COLUMNS.forEach(group => {
-    let hitCount = 0;
-    cpData.forEach(cp => {
-      const hitIds = getHitCheckIds(cp.hits);
-      group.checks.forEach(chk => {
-        if (hitIds.has(chk.id)) hitCount++;
-      });
-    });
-    // 更新 cpTable 的命中计数
-    ['ghc-', 'ghc-tx-'].forEach(prefix => {
-      const el = document.getElementById(`${prefix}${group.groupKey}`);
-      if (el) {
-        el.textContent = hitCount > 0 ? `✓${hitCount}` : '0';
-        el.className = `group-hit-count ${hitCount > 0 ? 'has-hits' : 'no-hits'}`;
-      }
-    });
-  });
+  updateCheckGroupHeaderState();
 }
 
 // ─── DYNAMIC TABLE HEADER ────────────────────────────────────────────────────
@@ -5736,6 +5833,7 @@ initMsFields();
 buildCpSubHeaders();
 calcInvoiceMismatch();
 updateCheckGroupHitCounts();
+renderCheckGroupDisplayControls();
 // 初始折叠：隐藏子表头，渲染数据行已根据折叠状态生成
 applyCheckGroupVisibility();
 updateSortIndicators('cpTable', 'outflow', 'desc');
