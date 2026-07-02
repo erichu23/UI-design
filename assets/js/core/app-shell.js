@@ -29,12 +29,14 @@ const APP_FRAME_STATE_KEY = 'auditCompass.currentFrameState';
 const DEFAULT_PROJECT = 'Test2';
 const DEFAULT_BOOK = '20251022';
 const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260626-ds-position1';
+const DATA_VALIDATION_SRC = './fragments/data-validation.html?v=20260701-data-validation1';
 const DATA_SUMMARY_SRC = './fragments/data-summary.html?v=20260626-ds-position1';
 const PROJECT_LIST_SRC = './fragments/project-list.html';
 
 function normalizeFrameSrc(src){
   if (!src) return src;
   if (src.includes('bank-analysis.html')) return BANK_ANALYSIS_SRC;
+  if (src.includes('data-validation.html')) return DATA_VALIDATION_SRC;
   if (src.includes('data-summary.html')) return DATA_SUMMARY_SRC;
   return src;
 }

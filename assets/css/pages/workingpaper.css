@@ -543,6 +543,52 @@
   text-align:center;
 }
 
+.wp-pager.audit-pager{
+  gap:5px !important;
+  flex-wrap:nowrap !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  scrollbar-width:none !important;
+  white-space:nowrap !important;
+}
+
+.wp-pager.audit-pager::-webkit-scrollbar{
+  display:none !important;
+}
+
+.wp-pager.audit-pager .audit-pager-btn{
+  flex:0 0 auto !important;
+  width:28px !important;
+  min-width:28px !important;
+  height:26px !important;
+  padding:0 !important;
+  border-radius:4px !important;
+  line-height:24px !important;
+  font-size:12px !important;
+}
+
+.wp-pager.audit-pager .audit-pager-size select{
+  flex:0 0 auto !important;
+  width:82px !important;
+  min-width:82px !important;
+  max-width:82px !important;
+  height:26px !important;
+  padding:0 18px 0 7px !important;
+  border-radius:4px !important;
+  font-size:12px !important;
+}
+
+.wp-pager.audit-pager .audit-pager-jump{
+  flex:0 0 auto !important;
+  width:44px !important;
+  min-width:44px !important;
+  max-width:44px !important;
+  height:26px !important;
+  padding:0 4px !important;
+  border-radius:4px !important;
+  text-align:center !important;
+}
+
 /* 底部按钮 */
 .wp-bottom-actions{
   display:flex;

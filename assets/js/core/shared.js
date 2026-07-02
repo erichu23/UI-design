@@ -1,5 +1,66 @@
 /* =============== 工具 =============== */
 
+  function auditPagerRange(page, pages){
+    const current = Math.max(1, Math.min(Number(page) || 1, Math.max(1, pages)));
+    const total = Math.max(1, Number(pages) || 1);
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    const out = [1];
+    let start = Math.max(2, current - 2);
+    let end = Math.min(total - 1, current + 2);
+    if (current <= 4) { start = 2; end = 6; }
+    if (current >= total - 3) { start = total - 5; end = total - 1; }
+    if (start > 2) out.push('ellipsis-start');
+    for (let i = start; i <= end; i++) out.push(i);
+    if (end < total - 1) out.push('ellipsis-end');
+    out.push(total);
+    return out;
+  }
+
+  function renderAuditPager(el, opts){
+    if (!el) return;
+    const total = Number(opts.total) || 0;
+    const pageSize = Number(opts.pageSize) || 20;
+    const pages = Math.max(1, Math.ceil(total / pageSize));
+    const page = Math.max(1, Math.min(Number(opts.page) || 1, pages));
+    const sizes = opts.sizes || [10,20,30,40,50];
+    const pageItems = auditPagerRange(page, pages).map(item => {
+      if (typeof item === 'string') return '<span class="audit-pager-ellipsis">...</span>';
+      return `<button class="audit-pager-btn ${item === page ? 'is-active' : ''}" type="button" data-page="${item}">${item}</button>`;
+    }).join('');
+    el.classList.add('audit-pager');
+    el.innerHTML = `
+      <span class="audit-pager-total">共 ${total.toLocaleString('zh-CN')} 条</span>
+      <button class="audit-pager-btn audit-pager-arrow" type="button" data-page="prev" ${page <= 1 ? 'disabled' : ''}>‹</button>
+      ${pageItems}
+      <button class="audit-pager-btn audit-pager-arrow" type="button" data-page="next" ${page >= pages ? 'disabled' : ''}>›</button>
+      <label class="audit-pager-size"><select data-page-size>${sizes.map(n => `<option value="${n}" ${n === pageSize ? 'selected' : ''}>${n} 条/页</option>`).join('')}</select></label>
+      <span class="audit-pager-jump-label">跳至</span>
+      <input class="audit-pager-jump" type="number" min="1" max="${pages}" inputmode="numeric" data-page-jump>
+      <span class="audit-pager-jump-label">页</span>
+    `;
+    el.querySelectorAll('[data-page]').forEach(btn => btn.addEventListener('click', () => {
+      let next = page;
+      if (btn.dataset.page === 'prev') next = page - 1;
+      else if (btn.dataset.page === 'next') next = page + 1;
+      else next = Number(btn.dataset.page) || page;
+      opts.onPage?.(Math.max(1, Math.min(next, pages)));
+    }));
+    el.querySelector('[data-page-size]')?.addEventListener('change', e => opts.onPageSize?.(Number(e.target.value) || 20));
+    const jump = el.querySelector('[data-page-jump]');
+    jump?.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      const next = Math.max(1, Math.min(Number(jump.value) || page, pages));
+      opts.onPage?.(next);
+    });
+    jump?.addEventListener('change', () => {
+      if (!jump.value) return;
+      const next = Math.max(1, Math.min(Number(jump.value) || page, pages));
+      opts.onPage?.(next);
+    });
+  }
+
+  window.renderAuditPager = window.renderAuditPager || renderAuditPager;
+
   function ez(id,opt){const c=echarts.init(document.getElementById(id));c.setOption(opt);window.addEventListener('resize',()=>c.resize());return c;}
   function fmtWan(v){return (Math.round(v*10)/10).toLocaleString()}
   function randPick(arr){return arr[Math.floor(Math.random()*arr.length)]}
@@ -435,8 +496,8 @@
             <button class="issue-detail-close" type="button" aria-label="关闭">×</button>
           </div>
           <div class="issue-detail-body">
-            <p class="issue-note">当前页面用于银行流水核查与底稿预览，建议先确认全局筛选条件，再按 Tab 查看账户、完整性、画像和高风险核查结果。</p>
-            <div class="issue-inline"><b>查看路径</b><span>账户总览 → 账号完整性 → 流水画像 → 高风险核查 → 流水查询</span></div>
+            <p class="issue-note">当前页面用于银行流水核查与底稿预览，建议先确认全局筛选条件，再按 Tab 查看账户、画像和高风险核查结果；完整性校验已迁移至“数据校验”。</p>
+            <div class="issue-inline"><b>查看路径</b><span>数据校验 → 账号完整性；银行流水分析 → 账户总览 / 流水画像 / 高风险核查 / 流水查询</span></div>
             <div class="issue-inline"><b>操作建议</b><span>表格支持排序、筛选、分页和导出；高风险核查可使用“放大”查看更完整的表格内容。</span></div>
           </div>
         </div>
@@ -612,6 +673,13 @@
             if (table && col && dir) runRiskZoomAction({ type: 'sort', table, col, dir });
             return;
           }
+          const pageBtn = event.target.closest('[data-risk-zoom-page]');
+          if (pageBtn && modal.contains(pageBtn)) {
+            event.preventDefault();
+            event.stopPropagation();
+            runRiskZoomAction({ type: 'page', table: bankRiskZoomState?.table, page: pageBtn.dataset.riskZoomPage });
+            return;
+          }
           const groupHeader = event.target.closest('th.group-collapsible');
           if (groupHeader && modal.contains(groupHeader)) {
             event.preventDefault();
@@ -633,6 +701,20 @@
           }
         });
         modal.addEventListener('change', event=>{
+          const pageSize = event.target.closest('[data-risk-zoom-page-size]');
+          if (pageSize && modal.contains(pageSize)) {
+            event.preventDefault();
+            event.stopPropagation();
+            runRiskZoomAction({ type: 'pageSize', table: bankRiskZoomState?.table, pageSize: pageSize.value });
+            return;
+          }
+          const pageJump = event.target.closest('[data-risk-zoom-jump]');
+          if (pageJump && modal.contains(pageJump)) {
+            event.preventDefault();
+            event.stopPropagation();
+            runRiskZoomAction({ type: 'page', table: bankRiskZoomState?.table, page: pageJump.value });
+            return;
+          }
           const remarkInput = event.target.closest('[data-risk-cp-remark]');
           if (remarkInput && modal.contains(remarkInput)) {
             event.preventDefault();
@@ -642,6 +724,14 @@
               cpId: remarkInput.dataset.riskCpRemark,
               value: remarkInput.value
             });
+          }
+        });
+        modal.addEventListener('keydown', event=>{
+          const pageJump = event.target.closest('[data-risk-zoom-jump]');
+          if (pageJump && modal.contains(pageJump) && event.key === 'Enter') {
+            event.preventDefault();
+            event.stopPropagation();
+            runRiskZoomAction({ type: 'page', table: bankRiskZoomState?.table, page: pageJump.value });
           }
         });
         document.addEventListener('keydown', event=>{
@@ -742,7 +832,6 @@
         general: { body: document.getElementById('generalLedgerReconcileBody'), pager: document.getElementById('generalLedgerReconcilePager'), rows: generalRows, page: 1, pageSize: 20 },
         account: { body: document.getElementById('accountReconcileBody'), pager: document.getElementById('accountReconcilePager'), rows: accountRows, page: 1, pageSize: 20 }
       };
-      const pageSizeControl = (value) => `<label class="ba-page-size">每页<select data-page-size>${[10,20,30,40,50].map(n=>`<option value="${n}" ${value===n?'selected':''}>${n}</option>`).join('')}</select>条</label>`;
       const render = key => {
         const state = pagers[key];
         if (!state.body || !state.pager) return;
@@ -750,19 +839,152 @@
         state.page = Math.min(Math.max(1, state.page), pages);
         const start = (state.page - 1) * state.pageSize;
         state.body.innerHTML = state.rows.slice(start, start + state.pageSize).join('');
-        state.pager.innerHTML = `<button class="btn" data-page="prev" ${state.page <= 1 ? 'disabled' : ''}>上一页</button><span>共 ${state.rows.length} 条 · ${start + 1}-${Math.min(start + state.pageSize, state.rows.length)} / ${state.rows.length}</span>${pageSizeControl(state.pageSize)}<span>${state.page} / ${pages}</span><button class="btn" data-page="next" ${state.page >= pages ? 'disabled' : ''}>下一页</button>`;
-        state.pager.querySelector('[data-page="prev"]')?.addEventListener('click',()=>{ state.page -= 1; render(key); });
-        state.pager.querySelector('[data-page="next"]')?.addEventListener('click',()=>{ state.page += 1; render(key); });
-        state.pager.querySelector('[data-page-size]')?.addEventListener('change',e=>{ state.pageSize = Number(e.target.value) || 20; state.page = 1; render(key); });
+        renderAuditPager(state.pager, {
+          total: state.rows.length,
+          page: state.page,
+          pageSize: state.pageSize,
+          onPage(next){ state.page = next; render(key); },
+          onPageSize(size){ state.pageSize = size; state.page = 1; render(key); }
+        });
       };
       render('general');
       render('account');
+    }
+
+    function initAccountSummaryPagination(){
+      const table = document.getElementById('tblAccountSummary');
+      const body = document.getElementById('accountSummaryBody');
+      const pager = document.getElementById('pagination-account');
+      if (!table || !body || !pager || table.dataset.accountPagerReady === '1') return;
+      table.dataset.accountPagerReady = '1';
+      const seedRows = Array.from(body.querySelectorAll('tr:not(.sum-row)'));
+      if (seedRows.length > 0 && seedRows.length < 8) {
+        const accounts = [
+          ['华东制造集团有限公司','1001***0821','工行上海分行','1,020,120K','724,880K','1,745,000K','28.38%','1,126','82','1'],
+          ['华东制造集团有限公司','1002***4186','建行上海分行','816,450K','598,300K','1,414,750K','23.01%','986','74','1'],
+          ['华东制造集团有限公司','2001***7739','招行上海分行','524,760K','386,240K','911,000K','14.82%','742','59','1'],
+          ['华东制造集团有限公司','3001***6290','平安深圳分行','438,920K','326,650K','765,570K','12.45%','688','52','1'],
+          ['华东制造集团有限公司','3002***9052','中行深圳分行','312,840K','218,130K','530,970K','8.64%','524','43','1'],
+          ['华东制造集团有限公司','4001***1578','广发广州分行','246,760K','169,520K','416,280K','6.77%','463','38','1'],
+          ['华东制造集团有限公司','5001***6426','农行苏州分行','164,310K','93,240K','257,550K','4.19%','358','31','1'],
+          ['华东制造集团有限公司','6001***3385','浦发广州分行','72,884K','34,844K','107,728K','1.75%','251','22','1']
+        ];
+        const template = seedRows[0];
+        seedRows.slice(1).forEach(row => row.remove());
+        accounts.forEach((item, index) => {
+          const row = index === 0 ? template : template.cloneNode(true);
+          const cells = row.children;
+          if (cells.length >= 12) {
+            cells[0].textContent = item[0];
+            cells[1].textContent = item[1];
+            cells[2].textContent = item[2];
+            cells[4].textContent = item[3];
+            cells[4].style.color = 'var(--flow-in)';
+            cells[5].textContent = item[4];
+            cells[5].style.color = 'var(--flow-out)';
+            cells[6].innerHTML = `<b>${item[5]}</b>`;
+            cells[7].textContent = item[6];
+            cells[8].textContent = item[7];
+            cells[9].textContent = item[8];
+            cells[10].textContent = item[9];
+          }
+          if (index > 0) body.appendChild(row);
+        });
+      }
+      const summaryRows = Array.from(body.querySelectorAll('tr.sum-row'));
+      const dataRows = Array.from(body.querySelectorAll('tr:not(.sum-row)'));
+      const state = { page: 1, pageSize: 20 };
+      const render = () => {
+        const total = dataRows.length;
+        const pages = Math.max(1, Math.ceil(total / state.pageSize));
+        state.page = Math.max(1, Math.min(state.page, pages));
+        const start = (state.page - 1) * state.pageSize;
+        const end = start + state.pageSize;
+        summaryRows.forEach(row => { row.style.display = ''; });
+        dataRows.forEach((row, index) => {
+          row.style.display = index >= start && index < end ? '' : 'none';
+        });
+        renderAuditPager(pager, {
+          total,
+          page: state.page,
+          pageSize: state.pageSize,
+          onPage(next){ state.page = next; render(); },
+          onPageSize(size){ state.pageSize = size; state.page = 1; render(); }
+        });
+      };
+      render();
+    }
+
+    function initMissingSameNamePagination(){
+      const table = document.getElementById('tblMissingSameName');
+      const body = table?.querySelector('tbody');
+      if (!table || !body || table.dataset.missingPagerReady === '1') return;
+      table.dataset.missingPagerReady = '1';
+      const groupRow = body.querySelector('tr.group-row');
+      const detailRowsSeed = Array.from(body.querySelectorAll('tr.detail-row'));
+      if (detailRowsSeed.length > 0 && detailRowsSeed.length < 8) {
+        const extra = [
+          ['4308 **** 6621','0K','0.00%','0K','0.00%','0','0.00%'],
+          ['8820 **** 3519','0K','0.00%','0K','0.00%','0','0.00%'],
+          ['7741 **** 0926','0K','0.00%','0K','0.00%','0','0.00%'],
+          ['9032 **** 5178','0K','0.00%','0K','0.00%','0','0.00%']
+        ];
+        const template = detailRowsSeed[detailRowsSeed.length - 1];
+        extra.slice(0, 8 - detailRowsSeed.length).forEach(item => {
+          const row = template.cloneNode(true);
+          const cells = row.children;
+          cells[1].textContent = item[0];
+          cells[2].textContent = item[1];
+          cells[3].textContent = item[2];
+          cells[4].textContent = item[3];
+          cells[5].textContent = item[4];
+          cells[6].textContent = item[5];
+          cells[7].textContent = item[6];
+          body.appendChild(row);
+        });
+      }
+      const detailRows = Array.from(body.querySelectorAll('tr.detail-row'));
+      let pager = document.getElementById('missingSameNamePager');
+      if (!pager) {
+        pager = document.createElement('div');
+        pager.id = 'missingSameNamePager';
+        pager.className = 'pagination reconcile-pagination';
+        table.closest('.content')?.appendChild(pager);
+      }
+      const state = { page: 1, pageSize: 20 };
+      const render = () => {
+        const total = detailRows.length;
+        const pages = Math.max(1, Math.ceil(total / state.pageSize));
+        state.page = Math.max(1, Math.min(state.page, pages));
+        const start = (state.page - 1) * state.pageSize;
+        const end = start + state.pageSize;
+        if (groupRow) groupRow.style.display = '';
+        detailRows.forEach((row, index) => { row.style.display = index >= start && index < end ? '' : 'none'; });
+        renderAuditPager(pager, {
+          total,
+          page: state.page,
+          pageSize: state.pageSize,
+          onPage(next){ state.page = next; render(); },
+          onPageSize(size){ state.pageSize = size; state.page = 1; render(); }
+        });
+      };
+      render();
     }
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initReconcilePagination);
     } else {
       initReconcilePagination();
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAccountSummaryPagination);
+    } else {
+      initAccountSummaryPagination();
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMissingSameNamePagination);
+    } else {
+      initMissingSameNamePagination();
     }
     // ===== 资金流水核查底稿导出：自检版 JS（作用域安全 + 延迟初始化） =====//
     (function () {
@@ -991,11 +1213,15 @@
   }
 
   function renderTopBar() {
-    $("#wpProj").textContent = WP.proj || "20220318/TEST";
-    $("#wpBook").textContent = WP.book || "test for tech hour";
-    $("#wpKind").textContent = WP.kindText || (WP.isIPO ? "IPO" : "Non-IPO_NON-PIE");
-    $("#wpMarket").textContent = WP.market || "N/A";
-    $("#wpMaterialityText").textContent = WP.materiality ? fmt(WP.materiality) : "-";
+    const setText = (id, value) => {
+      const el = $("#" + id);
+      if (el) el.textContent = value;
+    };
+    setText("wpProj", WP.proj || "20220318/TEST");
+    setText("wpBook", WP.book || "test for tech hour");
+    setText("wpKind", WP.kindText || (WP.isIPO ? "IPO" : "Non-IPO_NON-PIE"));
+    setText("wpMarket", WP.market || "N/A");
+    setText("wpMaterialityText", WP.materiality ? fmt(WP.materiality) : "-");
   }
 
   function renderTable1() {
@@ -1029,7 +1255,9 @@
       `;
     }).join("");
 
-    $("#wpTable1Total").textContent = String((WP.accounts || []).length);
+    const table1Total = String((WP.accounts || []).length);
+    if ($("#wpTable1Total")) $("#wpTable1Total").textContent = table1Total;
+    if ($("#wpTable1TotalMirror")) $("#wpTable1TotalMirror").textContent = table1Total;
 
     $all(".wp-method-select").forEach(sel => {
       sel.addEventListener("change", (e) => {
@@ -1532,24 +1760,19 @@
     const table = document.getElementById('statementFlowTable');
     if (table?.dataset.baEnhanced === '1') applyTableFilters(table);
     if (count) count.textContent = `共 ${total.toLocaleString('zh-CN')} 条，当前展示 ${start + 1}-${Math.min(start + statementFlowState.pageSize, total)} / ${total.toLocaleString('zh-CN')}`;
-    pager.innerHTML = `
-      <button class="btn" data-page="prev" ${statementFlowState.page === 1 ? 'disabled' : ''}>上一页</button>
-      <label class="ba-page-size">每页<select data-page-size>${[10,20,30,40,50].map(n=>`<option value="${n}" ${statementFlowState.pageSize===n?'selected':''}>${n}</option>`).join('')}</select>条</label>
-      <span>${statementFlowState.page} / ${totalPages}</span>
-      <button class="btn" data-page="next" ${statementFlowState.page === totalPages ? 'disabled' : ''}>下一页</button>
-    `;
-    pager.querySelector('[data-page="prev"]')?.addEventListener('click', () => {
-      statementFlowState.page -= 1;
-      renderStatementFlowTable();
-    });
-    pager.querySelector('[data-page="next"]')?.addEventListener('click', () => {
-      statementFlowState.page += 1;
-      renderStatementFlowTable();
-    });
-    pager.querySelector('[data-page-size]')?.addEventListener('change', (e) => {
-      statementFlowState.pageSize = Number(e.target.value) || 20;
-      statementFlowState.page = 1;
-      renderStatementFlowTable();
+    renderAuditPager(pager, {
+      total,
+      page: statementFlowState.page,
+      pageSize: statementFlowState.pageSize,
+      onPage(next) {
+        statementFlowState.page = next;
+        renderStatementFlowTable();
+      },
+      onPageSize(size) {
+        statementFlowState.pageSize = size;
+        statementFlowState.page = 1;
+        renderStatementFlowTable();
+      }
     });
   }
 

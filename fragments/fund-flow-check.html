@@ -992,6 +992,81 @@
     td.amount { font-variant-numeric: tabular-nums; font-weight: 500; }
     td.amount.outflow { color: var(--danger); }
     td.amount.inflow { color: var(--primary); }
+    .risk-hit-count-head,
+    .risk-hit-count-sub,
+    .risk-hit-count-cell {
+      min-width: 72px;
+      text-align: center !important;
+      font-variant-numeric: tabular-nums;
+    }
+    .risk-hit-count-cell {
+      color: var(--primary);
+      font-weight: 700;
+      background: #f8fbff;
+    }
+    .audit-pager {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 5px;
+      margin-top: 8px;
+      padding: 4px 0;
+      font-size: 12px;
+      color: #475569;
+      flex-wrap: nowrap;
+      min-width: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      white-space: nowrap;
+    }
+    .audit-pager::-webkit-scrollbar { display: none; }
+    .audit-pager-total { flex: 0 0 auto; margin-right: 2px; color: #334155; white-space: nowrap; }
+    .audit-pager-btn {
+      flex: 0 0 auto;
+      width: 28px;
+      min-width: 28px;
+      height: 26px;
+      padding: 0;
+      border: 1px solid #dbe4f0;
+      border-radius: 4px;
+      background: #fff;
+      color: #334155;
+      font-size: 12px;
+      line-height: 24px;
+      cursor: pointer;
+      box-shadow: none;
+    }
+    .audit-pager-btn:hover:not(:disabled) { border-color: #9bbbea; background: #f7faff; color: #1d4ed8; }
+    .audit-pager-btn.is-active { border-color: #2f6fed; background: #fff; color: #1d4ed8; font-weight: 700; }
+    .audit-pager-btn:disabled { color: #cbd5e1; background: #f8fafc; border-color: #e5eaf2; cursor: not-allowed; }
+    .audit-pager-arrow { font-size: 17px; font-weight: 400; line-height: 20px; }
+    .audit-pager-ellipsis {
+      flex: 0 0 auto;
+      min-width: 22px;
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+    }
+    .audit-pager-size select,
+    .audit-pager-jump {
+      flex: 0 0 auto;
+      height: 26px;
+      border: 1px solid #dbe4f0;
+      border-radius: 4px;
+      background: #fff;
+      color: #334155;
+      font-size: 12px;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .audit-pager-size select { width: 82px; min-width: 82px; max-width: 82px; padding: 0 18px 0 7px; }
+    .audit-pager-jump { width: 44px; min-width: 44px; max-width: 44px; padding: 0 4px; text-align: center; }
+    .audit-pager-size select:focus,
+    .audit-pager-jump:focus { border-color: #2f6fed; box-shadow: 0 0 0 2px rgba(47,111,237,.12); }
+    .audit-pager-jump-label { flex: 0 0 auto; color: #334155; white-space: nowrap; }
 
     .risk-badge {
       display: inline-flex;
@@ -1244,6 +1319,38 @@
     }
     tbody tr.selected:hover .sticky-name-cell {
       background: var(--primary-light) !important;
+    }
+    /* 对手方汇总/流水明细是三层表头：仅纵向固定表头，不再做横向冻结列。 */
+    #cpTable thead th,
+    #txTable thead th {
+      left: auto !important;
+      background-clip: padding-box;
+    }
+    #cpTable thead tr:nth-child(1) th,
+    #txTable thead tr:nth-child(1) th {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 80 !important;
+    }
+    #cpTable thead tr:nth-child(2) th,
+    #txTable thead tr:nth-child(2) th {
+      position: sticky !important;
+      top: var(--risk-sticky-row-1, 29px) !important;
+      z-index: 79 !important;
+    }
+    #cpTable thead tr:nth-child(3) th,
+    #txTable thead tr:nth-child(3) th {
+      position: sticky !important;
+      top: var(--risk-sticky-row-2, 58px) !important;
+      z-index: 78 !important;
+    }
+    #cpTable tbody td[data-check-group],
+    #txTable tbody td[data-check-group],
+    #cpTable tbody .cp-name-sticky,
+    #txTable tbody .tx-cp-name-cell {
+      position: static !important;
+      left: auto !important;
+      box-shadow: none !important;
     }
     /* 大类组头色块 */
     .gq-quantitative { background: #eff6ff !important; color: #2563eb !important; }
@@ -2498,17 +2605,10 @@
         <div class="check-context-filters" id="filterConditions">
           <span class="fc-label">筛选：</span>
 
-          <div class="filter-chip active-chip" id="chip-minAmt" onclick="toggleEditor('minAmt')" style="position:relative">
-            <div class="chip-dot"></div>
-            <span>单笔交易金额 ≥ 50000元</span>
-            <div class="chip-remove" onclick="removeChip('minAmt',event)">×</div>
-            <div class="condition-editor" id="editor-minAmt">
-              <div class="ce-field">
-                <label>单笔交易金额 ≥（元）</label>
-                <input class="ce-input" type="number" id="minAmtVal" value="50000" style="width:120px"/>
-              </div>
-              <button class="ce-confirm" onclick="confirmEditor('minAmt')">确认</button>
-            </div>
+          <div class="filter-control">
+            <label for="minAmtVal">单笔交易金额 ≥</label>
+            <input class="ce-input" type="number" id="minAmtVal" value="50000"/>
+            <span class="filter-unit">元</span>
           </div>
         </div>
         <div class="ccb-spacer"></div>
@@ -2553,7 +2653,7 @@
               <!-- 第0行：总组头 -->
               <tr class="group-header" id="cpGroupHeaderRow">
                 <th id="thGroupCheck" colspan="29" style="background:var(--gray-100);font-weight:700;font-size:11px;letter-spacing:.3px;color:var(--gray-700)">核查标准</th>
-                <th id="thGroupCpInfo" colspan="7" style="background:var(--gray-100);font-weight:700;font-size:11px;letter-spacing:.3px;color:var(--gray-700)">对手方信息</th>
+                <th id="thGroupCpInfo" colspan="8" style="background:var(--gray-100);font-weight:700;font-size:11px;letter-spacing:.3px;color:var(--gray-700)">对手方信息</th>
                 <th id="thGroupAux" colspan="5" style="background:var(--gray-100);font-weight:700;font-size:11px;letter-spacing:.3px;color:var(--gray-700)">辅助信息</th>
               </tr>
               <!-- 第1行：大类组头（可折叠） -->
@@ -2563,6 +2663,7 @@
                 <th colspan="9" class="gq-abnormal group-collapsible" data-group-key="abnormal" onclick="toggleCheckGroup('abnormal')" style="border-right:1px solid var(--gray-200)">重点关注异常 <span class="group-hit-count" id="ghc-abnormal"></span><span class="group-toggle-icon">▼</span></th>
                 <th colspan="9" class="gq-bizinfo group-collapsible" data-group-key="bizinfo" onclick="toggleCheckGroup('bizinfo')" style="border-right:1px solid var(--gray-200)">工商信息异常 <span class="group-hit-count" id="ghc-bizinfo"></span><span class="group-toggle-icon">▼</span></th>
                 <th colspan="2" class="gq-other group-collapsible" data-group-key="other" onclick="toggleCheckGroup('other')" style="border-right:2px solid var(--gray-300)">其他异常 <span class="group-hit-count" id="ghc-other"></span><span class="group-toggle-icon">▼</span></th>
+                <th class="risk-hit-count-head" data-col="hitCount">命中个数 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','hitCount','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','hitCount','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th class="cp-name-sticky" data-col="cpName">对手方名称 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','name','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','name','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="toggleCpNameFilter(event)"></span></span></th>
                 <th data-col="cpType">对手方类型 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','cpType','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','cpType','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th data-col="inflow">流入金额 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','inflow','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','inflow','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
@@ -2596,7 +2697,7 @@
               <!-- 第0行：总组头 -->
               <tr class="group-header" id="txGroupHeaderRow">
                 <th id="thTxGroupCheck" colspan="29" style="background:var(--gray-100);font-weight:700;font-size:11px;letter-spacing:.3px;color:var(--gray-700)">核查标准</th>
-                <th id="thTxGroupDetail" colspan="14" style="background:var(--gray-100);font-weight:700;font-size:11px;letter-spacing:.3px;color:var(--gray-700)">流水明细</th>
+                <th id="thTxGroupDetail" colspan="15" style="background:var(--gray-100);font-weight:700;font-size:11px;letter-spacing:.3px;color:var(--gray-700)">流水明细</th>
               </tr>
               <!-- 第1行：大类组头（可折叠） -->
               <tr class="group-header">
@@ -2605,6 +2706,7 @@
                 <th colspan="9" class="gq-abnormal group-collapsible" data-group-key="abnormal" onclick="toggleCheckGroup('abnormal')" style="border-right:1px solid var(--gray-200)">重点关注异常 <span class="group-hit-count" id="ghc-tx-abnormal"></span><span class="group-toggle-icon">▼</span></th>
                 <th colspan="9" class="gq-bizinfo group-collapsible" data-group-key="bizinfo" onclick="toggleCheckGroup('bizinfo')" style="border-right:1px solid var(--gray-200)">工商信息异常 <span class="group-hit-count" id="ghc-tx-bizinfo"></span><span class="group-toggle-icon">▼</span></th>
                 <th colspan="2" class="gq-other group-collapsible" data-group-key="other" onclick="toggleCheckGroup('other')" style="border-right:2px solid var(--gray-300)">其他异常 <span class="group-hit-count" id="ghc-tx-other"></span><span class="group-toggle-icon">▼</span></th>
+                <th class="risk-hit-count-head" data-col="hitCount">命中个数 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('tx','hitCount','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('tx','hitCount','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showTxColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th data-col="txId">交易编号 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('tx','txId','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('tx','txId','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showTxColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th data-col="date">交易日期 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('tx','date','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('tx','date','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showTxColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th data-col="time">交易时间 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('tx','time','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('tx','time','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showTxColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
@@ -3213,23 +3315,55 @@ function paginateRows(data, page) {
   };
 }
 
+function riskPagerRange(page, pages) {
+  const current = Math.max(1, Math.min(Number(page) || 1, Math.max(1, pages)));
+  const total = Math.max(1, Number(pages) || 1);
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const out = [1];
+  let start = Math.max(2, current - 2);
+  let end = Math.min(total - 1, current + 2);
+  if (current <= 4) { start = 2; end = 6; }
+  if (current >= total - 3) { start = total - 5; end = total - 1; }
+  if (start > 2) out.push('ellipsis-start');
+  for (let i = start; i <= end; i++) out.push(i);
+  if (end < total - 1) out.push('ellipsis-end');
+  out.push(total);
+  return out;
+}
+
 function renderRiskPager(kind, total, page, totalPages) {
   const pager = document.getElementById(kind === 'cp' ? 'cpPager' : 'txPager');
   if (!pager) return;
-  const from = total === 0 ? 0 : (page - 1) * riskPageSize + 1;
-  const to = Math.min(page * riskPageSize, total);
+  const pages = Math.max(1, totalPages || Math.ceil(total / riskPageSize));
   const prevDisabled = page <= 1 ? 'disabled' : '';
-  const nextDisabled = page >= totalPages ? 'disabled' : '';
-  const sizeOptions = [10,20,30,40,50].map(size => `<option value="${size}" ${riskPageSize === size ? 'selected' : ''}>${size}</option>`).join('');
+  const nextDisabled = page >= pages ? 'disabled' : '';
+  const sizeOptions = [10,20,30,40,50].map(size => `<option value="${size}" ${riskPageSize === size ? 'selected' : ''}>${size} 条/页</option>`).join('');
+  const pageBtns = riskPagerRange(page, pages).map(item => {
+    if (typeof item === 'string') return '<span class="audit-pager-ellipsis">...</span>';
+    return `<button class="audit-pager-btn ${item === page ? 'is-active' : ''}" type="button" onclick="setRiskPage('${kind}', ${item})">${item}</button>`;
+  }).join('');
+  pager.classList.add('audit-pager');
   pager.innerHTML = `
-    <span class="risk-pager-info">共 ${total} 条 · ${from}-${to}</span>
-    <div class="risk-pager-actions">
-      <label class="risk-page-size">每页<select onchange="changeRiskPageSize(this.value)">${sizeOptions}</select>条</label>
-      <button type="button" ${prevDisabled} onclick="changeRiskPage('${kind}', -1)">上一页</button>
-      <span>${page} / ${totalPages}</span>
-      <button type="button" ${nextDisabled} onclick="changeRiskPage('${kind}', 1)">下一页</button>
-    </div>
+    <span class="audit-pager-total">共 ${total.toLocaleString('zh-CN')} 条</span>
+    <button class="audit-pager-btn audit-pager-arrow" type="button" ${prevDisabled} onclick="changeRiskPage('${kind}', -1)">‹</button>
+    ${pageBtns}
+    <button class="audit-pager-btn audit-pager-arrow" type="button" ${nextDisabled} onclick="changeRiskPage('${kind}', 1)">›</button>
+    <label class="audit-pager-size"><select onchange="changeRiskPageSize(this.value)">${sizeOptions}</select></label>
+    <span class="audit-pager-jump-label">跳至</span>
+    <input class="audit-pager-jump" type="number" min="1" max="${pages}" inputmode="numeric" onkeydown="if(event.key==='Enter')setRiskPage('${kind}', this.value)" onchange="setRiskPage('${kind}', this.value)">
+    <span class="audit-pager-jump-label">页</span>
   `;
+}
+
+function setRiskPage(kind, value) {
+  const next = Math.max(1, Number(value) || 1);
+  if (kind === 'cp') {
+    cpPage = next;
+    renderCpTable();
+  } else {
+    txPage = next;
+    renderTxTable();
+  }
 }
 
 function changeRiskPageSize(value) {
@@ -3248,6 +3382,60 @@ function changeRiskPage(kind, delta) {
     txPage += delta;
     renderTxTable();
   }
+}
+
+function getRiskFilteredRows(kind) {
+  if (kind === 'tx') {
+    let data = [...txData];
+    if (selectedCpId && activeTab === 'cp') data = data.filter(t => t.cpId === selectedCpId);
+    if (txSearchText) {
+      data = data.filter(r =>
+        r.remark.toLowerCase().includes(txSearchText) ||
+        r.account.toLowerCase().includes(txSearchText) ||
+        r.cp.toLowerCase().includes(txSearchText) ||
+        r.txId.toLowerCase().includes(txSearchText)
+      );
+    }
+    data = applyTxColumnFilters(data);
+    data = applyCheckColumnFilters(data, 'tx');
+    return sortData(data, txSortCol, txSortDir);
+  }
+  let data = [...cpData];
+  if (cpNameFilterSelected.length > 0) data = data.filter(r => cpNameFilterSelected.includes(r.name));
+  if (cpSearchText) {
+    data = data.filter(r =>
+      r.name.toLowerCase().includes(cpSearchText) ||
+      r.account.toLowerCase().includes(cpSearchText) ||
+      r.cpType.includes(cpSearchText) ||
+      r.industry.includes(cpSearchText)
+    );
+  }
+  data = applyCpFilters(data);
+  data = applyCheckColumnFilters(data, 'cp');
+  return sortData(data, cpSortCol, cpSortDir);
+}
+
+function riskZoomPagerHtml(kind, total) {
+  const page = kind === 'tx' ? txPage : cpPage;
+  const pages = Math.max(1, Math.ceil(total / riskPageSize));
+  const safePage = Math.max(1, Math.min(page, pages));
+  const sizeOptions = [10,20,30,40,50].map(size => `<option value="${size}" ${riskPageSize === size ? 'selected' : ''}>${size} 条/页</option>`).join('');
+  const pageBtns = riskPagerRange(safePage, pages).map(item => {
+    if (typeof item === 'string') return '<span class="audit-pager-ellipsis">...</span>';
+    return `<button class="audit-pager-btn ${item === safePage ? 'is-active' : ''}" type="button" data-risk-zoom-page="${item}">${item}</button>`;
+  }).join('');
+  return `
+    <div class="audit-pager bank-risk-zoom-pager">
+      <span class="audit-pager-total">共 ${total.toLocaleString('zh-CN')} 条</span>
+      <button class="audit-pager-btn audit-pager-arrow" type="button" data-risk-zoom-page="prev" ${safePage <= 1 ? 'disabled' : ''}>‹</button>
+      ${pageBtns}
+      <button class="audit-pager-btn audit-pager-arrow" type="button" data-risk-zoom-page="next" ${safePage >= pages ? 'disabled' : ''}>›</button>
+      <label class="audit-pager-size"><select data-risk-zoom-page-size>${sizeOptions}</select></label>
+      <span class="audit-pager-jump-label">跳至</span>
+      <input class="audit-pager-jump" type="number" min="1" max="${pages}" inputmode="numeric" data-risk-zoom-jump>
+      <span class="audit-pager-jump-label">页</span>
+    </div>
+  `;
 }
 
 // ─── MATERIALITY LEVEL ──────────────────────────────────────────────────────
@@ -3762,6 +3950,9 @@ function updateCpRemark(cpId, value, rerender = false) {
 // ─── SORTING ────────────────────────────────────────────────────────────────
 function getSortValue(obj, col) {
   const riskOrder = { high: 3, mid: 2, low: 1, none: 0 };
+  if (col === 'hitCount') {
+    return obj.flags ? getTxCheckIds(obj.flags).size : getHitCheckIds(obj.hits).size;
+  }
   if (col === 'risk') return riskOrder[obj.risk] || 0;
   if (col === 'flag' || col === 'markStatus') {
     const statusOrder = { flagged: 3, explained: 2, cleared: 1, none: 0 };
@@ -3838,6 +4029,7 @@ function searchTx(text) {
 
 function getTxColumnValue(row, col) {
   const map = {
+    hitCount: String(getTxCheckIds(row.flags).size),
     txId: row.txId,
     date: row.date,
     time: row.time,
@@ -3999,6 +4191,7 @@ function getCpColumnValue(row, col) {
   };
   const status = row.markStatus || ((row.hits && row.hits.length) ? 'flagged' : 'none');
   const map = {
+    hitCount: String(getHitCheckIds(row.hits).size),
     cpName: row.name,
     cpType: row.cpType,
     inflow: fmtFull(row.inflow),
@@ -4109,6 +4302,7 @@ function renderCpTable() {
 
   data.forEach(row => {
     const hitIds = getHitCheckIds(row.hits);
+    const hitCount = hitIds.size;
 
     const cpTypeClass = row.cpType === '客户' ? ' is-customer' : row.cpType === '供应商' ? ' is-supplier' : row.cpType === '个人' ? ' is-personal' : '';
 
@@ -4141,6 +4335,7 @@ function renderCpTable() {
     tr.id = `cp-row-${row.id}`;
     tr.innerHTML = `
       ${checkTDs}
+      <td class="risk-hit-count-cell">${hitCount}</td>
       <td class="cp-name-sticky" style="font-size:11px;font-weight:500;color:var(--gray-800)">${row.name}</td>
       <td class="risk-cp-type-cell${cpTypeClass}">${row.cpType}</td>
       <td class="amount inflow text-right" style="font-size:11px;font-variant-numeric:tabular-nums">${fmtAmt(row.inflow)}</td>
@@ -4216,6 +4411,7 @@ function renderTxTable(subtitle) {
 
     // 核查程序各编号列（使用 cpId 关联对手方数据）
     const hitIds = getTxCheckIds(row.flags);
+    const hitCount = hitIds.size;
     let checkTDs = '';
     let colIndex = 0;
     CHECK_COLUMNS.forEach(group => {
@@ -4226,6 +4422,7 @@ function renderTxTable(subtitle) {
 
     tr.innerHTML = `
       ${checkTDs}
+      <td class="risk-hit-count-cell">${hitCount}</td>
       <td style="font-size:10px;color:var(--gray-400);font-variant-numeric:tabular-nums">${row.txId}</td>
       <td style="font-variant-numeric:tabular-nums">${row.date}</td>
       <td style="color:var(--gray-400);font-size:11px">${row.time}</td>
@@ -4397,6 +4594,7 @@ function renderCpTableWithHighlight(matchIds) {
     const isMatch = matchIds.includes(row.id);
     const rowStyle = isMatch ? '' : 'opacity:0.35';
     const hitIds = getHitCheckIds(row.hits);
+    const hitCount = hitIds.size;
 
     const cpTypeClass = row.cpType === '客户' ? ' is-customer' : row.cpType === '供应商' ? ' is-supplier' : row.cpType === '个人' ? ' is-personal' : '';
 
@@ -4429,6 +4627,7 @@ function renderCpTableWithHighlight(matchIds) {
     tr.id = `cp-row-${row.id}`;
     tr.innerHTML = `
       ${checkTDs}
+      <td class="risk-hit-count-cell">${hitCount}</td>
       <td class="cp-name-sticky" style="font-size:11px;font-weight:500;color:var(--gray-800);min-width:180px;white-space:normal;line-height:1.35">${isMatch ? '⚑ ' : ''}${row.name}</td>
       <td class="risk-cp-type-cell${cpTypeClass}">${row.cpType}</td>
       <td class="amount inflow text-right" style="font-size:11px;font-variant-numeric:tabular-nums">${fmtAmt(row.inflow)}</td>
@@ -4492,68 +4691,48 @@ function renderFilterPanel(checkId, meta) {
   let html = '<span class="fc-label">筛选：</span>';
 
   if (!meta.filters || meta.filters.length === 0) {
-    html += '<span style="font-size:11px;color:var(--gray-400)">无</span>';
+    html += '<span class="filter-empty">当前核查程序无需额外筛选</span>';
   } else {
     meta.filters.forEach(f => {
-      const hasDefault = f.defaultVal !== null && f.defaultVal !== undefined;
-      let chipLabel = '';
-      if (hasDefault) {
-        if (f.type === 'number') chipLabel = `${f.label} = ${f.defaultVal}${f.unit || ''}`;
-        else if (f.type === 'text') chipLabel = `${f.label} = ${f.defaultVal}`;
-        else if (f.type === 'date') chipLabel = `${f.label} = ${f.defaultVal}`;
-        else if (f.type === 'date-range') chipLabel = `${f.label} = ${f.defaultVal}`;
-        else chipLabel = `${f.label} = ${f.defaultVal}`;
-      }
-      // Each chip wraps its own editor dropdown
-      let editorHTML = '';
+      const value = f.defaultVal !== null && f.defaultVal !== undefined ? f.defaultVal : '';
+      const placeholder = f.placeholder || '请输入';
+
       if (f.type === 'number') {
-        editorHTML += `<div class="ce-field">
-          <label>${f.label}</label>
-          <input class="ce-input" type="number" id="${f.key}Val" value="${f.defaultVal || ''}" placeholder="${f.placeholder || ''}" style="width:120px"/>
-          ${f.unit ? `<span style="font-size:11px;color:var(--gray-400);margin-left:2px">${f.unit}</span>` : ''}
+        html += `<div class="filter-control">
+          <label for="${f.key}Val">${f.label}</label>
+          <input class="ce-input" type="number" id="${f.key}Val" value="${value}" placeholder="${placeholder}"/>
+          ${f.unit ? `<span class="filter-unit">${f.unit}</span>` : ''}
         </div>`;
       } else if (f.type === 'text') {
-        editorHTML += `<div class="ce-field">
-          <label>${f.label}</label>
-          <input class="ce-input" type="text" id="${f.key}Val" value="${f.defaultVal || ''}" placeholder="${f.placeholder || ''}" style="width:120px"/>
+        html += `<div class="filter-control is-wide">
+          <label for="${f.key}Val">${f.label}</label>
+          <input class="ce-input" type="text" id="${f.key}Val" value="${value}" placeholder="${placeholder}"/>
         </div>`;
       } else if (f.type === 'date') {
-        editorHTML += `<div class="ce-field">
-          <label>${f.label}</label>
-          <input class="ce-input" type="date" id="${f.key}Val" value="${f.defaultVal || ''}" style="width:140px"/>
+        const dateValue = /^\d{4}-\d{2}-\d{2}$/.test(String(value)) ? value : '';
+        html += `<div class="filter-control is-date">
+          <label for="${f.key}Val">${f.label}</label>
+          <input class="ce-input" type="date" id="${f.key}Val" value="${dateValue}" placeholder="${value || '选择日期'}"/>
         </div>`;
       } else if (f.type === 'date-range') {
-        editorHTML += `<div class="ce-field">
-          <label>起始日期</label>
-          <input class="ce-input" type="date" id="${f.key}ValStart" style="width:130px"/>
+        html += `<div class="filter-control is-date">
+          <label for="${f.key}ValStart">${f.label}起</label>
+          <input class="ce-input" type="date" id="${f.key}ValStart"/>
         </div>
-        <div class="ce-field">
-          <label>截止日期</label>
-          <input class="ce-input" type="date" id="${f.key}ValEnd" style="width:130px"/>
+        <span class="filter-range-sep">至</span>
+        <div class="filter-control is-date">
+          <label for="${f.key}ValEnd">${f.label}止</label>
+          <input class="ce-input" type="date" id="${f.key}ValEnd"/>
         </div>`;
       } else if (f.type === 'number-range') {
-        editorHTML += `<div class="ce-field">
-          <label>${f.label}（起）</label>
-          <input class="ce-input" type="number" id="${f.key}ValStart" placeholder="${f.placeholder || ''}" style="width:100px"/>
+        html += `<div class="filter-control">
+          <label for="${f.key}ValStart">${f.label}起</label>
+          <input class="ce-input" type="number" id="${f.key}ValStart" placeholder="${placeholder}"/>
         </div>
-        <div class="ce-field">
-          <label>${f.label}（止）</label>
-          <input class="ce-input" type="number" id="${f.key}ValEnd" placeholder="${f.placeholder || ''}" style="width:100px"/>
-        </div>`;
-      }
-      editorHTML += `<button class="ce-confirm" onclick="confirmEditor('${f.key}')">确认</button>`;
-
-      if (hasDefault) {
-        html += `<div class="filter-chip active-chip" id="chip-${f.key}" onclick="toggleEditor('${f.key}')" style="position:relative">
-          <div class="chip-dot"></div>
-          <span>${chipLabel}</span>
-          <div class="chip-remove" onclick="removeChip('${f.key}',event)">×</div>
-          <div class="condition-editor" id="editor-${f.key}">${editorHTML}</div>
-        </div>`;
-      } else {
-        html += `<div class="filter-chip inactive-chip" onclick="toggleEditor('${f.key}')" style="position:relative">
-          <span>+ ${f.label}</span>
-          <div class="condition-editor" id="editor-${f.key}">${editorHTML}</div>
+        <span class="filter-range-sep">至</span>
+        <div class="filter-control">
+          <label for="${f.key}ValEnd">${f.label}止</label>
+          <input class="ce-input" type="number" id="${f.key}ValEnd" placeholder="${placeholder}"/>
         </div>`;
       }
     });
@@ -5023,12 +5202,13 @@ function getRiskZoomTablePayload(preferredTable) {
   clone.querySelectorAll('[onclick]').forEach(el => el.removeAttribute('onclick'));
   clone.querySelectorAll('[onchange]').forEach(el => el.removeAttribute('onchange'));
   const context = getRiskZoomContext(table);
+  const totalRows = getRiskFilteredRows(table).length;
   return {
     table,
     title: `${context.group} › ${context.title}`,
     sub: `${context.badge}${context.filters.length ? ' · 筛选：' + context.filters.join('、') : ''}`,
     context,
-    html: clone.outerHTML
+    html: clone.outerHTML + riskZoomPagerHtml(table, totalRows)
   };
 }
 
@@ -5043,6 +5223,31 @@ window.handleRiskZoomAction = function(action = {}) {
   }
   if (action.type === 'sort' && action.table && action.col && action.dir) {
     sortTable(action.table, action.col, action.dir);
+  }
+  if (action.type === 'page' && action.table) {
+    const table = action.table === 'tx' ? 'tx' : 'cp';
+    const total = getRiskFilteredRows(table).length;
+    const pages = Math.max(1, Math.ceil(total / riskPageSize));
+    const current = table === 'tx' ? txPage : cpPage;
+    let next = current;
+    if (action.page === 'prev') next = current - 1;
+    else if (action.page === 'next') next = current + 1;
+    else next = Number(action.page) || current;
+    next = Math.max(1, Math.min(next, pages));
+    if (table === 'tx') {
+      txPage = next;
+      renderTxTable();
+    } else {
+      cpPage = next;
+      renderCpTable();
+    }
+  }
+  if (action.type === 'pageSize') {
+    riskPageSize = Number(action.pageSize) || 20;
+    cpPage = 1;
+    txPage = 1;
+    renderCpTable();
+    renderTxTable();
   }
   if (action.type === 'updateCpRemark' && action.cpId) {
     updateCpRemark(action.cpId, action.value, false);
@@ -5100,6 +5305,22 @@ window.getRiskZoomFilterConfig = function(request = {}) {
   }
   if (request.filterType === 'tx') {
     const col = request.key;
+    const titles = {
+      hitCount: '命中个数',
+      txId: '交易编号',
+      date: '交易日期',
+      time: '交易时间',
+      selfName: '本方名称',
+      selfAccount: '本方账号',
+      cp: '对手方名称',
+      account: '对手方账号',
+      currency: '币种',
+      type: '交易类型',
+      dir: '方向',
+      inflowAmt: '流入金额',
+      outflowAmt: '流出金额',
+      flag: '标记状态'
+    };
     let source = [...txData];
     if (selectedCpId && activeTab === 'cp') source = source.filter(t => t.cpId === selectedCpId);
     if (txSearchText) {
@@ -5112,11 +5333,12 @@ window.getRiskZoomFilterConfig = function(request = {}) {
     }
     const values = Array.from(new Set(source.map(row => getTxColumnValue(row, col)).filter(Boolean))).slice(0, 80);
     const selected = txColumnFilters[col] || values;
-    return { filterType: 'tx', key: col, title: col, options: values, selected };
+    return { filterType: 'tx', key: col, title: titles[col] || col, options: values, selected };
   }
   if (request.filterType === 'cp') {
     const col = request.key;
     const titles = {
+      hitCount: '命中个数',
       cpName: '对手方名称',
       cpType: '对手方类型',
       inflow: '流入金额',
@@ -5247,25 +5469,34 @@ function rebuildSubHeaders() {
     }
   });
 
-  // cpTable 子表头：核查标准 + 对手方信息(7) + 辅助信息(5)
+  // cpTable 子表头：核查标准 + 对手方信息(8) + 辅助信息(5)
   const cpSubRow = document.getElementById('cpSubHeader');
   if (cpSubRow) {
     cpSubRow.innerHTML = checkSubHTML
-      + '<th class="cp-name-sticky" id="subHeaderName"></th><th></th><th></th><th></th><th></th><th></th><th style="border-right:2px solid var(--gray-300)"></th>'
+      + '<th class="risk-hit-count-sub"></th><th class="cp-name-sticky" id="subHeaderName"></th><th></th><th></th><th></th><th></th><th></th><th style="border-right:2px solid var(--gray-300)"></th>'
       + '<th></th><th></th><th></th><th></th><th></th>';
   }
 
-  // txTable 子表头：核查标准 + 流水明细列(14)
+  // txTable 子表头：核查标准 + 流水明细列(15)
   const txSubRow = document.getElementById('txSubHeader');
   if (txSubRow) {
     txSubRow.innerHTML = checkSubHTML
-      + '<th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>';
+      + '<th class="risk-hit-count-sub"></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>';
   }
 
   // 清理旧固定列内联样式
   requestAnimationFrame(() => { updateStickyLeft(); });
 }
 // 固定列已取消：表格作为一个整体横向滚动，这里仅清理历史 sticky 内联样式。
+function updateRiskStickyHeaderOffsets(table) {
+  const rows = table.tHead ? Array.from(table.tHead.rows) : [];
+  if (rows.length < 3) return;
+  const firstHeight = Math.ceil(rows[0].getBoundingClientRect().height || 29);
+  const secondHeight = Math.ceil(rows[1].getBoundingClientRect().height || 29);
+  table.style.setProperty('--risk-sticky-row-1', `${firstHeight}px`);
+  table.style.setProperty('--risk-sticky-row-2', `${firstHeight + secondHeight}px`);
+}
+
 function updateStickyLeft() {
   ['cpTable', 'txTable'].forEach(tableId => {
     const table = document.getElementById(tableId);
@@ -5280,6 +5511,7 @@ function updateStickyLeft() {
         el.style.maxWidth = '';
         el.style.zIndex = '';
     });
+    updateRiskStickyHeaderOffsets(table);
   });
 }
 

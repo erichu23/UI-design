@@ -320,7 +320,7 @@
     
     /* =============== 你原有的表格分页与填充（不改动结构） =============== */
     let currentPageDeal=1, currentPageCorp=1, currentRoutinePage=1;
-    const pageSize=10;
+    let pageSize=20;
     let bizFilteredList = companies.slice(); // 经营实质区域当前筛选结果
     
     function paginate(arr,page){return arr.slice((page-1)*pageSize,page*pageSize);}
@@ -334,6 +334,16 @@
       const pages=Math.max(1,Math.ceil(total/pageSize));
       const el = document.getElementById(eleId);
       if(!el) return;
+      if (window.renderAuditPager) {
+        window.renderAuditPager(el, {
+          total,
+          page: current,
+          pageSize,
+          onPage(next){ window[handler]?.(next); },
+          onPageSize(size){ pageSize = Number(size) || 20; currentPageDeal = 1; currentPageCorp = 1; window[handler]?.(1); }
+        });
+        return;
+      }
 
       const pageItems = getPageItems(current, pages);
       let html = `
@@ -395,6 +405,8 @@
     }
     function gotoDeal(p){currentPageDeal=p;fillBizTables()}
     function gotoCorp(p){currentPageCorp=p;fillBizTables()}
+    window.gotoDeal = gotoDeal;
+    window.gotoCorp = gotoCorp;
     
     // ================== 刷新后记忆：顶层 Tab & 子表 Tab ==================
     /* ================== 刷新记忆的 key ================== */

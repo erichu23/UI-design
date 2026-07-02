@@ -25,10 +25,20 @@
 
       // 分页按钮
       window.renderPagination = window.renderPagination || function(eleId, total, current, handler){
-        const ps    = 10;
+        const ps    = window.routinePageSize || 20;
         const pages = Math.max(1, Math.ceil((total||0)/ps));
         const host  = document.getElementById(eleId);
         if (!host) return;
+        if (window.renderAuditPager) {
+          window.renderAuditPager(host, {
+            total,
+            page: current,
+            pageSize: ps,
+            onPage(next){ window[handler]?.(next); },
+            onPageSize(size){ window.routinePageSize = size || 20; window[handler]?.(1); }
+          });
+          return;
+        }
 
         const pageItems = getPageItems(current, pages);
         let html = `
@@ -577,7 +587,7 @@
 
       function renderRoutineTable(){
         const list = (routineState.list||[]).slice();
-        const pageItems = paginate(list, currentRoutinePage, 10);
+        const pageItems = paginate(list, currentRoutinePage, window.routinePageSize || 20);
         const thead = document.querySelector('#tblRoutineDetail thead');
         const tbody = document.querySelector('#tblRoutineDetail tbody');
         if (!thead || !tbody) return;

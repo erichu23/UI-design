@@ -2248,6 +2248,80 @@ body .statement-pagination{
   margin-top:8px;
 }
 
+body .tab-pane .pagination.audit-pager,
+body .statement-pagination.audit-pager,
+body .portrait-pagination.audit-pager{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:5px !important;
+  flex-wrap:nowrap !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  scrollbar-width:none !important;
+  white-space:nowrap !important;
+}
+
+body .tab-pane .pagination.audit-pager::-webkit-scrollbar,
+body .statement-pagination.audit-pager::-webkit-scrollbar,
+body .portrait-pagination.audit-pager::-webkit-scrollbar{
+  display:none !important;
+}
+
+body .tab-pane .pagination.audit-pager .audit-pager-total,
+body .statement-pagination.audit-pager .audit-pager-total,
+body .portrait-pagination.audit-pager .audit-pager-total,
+body .tab-pane .pagination.audit-pager .audit-pager-jump-label,
+body .statement-pagination.audit-pager .audit-pager-jump-label,
+body .portrait-pagination.audit-pager .audit-pager-jump-label{
+  flex:0 0 auto !important;
+  font-size:12px !important;
+  white-space:nowrap !important;
+}
+
+body .tab-pane .pagination.audit-pager .audit-pager-btn,
+body .statement-pagination.audit-pager .audit-pager-btn,
+body .portrait-pagination.audit-pager .audit-pager-btn{
+  flex:0 0 auto !important;
+  width:28px !important;
+  min-width:28px !important;
+  height:26px !important;
+  min-height:26px !important;
+  padding:0 !important;
+  border-radius:4px !important;
+  line-height:24px !important;
+  font-size:12px !important;
+}
+
+body .tab-pane .pagination.audit-pager .audit-pager-size select,
+body .statement-pagination.audit-pager .audit-pager-size select,
+body .portrait-pagination.audit-pager .audit-pager-size select{
+  flex:0 0 auto !important;
+  width:82px !important;
+  min-width:82px !important;
+  max-width:82px !important;
+  height:26px !important;
+  min-height:26px !important;
+  padding:0 18px 0 7px !important;
+  border-radius:4px !important;
+  font-size:12px !important;
+}
+
+body .tab-pane .pagination.audit-pager .audit-pager-jump,
+body .statement-pagination.audit-pager .audit-pager-jump,
+body .portrait-pagination.audit-pager .audit-pager-jump{
+  flex:0 0 auto !important;
+  width:44px !important;
+  min-width:44px !important;
+  max-width:44px !important;
+  height:26px !important;
+  min-height:26px !important;
+  padding:0 4px !important;
+  border-radius:4px !important;
+  text-align:center !important;
+  font-size:12px !important;
+}
+
 /* =========================================================
    专业版统一色板与控件：银行流水分析
    - 表格正文金额使用浅色，合计/分组行稍深
@@ -2717,4 +2791,27 @@ body #tblAccountSummary td.actions a[title*="文件"]::before{
     linear-gradient(currentColor,currentColor) 3px 9px/6px 1.2px no-repeat,
     #fff !important;
   box-sizing:border-box !important;
+}
+
+/* 全平台表格体验：银行流水分析内所有可纵向滚动表格固定表头。 */
+body .tab-pane .account-summary-table-wrap table thead,
+body .tab-pane .portrait-table-wrap table thead,
+body .tab-pane .wp-table-wrap table thead,
+body .tab-pane .table-wrap table thead,
+body .tab-pane .risk-table-wrap table thead,
+body .tab-pane .statement-table-wrap table thead,
+body .tab-pane .content > div[style*="overflow"] table thead{
+  position:sticky !important;
+  top:0 !important;
+  z-index:40 !important;
+}
+
+body .tab-pane .account-summary-table-wrap table thead th,
+body .tab-pane .portrait-table-wrap table thead th,
+body .tab-pane .wp-table-wrap table thead th,
+body .tab-pane .table-wrap table thead th,
+body .tab-pane .risk-table-wrap table thead th,
+body .tab-pane .statement-table-wrap table thead th,
+body .tab-pane .content > div[style*="overflow"] table thead th{
+  background-clip:padding-box !important;
 }

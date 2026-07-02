@@ -62,7 +62,7 @@ html,body{width:100%;height:100%}
   .btn:hover{border-color:var(--primary);box-shadow:0 2px 6px rgba(37,99,235,.2)}
   .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-600));color:#fff;border:none}
 
-  .tabbar{display:flex;gap:6px;border-bottom:2px solid var(--border);margin:10px 0 16px}
+  .tabbar{display:flex;gap:4px;border-bottom:2px solid var(--border);margin:8px 0 10px}
   .tab{padding:10px 14px;border-radius:8px 8px 0 0;color:var(--muted);cursor:pointer}
   .tab.active{background:#fff;border:1px solid var(--border);border-bottom:0;color:var(--primary)}
   .card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:6.5px;overflow:hidden}
@@ -105,6 +105,118 @@ html,body{width:100%;height:100%}
   .grid-2{display:grid;grid-template-columns:2fr 1fr;gap:16px}
   .pagination{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
   .pagination .btn{padding:6px 10px}
+  .audit-pager,
+  .pagination.audit-pager,
+  .ds3-pagination.audit-pager,
+  .risk-table-pager.audit-pager{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:5px;
+    margin-top:8px;
+    padding:4px 0;
+    font-size:12px;
+    color:#475569;
+    flex-wrap:nowrap;
+    min-width:0;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scrollbar-width:none;
+    white-space:nowrap;
+  }
+  .audit-pager::-webkit-scrollbar,
+  .pagination.audit-pager::-webkit-scrollbar,
+  .ds3-pagination.audit-pager::-webkit-scrollbar,
+  .risk-table-pager.audit-pager::-webkit-scrollbar{
+    display:none;
+  }
+  .audit-pager-total{
+    margin-right:2px;
+    color:#334155;
+    white-space:nowrap;
+    flex:0 0 auto;
+  }
+  .audit-pager-btn{
+    flex:0 0 auto;
+    width:28px;
+    min-width:28px;
+    height:26px;
+    padding:0;
+    border:1px solid #dbe4f0;
+    border-radius:4px;
+    background:#fff;
+    color:#334155;
+    font-size:12px;
+    line-height:24px;
+    cursor:pointer;
+    box-shadow:none;
+  }
+  .audit-pager-btn:hover:not(:disabled){
+    border-color:#9bbbea;
+    background:#f7faff;
+    color:#1d4ed8;
+  }
+  .audit-pager-btn.is-active{
+    border-color:#2f6fed;
+    background:#fff;
+    color:#1d4ed8;
+    font-weight:700;
+  }
+  .audit-pager-btn:disabled{
+    color:#cbd5e1;
+    background:#f8fafc;
+    border-color:#e5eaf2;
+    cursor:not-allowed;
+  }
+  .audit-pager-arrow{
+    font-size:17px;
+    font-weight:400;
+    line-height:20px;
+  }
+  .audit-pager-ellipsis{
+    flex:0 0 auto;
+    min-width:22px;
+    height:26px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    color:#94a3b8;
+  }
+  .audit-pager-size select,
+  .audit-pager-jump{
+    flex:0 0 auto;
+    height:26px;
+    border:1px solid #dbe4f0;
+    border-radius:4px;
+    background:#fff;
+    color:#334155;
+    font-size:12px;
+    outline:none;
+    box-sizing:border-box;
+  }
+  .audit-pager-size select{
+    width:82px;
+    min-width:82px;
+    max-width:82px;
+    padding:0 18px 0 7px;
+  }
+  .audit-pager-jump{
+    width:44px;
+    min-width:44px;
+    max-width:44px;
+    padding:0 4px;
+    text-align:center;
+  }
+  .audit-pager-size select:focus,
+  .audit-pager-jump:focus{
+    border-color:#2f6fed;
+    box-shadow:0 0 0 2px rgba(47,111,237,.12);
+  }
+  .audit-pager-jump-label{
+    color:#334155;
+    white-space:nowrap;
+    flex:0 0 auto;
+  }
   .hide{display:none}
   #tblTop20 {
     width: 100%;
@@ -126,4 +238,44 @@ html,body{width:100%;height:100%}
     height:10px;
     border-radius:50%;
     margin-right:4px;
+  }
+
+  /* ====== 全平台表格：纵向滚动时固定表头 ======
+     使用 thead 整体 sticky，避免多行表头的第二行覆盖第一行。 */
+  .table-wrap table thead,
+  .table-scroll table thead,
+  .table-container table thead,
+  .content-scroll table thead,
+  .du-table-wrap table thead,
+  .pl-table-wrap table thead,
+  .wp-table-wrap table thead,
+  .ds-table-wrap table thead,
+  .ds3-table-wrap table thead,
+  .account-summary-table-wrap table thead,
+  .portrait-table-wrap table thead,
+  .risk-table-wrap table thead,
+  .statement-table-wrap table thead,
+  div[style*="overflow:auto"] table thead,
+  div[style*="overflow: auto"] table thead{
+    position:sticky;
+    top:0;
+    z-index:30;
+  }
+
+  .table-wrap table thead th,
+  .table-scroll table thead th,
+  .table-container table thead th,
+  .content-scroll table thead th,
+  .du-table-wrap table thead th,
+  .pl-table-wrap table thead th,
+  .wp-table-wrap table thead th,
+  .ds-table-wrap table thead th,
+  .ds3-table-wrap table thead th,
+  .account-summary-table-wrap table thead th,
+  .portrait-table-wrap table thead th,
+  .risk-table-wrap table thead th,
+  .statement-table-wrap table thead th,
+  div[style*="overflow:auto"] table thead th,
+  div[style*="overflow: auto"] table thead th{
+    background-clip:padding-box;
   }

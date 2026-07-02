@@ -7885,6 +7885,68 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   box-shadow:0 0 0 2px rgba(47,111,237,.10);
 }
 
+/* 统一分页控件：共 x 条 / 页码省略 / 条数切换 / 跳页 */
+.ds3-vat-page .audit-pager,
+.ds3-pagination.audit-pager{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:5px;
+  margin-top:6px;
+  padding:4px 0 0;
+  flex-wrap:nowrap;
+  overflow-x:auto;
+  overflow-y:hidden;
+  scrollbar-width:none;
+  white-space:nowrap;
+}
+.ds3-vat-page .audit-pager::-webkit-scrollbar,
+.ds3-pagination.audit-pager::-webkit-scrollbar{
+  display:none;
+}
+.ds3-vat-page .audit-pager .audit-pager-btn,
+.ds3-pagination.audit-pager .audit-pager-btn{
+  flex:0 0 auto;
+  width:28px;
+  min-width:28px;
+  height:26px;
+  padding:0;
+  border:1px solid #dbe4f0;
+  border-radius:4px;
+  background:#fff;
+  color:#334155;
+  font-size:12px;
+  line-height:24px;
+  font-weight:500;
+}
+.ds3-vat-page .audit-pager .audit-pager-btn.is-active,
+.ds3-pagination.audit-pager .audit-pager-btn.is-active{
+  color:#1d4ed8;
+  border-color:#2f6fed;
+  font-weight:700;
+}
+.ds3-vat-page .audit-pager .audit-pager-size select,
+.ds3-vat-page .audit-pager .audit-pager-jump,
+.ds3-pagination.audit-pager .audit-pager-size select,
+.ds3-pagination.audit-pager .audit-pager-jump{
+  flex:0 0 auto;
+  height:26px;
+  border-radius:4px;
+  font-size:12px;
+}
+.ds3-vat-page .audit-pager .audit-pager-size select,
+.ds3-pagination.audit-pager .audit-pager-size select{
+  width:82px;
+  min-width:82px;
+  max-width:82px;
+}
+.ds3-vat-page .audit-pager .audit-pager-jump,
+.ds3-pagination.audit-pager .audit-pager-jump{
+  width:44px;
+  min-width:44px;
+  max-width:44px;
+}
+
 /* 数据综合分析 card 标题样式对齐银行流水分析：左侧整高蓝色竖条 */
 .ds3-vat-page .ds3-block{
   margin-top:6px !important;
@@ -8361,4 +8423,25 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 .ds3-vat-page .ds3-filter-block .ds3-actions{
   margin-left:0 !important;
   flex:0 0 auto !important;
+}
+
+/* 全平台表格体验：数据综合分析内所有可纵向滚动表格固定表头。 */
+.ds3-vat-page .ds3-table-wrap table thead,
+.ds3-vat-page .ds3-selected-table-wrap table thead,
+.ds3-vat-page .ds3-detail-table-wrap table thead,
+.ds3-vat-page .ds3-rule-table-wrap table thead,
+.ds3-vat-page .ds3-linked-table-wrap table thead,
+.ds3-vat-page .ds3-panel table thead{
+  position:sticky !important;
+  top:0 !important;
+  z-index:40 !important;
+}
+
+.ds3-vat-page .ds3-table-wrap table thead th,
+.ds3-vat-page .ds3-selected-table-wrap table thead th,
+.ds3-vat-page .ds3-detail-table-wrap table thead th,
+.ds3-vat-page .ds3-rule-table-wrap table thead th,
+.ds3-vat-page .ds3-linked-table-wrap table thead th,
+.ds3-vat-page .ds3-panel table thead th{
+  background-clip:padding-box !important;
 }
