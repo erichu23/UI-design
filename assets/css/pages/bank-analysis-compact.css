@@ -434,6 +434,26 @@ body .bank-risk-zoom-scroll thead th{
   background:#f4f8fd !important;
   color:#334155 !important;
   white-space:nowrap !important;
+  position:sticky !important;
+  background-clip:padding-box !important;
+}
+
+body .bank-risk-zoom-scroll thead tr:nth-child(1) th{
+  top:0 !important;
+  z-index:40 !important;
+  background:#edf5ff !important;
+}
+
+body .bank-risk-zoom-scroll thead tr:nth-child(2) th{
+  top:28px !important;
+  z-index:41 !important;
+  background:#f4f8fd !important;
+}
+
+body .bank-risk-zoom-scroll thead tr:nth-child(3) th{
+  top:56px !important;
+  z-index:42 !important;
+  background:#eef5fc !important;
 }
 
 body .bank-risk-zoom-scroll tbody td{
@@ -467,6 +487,37 @@ body .bank-risk-zoom-scroll .inflow{
 
 body .bank-risk-zoom-scroll .outflow{
   color:#d9466f !important;
+}
+
+body .bank-risk-zoom-scroll .tax-sales{
+  color:#2aa99a !important;
+  font-weight:700 !important;
+}
+
+body .bank-risk-zoom-scroll .tax-purchase{
+  color:#dd8b22 !important;
+  font-weight:700 !important;
+}
+
+body .bank-risk-zoom-scroll .risk-cp-type-cell{
+  color:#334155 !important;
+  font-weight:700 !important;
+  text-align:center !important;
+}
+
+body .bank-risk-zoom-scroll .risk-cp-type-cell.is-customer,
+body .bank-risk-zoom-scroll tbody tr:hover td.risk-cp-type-cell.is-customer{
+  background:#eef5ff !important;
+}
+
+body .bank-risk-zoom-scroll .risk-cp-type-cell.is-supplier,
+body .bank-risk-zoom-scroll tbody tr:hover td.risk-cp-type-cell.is-supplier{
+  background:#f8f3ea !important;
+}
+
+body .bank-risk-zoom-scroll .risk-cp-type-cell.is-personal,
+body .bank-risk-zoom-scroll tbody tr:hover td.risk-cp-type-cell.is-personal{
+  background:#f5f1ff !important;
 }
 
 body .bank-risk-zoom-scroll .th-icons{
@@ -2544,7 +2595,7 @@ body .tab-pane .statement-table-wrap,
 body #pane-verify .content > div[style*="overflow"],
 body .check-window{
   scrollbar-width:thin !important;
-  scrollbar-color:rgba(148,163,184,.42) transparent !important;
+  scrollbar-color:rgba(148,163,184,.26) transparent !important;
 }
 
 body .tab-scroll::-webkit-scrollbar,
@@ -2556,8 +2607,8 @@ body .tab-pane .risk-table-wrap::-webkit-scrollbar,
 body .tab-pane .statement-table-wrap::-webkit-scrollbar,
 body #pane-verify .content > div[style*="overflow"]::-webkit-scrollbar,
 body .check-window::-webkit-scrollbar{
-  width:6px !important;
-  height:6px !important;
+  width:4px !important;
+  height:4px !important;
   display:block !important;
 }
 
@@ -2583,7 +2634,7 @@ body .tab-pane .statement-table-wrap::-webkit-scrollbar-thumb,
 body #pane-verify .content > div[style*="overflow"]::-webkit-scrollbar-thumb,
 body .check-window::-webkit-scrollbar-thumb{
   border-radius:999px !important;
-  background:rgba(148,163,184,.42) !important;
+  background:rgba(148,163,184,.26) !important;
 }
 
 body .tab-pane .account-summary-table-wrap{
@@ -2616,7 +2667,7 @@ body #tblAccountSummary .check-window::-webkit-scrollbar-track{
 
 body #tblAccountSummary .check-window::-webkit-scrollbar-thumb{
   border-radius:999px !important;
-  background:rgba(148,163,184,.42) !important;
+  background:rgba(148,163,184,.26) !important;
 }
 
 /* 业务逻辑 / 操作提示：修复图标显示成方块的问题，统一为圆形轻量图标。 */

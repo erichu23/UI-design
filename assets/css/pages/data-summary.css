@@ -7755,7 +7755,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 .ds3-vat-page .ds3-centipede-list,
 .ds3-vat-page .ds3-vat-filter-grid{
   scrollbar-width:thin !important;
-  scrollbar-color:rgba(148,163,184,.42) transparent !important;
+  scrollbar-color:rgba(148,163,184,.26) transparent !important;
 }
 
 .ds3-vat-page ::-webkit-scrollbar,
@@ -7765,8 +7765,8 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 .ds3-vat-page #ds3DetailModal ::-webkit-scrollbar,
 .ds3-vat-page .ds3-centipede-list::-webkit-scrollbar,
 .ds3-vat-page .ds3-vat-filter-grid::-webkit-scrollbar{
-  width:6px !important;
-  height:6px !important;
+  width:4px !important;
+  height:4px !important;
   display:block !important;
 }
 
@@ -7788,13 +7788,13 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 .ds3-vat-page .ds3-centipede-list::-webkit-scrollbar-thumb,
 .ds3-vat-page .ds3-vat-filter-grid::-webkit-scrollbar-thumb{
   border-radius:999px !important;
-  background:rgba(148,163,184,.42) !important;
+  background:rgba(148,163,184,.26) !important;
 }
 
 .ds3-vat-page ::-webkit-scrollbar-thumb:hover,
 .ds3-vat-page .ds3-table-wrap::-webkit-scrollbar-thumb:hover,
 .ds3-vat-page #ds3DetailModal ::-webkit-scrollbar-thumb:hover{
-  background:rgba(100,116,139,.58) !important;
+  background:rgba(100,116,139,.42) !important;
 }
 
 .ds3-vat-page .ds3-table-wrap,

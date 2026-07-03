@@ -673,6 +673,18 @@
             if (table && col && dir) runRiskZoomAction({ type: 'sort', table, col, dir });
             return;
           }
+          const checkCell = event.target.closest('[data-risk-zoom-check-cp][data-risk-zoom-check-id]');
+          if (checkCell && modal.contains(checkCell)) {
+            event.preventDefault();
+            event.stopPropagation();
+            runRiskZoomAction({
+              type: 'toggleManualClear',
+              table: bankRiskZoomState?.table,
+              cpId: checkCell.dataset.riskZoomCheckCp,
+              checkId: checkCell.dataset.riskZoomCheckId
+            });
+            return;
+          }
           const pageBtn = event.target.closest('[data-risk-zoom-page]');
           if (pageBtn && modal.contains(pageBtn)) {
             event.preventDefault();

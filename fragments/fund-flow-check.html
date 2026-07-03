@@ -1930,6 +1930,29 @@
     min-width: 0;
   }
   #paretoCvs { display: block; width: 100%; height: 200px; cursor: default; }
+  .cfo-chart-tooltip {
+    position: absolute;
+    z-index: 8;
+    display: none;
+    max-width: 230px;
+    padding: 7px 9px;
+    border: 1px solid rgba(148, 163, 184, .22);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, .96);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, .10);
+    color: #334155;
+    font-size: 11px;
+    line-height: 1.55;
+    pointer-events: none;
+    white-space: normal;
+  }
+  .cfo-chart-tooltip strong {
+    display: block;
+    margin-bottom: 2px;
+    color: #0f172a;
+    font-size: 11px;
+  }
+  .cfo-chart-tooltip .muted { color: #64748b; }
 
   /* 中列：关联方集中度（共享 .cfo-card 样式） */
   /* 右列：2个小饼图上下排列 */
@@ -2539,6 +2562,7 @@
           <div class="cfo-pareto-row">
             <div class="cfo-pareto-wrap">
               <canvas id="paretoCvs"></canvas>
+              <div class="cfo-chart-tooltip" id="paretoTooltip"></div>
             </div>
             <div class="cfo-kpi-sidebar" id="paretoKpiStrip"><!-- JS填充 --></div>
           </div>
@@ -2558,6 +2582,7 @@
           <div class="cfo-pareto-row">
             <div class="cfo-pareto-wrap">
               <canvas id="relatedParetoCvs"></canvas>
+              <div class="cfo-chart-tooltip" id="relatedParetoTooltip"></div>
             </div>
             <div class="cfo-kpi-sidebar" id="relatedParetoKpi"><!-- JS填充 --></div>
           </div>
@@ -4027,6 +4052,45 @@ function updateSortIndicators(tableId, activeCol, dir) {
       th.classList.add(dir === 'asc' ? 'sort-asc' : 'sort-desc');
     }
   });
+  updateFilterIndicators();
+}
+
+function updateFilterIndicators() {
+  const setIconState = (selector, active) => {
+    document.querySelectorAll(selector).forEach(icon => {
+      icon.classList.toggle('is-active', Boolean(active));
+      icon.title = active ? '已筛选' : '筛选';
+    });
+  };
+
+  document.querySelectorAll('#cpTable thead th[data-col]').forEach(th => {
+    const col = th.dataset.col;
+    const active = col === 'cpName'
+      ? cpNameFilterSelected.length > 0
+      : Array.isArray(cpColumnFilters[col]) && cpColumnFilters[col].length > 0;
+    th.querySelectorAll('.th-filter-icon').forEach(icon => {
+      icon.classList.toggle('is-active', active);
+      icon.title = active ? '已筛选' : '筛选';
+    });
+  });
+
+  document.querySelectorAll('#txTable thead th[data-col]').forEach(th => {
+    const col = th.dataset.col;
+    const active = Array.isArray(txColumnFilters[col]) && txColumnFilters[col].length > 0;
+    th.querySelectorAll('.th-filter-icon').forEach(icon => {
+      icon.classList.toggle('is-active', active);
+      icon.title = active ? '已筛选' : '筛选';
+    });
+  });
+
+  document.querySelectorAll('#cpTable thead th[data-check], #txTable thead th[data-check]').forEach(th => {
+    const checkId = th.dataset.check;
+    const active = checkColumnFilters[checkId] === 'hit' || checkColumnFilters[checkId] === 'empty';
+    th.querySelectorAll('.th-filter-icon').forEach(icon => {
+      icon.classList.toggle('is-active', active);
+      icon.title = active ? '已筛选命中状态' : '筛选命中状态';
+    });
+  });
 }
 
 // ─── SEARCH ─────────────────────────────────────────────────────────────────
@@ -4176,7 +4240,9 @@ function showTxColumnFilter(event, col) {
   pop.querySelector('[data-action="clear"]').addEventListener('click', () => pop.querySelectorAll('input').forEach(input => input.checked = false));
   pop.querySelector('[data-action="all"]').addEventListener('click', () => pop.querySelectorAll('input').forEach(input => input.checked = true));
   pop.querySelector('[data-action="apply"]').addEventListener('click', () => {
-    txColumnFilters[col] = Array.from(pop.querySelectorAll('input:checked')).map(input => input.value);
+    const next = Array.from(pop.querySelectorAll('input:checked')).map(input => input.value);
+    if (!next.length || next.length === values.length) delete txColumnFilters[col];
+    else txColumnFilters[col] = next;
     txPage = 1;
     renderTxTable();
     pop.remove();
@@ -4366,6 +4432,7 @@ function renderCpTable() {
   });
   updateGroupCounts();
   updateCheckGroupHitCounts();
+  updateFilterIndicators();
   requestAnimationFrame(() => {
     requestAnimationFrame(() => { updateStickyLeft(); });
   });
@@ -4460,6 +4527,7 @@ function renderTxTable(subtitle) {
 
   // 确保 tx 表的子表头和 sticky 定位正确
   rebuildSubHeaders();
+  updateFilterIndicators();
   requestAnimationFrame(() => {
     requestAnimationFrame(() => { updateStickyLeft(); });
   });
@@ -4658,6 +4726,7 @@ function renderCpTableWithHighlight(matchIds) {
   });
   updateGroupCounts();
   updateCheckGroupHitCounts();
+  updateFilterIndicators();
   requestAnimationFrame(() => {
     requestAnimationFrame(() => { updateStickyLeft(); });
   });
@@ -5216,6 +5285,10 @@ function getRiskZoomTablePayload(preferredTable) {
       }
     });
   }
+  clone.querySelectorAll('.check-cell[data-cp][data-check]').forEach(el => {
+    el.dataset.riskZoomCheckCp = el.dataset.cp || '';
+    el.dataset.riskZoomCheckId = el.dataset.check || '';
+  });
   clone.querySelectorAll('[onclick]').forEach(el => el.removeAttribute('onclick'));
   clone.querySelectorAll('[onchange]').forEach(el => el.removeAttribute('onchange'));
   const context = getRiskZoomContext(table);
@@ -5230,6 +5303,50 @@ function getRiskZoomTablePayload(preferredTable) {
 }
 
 window.getRiskZoomTablePayload = getRiskZoomTablePayload;
+
+function refreshRiskTableZoomIfOpen(table) {
+  const modal = document.getElementById('riskTableZoomModal');
+  const body = document.getElementById('riskTableZoomBody');
+  if (!modal?.classList.contains('is-open') || !body) return;
+  const payload = getRiskZoomTablePayload(table || (activeTab === 'tx' ? 'tx' : 'cp'));
+  const wrap = document.createElement('div');
+  wrap.className = 'risk-table-zoom-scroll';
+  wrap.innerHTML = payload.html;
+  body.innerHTML = '';
+  body.appendChild(wrap);
+  const title = document.getElementById('riskTableZoomTitle');
+  const sub = document.getElementById('riskTableZoomSub');
+  if (title) title.textContent = payload.title;
+  if (sub) sub.textContent = payload.sub;
+}
+
+function toggleManualClearFromZoom(cpId, checkId) {
+  const cp = getCpById(cpId);
+  if (!cp || !checkId) return;
+  const hitIds = getHitCheckIds(cp.hits);
+  const clearKey = `${cpId}_${checkId}`;
+  if (manualClears[clearKey]) {
+    delete manualClears[clearKey];
+    renderCpTable();
+    renderTxTable();
+    refreshRiskTableZoomIfOpen(activeTab === 'tx' ? 'tx' : 'cp');
+    showToast('success', '已恢复命中标记');
+    return;
+  }
+  if (!hitIds.has(checkId)) {
+    selectCheck(checkId);
+    refreshRiskTableZoomIfOpen(activeTab === 'tx' ? 'tx' : 'cp');
+    return;
+  }
+  manualClears[clearKey] = {
+    reason: '放大查看中手工去除',
+    time: new Date().toLocaleString('zh-CN')
+  };
+  renderCpTable();
+  renderTxTable();
+  refreshRiskTableZoomIfOpen(activeTab === 'tx' ? 'tx' : 'cp');
+  showToast('success', '已手工去除命中标记');
+}
 
 window.handleRiskZoomAction = function(action = {}) {
   if (action.type === 'switchZoomTable' && action.table) {
@@ -5269,6 +5386,9 @@ window.handleRiskZoomAction = function(action = {}) {
   if (action.type === 'updateCpRemark' && action.cpId) {
     updateCpRemark(action.cpId, action.value, false);
     renderCpTable();
+  }
+  if (action.type === 'toggleManualClear' && action.cpId && action.checkId) {
+    toggleManualClearFromZoom(action.cpId, action.checkId);
   }
   if (action.type === 'applyFilter') {
     if (action.filterType === 'check' && action.key) {
@@ -5390,6 +5510,13 @@ function closeRiskTableZoom() {
 }
 
 document.getElementById('riskTableZoomModal')?.addEventListener('click', (event) => {
+  const zoomCheckCell = event.target.closest('[data-risk-zoom-check-cp][data-risk-zoom-check-id]');
+  if (zoomCheckCell) {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleManualClearFromZoom(zoomCheckCell.dataset.riskZoomCheckCp, zoomCheckCell.dataset.riskZoomCheckId);
+    return;
+  }
   if (event.target?.id === 'riskTableZoomModal') closeRiskTableZoom();
 });
 
@@ -5741,6 +5868,8 @@ function confirmClear(cpId, checkId) {
     time: new Date().toLocaleString('zh-CN')
   };
   renderCpTable();
+  renderTxTable();
+  refreshRiskTableZoomIfOpen(activeTab === 'tx' ? 'tx' : 'cp');
   showToast('success', '已手工去除命中标记');
 }
 
@@ -5748,6 +5877,8 @@ function undoClear(cpId, checkId) {
   const clearKey = `${cpId}_${checkId}`;
   delete manualClears[clearKey];
   renderCpTable();
+  renderTxTable();
+  refreshRiskTableZoomIfOpen(activeTab === 'tx' ? 'tx' : 'cp');
   showToast('success', '已撤销手工去除');
 }
 
@@ -5984,6 +6115,62 @@ function fmtWan(v) {
 }
 function fmtPct(v) { return (v * 100).toFixed(1) + '%'; }
 
+function shortCfoAxisName(name, maxLen = 7) {
+  const text = String(name || '').replace(/[（）()]/g, '').replace(/\s+/g, '');
+  if (text.length <= maxLen) return text;
+  return text.slice(0, maxLen) + '…';
+}
+
+function shouldDrawCfoAxisLabel(index, total, barGap) {
+  if (total <= 8) return true;
+  if (index === 0 || index === total - 1) return true;
+  const step = barGap < 18 ? 4 : barGap < 24 ? 3 : 2;
+  return index % step === 0;
+}
+
+function bindCfoParetoTooltip(cvs, tooltipId, points, renderHtml) {
+  const tooltip = document.getElementById(tooltipId);
+  if (!cvs || !tooltip) return;
+  cvs._cfoHoverPoints = points || [];
+  cvs._cfoHoverRender = renderHtml;
+  if (cvs._cfoTooltipBound) return;
+  cvs._cfoTooltipBound = true;
+
+  cvs.addEventListener('mousemove', function(e) {
+    const points = cvs._cfoHoverPoints || [];
+    if (!points.length) {
+      tooltip.style.display = 'none';
+      return;
+    }
+    const rect = cvs.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const nearest = points.reduce((best, p) => {
+      const dist = Math.abs(x - p.cx);
+      return !best || dist < best.dist ? { point: p, dist } : best;
+    }, null);
+    if (!nearest || nearest.dist > Math.max(18, nearest.point.barGap / 2)) {
+      tooltip.style.display = 'none';
+      cvs.style.cursor = 'default';
+      return;
+    }
+    const point = nearest.point;
+    tooltip.innerHTML = cvs._cfoHoverRender ? cvs._cfoHoverRender(point) : '';
+    tooltip.style.display = 'block';
+    const tipW = tooltip.offsetWidth || 220;
+    const tipH = tooltip.offsetHeight || 70;
+    const left = Math.min(Math.max(point.cx + 10, 6), rect.width - tipW - 6);
+    const top = Math.min(Math.max(e.clientY - rect.top - tipH - 8, 6), rect.height - tipH - 6);
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+    cvs.style.cursor = 'crosshair';
+  });
+
+  cvs.addEventListener('mouseleave', function() {
+    tooltip.style.display = 'none';
+    cvs.style.cursor = 'default';
+  });
+}
+
 // ── 帕累托图 (Canvas) ──
 let paretoField = 'inflow';  // 当前字段
 let paretoThresh = 0.8;      // 阈值线百分比 (0~1)
@@ -6168,18 +6355,38 @@ function drawParetoChart() {
     ctx.fill();
   });
 
-  // X轴标签 — 全称倾斜展示
+  // X轴标签 — 仍保留原图结构，但按空间抽样显示，避免名称堆叠
   ctx.fillStyle = '#6b7280';
-  ctx.font = `10px -apple-system, PingFang SC, sans-serif`;
+  ctx.font = `9px -apple-system, PingFang SC, sans-serif`;
   ctx.textAlign = 'right';
   items.forEach((d, i) => {
+    if (!shouldDrawCfoAxisLabel(i, items.length, barGap)) return;
     const cx = padL + barGap * i + barGap / 2;
     ctx.save();
-    ctx.translate(cx, padT + gH + 6);
-    ctx.rotate(-Math.PI / 5);  // 倾斜约36度
-    ctx.fillText(d.name, 0, 0);
+    ctx.translate(cx, padT + gH + 8);
+    ctx.rotate(-Math.PI / 4);  // 倾斜约45度，提升密集场景可读性
+    ctx.fillText(shortCfoAxisName(d.name), 0, 0);
     ctx.restore();
   });
+
+  bindCfoParetoTooltip(
+    cvs,
+    'paretoTooltip',
+    items.map((d, i) => ({
+      d,
+      index: i,
+      cx: padL + barGap * i + barGap / 2,
+      barGap,
+      value: getVal(d),
+      cumPct: cumPcts[i] || 0
+    })),
+    (p) => `
+      <strong>${p.index + 1}. ${p.d.name || '未命名对手方'}</strong>
+      <div>${fieldLabel}金额：${fmtWan(p.value || 0)}</div>
+      <div>累计占比：${fmtPct(p.cumPct || 0)}</div>
+      <div class="muted">对手方类型：${p.d.cpType || '—'}｜关联关系：${p.d.typeTag || '—'}</div>
+    `
+  );
 }
 
 // ── 80%线拖动 ──
@@ -6384,13 +6591,34 @@ function drawRelatedParetoChart() {
     ctx.fillStyle = '#64748b'; ctx.fill();
   });
 
-  // X轴标签
-  ctx.fillStyle='#6b7280'; ctx.font='10px -apple-system,PingFang SC,sans-serif'; ctx.textAlign='right';
+  // X轴标签：按空间抽样显示，防止多家公司名称堆叠
+  ctx.fillStyle='#6b7280'; ctx.font='9px -apple-system,PingFang SC,sans-serif'; ctx.textAlign='right';
   items.forEach((d,i) => {
+    if (!shouldDrawCfoAxisLabel(i, items.length, barGap)) return;
     const cx=padL+barGap*i+barGap/2;
-    ctx.save(); ctx.translate(cx,padT+gH+6); ctx.rotate(-Math.PI/5);
-    ctx.fillText(d.name, 0, 0); ctx.restore();
+    ctx.save(); ctx.translate(cx,padT+gH+8); ctx.rotate(-Math.PI/4);
+    ctx.fillText(shortCfoAxisName(d.name), 0, 0); ctx.restore();
   });
+
+  bindCfoParetoTooltip(
+    cvs,
+    'relatedParetoTooltip',
+    items.map((d, i) => ({
+      d,
+      index: i,
+      cx: padL + barGap * i + barGap / 2,
+      barGap,
+      value: getVal(d),
+      cumPct: cumPcts[i] || 0
+    })),
+    (p) => `
+      <strong>${p.index + 1}. ${p.d.name || '未命名关联方'}</strong>
+      <div>${fieldLabel}金额：${fmtWan(p.value || 0)}</div>
+      <div>流入金额：${fmtWan(p.d.inflow || 0)}｜流出金额：${fmtWan(p.d.outflow || 0)}</div>
+      <div>累计占总${fieldLabel}：${fmtPct(p.cumPct || 0)}</div>
+      <div class="muted">对手方类型：${p.d.cpType || '—'}｜关联关系：${p.d.typeTag || '—'}</div>
+    `
+  );
 }
 
 // ── 类型构成饼图（按当前字段金额占比，支持重叠，Canvas） ──

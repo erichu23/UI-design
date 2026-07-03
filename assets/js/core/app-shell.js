@@ -25,6 +25,114 @@ function toggleSb(el){
   el.classList.toggle('open');
 }
 
+function initCollapsedSidebarFlyout(){
+  const sidebar = document.getElementById('appSidebar');
+  if (!sidebar) return;
+
+  let flyout = document.getElementById('sidebarFlyout');
+  if (!flyout) {
+    flyout = document.createElement('div');
+    flyout.id = 'sidebarFlyout';
+    flyout.className = 'sidebar-flyout';
+    document.body.appendChild(flyout);
+  }
+
+  let hideTimer = null;
+  let activeGroup = null;
+
+  const closeFlyout = () => {
+    flyout.classList.remove('is-open');
+    activeGroup = null;
+  };
+
+  const scheduleClose = () => {
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(closeFlyout, 160);
+  };
+
+  const cancelClose = () => {
+    clearTimeout(hideTimer);
+  };
+
+  const getGroupTitle = (group) => group.querySelector(':scope > .sb-toggle-head .sb-txt')?.textContent.trim() || '';
+  const getGroupIconClass = (group) => group.querySelector(':scope > .sb-toggle-head .ico')?.className || 'fa-regular fa-folder ico';
+
+  const renderFlyout = (group) => {
+    const title = getGroupTitle(group);
+    const iconClass = getGroupIconClass(group);
+    const rows = Array.from(group.querySelectorAll(':scope > .sb-submenu > .sb-row'));
+    const itemsHtml = rows.length ? rows.map((row, index) => {
+      const text = row.querySelector('.sb-txt')?.textContent.trim() || '未命名页面';
+      const icon = row.querySelector('i')?.className || 'fa-regular fa-circle ico';
+      const disabled = !row.getAttribute('onclick');
+      const current = row.classList.contains('current');
+      return `
+        <button class="sidebar-flyout-item ${current ? 'is-current' : ''} ${disabled ? 'is-disabled' : ''}"
+                type="button"
+                data-flyout-index="${index}"
+                ${disabled ? 'disabled' : ''}>
+          <i class="${icon}"></i>
+          <span>${text}</span>
+          <small>${disabled ? '待配置' : '进入'}</small>
+        </button>
+      `;
+    }).join('') : '<div class="sidebar-flyout-empty">暂无可进入页面</div>';
+
+    flyout.innerHTML = `
+      <div class="sidebar-flyout-head">
+        <i class="${iconClass}"></i>
+        <span>${title}</span>
+      </div>
+      <div class="sidebar-flyout-list">${itemsHtml}</div>
+    `;
+
+    flyout.querySelectorAll('[data-flyout-index]').forEach(btn => {
+      btn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const row = rows[Number(btn.dataset.flyoutIndex)];
+        if (!row || !row.getAttribute('onclick')) return;
+        row.click();
+        closeFlyout();
+      });
+    });
+  };
+
+  const openFlyout = (group) => {
+    if (!sidebar.classList.contains('is-collapsed')) return;
+    cancelClose();
+    activeGroup = group;
+    renderFlyout(group);
+    const rect = group.querySelector(':scope > .sb-toggle-head')?.getBoundingClientRect() || group.getBoundingClientRect();
+    const top = Math.min(Math.max(rect.top - 8, 50), window.innerHeight - flyout.offsetHeight - 12);
+    flyout.style.left = `${rect.right + 8}px`;
+    flyout.style.top = `${top}px`;
+    flyout.classList.add('is-open');
+  };
+
+  sidebar.querySelectorAll('.sb-toggle').forEach(group => {
+    const head = group.querySelector(':scope > .sb-toggle-head');
+    if (!head) return;
+    head.addEventListener('mouseenter', () => openFlyout(group));
+    head.addEventListener('focusin', () => openFlyout(group));
+    head.addEventListener('click', (event) => {
+      if (!sidebar.classList.contains('is-collapsed')) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (activeGroup === group && flyout.classList.contains('is-open')) closeFlyout();
+      else openFlyout(group);
+    });
+  });
+
+  sidebar.addEventListener('mouseleave', scheduleClose);
+  flyout.addEventListener('mouseenter', cancelClose);
+  flyout.addEventListener('mouseleave', scheduleClose);
+  window.addEventListener('resize', closeFlyout);
+  document.addEventListener('click', (event) => {
+    if (!flyout.contains(event.target) && !sidebar.contains(event.target)) closeFlyout();
+  });
+}
+
 const APP_FRAME_STATE_KEY = 'auditCompass.currentFrameState';
 const DEFAULT_PROJECT = 'Test2';
 const DEFAULT_BOOK = '20251022';
@@ -191,8 +299,10 @@ function restoreFrameState(){
   if (toggle && sidebar){
     toggle.addEventListener('click', function(){
       sidebar.classList.toggle('is-collapsed');
+      document.getElementById('sidebarFlyout')?.classList.remove('is-open');
     });
   }
 
+  initCollapsedSidebarFlyout();
   restoreFrameState();
 })();

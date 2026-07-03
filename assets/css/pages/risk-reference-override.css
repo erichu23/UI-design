@@ -135,10 +135,10 @@ body{ background:#f7f9fc; font-size:12px; }
   overflow-x:hidden !important;
   overflow-y:auto !important;
   scrollbar-width:thin;
-  scrollbar-color:#cbd5e1 transparent;
+  scrollbar-color:rgba(148,163,184,.26) transparent;
 }
-.content-area::-webkit-scrollbar{ width:7px; }
-.content-area::-webkit-scrollbar-thumb{ border-radius:999px; background:#cbd5e1; }
+.content-area::-webkit-scrollbar{ width:4px; height:4px; }
+.content-area::-webkit-scrollbar-thumb{ border-radius:999px; background:rgba(148,163,184,.26); }
 .cfo-dashboard,.check-context-bar,.tabs-bar,.table-area{ border:1px solid #dfe7f1 !important; box-shadow:0 1px 3px rgba(15,23,42,.035) !important; }
 .cfo-dashboard{ margin:0 0 6px !important; padding:0 !important; border-radius:8px !important; background:#fff !important; overflow:hidden !important; }
 .cfo-dash-header{
@@ -541,7 +541,7 @@ thead tr.sub-header .cp-name-sticky{
   border-radius:9px;
   background:#fff;
   scrollbar-width:thin;
-  scrollbar-color:#cbd8e7 transparent;
+  scrollbar-color:rgba(148,163,184,.26) transparent;
 }
 .risk-table-zoom-scroll table{
   width:max-content !important;
@@ -669,6 +669,13 @@ tbody tr:hover .cleared-cell{ background:#e2f4ee !important; }
   clip-path:polygon(8% 14%,92% 14%,60% 52%,60% 88%,40% 88%,40% 52%) !important;
 }
 .th-filter-icon:hover::before{ background:#2f6fed !important; }
+.th-filter-icon.is-active{
+  background:#eaf2ff !important;
+  box-shadow:inset 0 0 0 1px #bfdbfe !important;
+}
+.th-filter-icon.is-active::before{
+  background:#1d4ed8 !important;
+}
 .th-icons{
   display:inline-flex !important;
   align-items:center !important;
@@ -1093,12 +1100,12 @@ body{
 .scroll-wrap{
   overflow:auto !important;
   scrollbar-width:thin !important;
-  scrollbar-color:rgba(148,163,184,.42) transparent !important;
+  scrollbar-color:rgba(148,163,184,.26) transparent !important;
 }
 
 .scroll-wrap::-webkit-scrollbar{
-  width:6px !important;
-  height:6px !important;
+  width:4px !important;
+  height:4px !important;
   display:block !important;
 }
 
@@ -1108,7 +1115,7 @@ body{
 
 .scroll-wrap::-webkit-scrollbar-thumb{
   border-radius:999px !important;
-  background:rgba(148,163,184,.42) !important;
+  background:rgba(148,163,184,.26) !important;
 }
 
 table,
@@ -1299,12 +1306,12 @@ tbody tr:hover td.risk-cp-type-cell.is-personal{
 /* iframe 内统一轻量滚动条 */
 *{
   scrollbar-width:thin !important;
-  scrollbar-color:rgba(148,163,184,.42) transparent !important;
+  scrollbar-color:rgba(148,163,184,.26) transparent !important;
 }
 
 *::-webkit-scrollbar{
-  width:6px !important;
-  height:6px !important;
+  width:4px !important;
+  height:4px !important;
   display:block !important;
 }
 
@@ -1314,11 +1321,11 @@ tbody tr:hover td.risk-cp-type-cell.is-personal{
 
 *::-webkit-scrollbar-thumb{
   border-radius:999px !important;
-  background:rgba(148,163,184,.42) !important;
+  background:rgba(148,163,184,.26) !important;
 }
 
 *::-webkit-scrollbar-thumb:hover{
-  background:rgba(100,116,139,.58) !important;
+  background:rgba(100,116,139,.42) !important;
 }
 
 /* =========================================================
@@ -2483,6 +2490,78 @@ html body #txTable tbody td.amount.outflow{
 }
 
 html body #cpTable tbody td.amount.tax-purchase{
+  color:#dd8b22 !important;
+  font-weight:700 !important;
+}
+
+html body .risk-table-zoom-scroll{
+  overflow:auto !important;
+}
+
+html body .risk-table-zoom-scroll table thead{
+  position:static !important;
+}
+
+html body .risk-table-zoom-scroll table thead th{
+  position:sticky !important;
+  background-clip:padding-box !important;
+}
+
+html body .risk-table-zoom-scroll table thead tr:nth-child(1) th{
+  top:0 !important;
+  z-index:40 !important;
+  background:#edf5ff !important;
+}
+
+html body .risk-table-zoom-scroll table thead tr:nth-child(2) th{
+  top:30px !important;
+  z-index:41 !important;
+  background:#f4f8fd !important;
+}
+
+html body .risk-table-zoom-scroll table thead tr:nth-child(3) th{
+  top:60px !important;
+  z-index:42 !important;
+  background:#eef5fc !important;
+}
+
+html body .risk-table-zoom-scroll table tbody td.risk-cp-type-cell{
+  color:#334155 !important;
+  font-weight:700 !important;
+  text-align:center !important;
+}
+
+html body .risk-table-zoom-scroll table tbody td.risk-cp-type-cell.is-customer,
+html body .risk-table-zoom-scroll table tbody tr:hover td.risk-cp-type-cell.is-customer{
+  background:#eef5ff !important;
+}
+
+html body .risk-table-zoom-scroll table tbody td.risk-cp-type-cell.is-supplier,
+html body .risk-table-zoom-scroll table tbody tr:hover td.risk-cp-type-cell.is-supplier{
+  background:#f8f3ea !important;
+}
+
+html body .risk-table-zoom-scroll table tbody td.risk-cp-type-cell.is-personal,
+html body .risk-table-zoom-scroll table tbody tr:hover td.risk-cp-type-cell.is-personal{
+  background:#f5f1ff !important;
+}
+
+html body .risk-table-zoom-scroll table tbody td.amount.inflow{
+  color:#4f8df7 !important;
+  font-weight:700 !important;
+}
+
+html body .risk-table-zoom-scroll table tbody td.amount.tax-sales{
+  color:#2aa99a !important;
+  font-weight:700 !important;
+}
+
+html body .risk-table-zoom-scroll table tbody td.amount.outflow{
+  color:#d95785 !important;
+  font-weight:700 !important;
+}
+
+html body .risk-table-zoom-scroll table tbody td.amount.tax-purchase{
   color:#dd8b22 !important;
   font-weight:700 !important;
 }
