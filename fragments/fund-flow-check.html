@@ -2645,7 +2645,7 @@
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           执行筛查
         </button>
-        <button class="btn-export" onclick="exportDemo()">导出</button>
+        <button class="btn-export" onclick="openRiskExportModal()">导出</button>
         <button class="btn-table-zoom" type="button" onclick="openRiskTableZoom()" title="放大查看当前表格">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5"/><path d="M3 3l7 7"/><path d="M16 3h5v5"/><path d="M21 3l-7 7"/><path d="M8 21H3v-5"/><path d="M3 21l7-7"/><path d="M16 21h5v-5"/><path d="M21 21l-7-7"/></svg>
           放大
@@ -2774,6 +2774,56 @@
       <button class="risk-table-zoom-close" type="button" onclick="closeRiskTableZoom()" aria-label="关闭">×</button>
     </div>
     <div class="risk-table-zoom-body" id="riskTableZoomBody"></div>
+  </div>
+</div>
+
+<div class="risk-export-modal" id="riskExportModal" aria-hidden="true">
+  <div class="risk-export-panel" role="dialog" aria-modal="true" aria-labelledby="riskExportTitle">
+    <div class="risk-export-head">
+      <div class="risk-export-title">
+        <span id="riskExportTitle">导出核查结果</span>
+        <small>选择导出的核查标准项与结果表页</small>
+      </div>
+      <button class="risk-export-close" type="button" onclick="closeRiskExportModal()" aria-label="关闭">×</button>
+    </div>
+    <div class="risk-export-body">
+      <section class="risk-export-section risk-export-tables">
+        <div class="risk-export-section-title">导出结果</div>
+        <label class="risk-export-table-option">
+          <input type="checkbox" data-export-table="cp" checked onchange="updateRiskExportSummary()">
+          <span>
+            <strong>对手方汇总</strong>
+            <em id="riskExportCpCount">当前筛选 0 条</em>
+          </span>
+        </label>
+        <label class="risk-export-table-option">
+          <input type="checkbox" data-export-table="tx" checked onchange="updateRiskExportSummary()">
+          <span>
+            <strong>流水明细</strong>
+            <em id="riskExportTxCount">当前筛选 0 条</em>
+          </span>
+        </label>
+        <div class="risk-export-note">导出文件包含所选表页；每个表页按当前筛选、排序后的结果生成。</div>
+      </section>
+      <section class="risk-export-section risk-export-check-section">
+        <div class="risk-export-section-head">
+          <div class="risk-export-section-title">核查标准项</div>
+          <div class="risk-export-actions">
+            <button type="button" onclick="selectRiskExportChecks('current')">当前显示项</button>
+            <button type="button" onclick="selectRiskExportChecks('all')">全选</button>
+            <button type="button" onclick="selectRiskExportChecks('clear')">清空</button>
+          </div>
+        </div>
+        <div class="risk-export-checks" id="riskExportChecks"></div>
+      </section>
+    </div>
+    <div class="risk-export-foot">
+      <span class="risk-export-summary" id="riskExportSummary">请选择导出内容</span>
+      <div class="risk-export-foot-actions">
+        <button type="button" class="risk-export-secondary" onclick="closeRiskExportModal()">取消</button>
+        <button type="button" class="risk-export-primary" onclick="confirmRiskExport()">导出</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -5215,8 +5265,289 @@ function runCheck() {
   }, 800);
 }
 
+let riskExportSelectedChecks = new Set(ALL_CHECK_IDS);
+
+function getRiskExportCheckedTables() {
+  return Array.from(document.querySelectorAll('#riskExportModal [data-export-table]:checked'))
+    .map(input => input.dataset.exportTable);
+}
+
+function getRiskExportRows(kind, checkIds = riskExportSelectedChecks) {
+  const selected = checkIds instanceof Set ? checkIds : new Set(checkIds || []);
+  if (!selected.size) return [];
+  return getRiskFilteredRows(kind).filter(row => {
+    const rowIds = kind === 'tx' ? getTxCheckIds(row.flags) : getHitCheckIds(row.hits);
+    return Array.from(selected).some(checkId => rowIds.has(checkId) && isCheckHitForRow(row, checkId, kind));
+  });
+}
+
+function openRiskExportModal() {
+  const modal = document.getElementById('riskExportModal');
+  if (!modal) return;
+  riskExportSelectedChecks = new Set(ALL_CHECK_IDS);
+  modal.querySelectorAll('[data-export-table]').forEach(input => { input.checked = true; });
+  renderRiskExportChecks();
+  updateRiskExportSummary();
+  modal.classList.add('is-open');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeRiskExportModal() {
+  const modal = document.getElementById('riskExportModal');
+  if (!modal) return;
+  modal.classList.remove('is-open');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function selectRiskExportChecks(mode) {
+  if (mode === 'all') riskExportSelectedChecks = new Set(ALL_CHECK_IDS);
+  if (mode === 'clear') riskExportSelectedChecks = new Set();
+  if (mode === 'current') {
+    riskExportSelectedChecks = new Set(getVisibleCheckGroups().flatMap(group => group.checks.map(check => check.id)));
+  }
+  renderRiskExportChecks();
+  updateRiskExportSummary();
+}
+
+function toggleRiskExportGroup(groupKey, checked) {
+  const group = CHECK_COLUMNS.find(item => item.groupKey === groupKey);
+  if (!group) return;
+  group.checks.forEach(check => {
+    if (checked) riskExportSelectedChecks.add(check.id);
+    else riskExportSelectedChecks.delete(check.id);
+  });
+  renderRiskExportChecks();
+  updateRiskExportSummary();
+}
+
+function toggleRiskExportCheck(checkId, checked) {
+  if (checked) riskExportSelectedChecks.add(checkId);
+  else riskExportSelectedChecks.delete(checkId);
+  renderRiskExportChecks();
+  updateRiskExportSummary();
+}
+
+function renderRiskExportChecks() {
+  const box = document.getElementById('riskExportChecks');
+  if (!box) return;
+  box.innerHTML = CHECK_COLUMNS.map(group => {
+    const selectedCount = group.checks.filter(check => riskExportSelectedChecks.has(check.id)).length;
+    const checked = selectedCount === group.checks.length && group.checks.length > 0 ? 'checked' : '';
+    const indeterminate = selectedCount > 0 && selectedCount < group.checks.length ? 'data-indeterminate="true"' : '';
+    return `
+      <div class="risk-export-group">
+        <label class="risk-export-group-head">
+          <input type="checkbox" ${checked} ${indeterminate} onchange="toggleRiskExportGroup('${group.groupKey}', this.checked)">
+          <span>${group.label}</span>
+          <em>${selectedCount}/${group.checks.length}</em>
+        </label>
+        <div class="risk-export-check-list">
+          ${group.checks.map(check => {
+            const title = checkMeta[check.id]?.title || check.id;
+            const active = riskExportSelectedChecks.has(check.id);
+            return `
+              <label class="risk-export-check ${active ? 'is-active' : ''}">
+                <input type="checkbox" ${active ? 'checked' : ''} onchange="toggleRiskExportCheck('${check.id}', this.checked)">
+                <span>${escapeHtml(check.abbr || check.id)}</span>
+                <em>${escapeHtml(title.replace(`${check.id} `, ''))}</em>
+              </label>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+  box.querySelectorAll('[data-indeterminate="true"]').forEach(input => { input.indeterminate = true; });
+}
+
+function updateRiskExportSummary() {
+  const selectedCount = riskExportSelectedChecks.size;
+  const cpRows = getRiskExportRows('cp');
+  const txRows = getRiskExportRows('tx');
+  const cpCount = document.getElementById('riskExportCpCount');
+  const txCount = document.getElementById('riskExportTxCount');
+  const summary = document.getElementById('riskExportSummary');
+  if (cpCount) cpCount.textContent = `当前可导出 ${cpRows.length.toLocaleString('zh-CN')} 条`;
+  if (txCount) txCount.textContent = `当前可导出 ${txRows.length.toLocaleString('zh-CN')} 条`;
+  const tables = getRiskExportCheckedTables();
+  if (summary) {
+    summary.textContent = `已选 ${selectedCount} 个核查标准项，${tables.length} 个结果表页`;
+  }
+}
+
+function riskExportXml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&apos;'
+  })[ch]);
+}
+
+function riskExportMarkStatus(row, kind) {
+  const status = row.markStatus || (kind === 'tx'
+    ? ((row.flags && row.flags.length) ? 'flagged' : 'none')
+    : ((row.hits && row.hits.length) ? 'flagged' : 'none'));
+  return ({ flagged: '需关注', explained: '已说明', cleared: '已排除', none: '未标记' })[status] || '未标记';
+}
+
+function riskExportCell(value, type = 'String') {
+  const cellType = type === 'Number' && value !== '' && value !== null && value !== undefined ? 'Number' : 'String';
+  return `<Cell><Data ss:Type="${cellType}">${riskExportXml(value)}</Data></Cell>`;
+}
+
+function riskExportRow(values) {
+  return `<Row>${values.map(item => Array.isArray(item) ? riskExportCell(item[0], item[1]) : riskExportCell(item)).join('')}</Row>`;
+}
+
+function riskExportSheet(name, headers, rows) {
+  const tableRows = [
+    riskExportRow(headers),
+    ...rows.map(row => riskExportRow(row))
+  ].join('');
+  return `<Worksheet ss:Name="${riskExportXml(name)}"><Table>${tableRows}</Table></Worksheet>`;
+}
+
+function getRiskExportCpSheet(checks) {
+  const rows = getRiskExportRows('cp', checks).map(row => {
+    const checkCells = checks.map(checkId => isCheckHitForRow(row, checkId, 'cp') ? 1 : '');
+    return [
+      ...checkCells,
+      [getHitCheckIds(row.hits).size, 'Number'],
+      row.name,
+      row.cpType,
+      [row.inflow, 'Number'],
+      [row.salesTax, 'Number'],
+      [row.outflow, 'Number'],
+      [row.inputTax, 'Number'],
+      [row.txCount, 'Number'],
+      row.industry,
+      row.bizAge,
+      row.executives || '',
+      riskExportMarkStatus(row, 'cp'),
+      row.remark || ''
+    ];
+  });
+  return {
+    headers: [
+      ...checks,
+      '命中个数',
+      '对手方名称',
+      '对手方类型',
+      '流入金额',
+      '销项税价合计',
+      '流出金额',
+      '进项税价合计',
+      '交易笔数',
+      '行业',
+      '经营时长',
+      '董监高',
+      '标记状态',
+      '备注'
+    ],
+    rows
+  };
+}
+
+function getRiskExportTxSheet(checks) {
+  const rows = getRiskExportRows('tx', checks).map(row => {
+    const checkCells = checks.map(checkId => isCheckHitForRow(row, checkId, 'tx') ? 1 : '');
+    return [
+      ...checkCells,
+      [getTxCheckIds(row.flags).size, 'Number'],
+      row.txId,
+      row.date,
+      row.time,
+      row.selfName,
+      row.selfAccount,
+      row.cp,
+      row.account,
+      row.currency,
+      row.type,
+      row.dir,
+      [row.dir === '流入' ? row.amount : 0, 'Number'],
+      [row.dir === '流出' ? row.amount : 0, 'Number'],
+      row.remark,
+      riskExportMarkStatus(row, 'tx')
+    ];
+  });
+  return {
+    headers: [
+      ...checks,
+      '命中个数',
+      '交易编号',
+      '交易日期',
+      '交易时间',
+      '本方名称',
+      '本方账号',
+      '对手方名称',
+      '对手方账号',
+      '币种',
+      '交易类型',
+      '方向',
+      '流入金额',
+      '流出金额',
+      '摘要',
+      '标记状态'
+    ],
+    rows
+  };
+}
+
+function downloadRiskExportWorkbook(tables, checks) {
+  const sheets = [];
+  if (tables.includes('cp')) {
+    const cpSheet = getRiskExportCpSheet(checks);
+    sheets.push(riskExportSheet('对手方汇总', cpSheet.headers, cpSheet.rows));
+  }
+  if (tables.includes('tx')) {
+    const txSheet = getRiskExportTxSheet(checks);
+    sheets.push(riskExportSheet('流水明细', txSheet.headers, txSheet.rows));
+  }
+  const workbook = `<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal"><Alignment ss:Vertical="Center"/><Font ss:FontName="Arial" ss:Size="10"/></Style>
+ </Styles>
+ ${sheets.join('')}
+</Workbook>`;
+  const blob = new Blob([workbook], { type: 'application/vnd.ms-excel;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const day = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  a.href = url;
+  a.download = `特殊交易识别_核查结果_${day}.xls`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function confirmRiskExport() {
+  const tables = getRiskExportCheckedTables();
+  const checks = ALL_CHECK_IDS.filter(checkId => riskExportSelectedChecks.has(checkId));
+  if (!tables.length) {
+    showToast('warning', '请至少选择一个导出结果表页');
+    return;
+  }
+  if (!checks.length) {
+    showToast('warning', '请至少选择一个核查标准项');
+    return;
+  }
+  downloadRiskExportWorkbook(tables, checks);
+  closeRiskExportModal();
+  const cpCount = tables.includes('cp') ? getRiskExportRows('cp', new Set(checks)).length : 0;
+  const txCount = tables.includes('tx') ? getRiskExportRows('tx', new Set(checks)).length : 0;
+  showToast('success', `已导出 ${checks.length} 个核查标准项：对手方汇总 ${cpCount} 条，流水明细 ${txCount} 条`);
+}
+
 function exportDemo() {
-  showToast('info', 'Demo 模式下导出功能仅做展示');
+  openRiskExportModal();
 }
 
 function openRiskTableZoom() {
@@ -5520,8 +5851,15 @@ document.getElementById('riskTableZoomModal')?.addEventListener('click', (event)
   if (event.target?.id === 'riskTableZoomModal') closeRiskTableZoom();
 });
 
+document.getElementById('riskExportModal')?.addEventListener('click', (event) => {
+  if (event.target?.id === 'riskExportModal') closeRiskExportModal();
+});
+
 document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') closeRiskTableZoom();
+  if (event.key === 'Escape') {
+    closeRiskTableZoom();
+    closeRiskExportModal();
+  }
 });
 
 // ─── CHECK GROUP COLLAPSE STATE ────────────────────────────────────────────────

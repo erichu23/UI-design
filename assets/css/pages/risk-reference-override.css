@@ -2566,6 +2566,318 @@ html body .risk-table-zoom-scroll table tbody td.amount.tax-purchase{
   font-weight:700 !important;
 }
 
+/* 特殊交易识别：导出核查结果配置弹窗 */
+html body .risk-export-modal{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2600 !important;
+  display:none !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:24px !important;
+  background:rgba(15,23,42,.34) !important;
+  backdrop-filter:blur(2px) !important;
+}
+
+html body .risk-export-modal.is-open{
+  display:flex !important;
+}
+
+html body .risk-export-panel{
+  width:min(920px, calc(100vw - 48px)) !important;
+  max-height:min(760px, calc(100vh - 48px)) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  border:1px solid #dbe7f5 !important;
+  border-radius:10px !important;
+  background:#fff !important;
+  box-shadow:0 22px 60px rgba(15,23,42,.2) !important;
+  overflow:hidden !important;
+}
+
+html body .risk-export-head{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:14px !important;
+  padding:12px 14px !important;
+  border-bottom:1px solid #e6edf5 !important;
+  background:#fbfdff !important;
+}
+
+html body .risk-export-title{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:3px !important;
+  color:#263a57 !important;
+}
+
+html body .risk-export-title span{
+  font-size:14px !important;
+  font-weight:800 !important;
+}
+
+html body .risk-export-title small{
+  color:#64748b !important;
+  font-size:11px !important;
+  font-weight:500 !important;
+}
+
+html body .risk-export-close{
+  width:28px !important;
+  height:28px !important;
+  border:1px solid #d9e5f2 !important;
+  border-radius:7px !important;
+  background:#fff !important;
+  color:#64748b !important;
+  font-size:18px !important;
+  line-height:1 !important;
+  cursor:pointer !important;
+}
+
+html body .risk-export-close:hover{
+  border-color:#bfd4ef !important;
+  color:#1d4ed8 !important;
+}
+
+html body .risk-export-body{
+  display:grid !important;
+  grid-template-columns:260px minmax(0,1fr) !important;
+  gap:12px !important;
+  padding:12px !important;
+  overflow:auto !important;
+  background:#f6f9fd !important;
+}
+
+html body .risk-export-section{
+  border:1px solid #e0e9f5 !important;
+  border-radius:9px !important;
+  background:#fff !important;
+  box-shadow:0 2px 8px rgba(15,23,42,.035) !important;
+}
+
+html body .risk-export-tables{
+  padding:12px !important;
+}
+
+html body .risk-export-section-title{
+  color:#263a57 !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+}
+
+html body .risk-export-section-head{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  padding:10px 12px !important;
+  border-bottom:1px solid #edf3fa !important;
+}
+
+html body .risk-export-actions{
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  flex-wrap:wrap !important;
+}
+
+html body .risk-export-actions button,
+html body .risk-export-secondary{
+  height:28px !important;
+  padding:0 10px !important;
+  border:1px solid #d9e5f2 !important;
+  border-radius:7px !important;
+  background:#fff !important;
+  color:#475569 !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+  cursor:pointer !important;
+}
+
+html body .risk-export-actions button:hover,
+html body .risk-export-secondary:hover{
+  border-color:#bfd4ef !important;
+  background:#f7fbff !important;
+  color:#1d4ed8 !important;
+}
+
+html body .risk-export-primary{
+  height:28px !important;
+  padding:0 14px !important;
+  border:1px solid #1d4ed8 !important;
+  border-radius:7px !important;
+  background:#1d4ed8 !important;
+  color:#fff !important;
+  font-size:11px !important;
+  font-weight:800 !important;
+  cursor:pointer !important;
+}
+
+html body .risk-export-primary:hover{
+  background:#1749b7 !important;
+}
+
+html body .risk-export-table-option{
+  display:flex !important;
+  align-items:center !important;
+  gap:9px !important;
+  margin-top:10px !important;
+  padding:10px !important;
+  border:1px solid #e2ebf6 !important;
+  border-radius:8px !important;
+  background:#fbfdff !important;
+  cursor:pointer !important;
+}
+
+html body .risk-export-table-option:hover{
+  border-color:#bfd4ef !important;
+  background:#f5f9ff !important;
+}
+
+html body .risk-export-table-option input,
+html body .risk-export-check input,
+html body .risk-export-group-head input{
+  width:14px !important;
+  height:14px !important;
+  accent-color:#1d4ed8 !important;
+}
+
+html body .risk-export-table-option span{
+  min-width:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:2px !important;
+}
+
+html body .risk-export-table-option strong{
+  color:#263a57 !important;
+  font-size:12px !important;
+}
+
+html body .risk-export-table-option em,
+html body .risk-export-note{
+  color:#64748b !important;
+  font-size:11px !important;
+  font-style:normal !important;
+}
+
+html body .risk-export-note{
+  margin-top:10px !important;
+  line-height:1.6 !important;
+}
+
+html body .risk-export-checks{
+  max-height:470px !important;
+  overflow:auto !important;
+  padding:10px 12px 12px !important;
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+  gap:10px !important;
+}
+
+html body .risk-export-group{
+  border:1px solid #e3ecf7 !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  overflow:hidden !important;
+}
+
+html body .risk-export-group-head{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  min-height:32px !important;
+  padding:8px 9px !important;
+  border-bottom:1px solid #eef4fa !important;
+  background:#f7fbff !important;
+  color:#263a57 !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  cursor:pointer !important;
+}
+
+html body .risk-export-group-head span{
+  flex:1 !important;
+}
+
+html body .risk-export-group-head em{
+  color:#64748b !important;
+  font-size:11px !important;
+  font-style:normal !important;
+  font-weight:700 !important;
+}
+
+html body .risk-export-check-list{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:5px !important;
+  padding:8px !important;
+}
+
+html body .risk-export-check{
+  display:grid !important;
+  grid-template-columns:14px 42px minmax(0,1fr) !important;
+  align-items:center !important;
+  gap:7px !important;
+  min-height:26px !important;
+  padding:4px 6px !important;
+  border-radius:6px !important;
+  color:#475569 !important;
+  font-size:11px !important;
+  cursor:pointer !important;
+}
+
+html body .risk-export-check:hover,
+html body .risk-export-check.is-active{
+  background:#f4f8ff !important;
+}
+
+html body .risk-export-check span{
+  color:#1d4ed8 !important;
+  font-weight:800 !important;
+}
+
+html body .risk-export-check em{
+  min-width:0 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+  color:#64748b !important;
+  font-style:normal !important;
+}
+
+html body .risk-export-foot{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  padding:10px 12px !important;
+  border-top:1px solid #e6edf5 !important;
+  background:#fff !important;
+}
+
+html body .risk-export-summary{
+  min-width:0 !important;
+  color:#64748b !important;
+  font-size:11px !important;
+}
+
+html body .risk-export-foot-actions{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+}
+
+@media (max-width: 860px){
+  html body .risk-export-body{
+    grid-template-columns:1fr !important;
+  }
+  html body .risk-export-checks{
+    grid-template-columns:1fr !important;
+  }
+}
+
 html body #cpTable thead th.group-collapsible,
 html body #txTable thead th.group-collapsible{
   min-width:94px !important;
