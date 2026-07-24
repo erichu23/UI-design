@@ -11,14 +11,14 @@
   <!-- ECharts -->
   <script defer src="../assets/vendor/echarts/echarts.min.js?v=5.6.0-local"></script>
   <script defer src="../assets/vendor/leaflet/leaflet.js?v=1.9.4-local"></script>
-  <link rel="stylesheet" href="../assets/css/base.css?v=20260626-ds-position1"/>
+  <link rel="stylesheet" href="../assets/css/base.css?v=20260723-button-size1"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260622-tab-rebuild7"/>
   <link rel="stylesheet" href="../assets/css/pages/account.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/biz.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/routine.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260507-routine"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260626-ds-position1"/>
-  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260625-meter-muted1"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260723-button-size1"/>
+  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260724-portrait-filter-cards1"/>
   <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260624-riskflow1"/>
 </head>
 <body>
@@ -97,9 +97,10 @@
 <div class="tabbar" id="topTabs">
 <div class="tab active" data-top="account">账户总览</div>
 <div class="tab" data-top="biz">经营分析</div>
-    <!-- <div class="tab" data-top="relation">关联方交易</div>
-<div class="tab" data-top="personal—transaction">个人交易</div>-->
+  <div class="tab" data-top="relation">已知关联方交易</div>
+<div class="tab" data-top="personal—transaction">个人交易</div>
 <div class="tab" data-top="transaction">特殊交易识别</div>
+<div class="tab" data-top="workingpaper">资金流水核查底稿导出</div>
 <div class="tab" data-top="statement">流水查询</div>
 <div class="tab-materiality"><label for="bankMateriality">重要性水平</label><input id="bankMateriality" placeholder="请输入" type="text"/><span>元</span></div>
 <button class="tab-guide-btn" id="bankOperationGuideBtn" type="button">操作指引</button>
@@ -137,7 +138,12 @@
 <div class="tab-scroll">
 <div class="card bank-balance-trend-card">
 <div class="head"><div class="title">资金余额变动趋势</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div></div>
-<div class="content"><div class="chart-md" id="chart-account-balance"></div></div>
+<div class="content">
+<div class="account-trend-stack">
+<div class="chart-md account-trend-chart" id="chart-account-balance"></div>
+<div class="chart-md account-trend-chart" id="chart-account-io"></div>
+</div>
+</div>
 </div>
 <!-- ========== 资金总览 ========== -->
 <div class="card">
@@ -156,11 +162,11 @@
 </div>
 <div class="content">
 <!-- 状态图例（靠右） -->
-<div class="small" style="display:flex;gap:16px;justify-content:flex-end;margin-bottom:8px;">
-<span><i style="width:10px;height:10px;border-radius:50%;background:#facc15;display:inline-block;"></i> 当日余额不连续</span>
-<span><i style="width:10px;height:10px;border-radius:50%;background:#cbd5e1;display:inline-block;"></i> 无流水数据</span>
-<span><i style="width:10px;height:10px;border-radius:50%;background:#3b82f6;display:inline-block;"></i> 检验无误</span>
-<span><i style="width:10px;height:10px;border-radius:50%;background:var(--flow-out);display:inline-block;"></i> 余额错误</span>
+<div class="small account-check-legend">
+<span><i class="chk-dot chk-warn"></i>当日余额不连续</span>
+<span><i class="chk-dot chk-none"></i>无流水数据</span>
+<span><i class="chk-dot chk-ok"></i>检验无误</span>
+<span><i class="chk-dot chk-err"></i>余额错误</span>
 </div>
 <!-- 总览表 -->
 <div class="account-summary-table-wrap">
@@ -335,10 +341,25 @@
 
   <div class="portrait-chart-grid">
     <div class="card portrait-chart-card"><div class="head"><div class="title">月度收支构成分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-legend"><span class="is-in">流入</span><span class="is-out">流出</span><span>单位：千元</span></div></div><div class="content"><div class="portrait-chart" id="portraitMonthlyChart"></div></div></div>
-    <div class="card portrait-chart-card"><div class="head"><div class="title">对手方交易特征分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-segment" id="portraitBubbleTabs"><button class="is-active" data-mode="inflow" type="button">流入</button><button data-mode="outflow" type="button">流出</button><button data-mode="total" type="button">交易总额</button></div></div><div class="content"><div class="portrait-chart" id="portraitBubbleChart"></div><div class="portrait-range"><label>金额范围<input id="portraitXMin" type="number" value="0"/><span>至</span><input id="portraitXMax" type="number" value="40000"/></label><label>交易次数<input id="portraitYMin" type="number" value="0"/><span>至</span><input id="portraitYMax" type="number" value="100"/></label></div></div></div>
+    <div class="card portrait-chart-card portrait-feature-card"><div class="head"><div class="title">对手方交易特征分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-feature-tools"><div class="portrait-segment" id="portraitBubbleTabs"><button class="is-active" data-mode="inflow" type="button">流入</button><button data-mode="outflow" type="button">流出</button><button data-mode="total" type="button">交易总额</button></div><label class="portrait-topn-control">前<input id="portraitFeatureTopN" type="number" min="5" max="100" step="1" value="20"/>大</label></div></div><div class="content"><div class="portrait-feature-table-wrap"><table class="portrait-feature-table"><thead><tr><th>对手方名称</th><th id="portraitFeatureAmountHead">流入金额</th></tr></thead><tbody id="portraitFeatureBody"></tbody></table></div></div></div>
   </div>
 
-  <div class="card portrait-table-card"><div class="head"><div class="title">对手方汇总清单</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-table-count bank-head-meta-hidden" id="portraitTableCount"></div><button class="btn bank-head-push" id="portraitColumnsBtn" type="button">自定义表头</button><button class="btn primary" id="portraitExportBtn" type="button">导出清单</button></div><div class="content"><div class="portrait-table-wrap"><table class="table" id="portraitCounterpartyTable"><thead><tr><th data-sort="name">对手方名称</th><th>月度分布</th><th data-sort="type">对手方类型</th><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="count">交易笔数</th><th data-sort="sameRatio">同进同出比例（%）</th><th data-sort="industry">行业</th><th data-sort="duration">经营时长</th><th>董监高</th></tr></thead><tbody id="portraitCounterpartyBody"></tbody></table></div><div class="pagination portrait-pagination" id="portraitPager"></div></div></div>
+  <div class="card portrait-table-card">
+    <div class="head">
+      <div class="title">对手方汇总清单</div>
+      <div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div>
+      <div class="portrait-table-count bank-head-meta-hidden" id="portraitTableCount"></div>
+    </div>
+    <div class="content">
+      <div class="portrait-counterparty-filters" id="portraitCounterpartyFilters"></div>
+      <div class="portrait-table-viewbar">
+        <div class="portrait-table-tabs" id="portraitTableTabs"><button class="is-active" data-view="summary" type="button">合计数据</button><button data-view="business" type="button">工商信息</button></div>
+        <div class="portrait-table-actions"><button class="btn" id="portraitColumnsBtn" type="button">自定义表头</button><button class="btn primary" id="portraitExportBtn" type="button">导出清单</button></div>
+      </div>
+      <div class="portrait-table-wrap"><table class="table" id="portraitCounterpartyTable"><thead id="portraitCounterpartyHead"></thead><tbody id="portraitCounterpartyBody"></tbody></table></div>
+      <div class="pagination portrait-pagination" id="portraitPager"></div>
+    </div>
+  </div>
 </div>
 </section>
 
@@ -720,95 +741,14 @@
 </div>
 </section>
 
-<!-- 旧核查底稿仅保留兼容，不再作为高风险核查页面 -->
-<section class="tab-pane hide" id="pane-transaction-legacy" hidden>
+<!-- ===================== 资金流水核查底稿导出 ===================== -->
+<section class="tab-pane hide" id="pane-workingpaper">
   <div class="tab-scroll wp-page">
 
-    <!-- 顶部信息条 -->
-    <div class="wp-info-strip">
-      <span>项目编号/名称：<b id="wpProj">20220318/TEST</b></span>
-      <span>工作簿名：<b id="wpBook">test for tech hour</b></span>
-      <span>工作簿类型：<b id="wpKind">Non-IPO_NON-PIE</b></span>
-      <span>资本市场：<b id="wpMarket">N/A</b></span>
-      <span>重要性水平：<b id="wpMaterialityText">-</b></span>
-      <a href="javascript:void(0)" id="wpEditMarket" class="wp-strip-edit" title="编辑">✎</a>
-    </div>
-
-    <div class="wp-page-tip">
-      该底稿基于A股IPO的资金流水核查底稿生成，非A股IPO项目组可参考使用。
-    </div>
-
-    <!-- ① 信息测试 - 完整性测试 -->
-    <section class="wp-card-section" id="wpBlock1">
+    <!-- 信息测试 - 准确性测试 -->
+    <section class="wp-card-section" id="wpBlock2">
       <div class="wp-card-head">
         <div class="wp-card-title-wrap">
-          <span class="wp-card-index">①</span>
-          <div class="wp-card-title-group">
-            <div class="wp-card-title">信息测试 - 完整性测试</div>
-            <div class="wp-card-subtitle">
-              请先在表格确定每个账户银行流水获取方式
-              <a href="javascript:void(0)" class="blue">（说明）</a>
-            </div>
-          </div>
-        </div>
-        <button class="wp-fold-btn" type="button" data-fold-target="wpBlock1" title="收起/展开"></button>
-      </div>
-
-      <div class="wp-card-body">
-        <div class="wp-card-desc">
-          不同的流水获取方式，需执行对应的审计程序；<br>
-          用于评价资金流水的完整性（对应底稿中的 &lt; 1.2阅览交易流水完整性测试 &gt;）
-        </div>
-
-        <div class="wp-tools">
-          <div></div>
-          <div class="wp-tools-right">
-            <button class="btn primary" id="btnExportWp">导出</button>
-            <label class="btn primary">
-              导入
-              <input type="file" id="btnImportWp" accept=".xlsx,.csv" hidden>
-            </label>
-          </div>
-        </div>
-
-        <div class="wp-table-wrap">
-          <table class="table wp-table" id="wpTable1">
-            <thead>
-              <tr>
-                <th>被审计单位名称</th>
-                <th>银行账号</th>
-                <th>本方银行</th>
-                <th class="num">交易总额</th>
-                <th class="num">交易笔数</th>
-                <th style="min-width:280px;">银行流水获取方式</th>
-                <th style="width:90px;">更新人</th>
-                <th style="width:120px;">更新时间</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <div class="wp-pager">
-          <span>共 <b id="wpTable1Total">0</b> 条</span>
-          <button class="pager-btn" disabled>&lt;</button>
-          <button class="pager-btn is-active">1</button>
-          <button class="pager-btn" disabled>&gt;</button>
-          <select>
-            <option>20 条/页</option>
-          </select>
-          <span>跳至</span>
-          <input type="text" value="1">
-          <span>页</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ② 信息测试 - 准确性测试 -->
-    <section class="wp-card-section" id="wpBlock2" style="display:none;">
-      <div class="wp-card-head">
-        <div class="wp-card-title-wrap">
-          <span class="wp-card-index">②</span>
           <div class="wp-card-title-group">
             <div class="wp-card-title">信息测试 - 准确性测试</div>
           </div>
@@ -841,19 +781,14 @@
               <option value="基础">基础的</option>
             </select>
           </div>
-
-          <div class="field wp-inline-link-field">
-            <label>抽样说明</label>
-            <a href="javascript:void(0)" class="blue">抽样说明</a>
-          </div>
         </div>
 
-        <div class="wp-card-desc">
+        <div class="wp-card-desc" id="wpDirectTestDesc">
           系统会根据KAE中，使用直接测试方案时，属性抽样样本量表，自动计算最小样本量并进行随机抽样。<br>
-          用于评价资金流水的准确性（对应底稿中的 &lt; 1.3阅览交易流水准确性测试 &gt;）
+          用于评价资金流水的准确性（对应底稿中的 &lt; 1.3网银交易流水准确性测试 &gt;）
         </div>
 
-        <div class="wp-table-wrap">
+        <div class="wp-table-wrap" id="wpTable2Wrap">
           <table class="table wp-table" id="wpTable2">
             <thead>
               <tr>
@@ -869,26 +804,23 @@
           </table>
         </div>
 
-        <div class="wp-pager">
-          <span>共 <b id="wpTable2Total">0</b> 条</span>
-          <button class="pager-btn" disabled>&lt;</button>
-          <button class="pager-btn is-active">1</button>
-          <button class="pager-btn" disabled>&gt;</button>
-          <select>
-            <option>20 条/页</option>
-          </select>
-          <span>跳至</span>
-          <input type="text" value="1">
-          <span>页</span>
+        <div class="wp-pager audit-pager" id="wpTable2Pager">
+          <span class="audit-pager-total">共 <b id="wpTable2Total">0</b> 条</span>
+          <button class="audit-pager-btn audit-pager-arrow" disabled>‹</button>
+          <button class="audit-pager-btn is-active">1</button>
+          <button class="audit-pager-btn audit-pager-arrow" disabled>›</button>
+          <label class="audit-pager-size"><select><option selected>20 条/页</option></select></label>
+          <span class="audit-pager-jump-label">跳至</span>
+          <input class="audit-pager-jump" type="number" min="1" inputmode="numeric">
+          <span class="audit-pager-jump-label">页</span>
         </div>
       </div>
     </section>
 
-    <!-- ③ 核查标准 -->
+    <!-- 核查标准 -->
     <section class="wp-card-section" id="wpBlock3">
       <div class="wp-card-head">
         <div class="wp-card-title-wrap">
-          <span class="wp-card-index">③</span>
           <div class="wp-card-title-group">
             <div class="wp-card-title">核查标准</div>
           </div>
@@ -930,11 +862,10 @@
       </div>
     </section>
 
-    <!-- ④ 可能配合实施财务舞弊的第三方特征 -->
+    <!-- 可能配合实施财务舞弊的第三方特征 -->
     <section class="wp-card-section" id="wpBlock4">
       <div class="wp-card-head">
         <div class="wp-card-title-wrap">
-          <span class="wp-card-index">④</span>
           <div class="wp-card-title-group">
             <div class="wp-card-title">可能配合实施财务舞弊的第三方特征</div>
           </div>
@@ -970,7 +901,7 @@
     </section>
 
     <div class="wp-bottom-actions">
-      <button class="btn primary" id="btnGenRisk">生成资金流水核查底稿</button>
+      <button class="btn primary" id="btnGenRisk">导出底稿</button>
     </div>
   </div>
 </section>
@@ -1025,9 +956,9 @@
 </section></div>
 
 
-<script defer src="../assets/js/core/shared.js?v=20260626-ds-position1"></script>
+<script defer src="../assets/js/core/shared.js?v=20260723-column-popover1"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260508-fast2"></script>
-<script defer src="../assets/js/pages/portrait.js?v=20260626-ds-position1"></script>
+<script defer src="../assets/js/pages/portrait.js?v=20260724-portrait-filter-cards1"></script>
 <script defer src="../assets/js/pages/routine.js?v=20260508-fast2"></script>
 </body>
 </html>

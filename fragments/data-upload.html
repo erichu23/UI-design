@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>数据上传</title>
-  <link rel="stylesheet" href="../assets/css/pages/data-upload.css?v=20260626-scrollbar1"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-upload.css?v=20260723-button-size1"/>
 </head>
 <body>
   <div class="du-page">
@@ -138,12 +138,12 @@
         </div>
       </div>
 
-      <div class="du-tabbar">
-        <button class="du-tab active" type="button">银行流水数据上传</button>
-        <button class="du-tab" type="button">增值税数据上传</button>
+      <div class="du-tabbar" id="duUploadTabs">
+        <button class="du-tab active" data-upload-tab="bank" type="button">银行流水数据上传</button>
+        <button class="du-tab" data-upload-tab="vat" type="button">增值税数据上传</button>
       </div>
 
-      <div class="du-table-wrap">
+      <div class="du-table-wrap du-upload-panel active" data-upload-panel="bank">
         <table class="du-table">
           <thead>
             <tr>
@@ -202,7 +202,82 @@
             </tr>
             <tr>
               <td>4</td>
+              <td>分账号科目余额表</td>
+              <td><span class="du-status pending"><i></i> 未采集</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="du-actions">
+                <a href="javascript:void(0)">导入</a>
+                <a href="javascript:void(0)">导入记录</a>
+                <a href="javascript:void(0)">查看数据</a>
+              </td>
+            </tr>
+            <tr>
+              <td>5</td>
               <td>汇率主档信息</td>
+              <td><span class="du-status pending"><i></i> 未采集</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="du-actions">
+                <a href="javascript:void(0)">导入</a>
+                <a href="javascript:void(0)">导入记录</a>
+                <a href="javascript:void(0)">查看数据</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="du-table-wrap du-upload-panel" data-upload-panel="vat">
+        <table class="du-table">
+          <thead>
+            <tr>
+              <th style="width:60px;">序号</th>
+              <th>数据采集项</th>
+              <th style="width:110px;">采集状态</th>
+              <th style="width:120px;">创建人</th>
+              <th style="width:120px;">创建时间</th>
+              <th style="width:120px;">更新人</th>
+              <th style="width:120px;">更新时间</th>
+              <th style="width:140px;">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>增值税销项税发票清单</td>
+              <td><span class="du-status pending"><i></i> 未采集</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="du-actions">
+                <a href="javascript:void(0)">导入</a>
+                <a href="javascript:void(0)">导入记录</a>
+                <a href="javascript:void(0)">查看数据</a>
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>增值税进项税发票清单</td>
+              <td><span class="du-status pending"><i></i> 未采集</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="du-actions">
+                <a href="javascript:void(0)">导入</a>
+                <a href="javascript:void(0)">导入记录</a>
+                <a href="javascript:void(0)">查看数据</a>
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>增值税申报表</td>
               <td><span class="du-status pending"><i></i> 未采集</span></td>
               <td></td>
               <td></td>
@@ -223,5 +298,21 @@
       </div>
     </section>
   </div>
+  <script>
+    (function(){
+      const tabs = document.querySelectorAll("[data-upload-tab]");
+      const panels = document.querySelectorAll("[data-upload-panel]");
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const target = tab.getAttribute("data-upload-tab");
+          tabs.forEach((item) => item.classList.toggle("active", item === tab));
+          panels.forEach((panel) => {
+            panel.classList.toggle("active", panel.getAttribute("data-upload-panel") === target);
+          });
+        });
+      });
+    })();
+  </script>
 </body>
 </html>

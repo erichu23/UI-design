@@ -693,7 +693,7 @@ body{
   display:inline-flex;
   align-items:center;
   gap:6px;
-  color:#003366;
+  color:#42526b;
   text-decoration:none;
   font-weight:600;
   cursor:pointer;
@@ -703,18 +703,19 @@ body{
 
 .back-link:hover{
   background:#eef4ff;
+  color:#1f3f73;
 }
 
 .sep{
-  color:#94a3b8;
+  color:#b4c0cf;
 }
 
 .crumb{
-  color:#64748b;
+  color:#6f7f93;
 }
 
 #module-title{
-  color:#0f172a;
+  color:#334155;
   font-weight:700;
 }
 

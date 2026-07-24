@@ -139,7 +139,7 @@ body{ background:#f7f9fc; font-size:12px; }
 }
 .content-area::-webkit-scrollbar{ width:4px; height:4px; }
 .content-area::-webkit-scrollbar-thumb{ border-radius:999px; background:rgba(148,163,184,.26); }
-.cfo-dashboard,.check-context-bar,.tabs-bar,.table-area{ border:1px solid #dfe7f1 !important; box-shadow:0 1px 3px rgba(15,23,42,.035) !important; }
+.cfo-dashboard,.check-context-bar,.tabs-bar,.table-area{ border:1px solid #edf2f7 !important; box-shadow:0 1px 2px rgba(15,23,42,.025) !important; }
 .cfo-dashboard{ margin:0 0 6px !important; padding:0 !important; border-radius:8px !important; background:#fff !important; overflow:hidden !important; }
 .cfo-dash-header{
   display:flex !important;
@@ -207,7 +207,7 @@ body{ background:#f7f9fc; font-size:12px; }
 .cfo-pareto-wrap{ height:104px !important; min-height:104px !important; }
 .cfo-pie-canvas-wrap{ width:70px !important; height:70px !important; }
 .cfo-pie-canvas-wrap canvas{ width:70px !important; height:70px !important; }
-.cfo-card,.cfo-pie-card{ border-color:#e2e8f0 !important; border-radius:7px !important; box-shadow:none !important; }
+.cfo-card,.cfo-pie-card{ border-color:#edf2f7 !important; border-radius:7px !important; box-shadow:none !important; }
 .cfo-card,.cfo-pie-card{ background:#fff !important; }
 .cfo-card-title,.cfo-pie-title{ font-size:11px !important; }
 .card-fold-btn.cfo-dash-toggle{
@@ -218,11 +218,14 @@ body{ background:#f7f9fc; font-size:12px; }
   width:26px !important;
   height:26px !important;
   min-width:26px !important;
+  min-height:26px !important;
+  flex:0 0 26px !important;
   margin-left:auto !important;
   padding:0 !important;
   border:1px solid #dbe5f0 !important;
   border-radius:999px !important;
   background:#fff !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.04) !important;
   color:#64748b !important;
   cursor:pointer !important;
   font-size:0 !important;
@@ -1377,7 +1380,7 @@ html body .tabs-bar{
 html body .cfo-card,
 html body .cfo-pie-card,
 html body .summary-card{
-  border:1px solid #e4edf7 !important;
+  border:1px solid #edf2f7 !important;
   border-radius:8px !important;
   background:#fff !important;
   box-shadow:none !important;
@@ -1386,12 +1389,26 @@ html body .summary-card{
 html body .cfo-card-header,
 html body .cfo-pie-card-header,
 html body .summary-card-header{
+  position:relative !important;
   padding:7px 9px !important;
-  border-bottom:1px solid #eef3f8 !important;
-  background:#fff !important;
+  border-bottom:1px solid #f1f5f9 !important;
+  background:#fafcff !important;
   color:#263a57 !important;
   font-size:11.5px !important;
   font-weight:700 !important;
+}
+
+html body .cfo-card-header::before,
+html body .cfo-pie-card-header::before,
+html body .summary-card-header::before{
+  content:"" !important;
+  display:inline-block !important;
+  width:3px !important;
+  height:13px !important;
+  margin-right:7px !important;
+  border-radius:999px !important;
+  background:linear-gradient(180deg, rgba(47,111,237,.68), rgba(47,111,237,.16)) !important;
+  vertical-align:-2px !important;
 }
 
 html body .cfo-card-body,
@@ -3006,4 +3023,387 @@ html body .risk-table-pager{
     order:5 !important;
     flex-basis:100% !important;
   }
+}
+
+/* 特殊交易识别：左侧核查程序最终对齐与轻量化。 */
+html body .main-layout{
+  padding:0 !important;
+  gap:6px !important;
+}
+
+html body .sidebar{
+  margin:0 6px 0 0 !important;
+  border-color:#edf2f7 !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.025) !important;
+}
+
+html body .sidebar.collapsed{
+  margin:0 6px 0 0 !important;
+  border-color:#edf2f7 !important;
+}
+
+html body .sidebar-header{
+  min-height:36px !important;
+  padding:6px 36px 6px 10px !important;
+  border-bottom:1px solid #edf2f7 !important;
+  background:#fafcff !important;
+}
+
+html body .sidebar-toggle,
+html body .sidebar-toggle.collapsed-btn{
+  width:26px !important;
+  height:26px !important;
+  border:1px solid #dbe5f0 !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  color:#64748b !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.04) !important;
+}
+
+html body .sidebar-toggle:hover,
+html body .sidebar-toggle.collapsed-btn:hover{
+  border-color:#b9c9dc !important;
+  background:#f8fbff !important;
+  color:#1d4ed8 !important;
+}
+
+html body .sidebar-body{
+  padding:4px 6px 6px !important;
+}
+
+html body .check-group-outer-title,
+html body .check-group-title{
+  min-height:28px !important;
+  margin:3px 0 !important;
+  padding:4px 6px 4px 8px !important;
+  border:0 !important;
+  border-radius:7px !important;
+  background:#f8fbff !important;
+  box-shadow:none !important;
+}
+
+html body .check-group-outer-title{
+  background:#f2f6ff !important;
+}
+
+html body .check-group-outer-title:hover,
+html body .check-group-title:hover{
+  background:#f1f6ff !important;
+}
+
+html body .check-group-count,
+html body .check-group-outer-count{
+  margin-left:auto !important;
+}
+
+html body .check-group-toggle,
+html body .check-group-outer-toggle{
+  width:20px !important;
+  height:20px !important;
+  flex:0 0 20px !important;
+  border:1px solid #dbe5f0 !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.035) !important;
+}
+
+html body .check-group-toggle:hover,
+html body .check-group-outer-toggle:hover{
+  border-color:#b9c9dc !important;
+  background:#f8fbff !important;
+}
+
+html body .check-group-toggle::before,
+html body .check-group-outer-toggle::before{
+  width:6px !important;
+  height:6px !important;
+  border-right:1.5px solid #64748b !important;
+  border-bottom:1.5px solid #64748b !important;
+}
+
+html body .check-group ul,
+html body .check-group-outer ul{
+  margin:0 !important;
+  padding:1px 0 3px !important;
+}
+
+html body .check-item{
+  min-height:34px !important;
+  margin:1px 0 !important;
+  padding:5px 7px 5px 9px !important;
+  border-top:0 !important;
+  border-right:0 !important;
+  border-bottom:0 !important;
+  border-radius:6px !important;
+  background:transparent !important;
+}
+
+html body .check-item:hover{
+  background:#f8fbff !important;
+}
+
+html body .check-item.active{
+  border-left-color:#2f6fed !important;
+  background:#f2f6ff !important;
+  box-shadow:inset 0 0 0 1px rgba(47,111,237,.07) !important;
+}
+
+/* 核查程序：减少右侧胶囊数量，改成轻量数字和状态点。 */
+html body .check-item-badges{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:4px !important;
+  min-width:22px !important;
+}
+
+html body .check-item-badges .badge-hits{
+  display:inline-flex !important;
+  align-items:baseline !important;
+  justify-content:flex-end !important;
+  min-width:18px !important;
+  height:auto !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#c24161 !important;
+  font-size:10px !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+  box-shadow:none !important;
+}
+
+html body .check-item-badges .badge-hits::after{
+  content:"条";
+  margin-left:1px;
+  color:#94a3b8;
+  font-size:8px;
+  font-weight:500;
+}
+
+html body .check-item-badges .badge-filter{
+  display:none !important;
+}
+
+html body .check-item-badges .badge-new{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:14px !important;
+  height:14px !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:#eef4ff !important;
+  color:#2f6fed !important;
+  font-size:9px !important;
+  font-weight:700 !important;
+  box-shadow:none !important;
+}
+
+html body .check-item.has-filter .filter-dot{
+  width:5px !important;
+  height:5px !important;
+  margin-left:3px !important;
+  background:#2f6fed !important;
+  box-shadow:0 0 0 2px rgba(47,111,237,.08) !important;
+}
+
+/* 特殊交易识别：去掉核查标准外框胶囊，右侧 card 风格与银行流水分析统一。 */
+html body .check-group-outer-title{
+  min-height:26px !important;
+  margin:2px 0 4px !important;
+  padding:2px 4px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#334155 !important;
+  box-shadow:none !important;
+}
+
+html body .check-group-outer-title:hover{
+  background:transparent !important;
+}
+
+html body .check-group-outer-title::before{
+  content:"" !important;
+  width:3px !important;
+  height:13px !important;
+  margin-right:6px !important;
+  border-radius:999px !important;
+  background:linear-gradient(180deg,rgba(47,111,237,.68),rgba(47,111,237,.16)) !important;
+}
+
+html body .check-group-outer-title .check-group-outer-count{
+  color:#94a3b8 !important;
+  font-size:10px !important;
+  font-weight:600 !important;
+}
+
+html body .cfo-dashboard,
+html body .check-context-bar,
+html body .table-area{
+  border:1px solid #edf2f7 !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.025) !important;
+  overflow:hidden !important;
+}
+
+html body .cfo-dashboard{
+  margin:0 0 6px !important;
+}
+
+html body .cfo-dash-header{
+  position:relative !important;
+  min-height:36px !important;
+  padding:5px 10px !important;
+  border-bottom:1px solid #edf2f7 !important;
+  background:#fafcff !important;
+  gap:7px !important;
+}
+
+html body .cfo-dash-header > svg{
+  display:none !important;
+}
+
+html body .cfo-dash-header::before{
+  content:"" !important;
+  flex:0 0 3px !important;
+  width:3px !important;
+  height:14px !important;
+  border-radius:999px !important;
+  background:linear-gradient(180deg,rgba(47,111,237,.72),rgba(47,111,237,.18)) !important;
+}
+
+html body .cfo-dash-title{
+  color:#1e293b !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+}
+
+html body .cfo-field-switcher{
+  margin-left:6px !important;
+  border-color:#edf2f7 !important;
+  border-radius:7px !important;
+  background:#fff !important;
+  box-shadow:none !important;
+}
+
+html body .cfo-fs-opt.active{
+  background:#f2f6ff !important;
+  color:#003366 !important;
+  box-shadow:none !important;
+  font-weight:700 !important;
+}
+
+html body .cfo-card,
+html body .cfo-pie-card{
+  border:1px solid #edf2f7 !important;
+  border-radius:7px !important;
+  background:#fff !important;
+  box-shadow:none !important;
+}
+
+html body .cfo-card-title,
+html body .cfo-pie-title{
+  color:#334155 !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+}
+
+html body .check-context-bar{
+  margin:0 0 0 !important;
+  border-bottom:0 !important;
+  border-radius:8px 8px 0 0 !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+
+html body .check-context-header{
+  min-height:38px !important;
+  padding:5px 10px !important;
+  border-bottom:1px solid #edf2f7 !important;
+  background:#fafcff !important;
+}
+
+html body .ccb-breadcrumb-group{
+  height:auto !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#64748b !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+}
+
+html body .ccb-check-badge{
+  height:20px !important;
+  padding:0 6px !important;
+  border:0 !important;
+  border-radius:5px !important;
+  background:#fff1f5 !important;
+  color:#c24161 !important;
+  font-size:10px !important;
+}
+
+html body .tabs-bar{
+  min-height:35px !important;
+  border-right:1px solid #edf2f7 !important;
+  border-left:1px solid #edf2f7 !important;
+  background:#fff !important;
+}
+
+html body .table-area{
+  margin:0 !important;
+  border-top:0 !important;
+  border-radius:0 0 8px 8px !important;
+  background:#fff !important;
+}
+
+html body .table-panel{
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:#fff !important;
+  box-shadow:none !important;
+}
+
+/* 高风险核查 iframe 普通按钮尺寸统一；仅统一尺寸，不改变颜色体系。 */
+html body .btn-run,
+html body .btn-reset,
+html body .btn-export,
+html body .btn-table-zoom,
+html body .ce-confirm,
+html body .risk-pager-actions button:not(.audit-pager-btn),
+html body .filter-menu button:not(.audit-pager-btn){
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  min-width:var(--audit-action-btn-min-w, 56px) !important;
+  min-height:var(--audit-action-btn-h, 28px) !important;
+  height:var(--audit-action-btn-h, 28px) !important;
+  padding:0 var(--audit-action-btn-px, 12px) !important;
+  border-radius:var(--audit-action-btn-radius, 7px) !important;
+  font-size:var(--audit-action-btn-font, 12px) !important;
+  line-height:calc(var(--audit-action-btn-h, 28px) - 2px) !important;
+  white-space:nowrap !important;
+  box-sizing:border-box !important;
+}
+
+html body .btn-icon{
+  min-width:28px !important;
+}
+
+html body .check-context-header,
+html body .risk-result-actions,
+html body .risk-export-actions,
+html body .risk-export-foot-actions,
+html body .cp-filter-actions,
+html body .risk-pager-actions,
+html body .filter-menu .filter-actions{
+  gap:var(--audit-action-btn-gap, 6px) !important;
 }

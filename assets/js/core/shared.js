@@ -142,6 +142,7 @@
       relation:"本页展示和分析：(1)关联方主档中的对手方，和(2)于“经营实质>流入流出构成”中手工标记为关联方的对手方的交易，旨在帮助用户全面了解被审计单位与关联方的资金往来，协助用户进行关联方披露。如用户暂未上传关联方主档或未手工打标，则本页展示内容为空。",
       "personal—transaction":"本页展示员工及其他个人对手方交易，支持查看个人交易规模、频次和明细。",
       transaction:"本页汇总高风险资金流水核查程序及识别结果，支持进一步查看和形成核查底稿。",
+      workingpaper:"本页保留资金流水核查底稿导出相关的准确性测试和核查标准清单，支持导出底稿。",
       routine:"聚合工商信息并与交易规模联动校验企业真实性与风险。",
       statement:"用户可对本页的多维筛选器设置筛选条件，系统将在已上传并执行分析的银行流水中选出符合筛选条件的异常交易流水，并支持流水导出，旨在帮助用户根据项目需求，全面、快速、精准地筛选出异常银行流水，协助用户进一步执行审计程序。",
     };
@@ -201,7 +202,10 @@
       requestAnimationFrame(()=>moveInkbar(tab));
       setTimeout(()=>window.dispatchEvent(new Event('resize')),50);
       window.dispatchEvent(new Event('bank-analysis:tab-change'));
-      if (key === 'account') setTimeout(()=>window.bankAccountBalanceChart?.resize(), 60);
+      if (key === 'account') setTimeout(()=>{
+        window.bankAccountBalanceChart?.resize();
+        window.bankAccountIoChart?.resize();
+      }, 60);
     }
 
     // 绑定顶部 Tab：切页面、刷新后保持当前页、同步说明条与底线
@@ -410,6 +414,63 @@
         window.bankAccountBalanceChart = chart;
       }
 
+      const accountIoEl = document.getElementById('chart-account-io');
+      if (accountIoEl && window.echarts) {
+        const chart = echarts.init(accountIoEl);
+        const months = [2023, 2024, 2025].flatMap(year => Array.from({ length: 12 }, (_, index) => `${year}年${String(index + 1).padStart(2, '0')}月`));
+        const inflowData = [
+          16820, 17450, 18260, 17680, 19140, 19820, 20360, 21180, 20740, 21960, 22680, 24120,
+          18640, 19380, 20120, 19760, 21480, 22150, 22960, 23840, 23210, 24680, 25540, 27060,
+          21340, 22180, 22970, 22560, 24120, 24980, 25840, 26720, 26180, 27640, 28620, 30240
+        ];
+        const outflowData = [
+          14260, 15180, 15840, 15420, 16780, 17460, 18120, 18840, 18460, 19680, 20420, 21780,
+          15920, 16680, 17430, 17110, 18560, 19340, 20120, 20940, 20480, 21860, 22670, 24110,
+          18160, 18980, 19840, 19460, 20920, 21760, 22640, 23520, 23010, 24480, 25360, 26840
+        ];
+        chart.setOption({
+          animationDuration: 450,
+          color: ['#3b82f6', '#d95785'],
+          tooltip: {
+            trigger: 'axis',
+            valueFormatter: value => `${Number(value).toLocaleString()} 千元`
+          },
+          legend: {
+            right: 8,
+            top: 0,
+            itemWidth: 10,
+            itemHeight: 6,
+            textStyle: { color: '#475569', fontSize: 10 }
+          },
+          grid: { left: 70, right: 28, top: 25, bottom: 42, containLabel: false },
+          xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: months,
+            axisLine: { lineStyle: { color: '#cbd5e1' } },
+            axisLabel: { color: '#64748b', fontSize: 10, interval: 2, hideOverlap: true, margin: 8 }
+          },
+          yAxis: {
+            type: 'value',
+            name: '流入/流出（千元）',
+            nameLocation: 'end',
+            nameGap: 8,
+            nameTextStyle: { color: '#475569', fontSize: 11, fontWeight: 600, padding: [0, 0, 0, 24] },
+            splitLine: { lineStyle: { color: '#eef2f7' } },
+            axisLabel: { color: '#64748b', fontSize: 10, formatter: value => Number(value).toLocaleString() }
+          },
+          dataZoom: [
+            { type: 'inside', start: 0, end: 100 },
+            { type: 'slider', height: 10, bottom: 4, borderColor: 'transparent', backgroundColor: '#eef2f7', fillerColor: 'rgba(47,111,237,.16)', handleSize: 0, showDetail: false }
+          ],
+          series: [
+            { name: '流入金额', type: 'line', smooth: true, symbolSize: 4, lineStyle: { width: 2 }, data: inflowData },
+            { name: '流出金额', type: 'line', smooth: true, symbolSize: 4, lineStyle: { width: 2 }, data: outflowData }
+          ]
+        });
+        window.bankAccountIoChart = chart;
+      }
+
       const materiality = document.getElementById('bankMateriality');
       materiality?.addEventListener('blur', ()=>{
         const value = Number(materiality.value.replace(/,/g,''));
@@ -427,6 +488,8 @@
     window.addEventListener('resize', ()=>{
       const active = document.querySelector('#topTabs .tab.active');
       if(active) moveInkbar(active);
+      window.bankAccountBalanceChart?.resize();
+      window.bankAccountIoChart?.resize();
     });
 
     function initCardCollapse(){
@@ -792,21 +855,20 @@
       const fmt = value => `${Number(value).toLocaleString('zh-CN')}K`;
       const companies = [
         ['华东制造集团有限公司','发行人'],
-        ['上海星河科技有限公司','输入人'],
+        ['上海星河科技有限公司','发行人'],
         ['深圳南山精密制造有限公司','发行人'],
-        ['北京恒瑞医疗设备有限公司','输入人'],
+        ['北京恒瑞医疗设备有限公司','发行人'],
         ['重庆云峰智能装备有限公司','发行人'],
-        ['郑州华辰电气有限公司','输入人'],
+        ['郑州华辰电气有限公司','发行人'],
         ['昆明启明商贸有限公司','发行人'],
-        ['天津远泽汽车零部件有限公司','输入人']
+        ['天津远泽汽车零部件有限公司','发行人']
       ];
       const banks = ['工行上海分行','建行上海分行','招商银行深圳分行','中国银行北京分行','浦发银行重庆分行','交通银行郑州分行','民生银行昆明分行','农业银行天津分行'];
       const accounts = ['1001***0821','1002***4186','6214****8890','3941****2193','2170****7797','5784****7907','4308****6621','8820****3519'];
       const currencies = ['RMB','RMB','RMB','USD'];
-      const years = [2023,2024,2025];
       const makeRow = (base, i, withAccount=false) => {
         const company = companies[i % companies.length];
-        const year = years[i % years.length];
+        const year = 2025;
         const currency = currencies[i % currencies.length];
         const end = base + i * 37600;
         const inflow = Math.round(end * (.16 + (i % 5) * .018));
@@ -816,11 +878,13 @@
         const bookOut = outflow + (i % 6 === 0 ? 860 : 0);
         const bookIn = inflow - (i % 7 === 0 ? 640 : 0);
         const bookFinal = bookOpen + bookIn - bookOut;
+        const openDiff = end - bookOpen;
         const inDiff = inflow - bookOut;
+        const outDiff = outflow - bookIn;
         const finalDiff = final - bookFinal;
         const cells = [
           company[0],
-          ...(withAccount ? [accounts[i % accounts.length], banks[i % banks.length], i % 4 === 2 ? '模拟回传' : '银行流水'] : [company[1]]),
+          ...(withAccount ? ['发行人', accounts[i % accounts.length], banks[i % banks.length], '银行流水'] : [company[1]]),
           year,
           currency,
           fmt(end),
@@ -831,7 +895,9 @@
           fmt(bookOut),
           fmt(bookIn),
           fmt(bookFinal),
+          openDiff === 0 ? '0' : fmt(openDiff),
           inDiff === 0 ? '0' : fmt(inDiff),
+          outDiff === 0 ? '0' : fmt(outDiff),
           finalDiff === 0 ? '0' : fmt(finalDiff),
           `<input class="ba-note-input" value="${Math.abs(finalDiff) > 1000 ? '差异待复核' : '核对一致'}"/>`,
           ''
@@ -1367,12 +1433,13 @@
   }
 
   function updateWorkingPaperSections() {
+    const isBankWorkingpaperTab = !!document.getElementById("pane-workingpaper");
     const complete = isMethodComplete();
     const block2 = $("#wpBlock2");
     const block3 = $("#wpBlock3");
     const block4 = $("#wpBlock4");
 
-    if (block2) block2.style.display = complete ? "" : "none";
+    if (block2) block2.style.display = (isBankWorkingpaperTab || complete) ? "" : "none";
     if (block3) block3.style.display = "";
     if (block4) block4.style.display = "";
 
@@ -1381,11 +1448,28 @@
       $("#directTestText").textContent = directTest ? "是" : "否";
     }
     if ($("#sampleConfigRow")) {
-      $("#sampleConfigRow").style.display = directTest ? "" : "none";
+      $("#sampleConfigRow").classList.toggle("wp-is-hidden", !directTest);
+      if (directTest) $("#sampleConfigRow").style.removeProperty("display");
+      else $("#sampleConfigRow").style.setProperty("display", "none", "important");
+    }
+    if ($("#wpTable2Wrap")) {
+      $("#wpTable2Wrap").classList.toggle("wp-is-hidden", !directTest);
+      if (directTest) $("#wpTable2Wrap").style.removeProperty("display");
+      else $("#wpTable2Wrap").style.setProperty("display", "none", "important");
+    }
+    if ($("#wpTable2Pager")) {
+      $("#wpTable2Pager").classList.toggle("wp-is-hidden", !directTest);
+      if (directTest) $("#wpTable2Pager").style.removeProperty("display");
+      else $("#wpTable2Pager").style.setProperty("display", "none", "important");
+    }
+    if ($("#wpDirectTestDesc")) {
+      $("#wpDirectTestDesc").classList.toggle("wp-is-hidden", !directTest);
+      if (directTest) $("#wpDirectTestDesc").style.removeProperty("display");
+      else $("#wpDirectTestDesc").style.setProperty("display", "none", "important");
     }
 
     renderTable1();
-    if (complete) renderTable2();
+    if (directTest && (isBankWorkingpaperTab || complete)) renderTable2();
     renderCheckStandardTable();
     renderThirdPartyTable();
   }
@@ -1425,11 +1509,12 @@
   });
 
   $("#btnGenRisk")?.addEventListener("click", () => {
-    if (!isMethodComplete()) {
+    const isBankWorkingpaperTab = !!document.getElementById("pane-workingpaper");
+    if (!isBankWorkingpaperTab && !isMethodComplete()) {
       alert("请先完成第1部分：为所有账户补充银行流水获取方式。");
       return;
     }
-    alert("生成资金流水核查底稿");
+    alert("导出资金流水核查底稿");
   });
 
   const modal = $("#wpModal");
@@ -1471,6 +1556,8 @@
 // 银行流水分析通用表格表头增强：排序 + 列值筛选
 (function(){
   const tableFilters = new WeakMap();
+  const columnPrefs = new Map();
+  let generatedTableId = 0;
 
   function getCellText(row, index) {
     return (row.children[index]?.innerText || '').trim();
@@ -1513,6 +1600,178 @@
 
   function closeFilterPopovers() {
     document.querySelectorAll('.ba-table-filter-popover').forEach(el => el.remove());
+  }
+
+  function closeColumnPopovers() {
+    document.querySelectorAll('.ba-column-popover').forEach(el => {
+      if (typeof el._baCleanup === 'function') el._baCleanup();
+      el.remove();
+    });
+  }
+
+  function cssIdent(value) {
+    if (window.CSS?.escape) return CSS.escape(value);
+    return String(value).replace(/[^a-zA-Z0-9_-]/g, '\\$&');
+  }
+
+  function getTableKey(table) {
+    if (!table.id) {
+      generatedTableId += 1;
+      table.id = `baCustomTable${generatedTableId}`;
+    }
+    return table.id;
+  }
+
+  function getHeaderLabel(th) {
+    if (th.classList.contains('check-col')) return '校验情况';
+    if (th.classList.contains('monthly-flow-head')) return '月度流入/流出';
+    const clone = th.cloneNode(true);
+    clone.querySelectorAll('.ba-th-tools,button,svg,.check-window,.check-nav').forEach(el => el.remove());
+    const text = (clone.textContent || '').replace(/\s+/g, ' ').trim();
+    return text || '未命名字段';
+  }
+
+  function getLeafHeaderColumns(table) {
+    const headerRows = Array.from(table.tHead?.rows || []);
+    if (!headerRows.length) return [];
+    const headerGrid = [];
+    const columns = [];
+    headerRows.forEach((row, rowIndex) => {
+      headerGrid[rowIndex] ||= [];
+      let colIndex = 0;
+      Array.from(row.cells).forEach(th => {
+        while (headerGrid[rowIndex][colIndex]) colIndex += 1;
+        const rowSpan = th.rowSpan || 1;
+        const colSpan = th.colSpan || 1;
+        for (let r = 0; r < rowSpan; r += 1) {
+          headerGrid[rowIndex + r] ||= [];
+          for (let c = 0; c < colSpan; c += 1) headerGrid[rowIndex + r][colIndex + c] = true;
+        }
+        if (colSpan === 1 && rowIndex + rowSpan >= headerRows.length) {
+          const label = getHeaderLabel(th);
+          if (label) columns.push({ index: colIndex + 1, label });
+        }
+        colIndex += colSpan;
+      });
+    });
+    return columns;
+  }
+
+  function applyCustomizedColumns(table) {
+    if (!table) return;
+    const key = getTableKey(table);
+    const hidden = columnPrefs.get(key) || new Set();
+    let style = document.getElementById(`ba-col-style-${key}`);
+    if (!style) {
+      style = document.createElement('style');
+      style.id = `ba-col-style-${key}`;
+      document.head.appendChild(style);
+    }
+    const selector = `#${cssIdent(key)}`;
+    style.textContent = Array.from(hidden)
+      .map(index => `${selector} tr > :nth-child(${index}){display:none!important;}`)
+      .join('\n');
+    table.classList.toggle('ba-has-hidden-columns', hidden.size > 0);
+  }
+
+  function openColumnChooser(anchor, table) {
+    if (!anchor || !table) return;
+    closeFilterPopovers();
+    closeColumnPopovers();
+    const key = getTableKey(table);
+    const columns = getLeafHeaderColumns(table);
+    const hidden = new Set(columnPrefs.get(key) || []);
+    const pop = document.createElement('div');
+    pop.className = 'ba-column-popover';
+    pop.innerHTML = `
+      <div class="ba-column-popover-title">
+        <b>自定义表头</b>
+        <span>勾选后立即同步</span>
+      </div>
+      <div class="ba-column-options">
+        ${columns.map(col => `
+          <label>
+            <input type="checkbox" value="${col.index}" ${hidden.has(col.index) ? '' : 'checked'}>
+            <span>${escapeHtml(col.label)}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="ba-column-popover-foot">
+        <button type="button" data-action="show-all">显示全部字段</button>
+      </div>
+    `;
+    document.body.appendChild(pop);
+    const placePopover = () => {
+      if (!pop.isConnected) return;
+      const rect = anchor.getBoundingClientRect();
+      const width = Math.min(520, Math.max(360, window.innerWidth - 24));
+      pop.style.width = `${width}px`;
+      pop.style.left = `${Math.max(12, Math.min(rect.right - width, window.innerWidth - width - 12)) + window.scrollX}px`;
+      pop.style.top = `${rect.bottom + 6 + window.scrollY}px`;
+    };
+    placePopover();
+
+    pop.querySelectorAll('input[type="checkbox"]').forEach(input => {
+      input.addEventListener('change', () => {
+        const nextHidden = new Set();
+        pop.querySelectorAll('input[type="checkbox"]').forEach(item => {
+          if (!item.checked) nextHidden.add(Number(item.value));
+        });
+        if (nextHidden.size >= columns.length) {
+          input.checked = true;
+          nextHidden.delete(Number(input.value));
+        }
+        columnPrefs.set(key, nextHidden);
+        applyCustomizedColumns(table);
+      });
+    });
+    pop.querySelector('[data-action="show-all"]')?.addEventListener('click', () => {
+      columnPrefs.set(key, new Set());
+      pop.querySelectorAll('input[type="checkbox"]').forEach(input => input.checked = true);
+      applyCustomizedColumns(table);
+    });
+
+    setTimeout(() => {
+      window.addEventListener('scroll', placePopover, true);
+      window.addEventListener('resize', placePopover);
+      pop._baCleanup = () => {
+        window.removeEventListener('scroll', placePopover, true);
+        window.removeEventListener('resize', placePopover);
+      };
+      document.addEventListener('click', function handler(ev) {
+        if (!pop.contains(ev.target) && ev.target !== anchor) {
+          if (typeof pop._baCleanup === 'function') pop._baCleanup();
+          pop.remove();
+          document.removeEventListener('click', handler);
+        }
+      });
+    }, 0);
+  }
+
+  window.openBankColumnChooser = function(anchor, tableOrSelector) {
+    const table = typeof tableOrSelector === 'string'
+      ? document.querySelector(tableOrSelector)
+      : tableOrSelector;
+    openColumnChooser(anchor, table);
+  };
+
+  function bindColumnChooserButtons() {
+    const bind = (id, tableGetter) => {
+      const btn = document.getElementById(id);
+      if (!btn || btn.dataset.baColumnChooserBound === '1') return;
+      btn.dataset.baColumnChooserBound = '1';
+      btn.addEventListener('click', ev => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        openColumnChooser(btn, tableGetter());
+      });
+    };
+    bind('btnCustomizeCols', () => document.getElementById('tblAccountSummary'));
+    bind('statementCustomizeCols', () => document.getElementById('statementFlowTable'));
+    bind('btnHead', () => {
+      const view = document.querySelector('#tblSwitcher .opt.active')?.dataset.view || 'deal';
+      return document.getElementById(view === 'corp' ? 'tblCorp' : 'tblDeal');
+    });
   }
 
   function openFilterPopover(event, table, index, th) {
@@ -1771,6 +2030,7 @@
     `).join('');
     const table = document.getElementById('statementFlowTable');
     if (table?.dataset.baEnhanced === '1') applyTableFilters(table);
+    if (table) applyCustomizedColumns(table);
     if (count) count.textContent = `共 ${total.toLocaleString('zh-CN')} 条，当前展示 ${start + 1}-${Math.min(start + statementFlowState.pageSize, total)} / ${total.toLocaleString('zh-CN')}`;
     renderAuditPager(pager, {
       total,
@@ -1799,9 +2059,6 @@
       table.querySelectorAll('th').forEach(th => th.classList.remove('ba-filtered', 'ba-sort-asc', 'ba-sort-desc'));
       renderStatementFlowTable();
     });
-    document.getElementById('statementCustomizeCols')?.addEventListener('click', () => {
-      alert('自定义表头功能开发中');
-    });
     document.getElementById('statementGenerateFlow')?.addEventListener('click', () => {
       alert('已生成当前筛选范围流水');
     });
@@ -1810,6 +2067,8 @@
   function initBankTableTools() {
     initStatementFlowQuery();
     document.querySelectorAll('.tab-pane table.table').forEach(enhanceTable);
+    bindColumnChooserButtons();
+    document.querySelectorAll('.tab-pane table.table').forEach(applyCustomizedColumns);
   }
 
   if (document.readyState === 'loading') {

@@ -52,11 +52,17 @@ body .kpi .kpi-value{
 }
 
 body .issue-card{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:8px;
   width:max-content;
+  min-width:max-content;
   max-width:none;
   height:30px;
   min-height:30px;
-  padding:4px 58px 4px 9px;
+  padding:3px 7px 3px 9px;
   border-color:#f2d7a6;
   border-radius:7px;
   overflow:visible;
@@ -64,16 +70,20 @@ body .issue-card{
 }
 
 body .issue-body-simple{
+  flex:0 0 auto !important;
   overflow:hidden;
   padding-right:0;
 }
 
 body .issue-note{
+  display:inline-flex;
+  align-items:center;
   margin:0;
   line-height:20px;
   color:#7a5a12;
   font-size:var(--bank-ui-main-font);
   white-space:nowrap;
+  min-width:max-content;
   overflow:visible;
   text-overflow:clip;
 }
@@ -83,15 +93,30 @@ body .issue-inline{
 }
 
 body .issue-toggle{
-  right:8px;
-  bottom:6px;
+  position:static !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:0 0 auto;
+  height:auto;
+  padding:0 0 1px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#7a5a12;
   font-size:var(--bank-ui-main-font);
-  line-height:18px;
+  line-height:20px;
   font-weight:700;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  text-decoration-thickness:1px;
 }
 
 body .issue-toggle:hover{
+  border-color:transparent;
+  background:transparent;
   color:#1d4ed8;
+  text-decoration:underline;
 }
 
 body .issue-detail-modal{
@@ -710,16 +735,17 @@ body #pane-verify .reconcile-pagination .btn:disabled{
 
 body .tab-pane .card{
   margin-bottom:6px;
-  border:1px solid #dfe7f1;
+  border:1px solid #edf2f7;
   border-radius:8px;
-  box-shadow:0 1px 3px rgba(15,23,42,.04);
+  box-shadow:0 1px 2px rgba(15,23,42,.025);
 }
 
 body .tab-pane .card > .head{
   min-height:36px;
   padding:5px 10px;
   gap:6px;
-  background:#f8fafc;
+  border-bottom-color:#edf2f7;
+  background:#fafcff;
 }
 
 body .tab-pane .card > .head::before{
@@ -864,6 +890,31 @@ body .tab-pane .bank-help-actions + .portrait-segment{
 
 body .tab-pane .bank-head-meta-hidden{
   display:none !important;
+}
+
+body .tab-pane .portrait-feature-tools .portrait-segment{
+  margin-left:0 !important;
+  padding:0 2px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+body .tab-pane .portrait-feature-tools .portrait-segment button{
+  min-width:48px !important;
+  height:26px !important;
+  min-height:26px !important;
+  padding:0 9px 2px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+body .tab-pane .portrait-feature-tools .portrait-segment button.is-active{
+  background:transparent !important;
+  box-shadow:none !important;
 }
 
 body #pane-verify .bank-head-push{
@@ -1101,9 +1152,26 @@ body .tab-pane .pagination .btn{
   line-height:24px;
 }
 
-body .bank-balance-trend-card .chart-md{
-  height:178px;
-  min-height:178px;
+body .bank-balance-trend-card .content{
+  padding-top:6px !important;
+  padding-bottom:6px !important;
+}
+
+body .bank-balance-trend-card .account-trend-stack{
+  display:grid;
+  grid-template-rows:repeat(2, minmax(146px, 1fr));
+  gap:2px;
+}
+
+body .bank-balance-trend-card .account-trend-chart{
+  height:150px !important;
+  min-height:150px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  background:transparent !important;
+  padding:0 !important;
+  margin:0 !important;
 }
 
 body .account-summary-table-wrap{
@@ -1399,6 +1467,36 @@ body #tblAccountSummary .months-grid .chk-ok{ background:#3b82f6; }
 body #tblAccountSummary .months-grid .chk-warn{ background:#facc15; }
 body #tblAccountSummary .months-grid .chk-none{ background:#cbd5e1; }
 body #tblAccountSummary .months-grid .chk-err{ background:var(--flow-out); }
+
+body .account-check-legend{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:14px !important;
+  margin-bottom:7px !important;
+  line-height:18px !important;
+}
+
+body .account-check-legend span{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:5px !important;
+  white-space:nowrap !important;
+}
+
+body .account-check-legend .chk-dot{
+  display:inline-block !important;
+  width:5px !important;
+  height:10px !important;
+  flex:0 0 5px !important;
+  border-radius:999px !important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.72) !important;
+}
+
+body .account-check-legend .chk-ok{ background:#3b82f6 !important; }
+body .account-check-legend .chk-warn{ background:#facc15 !important; }
+body .account-check-legend .chk-none{ background:#cbd5e1 !important; }
+body .account-check-legend .chk-err{ background:var(--flow-out) !important; }
 
 body #pane-biz .panel{
   margin:6px 0;
@@ -2165,6 +2263,113 @@ body .tab-pane #portraitCounterpartyTable tbody tr:last-child td{
   background:#f7faff;
 }
 
+.ba-column-popover{
+  position:absolute;
+  z-index:10020;
+  width:520px;
+  max-width:calc(100vw - 24px);
+  max-height:245px;
+  padding:9px 10px;
+  border:1px solid #d8e2ee;
+  border-radius:8px;
+  background:#fff;
+  box-shadow:0 14px 34px rgba(15,23,42,.16);
+  color:#334155;
+  font-size:12px;
+}
+
+.ba-column-popover-title{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+  padding-bottom:7px;
+  border-bottom:1px solid #eef3f8;
+}
+
+.ba-column-popover-title b{
+  color:#172033;
+  font-size:12px;
+  font-weight:800;
+}
+
+.ba-column-popover-title span{
+  color:#8a9aae;
+  font-size:10px;
+  white-space:nowrap;
+}
+
+.ba-column-options{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  column-gap:8px;
+  row-gap:4px;
+  max-height:150px;
+  overflow:auto;
+  padding-right:3px;
+}
+
+.ba-column-options label{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-width:0;
+  min-height:24px;
+  padding:3px 6px;
+  border-radius:6px;
+  cursor:pointer;
+  background:#fbfdff;
+  box-shadow:inset 0 0 0 1px rgba(216,226,238,.78);
+}
+
+.ba-column-options label:hover{
+  background:#f6f9fd;
+}
+
+.ba-column-options input{
+  width:13px;
+  height:13px;
+  accent-color:#2f6fed;
+}
+
+.ba-column-options span{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.ba-column-popover-foot{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:7px;
+  padding-top:7px;
+  border-top:1px solid #eef3f8;
+}
+
+.ba-column-popover-foot button{
+  height:26px;
+  padding:0 9px;
+  border:1px solid #d7e3f1;
+  border-radius:999px;
+  background:#f8fbff;
+  color:#2f5f9f;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.ba-column-popover-foot button:hover{
+  border-color:#b9cbe3;
+  background:#eef5ff;
+}
+
+@media (max-width: 760px){
+  .ba-column-options{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
 .ba-filter-options span{
   min-width:0;
   overflow:hidden;
@@ -2865,4 +3070,527 @@ body .tab-pane .risk-table-wrap table thead th,
 body .tab-pane .statement-table-wrap table thead th,
 body .tab-pane .content > div[style*="overflow"] table thead th{
   background-clip:padding-box !important;
+}
+
+/* 全局精简：隐藏所有 card 中的业务逻辑 / 操作提示入口，标题左侧改为轻量短标记。 */
+body .tab-pane .bank-help-actions,
+body .tab-pane #btnAccountLogic,
+body .tab-pane #btnAccountTips{
+  display:none !important;
+}
+
+body .tab-pane .card > .head::before{
+  content:"" !important;
+  position:absolute !important;
+  left:10px !important;
+  top:50% !important;
+  width:3px !important;
+  height:14px !important;
+  border-radius:999px !important;
+  background:linear-gradient(180deg, rgba(47,111,237,.72), rgba(47,111,237,.18)) !important;
+  transform:translateY(-50%) !important;
+}
+
+body .tab-pane .card .title,
+body .tab-pane .card .ph-title,
+body .tab-pane .card .wp-card-title{
+  margin-left:14px !important;
+}
+
+/* Card 收起/展开统一为右侧圆形图标按钮。 */
+body .tab-pane .card-fold-btn{
+  width:26px !important;
+  min-width:26px !important;
+  height:26px !important;
+  min-height:26px !important;
+  flex:0 0 26px !important;
+  margin-left:auto !important;
+  padding:0 !important;
+  border:1px solid #dbe5f0 !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.04) !important;
+  line-height:24px !important;
+}
+
+body .tab-pane .card-fold-btn:hover{
+  border-color:#b9c9dc !important;
+  background:#f8fbff !important;
+}
+
+body .bank-balance-trend-card > .head .card-fold-btn{
+  margin-left:auto !important;
+}
+
+/* 修正右侧操作区：按钮组贴着收起按钮整体靠右。 */
+body .tab-pane .card > .head > .title,
+body .tab-pane .card > .head > .ph-title,
+body .tab-pane .card > .head > .wp-card-title{
+  margin-right:auto !important;
+}
+
+body .tab-pane .card > .head > .card-fold-btn{
+  margin-left:6px !important;
+}
+
+body .tab-pane .card > .head > .bank-head-push:first-of-type,
+body .tab-pane .card > .head > .portrait-table-count + .bank-head-push,
+body .tab-pane .card > .head > div[style*="margin-left:auto"]{
+  margin-left:auto !important;
+}
+
+body .bank-balance-trend-card > .head > .card-fold-btn{
+  margin-left:auto !important;
+}
+
+body .tab-pane .card > .head > .bank-head-push,
+body .tab-pane .card > .head > div[style*="margin-left:auto"]{
+  margin-left:0 !important;
+}
+
+body .tab-pane .card > .head > .bank-head-push:first-of-type,
+body .tab-pane .card > .head > .portrait-table-count + .bank-head-push{
+  margin-left:0 !important;
+}
+
+/* Card 外框最终轻量化。 */
+body .tab-pane .card{
+  border-color:#edf2f7 !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.025) !important;
+}
+
+body .tab-pane .card > .head{
+  border-bottom-color:#edf2f7 !important;
+  background:#fafcff !important;
+}
+
+/* Tab bar 与筛选区最终统一为 card 风格，筛选项一行均匀撑满。 */
+body .tab-container{
+  margin:7px var(--bank-page-x) 0 !important;
+  border:1px solid #edf2f7 !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.025) !important;
+  overflow:hidden !important;
+}
+
+body .tab-container .tabbar{
+  min-height:36px !important;
+  padding:5px 10px !important;
+  gap:7px !important;
+  border-bottom:1px solid #edf2f7 !important;
+  background:#fafcff !important;
+  scrollbar-width:none !important;
+}
+
+body .tab-container .tabbar::-webkit-scrollbar{
+  display:none !important;
+}
+
+body .tab-container .tab{
+  position:relative !important;
+  height:26px !important;
+  padding:3px 7px !important;
+  border-radius:0 !important;
+  color:#6b7b91 !important;
+  font-weight:600 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  transition:color .16s ease !important;
+}
+
+body .tab-container .tab + .tab::before{
+  content:"" !important;
+  position:absolute !important;
+  left:-4px !important;
+  top:50% !important;
+  width:1px !important;
+  height:12px !important;
+  background:#dbe5f0 !important;
+  transform:translateY(-50%) !important;
+  pointer-events:none !important;
+}
+
+body .tab-container .tab:hover{
+  color:#1d4ed8 !important;
+  background:transparent !important;
+}
+
+body .tab-container .tab.active{
+  color:#002b5c !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  font-weight:800 !important;
+}
+
+body .tab-container .inkbar{
+  height:2px !important;
+  bottom:0 !important;
+  border-radius:999px !important;
+  background:#003366 !important;
+  box-shadow:none !important;
+}
+
+body .tab-container .tab-materiality{
+  background:#fafcff !important;
+  box-shadow:-8px 0 12px #fafcff !important;
+}
+
+body .tab-container .biz-filter-bar{
+  padding:6px 10px 8px !important;
+  border:0 !important;
+  background:#fff !important;
+}
+
+body .tab-container .biz-filter-bar .filter-area{
+  display:flex !important;
+  width:100% !important;
+  min-width:0 !important;
+  align-items:center !important;
+  gap:6px !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+body .tab-container .biz-filter-bar .filter-area > label:not(.negate),
+body .tab-container .biz-filter-bar .range-sep{
+  flex:0 0 auto !important;
+}
+
+body .tab-container .biz-filter-bar .select-wrap{
+  flex:1 1 180px !important;
+  width:auto !important;
+  min-width:160px !important;
+  max-width:none !important;
+}
+
+body .tab-container .biz-filter-bar input[type="date"]{
+  flex:1 1 150px !important;
+  width:auto !important;
+  min-width:142px !important;
+  max-width:none !important;
+}
+
+body .tab-container .biz-filter-bar .negate{
+  flex:0 0 auto !important;
+}
+
+body .tab-container .biz-filter-bar button{
+  flex:0 0 52px !important;
+  min-width:52px !important;
+  padding:0 10px !important;
+}
+
+/* 资金流水核查底稿导出：与当前 card 风格统一。 */
+body #pane-workingpaper .wp-page{
+  padding:6px var(--bank-page-x) 10px !important;
+}
+
+body #pane-workingpaper .wp-info-strip{
+  display:none !important;
+}
+
+body #pane-workingpaper .wp-card-section{
+  margin-bottom:6px !important;
+  border:1px solid #edf2f7 !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.025) !important;
+  overflow:hidden !important;
+}
+
+body #pane-workingpaper .wp-card-head{
+  min-height:36px !important;
+  padding:5px 10px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  border-bottom:1px solid #edf2f7 !important;
+  background:#fafcff !important;
+}
+
+body #pane-workingpaper .wp-card-title-wrap{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  padding-left:14px !important;
+  gap:0 !important;
+}
+
+body #pane-workingpaper .wp-card-title{
+  font-size:12px !important;
+  line-height:1.25 !important;
+  font-weight:600 !important;
+  color:#1e293b !important;
+}
+
+body #pane-workingpaper .wp-card-index{
+  display:none !important;
+}
+
+body #pane-workingpaper .wp-card-body{
+  padding:8px 10px 9px !important;
+}
+
+body #pane-workingpaper .wp-card-desc{
+  margin-bottom:6px !important;
+  color:#64748b !important;
+  font-size:11.5px !important;
+  line-height:1.5 !important;
+}
+
+body #pane-workingpaper .wp-bottom-actions{
+  display:flex !important;
+  justify-content:flex-end !important;
+  margin-top:7px !important;
+}
+
+body #pane-workingpaper #btnGenRisk{
+  min-width:86px !important;
+}
+
+body #pane-workingpaper .wp-fold-btn{
+  width:26px !important;
+  min-width:26px !important;
+  height:26px !important;
+  min-height:26px !important;
+  flex:0 0 26px !important;
+  margin-left:6px !important;
+  padding:0 !important;
+  border:1px solid #dbe5f0 !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.04) !important;
+}
+
+body #pane-workingpaper .wp-inline-row,
+body #pane-workingpaper .wp-form-row{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  flex-wrap:nowrap !important;
+  margin:0 0 6px !important;
+}
+
+body #pane-workingpaper .wp-inline-label,
+body #pane-workingpaper .wp-form-row label{
+  flex:0 0 auto !important;
+  margin:0 !important;
+  white-space:nowrap !important;
+  line-height:26px !important;
+}
+
+body #pane-workingpaper .wp-form-row .field{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  flex:0 0 auto !important;
+  min-width:0 !important;
+}
+
+body #pane-workingpaper #riskSel{
+  width:150px !important;
+  min-width:150px !important;
+  height:26px !important;
+}
+
+body #pane-workingpaper .wp-pager.audit-pager{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:5px !important;
+  flex-wrap:nowrap !important;
+  margin-top:7px !important;
+  padding:0 !important;
+  overflow-x:auto !important;
+  scrollbar-width:none !important;
+}
+
+body #pane-workingpaper .wp-pager.audit-pager::-webkit-scrollbar{
+  display:none !important;
+}
+
+body #pane-workingpaper .wp-pager.audit-pager .audit-pager-jump{
+  width:44px !important;
+  min-width:44px !important;
+  max-width:44px !important;
+}
+
+body #pane-workingpaper .wp-pager.audit-pager .audit-pager-size select{
+  width:82px !important;
+  min-width:82px !important;
+  max-width:82px !important;
+}
+
+body #pane-workingpaper .wp-table-wrap{
+  width:100% !important;
+  max-width:100% !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  border:1px solid var(--bank-table-border-outer, #d8e3ef) !important;
+  border-radius:7px !important;
+  scrollbar-width:thin !important;
+  scrollbar-color:rgba(148,163,184,.26) transparent !important;
+}
+
+body #pane-workingpaper .wp-table-wrap::-webkit-scrollbar{
+  display:block !important;
+  height:4px !important;
+}
+
+body #pane-workingpaper .wp-table-wrap::-webkit-scrollbar-thumb{
+  border-radius:999px !important;
+  background:rgba(148,163,184,.26) !important;
+}
+
+body #pane-workingpaper .wp-standard-table{
+  width:100% !important;
+  table-layout:auto !important;
+}
+
+body #pane-workingpaper #rngTable{
+  min-width:1240px !important;
+}
+
+body #pane-workingpaper #fraudTable{
+  min-width:100% !important;
+}
+
+body #pane-workingpaper .wp-standard-table th,
+body #pane-workingpaper .wp-standard-table td{
+  word-break:break-word !important;
+}
+
+body #pane-workingpaper .wp-standard-table th{
+  white-space:nowrap !important;
+  word-break:keep-all !important;
+}
+
+body #pane-workingpaper .wp-standard-table td{
+  white-space:normal !important;
+}
+
+body #pane-workingpaper .wp-standard-table th:nth-child(1){
+  width:auto !important;
+  min-width:250px !important;
+}
+
+body #pane-workingpaper .wp-standard-table td:nth-child(1){
+  width:auto !important;
+  min-width:250px !important;
+}
+
+body #pane-workingpaper .wp-standard-table th:nth-child(3){
+  width:auto !important;
+  min-width:310px !important;
+}
+
+body #pane-workingpaper .wp-standard-table td:nth-child(3){
+  width:auto !important;
+  min-width:310px !important;
+}
+
+body #pane-workingpaper .wp-standard-table th:nth-child(2),
+body #pane-workingpaper .wp-standard-table td:nth-child(2),
+body #pane-workingpaper .wp-standard-table th:nth-child(4),
+body #pane-workingpaper .wp-standard-table td:nth-child(4){
+  width:auto !important;
+  min-width:76px !important;
+}
+
+body #pane-workingpaper .wp-standard-table th:nth-child(5),
+body #pane-workingpaper .wp-standard-table td:nth-child(5),
+body #pane-workingpaper .wp-standard-table th:nth-child(6),
+body #pane-workingpaper .wp-standard-table td:nth-child(6),
+body #pane-workingpaper .wp-standard-table th:nth-child(7),
+body #pane-workingpaper .wp-standard-table td:nth-child(7){
+  width:auto !important;
+  min-width:96px !important;
+  white-space:nowrap !important;
+}
+
+body #pane-workingpaper #rngTable th:nth-child(8),
+body #pane-workingpaper #rngTable td:nth-child(8){
+  width:auto !important;
+  min-width:72px !important;
+  white-space:nowrap !important;
+}
+
+body #pane-workingpaper .wp-standard-table th:last-child,
+body #pane-workingpaper .wp-standard-table td:last-child{
+  width:auto !important;
+  min-width:120px !important;
+}
+
+body #pane-workingpaper .wp-action-links{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:6px !important;
+  flex-wrap:nowrap !important;
+  white-space:nowrap !important;
+}
+
+body #pane-workingpaper .wp-action-links .act-link{
+  display:inline-flex !important;
+  align-items:center !important;
+  white-space:nowrap !important;
+}
+
+body #pane-workingpaper .wp-is-hidden{
+  display:none !important;
+}
+
+/* 最终按钮尺寸覆盖层：放在文件末尾，避免前面页面细分样式再次覆盖。 */
+body .tab-container .biz-filter-bar button:not(.card-fold-btn):not(.audit-pager-btn),
+body .tab-pane .btn:not(.card-fold-btn):not(.audit-pager-btn):not(.ba-filter-btn):not(.ba-sort-up):not(.ba-sort-down),
+body .tab-pane button.btn:not(.card-fold-btn):not(.audit-pager-btn):not(.ba-filter-btn):not(.ba-sort-up):not(.ba-sort-down),
+body .tab-pane .btn-ghost:not(.audit-pager-btn),
+body .tab-pane .action-btn:not(.card-fold-btn):not(.audit-pager-btn){
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  min-width:var(--audit-action-btn-min-w, 56px) !important;
+  min-height:var(--audit-action-btn-h, 28px) !important;
+  height:var(--audit-action-btn-h, 28px) !important;
+  padding:0 var(--audit-action-btn-px, 12px) !important;
+  border-radius:var(--audit-action-btn-radius, 7px) !important;
+  font-size:var(--audit-action-btn-font, 12px) !important;
+  line-height:calc(var(--audit-action-btn-h, 28px) - 2px) !important;
+  white-space:nowrap !important;
+  box-sizing:border-box !important;
+}
+
+body .tab-pane .card-fold-btn,
+body .tab-pane .ba-filter-btn,
+body .tab-pane .ba-sort-up,
+body .tab-pane .ba-sort-down,
+body .tab-pane .audit-pager-btn{
+  min-width:initial !important;
+}
+
+body .tab-pane .head-inline,
+body .tab-pane .bank-help-actions,
+body .tab-pane .wp-tools-right,
+body .tab-pane .wp-bottom-actions,
+body .tab-pane .btn-bar,
+body .tab-pane .toolbar-right,
+body .tab-pane .risk-result-actions,
+body .tab-container .biz-filter-bar .actions,
+body .tab-pane .card > .head > div[style*="display:flex"]{
+  gap:var(--audit-action-btn-gap, 6px) !important;
+}
+
+body .tab-pane .card > .head > .btn + .btn,
+body .tab-pane .card > .head > button.btn + button.btn{
+  margin-left:var(--audit-action-btn-gap, 6px) !important;
+}
+
+body .portrait-table-card #portraitColumnsBtn{
+  margin-left:auto !important;
+  margin-right:0 !important;
+}
+
+body .portrait-table-card #portraitExportBtn{
+  margin-left:var(--audit-action-btn-gap, 6px) !important;
 }

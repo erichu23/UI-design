@@ -1,22 +1,23 @@
 :root{
-  --du-blue: #1e49e2;
+  --du-blue: #2f6fed;
   --du-blue-deep: #003366;
-  --du-blue-soft: #eef4ff;
-  --du-bg: #f5f7fb;
+  --du-blue-soft: #eef5ff;
+  --du-bg: #f5f7fa;
   --du-card: #ffffff;
-  --du-border: #e6edf5;
-  --du-border-dark: #d9e3ef;
-  --du-text: #1f2d3d;
+  --du-border: #edf2f7;
+  --du-border-dark: #dbe5f0;
+  --du-text: #1e293b;
   --du-text-2: #334155;
-  --du-muted: #7b8aa0;
-  --du-head-bg: #f8fbff;
+  --du-muted: #64748b;
+  --du-head-bg: #fafcff;
   --du-hover: #fafcff;
-  --du-success: #16a34a;
-  --du-success-bg: #edf9f1;
+  --du-success: #12805c;
+  --du-success-bg: #edf8f3;
   --du-pending: #94a3b8;
   --du-pending-bg: #f8fafc;
-  --du-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
-  --du-radius: 10px;
+  --du-shadow: 0 1px 2px rgba(15,23,42,.025);
+  --du-radius: 8px;
+  --du-font: var(--platform-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif);
 }
 
 *{
@@ -27,16 +28,40 @@ html, body{
   margin: 0;
   padding: 0;
   background: var(--du-bg);
-  font-family: var(--platform-font-family, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji");
+  font-family: var(--du-font);
   color: var(--du-text);
+  font-size: 12px;
 }
 
 body{
   min-height: 100vh;
 }
 
+*{
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148,163,184,.34) transparent;
+}
+
+*::-webkit-scrollbar{
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track{
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb{
+  background: rgba(148,163,184,.28);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover{
+  background: rgba(100,116,139,.42);
+}
+
 .du-page{
-  padding: 14px 14px 18px;
+  padding: 8px 12px 14px;
 }
 
 /* 顶部标题区 */
@@ -44,44 +69,46 @@ body{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 10px;
+  min-height: 34px;
+  margin-bottom: 7px;
 }
 
 .du-title{
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 16px;
+  gap: 8px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--du-blue-deep);
-  letter-spacing: .2px;
+  letter-spacing: 0;
 }
 
 .du-title-bar{
-  width: 4px;
-  height: 18px;
+  width: 3px;
+  height: 14px;
   border-radius: 999px;
-  background: linear-gradient(180deg, var(--du-blue), #4d77ff);
-  box-shadow: 0 0 0 3px rgba(30, 73, 226, 0.08);
+  background: linear-gradient(180deg, rgba(47,111,237,.72), rgba(47,111,237,.18));
 }
 
 .du-template-btn{
-  border: 1px solid var(--du-blue);
-  background: linear-gradient(180deg, #2f66f3 0%, #1e49e2 100%);
+  min-height: 28px;
+  border: 1px solid #1d4ed8;
+  background: #1d4ed8;
   color: #fff;
-  border-radius: 8px;
-  padding: 8px 14px;
+  border-radius: 7px;
+  padding: 0 12px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(30, 73, 226, 0.18);
-  transition: all .18s ease;
+  box-shadow: 0 1px 2px rgba(29,78,216,.12);
+  transition: background .16s ease, border-color .16s ease, box-shadow .16s ease;
 }
 
 .du-template-btn:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(30, 73, 226, 0.22);
+  background: #1746c6;
+  border-color: #1746c6;
+  box-shadow: 0 2px 5px rgba(29,78,216,.16);
 }
 
 /* 卡片 */
@@ -90,21 +117,25 @@ body{
   border: 1px solid var(--du-border);
   border-radius: var(--du-radius);
   box-shadow: var(--du-shadow);
-  margin-bottom: 12px;
+  margin-bottom: 7px;
   overflow: hidden;
 }
 
 .du-card-head{
-  padding: 14px 14px 10px;
-  border-bottom: 1px solid #f1f5f9;
-  background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
+  position: relative;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--du-border);
+  background: var(--du-head-bg);
 }
 
 .du-card-title{
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  gap: 7px;
+  font-size: 13px;
   font-weight: 700;
   color: #0f172a;
 }
@@ -113,37 +144,57 @@ body{
   width: 3px;
   height: 14px;
   border-radius: 999px;
-  background: var(--du-blue);
+  background: linear-gradient(180deg, rgba(47,111,237,.72), rgba(47,111,237,.18));
 }
 
 /* Tab */
 .du-tabbar{
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 0 14px 10px;
+  gap: 14px;
+  min-height: 34px;
+  padding: 4px 10px 0;
   border-bottom: 1px solid var(--du-border);
-  background: #fff;
+  background: var(--du-head-bg);
 }
 
 .du-tab{
   position: relative;
   border: none;
   background: transparent;
-  color: var(--du-muted);
-  font-size: 13px;
+  color: #6b7b91;
+  font-size: 12px;
   font-weight: 600;
-  padding: 2px 0 4px;
+  height: 29px;
+  padding: 0 2px 5px;
+  border-radius: 0;
   cursor: pointer;
-  transition: color .18s ease;
+  box-shadow: none;
+  transition: color .16s ease;
+}
+
+.du-tab + .du-tab::before{
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  width: 1px;
+  height: 12px;
+  background: #dbe5f0;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
 .du-tab:hover{
   color: var(--du-blue);
+  background: transparent;
 }
 
 .du-tab.active{
-  color: var(--du-blue);
+  color: #002b5c;
+  background: transparent;
+  box-shadow: none;
+  font-weight: 800;
 }
 
 .du-tab.active::after{
@@ -151,15 +202,25 @@ body{
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -11px;
+  bottom: -1px;
   height: 2px;
   border-radius: 999px;
-  background: var(--du-blue);
+  background: #003366;
+  box-shadow: none;
 }
 
 /* 表格容器 */
 .du-table-wrap{
-  padding: 12px 14px 14px;
+  padding: 10px;
+  overflow-x: auto;
+}
+
+.du-upload-panel{
+  display: none;
+}
+
+.du-upload-panel.active{
+  display: block;
 }
 
 .du-table{
@@ -168,35 +229,37 @@ body{
   border-spacing: 0;
   font-size: 12px;
   background: #fff;
-  border: 1px solid var(--du-border);
+  border: 1px solid #e7eef7;
   border-radius: 8px;
   overflow: hidden;
 }
 
 .du-table thead th{
   text-align: left;
-  color: #5f7188;
+  color: #314158;
   font-weight: 700;
   background: var(--du-head-bg);
-  border-bottom: 1px solid var(--du-border);
-  padding: 10px 12px;
+  border-bottom: 1px solid #dbe7f4;
+  padding: 7px 9px;
+  line-height: 18px;
   white-space: nowrap;
 }
 
 .du-table thead th + th{
-  border-left: 1px solid #edf2f7;
+  border-left: 1px solid #e4edf7;
 }
 
 .du-table tbody td{
-  border-bottom: 1px solid #edf2f7;
-  padding: 10px 12px;
+  border-bottom: 1px solid #e8eff7;
+  padding: 7px 9px;
+  line-height: 18px;
   color: var(--du-text-2);
   vertical-align: middle;
   background: #fff;
 }
 
 .du-table tbody td + td{
-  border-left: 1px solid #f3f6fa;
+  border-left: 1px solid #eef3f8;
 }
 
 .du-table tbody tr:last-child td{
@@ -216,11 +279,11 @@ body{
 .du-status{
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  min-width: 68px;
+  gap: 5px;
+  min-width: 64px;
   font-size: 12px;
   font-weight: 600;
-  padding: 3px 8px;
+  padding: 2px 7px;
   border-radius: 999px;
 }
 
@@ -259,16 +322,18 @@ body{
 
 .du-actions a{
   display: inline-block;
-  color: var(--du-blue);
+  color: #2563eb;
   text-decoration: none;
-  margin-right: 10px;
+  margin-right: 8px;
   font-weight: 600;
   position: relative;
   transition: color .18s ease;
 }
 
 .du-actions a:hover{
-  color: #1437b8;
+  color: #1d4ed8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .du-actions a:last-child{
@@ -280,8 +345,8 @@ body{
   display: inline-block;
   width: 1px;
   height: 10px;
-  background: #dbe4f0;
-  margin-right: 10px;
+  background: #dbe5f0;
+  margin-right: 8px;
   vertical-align: middle;
 }
 
@@ -289,27 +354,28 @@ body{
 .du-footer{
   display: flex;
   justify-content: flex-end;
-  padding: 0 14px 14px;
+  padding: 0 10px 10px;
 }
 
 .du-analyze-btn{
   border: 1px solid #dbe4f0;
   background: #f1f5f9;
   color: #94a3b8;
-  border-radius: 8px;
-  padding: 8px 16px;
+  border-radius: 7px;
+  min-height: 28px;
+  padding: 0 12px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: not-allowed;
 }
 
 /* 如果后面启用按钮，加这个类即可 */
 .du-analyze-btn.is-enabled{
-  background: linear-gradient(180deg, #2f66f3 0%, #1e49e2 100%);
+  background: #1d4ed8;
   color: #fff;
-  border-color: var(--du-blue);
+  border-color: #1d4ed8;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(30, 73, 226, 0.18);
+  box-shadow: 0 1px 2px rgba(29,78,216,.12);
 }
 
 /* 小屏适配 */
@@ -325,4 +391,29 @@ body{
   .du-table{
     min-width: 1100px;
   }
+}
+
+/* 数据上传页普通按钮尺寸统一；不覆盖按钮颜色。 */
+.du-page .btn:not(.audit-pager-btn):not(.card-fold-btn),
+.du-page button.btn:not(.audit-pager-btn):not(.card-fold-btn),
+.du-page .du-analyze-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-width:var(--audit-action-btn-min-w, 56px);
+  min-height:var(--audit-action-btn-h, 28px);
+  height:var(--audit-action-btn-h, 28px);
+  padding:0 var(--audit-action-btn-px, 12px);
+  border-radius:var(--audit-action-btn-radius, 7px);
+  font-size:var(--audit-action-btn-font, 12px);
+  line-height:calc(var(--audit-action-btn-h, 28px) - 2px);
+  white-space:nowrap;
+  box-sizing:border-box;
+}
+
+.du-page .du-footer,
+.du-page .du-card-head,
+.du-page .du-upload-tabs{
+  gap:var(--audit-action-btn-gap, 6px);
 }

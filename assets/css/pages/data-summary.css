@@ -316,24 +316,55 @@ html,body{
   display:flex;
   align-items:center;
   gap:10px;
-  padding:8px 16px;
+  padding:6px 12px 5px;
   border-bottom:1px solid var(--ds3-border);
   overflow-x:auto;
+  background:#fafcff;
+  scrollbar-width:none;
+}
+
+.ds3-tabbar::-webkit-scrollbar{
+  display:none;
 }
 
 .ds3-tab{
+  position:relative;
   border:none;
   background:transparent;
-  color:#475569;
-  font-size:13px;
-  padding:5px 10px;
+  color:#6b7b91;
+  font-size:12px;
+  height:28px;
+  padding:4px 7px;
+  border-radius:0;
   cursor:pointer;
   white-space:nowrap;
+  font-weight:600;
+  box-shadow:none;
+  transition:color .16s ease;
+}
+
+.ds3-tab + .ds3-tab::before{
+  content:"";
+  position:absolute;
+  left:-5px;
+  top:50%;
+  width:1px;
+  height:12px;
+  background:#dbe5f0;
+  transform:translateY(-50%);
+  pointer-events:none;
+}
+
+.ds3-tab:hover{
+  color:#1d4ed8;
+  background:transparent;
 }
 
 .ds3-tab.is-active{
-  color:var(--ds3-blue);
-  font-weight:600;
+  color:#002b5c;
+  background:transparent;
+  box-shadow:none;
+  font-weight:800;
 }
 
 .ds3-inkbar{
@@ -342,8 +373,10 @@ html,body{
   left:0;
   width:0;
   height:2px;
-  background:var(--ds3-blue);
-  transition:left .25s ease,width .25s ease;
+  border-radius:999px;
+  background:#003366;
+  box-shadow:none;
+  transition:left .22s ease,width .22s ease;
 }
 
 .ds3-intro{
@@ -7950,10 +7983,10 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 /* 数据综合分析 card 标题样式对齐银行流水分析：左侧整高蓝色竖条 */
 .ds3-vat-page .ds3-block{
   margin-top:6px !important;
-  border:1px solid #dfe7f1 !important;
+  border:1px solid #edf2f7 !important;
   border-radius:8px !important;
   background:#fff !important;
-  box-shadow:0 1px 3px rgba(15,23,42,.04) !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.025) !important;
   overflow:hidden !important;
 }
 
@@ -7962,8 +7995,8 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   min-height:36px !important;
   padding:5px 10px !important;
   gap:6px !important;
-  border-bottom:1px solid #dfe7f1 !important;
-  background:#f8fafc !important;
+  border-bottom:1px solid #edf2f7 !important;
+  background:#fafcff !important;
 }
 
 .ds3-vat-page .ds3-block-head::before{
@@ -8444,4 +8477,210 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 .ds3-vat-page .ds3-linked-table-wrap table thead th,
 .ds3-vat-page .ds3-panel table thead th{
   background-clip:padding-box !important;
+}
+
+/* 全局精简：数据综合分析隐藏业务逻辑 / 操作提示，普通 card 标题改为轻量短标记。 */
+.ds3-vat-page .ds3-help-actions{
+  display:none !important;
+}
+
+.ds3-vat-page .ds3-block-head::before{
+  content:"" !important;
+  position:absolute !important;
+  left:10px !important;
+  top:50% !important;
+  display:block !important;
+  width:3px !important;
+  height:14px !important;
+  border-radius:999px !important;
+  background:linear-gradient(180deg, rgba(47,111,237,.72), rgba(47,111,237,.18)) !important;
+  transform:translateY(-50%) !important;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-block-title{
+  margin-left:14px !important;
+}
+
+.ds3-vat-page .ds3-rule-block .ds3-block-head::before,
+.ds3-vat-page .ds3-filter-block .ds3-block-head::before{
+  display:none !important;
+}
+
+.ds3-vat-page .ds3-rule-block .ds3-block-title,
+.ds3-vat-page .ds3-filter-block .ds3-block-title{
+  margin-left:0 !important;
+}
+
+/* Card 收起/展开按钮统一为圆形轮廓。 */
+.ds3-vat-page .ds3-fold{
+  width:26px !important;
+  min-width:26px !important;
+  height:26px !important;
+  min-height:26px !important;
+  flex:0 0 26px !important;
+  padding:0 !important;
+  border:1px solid #dbe5f0 !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  color:transparent !important;
+  font-size:0 !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.04) !important;
+}
+
+.ds3-vat-page .ds3-fold:hover{
+  border-color:#b9c9dc !important;
+  background:#f8fbff !important;
+}
+
+/* 修正右侧操作区：标题撑开空间，操作按钮贴着圆形收起按钮。 */
+.ds3-vat-page .ds3-block-head > .ds3-block-title{
+  margin-right:auto !important;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-block-actions,
+.ds3-vat-page .ds3-block-head > .ds3-rule-note-head{
+  margin-left:0 !important;
+}
+
+.ds3-vat-page .ds3-block-head > .ds3-fold{
+  margin-left:6px !important;
+}
+
+.ds3-vat-page .ds3-filter-block .ds3-page-tabs{
+  margin-right:auto !important;
+}
+
+/* Card 外框最终轻量化。 */
+.ds3-vat-page .ds3-block,
+.ds3-vat-page .ds3-rule-block,
+.ds3-vat-page .ds3-filter-block{
+  border-color:#edf2f7 !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.025) !important;
+}
+
+.ds3-vat-page .ds3-block-head,
+.ds3-vat-page .ds3-rule-block .ds3-block-head,
+.ds3-vat-page .ds3-filter-block .ds3-block-head{
+  border-bottom-color:#edf2f7 !important;
+  background:#fafcff !important;
+}
+
+/* 数据综合分析普通操作按钮尺寸统一；颜色继续沿用原按钮状态。 */
+.ds3-vat-page .ds3-btn:not(.small):not(.ds3-fold):not(.ds3-eye-btn):not(.ds3-group-toggle-btn):not(.ds3-row-toggle-btn),
+.ds3-vat-page button.ds3-btn:not(.small):not(.ds3-fold):not(.ds3-eye-btn):not(.ds3-group-toggle-btn):not(.ds3-row-toggle-btn),
+.ds3-vat-page .ds3-analysis-clear-btn,
+.ds3-vat-page .ds3-filter-btn{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  min-width:var(--audit-action-btn-min-w, 56px) !important;
+  min-height:var(--audit-action-btn-h, 28px) !important;
+  height:var(--audit-action-btn-h, 28px) !important;
+  padding:0 var(--audit-action-btn-px, 12px) !important;
+  border-radius:var(--audit-action-btn-radius, 7px) !important;
+  font-size:var(--audit-action-btn-font, 12px) !important;
+  line-height:calc(var(--audit-action-btn-h, 28px) - 2px) !important;
+  white-space:nowrap !important;
+  box-sizing:border-box !important;
+}
+
+.ds3-vat-page .ds3-actions,
+.ds3-vat-page .ds3-block-actions,
+.ds3-vat-page .ds3-section-actions,
+.ds3-vat-page .ds3-analysis-summary-actions,
+.ds3-vat-page .ds3-modal-actions,
+.ds3-vat-page .ds3-period-actions,
+.ds3-vat-page .ds3-rule-actions,
+.ds3-vat-page .ds3-help-actions,
+.ds3-vat-page .ds3-month-menu-actions,
+.ds3-vat-page .ds3-vat-filter-grid .ds3-actions{
+  gap:var(--audit-action-btn-gap, 6px) !important;
+}
+
+/* 取消表格视图和“合计”展开的胶囊外框，统一为轻量下划线/文字交互。 */
+.ds3-vat-page .ds3-table-view-line .ds3-segment,
+.ds3-vat-page #ds3TableViewTabs{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  overflow:visible !important;
+  box-shadow:none !important;
+}
+
+.ds3-vat-page .ds3-table-view-line .ds3-segment button,
+.ds3-vat-page #ds3TableViewTabs button{
+  position:relative !important;
+  min-height:28px !important;
+  height:28px !important;
+  padding:0 12px 2px !important;
+  border:0 !important;
+  border-right:1px solid #e6edf5 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#64748b !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  box-shadow:none !important;
+}
+
+.ds3-vat-page .ds3-table-view-line .ds3-segment button:last-child,
+.ds3-vat-page #ds3TableViewTabs button:last-child{
+  border-right:0 !important;
+}
+
+.ds3-vat-page .ds3-table-view-line .ds3-segment button::after,
+.ds3-vat-page #ds3TableViewTabs button::after{
+  content:"" !important;
+  position:absolute !important;
+  right:10px !important;
+  bottom:-1px !important;
+  left:10px !important;
+  height:2px !important;
+  border-radius:999px !important;
+  background:transparent !important;
+}
+
+.ds3-vat-page .ds3-table-view-line .ds3-segment button.is-active,
+.ds3-vat-page #ds3TableViewTabs button.is-active{
+  color:#003366 !important;
+  background:transparent !important;
+  font-weight:800 !important;
+}
+
+.ds3-vat-page .ds3-table-view-line .ds3-segment button.is-active::after,
+.ds3-vat-page #ds3TableViewTabs button.is-active::after{
+  background:#003366 !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-group-toggle-btn,
+.ds3-vat-page #ds3SelectedTable .ds3-group-toggle-btn,
+.ds3-vat-page .ds3-group-toggle-btn{
+  min-width:0 !important;
+  height:28px !important;
+  min-height:28px !important;
+  padding:0 4px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#334155 !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-group-toggle-btn:hover,
+.ds3-vat-page #ds3SelectedTable .ds3-group-toggle-btn:hover,
+.ds3-vat-page .ds3-group-toggle-btn:hover{
+  background:transparent !important;
+  color:#1d4ed8 !important;
+  transform:none !important;
+}
+
+.ds3-vat-page .ds3-group-toggle-icon{
+  color:#64748b !important;
+  font-size:13px !important;
+  font-weight:800 !important;
 }

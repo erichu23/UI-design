@@ -53,15 +53,152 @@
   addGeneratedRows(sourceCustomerNames,'客户',0);
   addGeneratedRows(sourceSupplierNames,'供应商',45);
   addGeneratedRows(sourceOtherNames,'其他',90);
-  const charts={}; let mode='inflow',sortKey='',sortDir=1,page=1,pageSize=20;
+  const charts={}; let mode='inflow',sortKey='',sortDir=1,page=1,pageSize=20,tableView='summary',yearExpanded=false,counterpartyFilter='all';
   const fmt=v=>v?Number(v).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';
   const fmtK=v=>v?`${fmt(v)}K`:'—';
   const typeClass=t=>t==='客户'?'is-customer':t==='供应商'?'is-supplier':'';
+  const filterDefs=[
+    {key:'all',label:'全体对手方'},
+    {key:'related',label:'已知关联方'},
+    {key:'supplier',label:'供应商'},
+    {key:'customer',label:'客户'},
+    {key:'employee',label:'员工'},
+    {key:'other',label:'其他'},
+    {key:'personal',label:'个人'}
+  ];
+  const rowIndex=row=>rows.findIndex(r=>r.name===row.name);
+  const isRelated=row=>rowIndex(row)%8===0;
+  const isEmployee=row=>rowIndex(row)%17===0;
+  const isPersonal=row=>rowIndex(row)%19===0;
+  const displayType=row=>{
+    if(counterpartyFilter==='related'&&isRelated(row))return '已知关联方';
+    if(counterpartyFilter==='employee'&&isEmployee(row))return '员工';
+    if(counterpartyFilter==='personal'&&isPersonal(row))return '个人';
+    if(counterpartyFilter==='other')return '其他';
+    return row.type;
+  };
+  const filterRows=list=>list.filter(row=>{
+    if(counterpartyFilter==='all')return true;
+    if(counterpartyFilter==='related')return isRelated(row);
+    if(counterpartyFilter==='supplier')return row.type==='供应商';
+    if(counterpartyFilter==='customer')return row.type==='客户';
+    if(counterpartyFilter==='employee')return isEmployee(row);
+    if(counterpartyFilter==='other')return row.type==='其他';
+    if(counterpartyFilter==='personal')return isPersonal(row);
+    return true;
+  });
+  const years=[2023,2024,2025];
+  const yearRatios={2023:.27,2024:.33,2025:.40};
+  const businessStatus=['存续','存续','存续','存续','迁出','存续','存续','存续','存续','存续'];
+  const capitalCurrency=['RMB','RMB','RMB','RMB','RMB','RMB','RMB','RMB','USD','RMB'];
+  const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const yearVal=(row,key,year)=>{
+    const base=Number(row[key]||0);
+    const drift=1+(((row.name.length+year)%5)-2)*.018;
+    return +(base*(yearRatios[year]||.33)*drift).toFixed(1);
+  };
+  const groupCells=(row,year)=>{
+    const inflow=year?yearVal(row,'inflow',year):row.inflow;
+    const salesVat=year?yearVal(row,'salesVat',year):row.salesVat;
+    const outflow=year?yearVal(row,'outflow',year):row.outflow;
+    const purchaseVat=year?yearVal(row,'purchaseVat',year):row.purchaseVat;
+    const count=year?Math.max(1,Math.round(row.count*(yearRatios[year]||.33))):row.count;
+    return `<td class="is-num is-inflow">${fmtK(inflow)}</td><td class="is-num is-sales-vat">${fmtK(salesVat)}</td><td class="is-num is-outflow">${fmtK(outflow)}</td><td class="is-num is-purchase-vat">${fmtK(purchaseVat)}</td><td class="is-num">${fmtK(inflow+outflow)}</td><td class="is-num">${count}</td>`;
+  };
+  const headerCell=(label,key)=>`<th data-sort="${key||''}">${label}</th>`;
+  const businessInfo=row=>{
+    const idx=rows.findIndex(r=>r.name===row.name);
+    const start=2014+(idx%8);
+    const month=String((idx%12)+1).padStart(2,'0');
+    const day=String((idx*3)%27+1).padStart(2,'0');
+    return {
+      status:businessStatus[idx%businessStatus.length],
+      founded:`${start}-${month}-${day}`,
+      start:`${start}-${month}-${day}`,
+      end:idx%7===0?'2035-12-31':'长期',
+      term:idx%7===0?`${21-idx%5}年`:'长期',
+      capital:((idx%9)+1)*1000,
+      currency:capitalCurrency[idx%capitalCurrency.length],
+      scope:row.type==='客户'?'设备销售、技术服务、电子产品批发':'原材料采购、仓储物流、供应链服务',
+      address:['上海市浦东新区','深圳市南山区','苏州市工业园区','杭州市余杭区','成都市高新区'][idx%5],
+      contact:`021-${String(60000000+idx*1379).slice(0,8)}`,
+      people:row.people
+    };
+  };
   function mini(row,index){const max=Math.max(row.inflow,row.outflow,1);return `<div class="portrait-mini">${Array.from({length:12},(_,m)=>{const a=Math.max(2,(row.inflow/max)*(45+(m*13+index*9)%50)),b=Math.max(2,(row.outflow/max)*(42+(m*17+index*7)%54));return `<span title="${m+1}月"><i class="is-in" style="height:${a}%"></i><i class="is-out" style="height:${b}%"></i></span>`}).join('')}</div>`}
-  function renderTable(){let list=[...rows];if(sortKey)list.sort((a,b)=>{const av=a[sortKey],bv=b[sortKey];return (typeof av==='number'?av-bv:String(av).localeCompare(String(bv),'zh-CN'))*sortDir});const total=list.length,pages=Math.max(1,Math.ceil(total/pageSize));if(page>pages)page=pages;const start=(page-1)*pageSize,view=list.slice(start,start+pageSize);const body=document.getElementById('portraitCounterpartyBody');if(!body)return;body.innerHTML=view.map((r,i)=>`<tr><td>${r.name}</td><td>${mini(r,start+i)}</td><td class="portrait-type-cell ${typeClass(r.type)}">${r.type}</td><td class="is-inflow">${fmtK(r.inflow)}</td><td class="is-sales-vat">${fmtK(r.salesVat)}</td><td class="is-outflow">${fmtK(r.outflow)}</td><td class="is-purchase-vat">${fmtK(r.purchaseVat)}</td><td>${r.count}</td><td>${r.sameRatio.toFixed(1)}</td><td>${r.industry}</td><td>${r.duration}</td><td>${r.people}</td></tr>`).join('');document.getElementById('portraitTableCount').textContent=`共 ${total} 家对手方，当前展示 ${start+1}-${Math.min(start+pageSize,total)} / ${total}`;const pager=document.getElementById('portraitPager');if(pager){window.renderAuditPager?.(pager,{total,page,pageSize,onPage:next=>{page=next;renderTable();},onPageSize:size=>{pageSize=size;page=1;renderTable();}});}}
+  function renderTableHead(){
+    const head=document.getElementById('portraitCounterpartyHead');
+    if(!head)return;
+    const icon=yearExpanded?'«':'»';
+    const yearHeads=yearExpanded?years.map(y=>`<th colspan="6" class="portrait-year-head">${y}年</th>`).join(''):'';
+    const yearSubs=yearExpanded?years.map(()=>`<th>流入金额</th><th>销项税价合计</th><th>流出金额</th><th>进项税价合计</th><th>交易总额</th><th>交易笔数</th>`).join(''):'';
+    if(tableView==='business'){
+      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2">对手方名称</th><th rowspan="2">对手方类型</th><th rowspan="2">行业</th><th colspan="6" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="portraitYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2">经营状态</th><th rowspan="2">成立日期</th><th rowspan="2">经营开始时间</th><th rowspan="2">经营结束时间</th><th rowspan="2">营业期限</th><th rowspan="2">注册资本</th><th rowspan="2">币种</th><th rowspan="2">经营范围</th><th rowspan="2">注册地址</th><th rowspan="2">企业联系方式</th><th rowspan="2">董监高</th></tr><tr class="portrait-year-sub-head"><th>流入金额</th><th>销项税价合计</th><th>流出金额</th><th>进项税价合计</th><th>交易总额</th><th>交易笔数</th>${yearSubs}</tr>`;
+    }else{
+      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" data-sort="name">对手方名称</th><th rowspan="2">月度分布</th><th rowspan="2" data-sort="type">对手方类型</th><th colspan="6" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="portraitYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2" data-sort="sameRatio">同进同出比例（%）</th><th rowspan="2" data-sort="industry">行业</th><th rowspan="2" data-sort="duration">经营时长</th><th rowspan="2">董监高</th></tr><tr class="portrait-year-sub-head"><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="total">交易总额</th><th data-sort="count">交易笔数</th>${yearSubs}</tr>`;
+    }
+    document.getElementById('portraitYearToggle')?.addEventListener('click',()=>{yearExpanded=!yearExpanded;renderTable();});
+  }
+  function rowSortValue(row,key){
+    if(key==='total')return row.inflow+row.outflow;
+    if(key==='type')return displayType(row);
+    return row[key]??'';
+  }
+  function refreshTableTools(){
+    const table=document.getElementById('portraitCounterpartyTable');
+    if(!table)return;
+    delete table.dataset.baEnhanced;
+    table.querySelectorAll('.ba-th-tools').forEach(el=>el.remove());
+    window.dispatchEvent(new CustomEvent('bank-analysis:tab-change'));
+  }
+  function renderFilterCards(){
+    const wrap=document.getElementById('portraitCounterpartyFilters');
+    if(!wrap)return;
+    const total=Math.max(rows.length,1);
+    wrap.innerHTML=filterDefs.map(def=>{
+      const count=filterRowsFor(def.key).length;
+      const pct=count/total*100;
+      return `<button class="portrait-filter-card ${counterpartyFilter===def.key?'is-active':''}" data-filter="${def.key}" type="button">
+        <span>${def.label}</span>
+        <strong>${pct.toFixed(1)}%</strong>
+        <i style="--pct:${pct.toFixed(1)}%"></i>
+      </button>`;
+    }).join('');
+  }
+  function filterRowsFor(key){
+    const prev=counterpartyFilter;
+    counterpartyFilter=key;
+    const list=filterRows(rows);
+    counterpartyFilter=prev;
+    return list;
+  }
+  function renderTable(){renderFilterCards();let list=filterRows([...rows]);if(sortKey)list.sort((a,b)=>{const av=rowSortValue(a,sortKey),bv=rowSortValue(b,sortKey);return (typeof av==='number'?av-bv:String(av).localeCompare(String(bv),'zh-CN'))*sortDir});const total=list.length,pages=Math.max(1,Math.ceil(total/pageSize));if(page>pages)page=pages;const start=(page-1)*pageSize,view=list.slice(start,start+pageSize);const body=document.getElementById('portraitCounterpartyBody');if(!body)return;document.querySelector('.portrait-table-wrap')?.classList.toggle('is-year-expanded',yearExpanded);renderTableHead();body.innerHTML=view.map((r,i)=>{const yearsCells=yearExpanded?years.map(y=>groupCells(r,y)).join(''):'';const shownType=displayType(r);const shownTypeClass=typeClass(shownType);if(tableView==='business'){const bi=businessInfo(r);return `<tr><td>${esc(r.name)}</td><td class="portrait-type-cell ${shownTypeClass}">${esc(shownType)}</td><td>${esc(r.industry)}</td>${groupCells(r)}${yearsCells}<td>${bi.status}</td><td>${bi.founded}</td><td>${bi.start}</td><td>${bi.end}</td><td>${bi.term}</td><td class="is-num">${bi.capital}</td><td>${bi.currency}</td><td>${esc(bi.scope)}</td><td>${esc(bi.address)}</td><td>${bi.contact}</td><td>${esc(bi.people)}</td></tr>`;}return `<tr><td>${esc(r.name)}</td><td>${mini(r,start+i)}</td><td class="portrait-type-cell ${shownTypeClass}">${esc(shownType)}</td>${groupCells(r)}${yearsCells}<td>${r.sameRatio.toFixed(1)}</td><td>${esc(r.industry)}</td><td>${esc(r.duration)}</td><td>${esc(r.people)}</td></tr>`;}).join('');document.getElementById('portraitTableCount').textContent=`共 ${total} 家对手方，当前展示 ${total?start+1:0}-${Math.min(start+pageSize,total)} / ${total}`;document.querySelectorAll('#portraitCounterpartyTable th[data-sort]').forEach(th=>{th.classList.toggle('is-asc',sortKey===th.dataset.sort&&sortDir===1);th.classList.toggle('is-desc',sortKey===th.dataset.sort&&sortDir===-1);th.onclick=()=>{if(sortKey===th.dataset.sort)sortDir*=-1;else{sortKey=th.dataset.sort;sortDir=1;}renderTable();};});refreshTableTools();const pager=document.getElementById('portraitPager');if(pager){window.renderAuditPager?.(pager,{total,page,pageSize,onPage:next=>{page=next;renderTable();},onPageSize:size=>{pageSize=size;page=1;renderTable();}});}}
+  function featureAmount(row){return mode==='outflow'?row.outflow:mode==='total'?row.inflow+row.outflow:row.inflow;}
+  function featureLabel(){return mode==='outflow'?'流出金额':mode==='total'?'交易总额':'流入金额';}
+  function featureClass(){return mode==='outflow'?'is-outflow':mode==='total'?'is-total':'is-inflow';}
+  function renderFeatureTable(){
+    const input=document.getElementById('portraitFeatureTopN');
+    const body=document.getElementById('portraitFeatureBody');
+    const amountHead=document.getElementById('portraitFeatureAmountHead');
+    if(!body)return;
+    let topN=Math.round(Number(input?.value)||20);
+    topN=Math.max(1,Math.min(rows.length,topN));
+    if(input&&String(input.value)!==String(topN))input.value=topN;
+    const list=[...rows].sort((a,b)=>featureAmount(b)-featureAmount(a)).slice(0,topN);
+    const max=Math.max(...list.map(featureAmount),1);
+    if(amountHead)amountHead.textContent=featureLabel();
+    body.innerHTML=list.map((r,i)=>{
+      const amount=featureAmount(r);
+      const width=Math.max(5,Math.min(100,amount/max*100));
+      return `<tr>
+        <td><span class="portrait-feature-rank">${i+1}</span><span class="portrait-feature-name">${r.name}</span><em>${r.type}</em></td>
+        <td class="${featureClass()}"><div class="portrait-feature-amount"><strong>${fmtK(amount)}</strong><span><i style="width:${width}%"></i></span></div></td>
+      </tr>`;
+    }).join('');
+  }
   function monthlyOption(){const months=Array.from({length:12},(_,i)=>`${i+1}月`),base=[120,135,110,145,160,155,170,180,165,190,210,230];const series=[['客户流入','#2f6fed',1],['供应商流入','#74a0f5',.68],['其他流入','#bfdbfe',.28],['客户流出','#d9466f',-.75],['供应商流出','#ee839e',-.5],['其他流出','#fecdd3',-.2]].map(([name,color,factor],i)=>({name,type:'bar',stack:factor>0?'in':'out',barMaxWidth:20,itemStyle:{color},data:base.map((v,m)=>Math.round(v*factor*(.82+((m+i)%4)*.06)))}));return {tooltip:{trigger:'axis',valueFormatter:v=>`${Math.abs(v).toLocaleString()} 万元`},legend:{top:0,itemWidth:10,itemHeight:7,textStyle:{fontSize:10}},grid:{left:52,right:12,top:30,bottom:28},xAxis:{type:'category',data:months,axisLabel:{fontSize:10}},yAxis:{type:'value',name:'金额（万元）',nameTextStyle:{fontSize:10},axisLabel:{formatter:v=>Math.abs(v),fontSize:10},splitLine:{lineStyle:{color:'#edf2f7'}}},series};}
   function bubbleOption(){const xMin=+document.getElementById('portraitXMin')?.value||0,xMax=+document.getElementById('portraitXMax')?.value||40000,yMin=+document.getElementById('portraitYMin')?.value||0,yMax=+document.getElementById('portraitYMax')?.value||100;const key=mode==='inflow'?'inflow':mode==='outflow'?'outflow':null;const data=rows.map(r=>({name:r.name,value:[key?r[key]:r.inflow+r.outflow,r.count,Math.max(r.inflow,r.outflow),r.type]}));const dataMaxX=Math.max(...data.map(d=>d.value[0]||0),xMin+1000),dataMaxY=Math.max(...data.map(d=>d.value[1]||0),yMin+5);return {tooltip:{formatter:p=>`${p.name}<br/>${mode==='inflow'?'流入':mode==='outflow'?'流出':'交易总额'}：${fmt(p.value[0])} 万元<br/>交易次数：${p.value[1]}<br/>对手方类型：${p.value[3]}`},grid:{left:55,right:18,top:16,bottom:54},dataZoom:[{type:'inside',xAxisIndex:0,filterMode:'none'},{type:'slider',xAxisIndex:0,height:12,bottom:8,borderColor:'transparent',backgroundColor:'#eef2f7',fillerColor:'rgba(47,111,237,.18)',handleSize:0,showDetail:false}],xAxis:{type:'value',min:xMin,max:Math.max(xMin+1000,xMax,dataMaxX*1.08),name:mode==='inflow'?'流入金额（万元）':mode==='outflow'?'流出金额（万元）':'交易总额（万元）',nameLocation:'middle',nameGap:28,axisLabel:{fontSize:10},splitLine:{lineStyle:{color:'#edf2f7'}}},yAxis:{type:'value',min:yMin,max:Math.max(yMin+5,yMax,dataMaxY*1.08),name:'交易次数',axisLabel:{fontSize:10},splitLine:{lineStyle:{color:'#edf2f7'}}},series:[{type:'scatter',data,symbolSize:v=>Math.max(7,Math.min(26,Math.sqrt(v[2]||1)/7)),itemStyle:{color:p=>p.value[3]==='客户'?'#2f6fed':p.value[3]==='供应商'?'#d9466f':'#64748b',opacity:.72},label:{show:true,position:'top',fontSize:9,formatter:p=>p.name.length>8?p.name.slice(0,8)+'…':p.name}}]};}
-  function renderCharts(){if(!window.echarts)return;[['monthly','portraitMonthlyChart'],['bubble','portraitBubbleChart']].forEach(([key,id])=>{const el=document.getElementById(id);if(!el)return;charts[key]=echarts.getInstanceByDom(el)||echarts.init(el);charts[key].setOption(key==='monthly'?monthlyOption():bubbleOption(),true);charts[key].resize();});}
+  function renderCharts(){if(!window.echarts)return;[['monthly','portraitMonthlyChart']].forEach(([key,id])=>{const el=document.getElementById(id);if(!el)return;charts[key]=echarts.getInstanceByDom(el)||echarts.init(el);charts[key].setOption(monthlyOption(),true);charts[key].resize();});renderFeatureTable();}
   function updateConcentration(kind){
     const isCustomer=kind==='Customer';
     const select=document.getElementById(`portrait${kind}TopN`);
@@ -76,6 +213,6 @@
     ratioEl.textContent=`${ratio}%`;
     barEl.style.width=`${ratio}%`;
   }
-  function bind(){document.querySelectorAll('#portraitBubbleTabs button').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.mode;document.querySelectorAll('#portraitBubbleTabs button').forEach(x=>x.classList.toggle('is-active',x===btn));renderCharts();}));['portraitXMin','portraitXMax','portraitYMin','portraitYMax'].forEach(id=>document.getElementById(id)?.addEventListener('input',renderCharts));document.getElementById('portraitColumnsBtn')?.addEventListener('click',()=>document.querySelector('.portrait-table-wrap')?.classList.toggle('is-compact-columns'));document.getElementById('portraitExportBtn')?.addEventListener('click',()=>{const head=['对手方名称','对手方类型','流入金额','销项税价合计','流出金额','进项税价合计','交易笔数','同进同出比例','行业','经营时长','董监高'];const csv=[head,...rows.map(r=>[r.name,r.type,r.inflow,r.salesVat,r.outflow,r.purchaseVat,r.count,r.sameRatio,r.industry,r.duration,r.people])].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download='流水画像_对手方汇总清单.csv';a.click();URL.revokeObjectURL(a.href);});['Customer','Supplier'].forEach(kind=>{document.getElementById(`portrait${kind}TopN`)?.addEventListener('change',()=>updateConcentration(kind));updateConcentration(kind);});window.addEventListener('resize',()=>Object.values(charts).forEach(c=>c?.resize()));document.getElementById('btnQueryBiz')?.addEventListener('click',()=>{renderTable();renderCharts();});}
-  document.addEventListener('DOMContentLoaded',()=>{renderTable();bind();setTimeout(renderCharts,80);});
+  function bind(){document.querySelectorAll('#portraitBubbleTabs button').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.mode;document.querySelectorAll('#portraitBubbleTabs button').forEach(x=>x.classList.toggle('is-active',x===btn));renderFeatureTable();}));document.getElementById('portraitCounterpartyFilters')?.addEventListener('click',ev=>{const btn=ev.target.closest('.portrait-filter-card');if(!btn)return;counterpartyFilter=btn.dataset.filter||'all';page=1;renderTable();});document.querySelectorAll('#portraitTableTabs button').forEach(btn=>btn.addEventListener('click',()=>{tableView=btn.dataset.view||'summary';page=1;sortKey='';sortDir=1;document.querySelectorAll('#portraitTableTabs button').forEach(x=>x.classList.toggle('is-active',x===btn));renderTable();}));document.getElementById('portraitFeatureTopN')?.addEventListener('input',renderFeatureTable);document.getElementById('portraitColumnsBtn')?.addEventListener('click',ev=>{ev.preventDefault();window.openBankColumnChooser?.(ev.currentTarget,document.getElementById('portraitCounterpartyTable'));});document.getElementById('portraitExportBtn')?.addEventListener('click',()=>{const isBiz=tableView==='business';const exportRows=filterRows(rows);const head=isBiz?['对手方名称','对手方类型','行业','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','经营状态','成立日期','注册资本','经营范围','注册地址','企业联系方式','董监高']:['对手方名称','对手方类型','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','同进同出比例','行业','经营时长','董监高'];const csv=[head,...exportRows.map(r=>{const bi=businessInfo(r);return isBiz?[r.name,r.type,r.industry,r.inflow,r.salesVat,r.outflow,r.purchaseVat,r.inflow+r.outflow,r.count,bi.status,bi.founded,bi.capital,bi.scope,bi.address,bi.contact,bi.people]:[r.name,r.type,r.inflow,r.salesVat,r.outflow,r.purchaseVat,r.inflow+r.outflow,r.count,r.sameRatio,r.industry,r.duration,r.people];})].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download=`流水画像_对手方汇总清单_${isBiz?'工商信息':'合计数据'}.csv`;a.click();URL.revokeObjectURL(a.href);});['Customer','Supplier'].forEach(kind=>{document.getElementById(`portrait${kind}TopN`)?.addEventListener('change',()=>updateConcentration(kind));updateConcentration(kind);});window.addEventListener('resize',()=>Object.values(charts).forEach(c=>c?.resize()));document.getElementById('btnQueryBiz')?.addEventListener('click',()=>{renderTable();renderCharts();renderFeatureTable();});}
+  document.addEventListener('DOMContentLoaded',()=>{renderTable();bind();renderFeatureTable();setTimeout(renderCharts,80);});
 })();

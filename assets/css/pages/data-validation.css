@@ -20,7 +20,84 @@ body{
 .data-validation-tab-card{
   flex:0 0 auto;
   width:auto;
-  margin:10px var(--bank-page-x) 0;
+  margin:7px var(--bank-page-x) 0;
+  border:1px solid #edf2f7;
+  border-radius:8px;
+  background:#fff;
+  box-shadow:0 1px 2px rgba(15,23,42,.025);
+  overflow:hidden;
+}
+
+.data-validation-tab-card .tabbar{
+  position:relative;
+  display:flex;
+  align-items:center;
+  min-height:36px;
+  gap:7px;
+  padding:5px 10px;
+  margin:0;
+  border-bottom:1px solid #edf2f7;
+  background:#fafcff;
+  overflow-x:auto;
+  overflow-y:hidden;
+  scrollbar-width:none;
+}
+
+.data-validation-tab-card .tabbar::-webkit-scrollbar{
+  display:none;
+}
+
+.data-validation-tab-card .tab{
+  position:relative;
+  flex:0 0 auto;
+  height:26px;
+  padding:3px 7px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#6b7b91;
+  font-size:var(--bank-ui-main-font,12px);
+  line-height:20px;
+  font-weight:600;
+  box-shadow:none;
+  transition:color .16s ease;
+}
+
+.data-validation-tab-card .tab + .tab::before{
+  content:"";
+  position:absolute;
+  left:-4px;
+  top:50%;
+  width:1px;
+  height:12px;
+  background:#dbe5f0;
+  transform:translateY(-50%);
+  pointer-events:none;
+}
+
+.data-validation-tab-card .tab:hover{
+  color:#1d4ed8;
+  background:transparent;
+}
+
+.data-validation-tab-card .tab.active{
+  color:#002b5c;
+  background:transparent;
+  box-shadow:none;
+  font-weight:800;
+}
+
+.data-validation-tab-card .inkbar{
+  position:absolute;
+  bottom:0;
+  height:2px;
+  border-radius:999px;
+  background:#003366;
+  box-shadow:none;
+}
+
+.data-validation-tab-card .tab-intro{
+  display:none;
 }
 
 .data-validation-page .tab-pane{
@@ -54,9 +131,9 @@ body{
 }
 
 .data-validation-page .wp-card-section{
-  border:1px solid #dfe7f1;
+  border:1px solid #edf2f7;
   border-radius:8px;
-  box-shadow:0 1px 3px rgba(15,23,42,.04);
+  box-shadow:0 1px 2px rgba(15,23,42,.025);
   overflow:hidden;
   background:#fff;
 }
@@ -68,18 +145,29 @@ body{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  background:#f8fafc;
-  border-bottom:1px solid #dfe7f1;
+  background:#fafcff;
+  border-bottom:1px solid #edf2f7;
 }
 
 .data-validation-page .wp-card-head::before{
   content:"";
   position:absolute;
-  left:0;
-  top:0;
+  left:10px;
+  top:50%;
   width:3px;
-  height:100%;
-  background:#1d4ed8;
+  height:14px;
+  border-radius:999px;
+  background:linear-gradient(180deg,rgba(47,111,237,.72),rgba(47,111,237,.18));
+  transform:translateY(-50%);
+}
+
+.data-validation-page .bank-help-actions,
+.data-validation-page .account-help-btn{
+  display:none !important;
+}
+
+.data-validation-page .wp-card-title-wrap{
+  padding-left:14px;
 }
 
 .data-validation-page .wp-card-title-wrap{
@@ -288,9 +376,40 @@ body{
 }
 
 .data-validation-page .wp-fold-btn{
-  width:26px;
-  height:26px;
-  border:1px solid #dbe5f0;
-  border-radius:7px;
-  background:#fff;
+  width:26px !important;
+  min-width:26px !important;
+  height:26px !important;
+  min-height:26px !important;
+  flex:0 0 26px !important;
+  padding:0 !important;
+  border:1px solid #dbe5f0 !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.04) !important;
+}
+
+/* 数据校验页普通按钮尺寸统一；颜色保持各按钮原样式。 */
+.data-validation-page .btn:not(.audit-pager-btn):not(.wp-fold-btn):not(.card-fold-btn),
+.data-validation-page button.btn:not(.audit-pager-btn):not(.wp-fold-btn):not(.card-fold-btn),
+.data-validation-page .wp-tools .btn:not(.audit-pager-btn):not(.wp-fold-btn){
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  min-width:var(--audit-action-btn-min-w, 56px) !important;
+  min-height:var(--audit-action-btn-h, 28px) !important;
+  height:var(--audit-action-btn-h, 28px) !important;
+  padding:0 var(--audit-action-btn-px, 12px) !important;
+  border-radius:var(--audit-action-btn-radius, 7px) !important;
+  font-size:var(--audit-action-btn-font, 12px) !important;
+  line-height:calc(var(--audit-action-btn-h, 28px) - 2px) !important;
+  white-space:nowrap !important;
+  box-sizing:border-box !important;
+}
+
+.data-validation-page .bank-help-actions,
+.data-validation-page .wp-tools-right,
+.data-validation-page .wp-bottom-actions,
+.data-validation-page .card > .head{
+  gap:var(--audit-action-btn-gap, 6px) !important;
 }

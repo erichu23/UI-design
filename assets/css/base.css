@@ -65,10 +65,10 @@ html,body{width:100%;height:100%}
   .tabbar{display:flex;gap:4px;border-bottom:2px solid var(--border);margin:8px 0 10px}
   .tab{padding:10px 14px;border-radius:8px 8px 0 0;color:var(--muted);cursor:pointer}
   .tab.active{background:#fff;border:1px solid var(--border);border-bottom:0;color:var(--primary)}
-  .card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:6.5px;overflow:hidden}
-  .card .head{display:flex;align-items:center;justify-content:space-between;padding:10px 10px;border-bottom:1px solid var(--border);background:#f9fbff;position:relative}
-  .card .head::before{content:"";position:absolute;left:0;top:0;width:4px;height:100%;background:var(--primary)}
-  .card .title{font-weight:600;margin-left:8px;font-size:11px}
+  .card{background:#fff;border:1px solid #edf2f7;border-radius:12px;box-shadow:0 1px 2px rgba(15,23,42,.025);margin-bottom:6.5px;overflow:hidden}
+  .card .head{display:flex;align-items:center;justify-content:space-between;padding:10px 10px;border-bottom:1px solid #edf2f7;background:#fafcff;position:relative}
+  .card .head::before{content:"";position:absolute;left:10px;top:50%;width:3px;height:14px;border-radius:999px;background:linear-gradient(180deg,rgba(47,111,237,.78),rgba(47,111,237,.22));transform:translateY(-50%)}
+  .card .title{font-weight:600;margin-left:14px;font-size:11px}
   .card .content{padding:14px 16px}
   
 
@@ -278,4 +278,50 @@ html,body{width:100%;height:100%}
   div[style*="overflow:auto"] table thead th,
   div[style*="overflow: auto"] table thead th{
     background-clip:padding-box;
+  }
+
+  /* ====== 全平台普通按钮尺寸基准 ======
+     只统一高度、最小长度、内边距和文字对齐；颜色继续由各页面原样式控制。 */
+  :root{
+    --audit-action-btn-h:28px;
+    --audit-action-btn-min-w:56px;
+    --audit-action-btn-px:12px;
+    --audit-action-btn-radius:7px;
+    --audit-action-btn-font:12px;
+    --audit-action-btn-gap:6px;
+  }
+
+  .btn:not(.audit-pager-btn):not(.card-fold-btn):not(.nav-icon-btn):not(.icon-btn),
+  button.btn:not(.audit-pager-btn):not(.card-fold-btn):not(.nav-icon-btn):not(.icon-btn),
+  .btn-primary:not(.audit-pager-btn):not(.card-fold-btn):not(.nav-icon-btn):not(.icon-btn),
+  .btn-ghost:not(.audit-pager-btn):not(.card-fold-btn):not(.nav-icon-btn):not(.icon-btn){
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    min-width:var(--audit-action-btn-min-w);
+    min-height:var(--audit-action-btn-h);
+    height:var(--audit-action-btn-h);
+    padding:0 var(--audit-action-btn-px);
+    border-radius:var(--audit-action-btn-radius);
+    font-size:var(--audit-action-btn-font);
+    line-height:calc(var(--audit-action-btn-h) - 2px);
+    white-space:nowrap;
+    box-sizing:border-box;
+  }
+
+  .toolbar,
+  .btn-bar,
+  .btn-group,
+  .pl-actions,
+  .wp-tools-right,
+  .wp-bottom-actions,
+  .du-footer,
+  .ds3-actions,
+  .ds3-block-actions,
+  .ds3-section-actions,
+  .ds3-modal-actions,
+  .ds3-rule-actions,
+  .ds3-period-actions{
+    gap:var(--audit-action-btn-gap);
   }
