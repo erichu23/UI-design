@@ -197,10 +197,11 @@ body{
 }
 
 .data-validation-page .wp-table-wrap{
-  border:1px solid #dfe9f5;
+  border:1px solid var(--audit-table-border-outer,#e7eef6);
   border-radius:8px;
   overflow:auto;
   background:#fff;
+  box-shadow:inset 0 0 0 .5px rgba(231,238,246,.82);
 }
 
 .data-validation-page .wp-table{
@@ -218,9 +219,10 @@ body{
 .data-validation-page .wp-table th{
   height:30px;
   padding:4px 8px;
-  border-right:1px solid #dce7f3;
-  border-bottom:1px solid #d7e4f1;
-  background:#f4f8fd;
+  border-right:1px solid var(--audit-table-border-head,#dbe5f0);
+  border-bottom:1px solid var(--audit-table-border-head,#dbe5f0);
+  background:var(--audit-table-head-bg,#f6f9fd);
+  background-clip:padding-box;
   color:#263a57;
   font-size:11.5px;
   font-weight:700;
@@ -230,15 +232,16 @@ body{
 .data-validation-page .wp-table td{
   height:30px;
   padding:4px 8px;
-  border-right:1px solid #e7eef7;
-  border-bottom:1px solid #e9f0f7;
+  border-right:1px solid var(--audit-table-border-cell,#eef3f8);
+  border-bottom:1px solid var(--audit-table-border-row,#f1f5f9);
   background:#fff;
+  background-clip:padding-box;
   color:#334155;
   font-size:11.5px;
 }
 
 .data-validation-page .wp-table tbody tr:hover td{
-  background:#f8fbff;
+  background:var(--audit-table-hover-bg,#f8fbff);
 }
 
 .data-validation-page .wp-table .num,

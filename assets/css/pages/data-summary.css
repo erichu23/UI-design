@@ -729,7 +729,7 @@ html,body{
 /* 表格 */
 .ds3-table-wrap{
   overflow:auto;
-  border:1px solid #cfd8e3;
+  border:1px solid var(--audit-table-border-outer,#e7eef6);
   border-radius:5px;
   background:#fff;
   margin-top:10px;
@@ -748,20 +748,22 @@ html,body{
   font-weight:600;
   text-align:left;
   padding:10px 12px;
-  border-bottom:1px solid #d9e2ec;
-  border-right:1px solid #d9e2ec;
+  border-bottom:1px solid var(--audit-table-border-head,#dbe5f0);
+  border-right:1px solid var(--audit-table-border-head,#dbe5f0);
   white-space:nowrap;
   font-size:13px;
+  background-clip:padding-box;
 }
 
 .ds3-table td{
   padding:5px 7px;
-  border-bottom:1px solid #d9e2ec;
-  border-right:1px solid #d9e2ec;
+  border-bottom:1px solid var(--audit-table-border-row,#f1f5f9);
+  border-right:1px solid var(--audit-table-border-cell,#eef3f8);
   color:#334155;
   white-space:nowrap;
   font-size:13px;
   vertical-align:middle;
+  background-clip:padding-box;
 }
 
 .ds3-table th:last-child,
@@ -7608,14 +7610,14 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   --audit-pro-sales-strong:#0f766e;
   --audit-pro-out-strong:#be185d;
   --audit-pro-purchase-strong:#b45309;
-  --bank-table-border-outer:#edf2f7;
-  --bank-table-border-head:#dce6f1;
-  --bank-table-border-cell:#edf2f7;
-  --bank-table-border-row:#f0f4f8;
-  --bank-table-head-bg:#f4f8fd;
-  --bank-table-head-group-bg:#eef5fc;
+  --bank-table-border-outer:var(--audit-table-border-outer,#e7eef6);
+  --bank-table-border-head:var(--audit-table-border-head,#dbe5f0);
+  --bank-table-border-cell:var(--audit-table-border-cell,#eef3f8);
+  --bank-table-border-row:var(--audit-table-border-row,#f1f5f9);
+  --bank-table-head-bg:var(--audit-table-head-bg,#f6f9fd);
+  --bank-table-head-group-bg:var(--audit-table-head-group-bg,#eef5fc);
   --bank-table-body-bg:#fff;
-  --bank-table-hover-bg:#f8fbff;
+  --bank-table-hover-bg:var(--audit-table-hover-bg,#f8fbff);
   --bank-table-text:#334155;
 }
 
@@ -7642,6 +7644,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   background:var(--bank-table-head-bg) !important;
   color:var(--bank-table-text) !important;
   font-weight:700 !important;
+  background-clip:padding-box !important;
 }
 
 .ds3-vat-page .ds3-table thead tr:first-child th[colspan],
@@ -7658,6 +7661,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   border-bottom:1px solid var(--bank-table-border-row) !important;
   background:#fff !important;
   color:var(--bank-table-text);
+  background-clip:padding-box !important;
 }
 
 .ds3-vat-page .ds3-table th:last-child,

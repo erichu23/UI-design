@@ -395,6 +395,7 @@
       const balanceEl = document.getElementById('chart-account-balance');
       if (balanceEl && window.echarts) {
         const chart = echarts.init(balanceEl);
+        const balanceLineColor = '#7aa6c8';
         const balanceMonths = [2023, 2024, 2025].flatMap(year => Array.from({ length: 12 }, (_, index) => `${year}年${String(index + 1).padStart(2, '0')}月`));
         const balanceData = [
           1218, 1262, 1236, 1308, 1346, 1324, 1395, 1438, 1412, 1486, 1520, 1558,
@@ -403,13 +404,23 @@
         ];
         chart.setOption({
           animationDuration: 450,
-          color: ['#2f6fed'],
+          color: [balanceLineColor],
           tooltip: { trigger:'axis', valueFormatter:value=>`${Number(value).toLocaleString()} 千元` },
+          graphic: [{
+            type:'group',
+            right:16,
+            top:6,
+            z:20,
+            children:[
+              { type:'circle', shape:{cx:5,cy:8,r:4}, style:{fill:balanceLineColor} },
+              { type:'text', left:15, top:0, style:{text:'账户余额', fill:'#64748b', fontSize:11, fontWeight:600} }
+            ]
+          }],
           grid: { left:70, right:28, top:24, bottom:48, containLabel:false },
           xAxis: { type:'category', boundaryGap:false, data:balanceMonths, axisLine:{lineStyle:{color:'#cbd5e1'}}, axisLabel:{color:'#64748b',fontSize:10,interval:2,hideOverlap:true,margin:8} },
           yAxis: { type:'value', name:'账户余额（千元）', nameLocation:'end', nameGap:8, nameTextStyle:{color:'#475569',fontSize:11,fontWeight:600,padding:[0,0,0,24]}, splitLine:{lineStyle:{color:'#eef2f7'}}, axisLabel:{color:'#64748b',fontSize:10,formatter:value=>Number(value).toLocaleString()} },
-          dataZoom: [{ type:'inside', start:0, end:100 }, { type:'slider', height:12, bottom:4, borderColor:'transparent', backgroundColor:'#eef2f7', fillerColor:'rgba(47,111,237,.18)', handleSize:0, showDetail:false }],
-          series: [{ name:'账户余额', type:'line', smooth:true, symbolSize:4, lineStyle:{width:2}, areaStyle:{color:'rgba(47,111,237,.08)'}, data:balanceData }]
+          dataZoom: [{ type:'inside', start:0, end:100 }, { type:'slider', height:12, bottom:4, borderColor:'transparent', backgroundColor:'#eef2f7', fillerColor:'rgba(122,166,200,.18)', handleSize:0, showDetail:false }],
+          series: [{ name:'账户余额', type:'line', smooth:true, symbolSize:4, itemStyle:{color:balanceLineColor}, lineStyle:{width:2,color:balanceLineColor}, areaStyle:{color:'rgba(122,166,200,.08)'}, data:balanceData }]
         });
         window.bankAccountBalanceChart = chart;
       }
@@ -2064,8 +2075,28 @@
     });
   }
 
+  function stripTableKUnits(root = document) {
+    const scope = root?.querySelectorAll ? root : document;
+    scope.querySelectorAll('table td').forEach(cell => {
+      const walker = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT);
+      const textNodes = [];
+      while (walker.nextNode()) textNodes.push(walker.currentNode);
+      textNodes.forEach(node => {
+        const next = node.nodeValue.replace(/(-?\d[\d,.]*)K\b/g, '$1');
+        if (next !== node.nodeValue) node.nodeValue = next;
+      });
+    });
+  }
+
+  let stripTableKTimer = null;
+  function scheduleStripTableKUnits() {
+    clearTimeout(stripTableKTimer);
+    stripTableKTimer = setTimeout(() => stripTableKUnits(document), 20);
+  }
+
   function initBankTableTools() {
     initStatementFlowQuery();
+    stripTableKUnits(document);
     document.querySelectorAll('.tab-pane table.table').forEach(enhanceTable);
     bindColumnChooserButtons();
     document.querySelectorAll('.tab-pane table.table').forEach(applyCustomizedColumns);
@@ -2077,4 +2108,8 @@
     initBankTableTools();
   }
   window.addEventListener('bank-analysis:tab-change', initBankTableTools);
+  if (!window.__auditTableKUnitObserver) {
+    window.__auditTableKUnitObserver = new MutationObserver(scheduleStripTableKUnits);
+    window.__auditTableKUnitObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
 })();

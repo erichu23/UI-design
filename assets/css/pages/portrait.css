@@ -256,6 +256,117 @@
   overflow:visible;
 }
 
+.portrait-filter-strip{
+  position:relative;
+  display:block;
+  margin:0 0 9px;
+  overflow:visible;
+}
+
+.portrait-table-card,
+.portrait-table-card .content,
+.relation-analysis-card,
+.relation-analysis-card .content{
+  overflow:visible !important;
+}
+
+.portrait-filter-strip .portrait-counterparty-filters{
+  margin:0;
+  padding-right:0;
+  box-sizing:border-box;
+  max-height:76px;
+  opacity:1;
+  transform:translateX(0);
+  transform-origin:right center;
+  transition:max-height .18s ease,opacity .16s ease,transform .18s ease,margin .18s ease;
+}
+
+.portrait-kpi-toggle{
+  position:absolute;
+  top:50%;
+  right:-18px;
+  z-index:2;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:28px !important;
+  min-width:28px !important;
+  height:28px !important;
+  padding:0 !important;
+  border:1px solid #bfdbfe !important;
+  border-radius:999px !important;
+  background:linear-gradient(180deg,#eef6ff,#ddecff) !important;
+  color:#2563eb !important;
+  box-shadow:0 7px 18px rgba(37,99,235,.16) !important;
+  cursor:pointer;
+  transform:translateY(-50%);
+  backdrop-filter:blur(8px);
+  transition:background .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease,transform .16s ease;
+}
+
+.portrait-kpi-toggle::before{
+  display:none;
+}
+
+.portrait-kpi-toggle:hover{
+  border-color:#93c5fd !important;
+  background:linear-gradient(180deg,#e0f0ff,#cfe3ff) !important;
+  color:#1d4ed8 !important;
+  box-shadow:0 9px 22px rgba(37,99,235,.22) !important;
+  transform:translateY(-50%) scale(1.06);
+}
+
+.portrait-kpi-toggle span{
+  position:relative;
+  width:8px;
+  height:8px;
+  margin-left:0;
+}
+
+.portrait-kpi-toggle span::before{
+  content:"";
+  position:absolute;
+  top:1px;
+  left:0;
+  width:6px;
+  height:6px;
+  border-top:1.8px solid currentColor;
+  border-right:1.8px solid currentColor;
+  border-radius:1px;
+  transform:rotate(45deg);
+  transition:transform .16s ease;
+}
+
+.portrait-kpi-toggle.is-collapsed span::before{
+  transform:rotate(-135deg);
+}
+
+.portrait-filter-strip.is-kpi-hidden{
+  height:0;
+  min-height:0;
+  margin:0;
+}
+
+.portrait-filter-strip.is-kpi-hidden .portrait-counterparty-filters{
+  max-height:0;
+  margin:0;
+  overflow:hidden;
+  opacity:0;
+  pointer-events:none;
+  transform:translateX(12px) scaleX(.985);
+  visibility:hidden;
+}
+
+.portrait-filter-strip.is-kpi-hidden .portrait-kpi-toggle{
+  top:2px;
+  right:-18px;
+  transform:translateY(-50%);
+}
+
+.portrait-filter-strip.is-kpi-hidden .portrait-kpi-toggle:hover{
+  transform:translateY(-50%) scale(1.04);
+}
+
 .portrait-filter-card{
   position:relative;
   display:grid !important;
@@ -365,6 +476,8 @@
 
 .portrait-table-wrap{
   max-width:100% !important;
+  border-color:var(--audit-table-border-outer,#e7eef6) !important;
+  box-shadow:inset 0 0 0 .5px rgba(231,238,246,.82) !important;
   overflow-x:auto !important;
   overflow-y:auto !important;
   -webkit-overflow-scrolling:touch !important;
@@ -401,6 +514,18 @@
 .portrait-table-wrap td{
   min-width:92px !important;
   white-space:nowrap !important;
+  background-clip:padding-box !important;
+}
+
+.portrait-table-wrap th{
+  border-right-color:var(--audit-table-border-head,#dbe5f0) !important;
+  border-bottom-color:var(--audit-table-border-head,#dbe5f0) !important;
+  background-color:var(--audit-table-head-bg,#f6f9fd) !important;
+}
+
+.portrait-table-wrap td{
+  border-right-color:var(--audit-table-border-cell,#eef3f8) !important;
+  border-bottom-color:var(--audit-table-border-row,#f1f5f9) !important;
 }
 
 .portrait-table-wrap th:first-child,
@@ -437,11 +562,13 @@ body .tab-pane .portrait-counterparty-filters .portrait-filter-card{
 }
 
 /* 对手方汇总清单表头“合计”：去掉胶囊白底和外框，只保留轻量文字入口。 */
-body #portraitCounterpartyTable .portrait-group-toggle-cell{
+body #portraitCounterpartyTable .portrait-group-toggle-cell,
+body #relationCounterpartyTable .portrait-group-toggle-cell{
   background:#f3f6fb !important;
 }
 
-body #portraitCounterpartyTable .portrait-group-toggle{
+body #portraitCounterpartyTable .portrait-group-toggle,
+body #relationCounterpartyTable .portrait-group-toggle{
   display:inline-flex !important;
   align-items:center !important;
   justify-content:center !important;
@@ -462,7 +589,8 @@ body #portraitCounterpartyTable .portrait-group-toggle{
   transform:none !important;
 }
 
-body #portraitCounterpartyTable .portrait-group-toggle:hover{
+body #portraitCounterpartyTable .portrait-group-toggle:hover,
+body #relationCounterpartyTable .portrait-group-toggle:hover{
   border:0 !important;
   background:transparent !important;
   color:#1d4ed8 !important;
@@ -470,7 +598,8 @@ body #portraitCounterpartyTable .portrait-group-toggle:hover{
   transform:none !important;
 }
 
-body #portraitCounterpartyTable .portrait-group-toggle i{
+body #portraitCounterpartyTable .portrait-group-toggle i,
+body #relationCounterpartyTable .portrait-group-toggle i{
   display:inline-flex !important;
   align-items:center !important;
   justify-content:center !important;
@@ -478,4 +607,564 @@ body #portraitCounterpartyTable .portrait-group-toggle i{
   font-size:12px !important;
   font-weight:800 !important;
   line-height:1 !important;
+}
+
+/* 已知关联方交易：复用经营分析表格语言，单卡片内完成 KPI、图表、TOP20 和明细联动。 */
+.relation-page{
+  min-width:0;
+}
+
+.relation-analysis-card .content{
+  padding:8px 10px 10px !important;
+}
+
+.relation-mode-tabs{
+  display:inline-flex;
+  align-items:center;
+  gap:0;
+  margin:0 0 8px;
+  border:0;
+  background:transparent;
+}
+
+.relation-mode-tabs button{
+  position:relative;
+  height:28px;
+  padding:0 14px 2px;
+  border:0;
+  border-right:1px solid #e6edf5;
+  border-radius:0;
+  background:transparent;
+  color:#64748b;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.relation-mode-tabs button:last-child{
+  border-right:0;
+}
+
+.relation-mode-tabs button::after{
+  content:"";
+  position:absolute;
+  right:12px;
+  bottom:0;
+  left:12px;
+  height:2px;
+  border-radius:999px;
+  background:transparent;
+}
+
+.relation-mode-tabs button.is-active{
+  color:#003366;
+  font-weight:800;
+}
+
+.relation-mode-tabs button.is-active::after{
+  background:#003366;
+}
+
+.analysis-mode-tabs{
+  height:30px;
+  margin:0 0 0 12px !important;
+  padding:2px;
+  border:1px solid #aac2df;
+  border-radius:8px;
+  background:linear-gradient(180deg,#f3f8ff,#e9f2ff);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.62),0 2px 7px rgba(15,51,94,.06);
+}
+
+.analysis-mode-tabs::before{
+  content:"分析口径";
+  display:inline-flex;
+  align-items:center;
+  height:24px;
+  padding:0 8px 0 7px;
+  border-right:1px solid #c9daf0;
+  color:#0f3f70;
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.analysis-mode-tabs button{
+  height:24px;
+  min-width:58px;
+  padding:0 10px;
+  border:0 !important;
+  border-radius:6px;
+  color:#334e68;
+  font-size:11.5px;
+  font-weight:700;
+  background:transparent;
+  transition:background .15s ease,color .15s ease,box-shadow .15s ease;
+}
+
+.analysis-mode-tabs button::after{
+  display:none;
+}
+
+.analysis-mode-tabs button + button{
+  margin-left:2px;
+}
+
+.analysis-mode-tabs button.is-active{
+  background:linear-gradient(180deg,#0b4f95,#083b73);
+  color:#fff;
+  box-shadow:0 4px 12px rgba(8,59,115,.26);
+}
+
+.analysis-mode-tabs button:not(.is-active):hover{
+  background:#dcecff;
+  color:#0b4f95;
+}
+
+.relation-filter-cards{
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  margin-bottom:8px;
+}
+
+body .tab-pane .relation-filter-cards .portrait-filter-card{
+  height:62px !important;
+  min-height:62px !important;
+  grid-template-rows:17px 20px !important;
+  padding:8px 8px 8px 12px !important;
+}
+
+.relation-insight-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 330px;
+  gap:8px;
+  margin:0 0 8px;
+}
+
+.relation-chart-panel,
+.relation-top-panel{
+  min-width:0;
+  border:1px solid var(--audit-table-border-outer,#e7eef6);
+  border-radius:8px;
+  background:#fff;
+  box-shadow:0 1px 2px rgba(15,23,42,.018);
+  overflow:hidden;
+}
+
+.relation-panel-head{
+  height:32px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:0 10px;
+  border-bottom:1px solid #edf2f7;
+  background:#fafcff;
+}
+
+.relation-panel-head span{
+  color:#1e293b;
+  font-size:12px;
+  font-weight:700;
+}
+
+.relation-panel-head em{
+  color:#94a3b8;
+  font-size:10px;
+  font-style:normal;
+  white-space:nowrap;
+}
+
+.relation-chart{
+  height:178px;
+}
+
+.relation-top-list{
+  height:178px;
+  overflow:auto;
+  padding:6px 8px;
+}
+
+.relation-top-row{
+  position:relative;
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr) auto;
+  align-items:center;
+  gap:7px;
+  min-height:28px;
+  padding:3px 0;
+  color:#334155;
+  font-size:11px;
+}
+
+.relation-top-row em{
+  color:#94a3b8;
+  font-style:normal;
+  font-weight:700;
+}
+
+.relation-top-row span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:700;
+}
+
+.relation-top-row b{
+  color:#1e293b;
+  font-size:11px;
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+}
+
+.relation-top-row i{
+  position:absolute;
+  right:0;
+  bottom:1px;
+  left:35px;
+  height:2px;
+  border-radius:999px;
+  background:#8aa8c8;
+  opacity:.58;
+}
+
+.relation-empty{
+  padding:24px 0;
+  text-align:center;
+  color:#94a3b8;
+  font-size:12px;
+}
+
+.relation-table-viewbar{
+  margin-top:0;
+}
+
+.relation-table-wrap .table{
+  min-width:1560px !important;
+}
+
+.relation-table-wrap.is-year-expanded .table{
+  min-width:2460px !important;
+}
+
+@media (max-width:1200px){
+  .relation-insight-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* 已知关联方交易表格：和经营分析“对手方汇总清单”保持完全同一套表格观感。 */
+body #pane-relation .relation-table-wrap{
+  width:100% !important;
+  max-width:100% !important;
+  overflow:auto !important;
+  border:1px solid var(--audit-table-border-outer,#e7eef6) !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  box-shadow:inset 0 0 0 .5px rgba(231,238,246,.82) !important;
+}
+
+body #pane-relation #relationCounterpartyTable{
+  width:max-content !important;
+  min-width:100% !important;
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+  table-layout:auto !important;
+  color:#334155 !important;
+}
+
+body #pane-relation #relationCounterpartyTable th,
+body #pane-relation #relationCounterpartyTable td{
+  height:30px !important;
+  min-width:92px !important;
+  max-width:none !important;
+  padding:4px 7px !important;
+  overflow:visible !important;
+  border-right:1px solid var(--audit-table-border-cell,#eef3f8) !important;
+  border-bottom:1px solid var(--audit-table-border-row,#f1f5f9) !important;
+  background-clip:padding-box !important;
+  font-size:11px !important;
+  line-height:18px !important;
+  text-overflow:clip !important;
+  white-space:nowrap !important;
+}
+
+body #pane-relation #relationCounterpartyTable th{
+  border-right-color:var(--audit-table-border-head,#dbe5f0) !important;
+  border-bottom-color:var(--audit-table-border-head,#dbe5f0) !important;
+  background:var(--audit-table-head-bg,#f6f9fd) !important;
+  color:#334155 !important;
+  font-weight:700 !important;
+}
+
+body #pane-relation #relationCounterpartyTable thead tr:first-child th[colspan],
+body #pane-relation #relationCounterpartyTable .portrait-group-toggle-cell{
+  background:#f3f6fb !important;
+  color:#263a57 !important;
+  font-weight:800 !important;
+}
+
+body #pane-relation #relationCounterpartyTable th:first-child,
+body #pane-relation #relationCounterpartyTable td:first-child{
+  min-width:210px !important;
+}
+
+body #pane-relation #relationCounterpartyTable th:nth-child(2),
+body #pane-relation #relationCounterpartyTable td:nth-child(2){
+  min-width:146px !important;
+  width:146px !important;
+}
+
+body #pane-relation #relationCounterpartyTable th[data-sort]{
+  position:relative !important;
+  padding-right:32px !important;
+  cursor:pointer !important;
+}
+
+body #pane-relation #relationCounterpartyTable thead th:not(.no-sort):not(.portrait-group-toggle-cell){
+  position:relative !important;
+  padding-right:32px !important;
+}
+
+body #pane-relation #relationCounterpartyTable th.no-sort{
+  padding-right:7px !important;
+}
+
+body #pane-relation #relationCounterpartyTable th .ba-th-tools{
+  right:6px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+}
+
+body #pane-relation #relationCounterpartyTable .portrait-mini{
+  width:126px !important;
+  margin:0 auto !important;
+}
+
+body #pane-relation #relationCounterpartyTable th:last-child,
+body #pane-relation #relationCounterpartyTable td:last-child{
+  border-right:0 !important;
+}
+
+body #pane-relation #relationCounterpartyTable tbody tr:last-child td{
+  border-bottom:0 !important;
+}
+
+body #pane-relation #relationCounterpartyTable tbody tr:hover td{
+  background:var(--audit-table-hover-bg,#f8fbff) !important;
+}
+
+body #pane-relation #relationCounterpartyTable .is-num{
+  text-align:right !important;
+  font-variant-numeric:tabular-nums !important;
+}
+
+body #pane-relation #relationCounterpartyTable tbody td.portrait-type-cell{
+  color:#334155 !important;
+  font-weight:500 !important;
+  text-align:center !important;
+}
+
+body #pane-relation #relationCounterpartyTable tbody td.portrait-type-cell.is-customer{
+  background:#f1f5f9 !important;
+}
+
+body #pane-relation #relationCounterpartyTable tbody td.portrait-type-cell.is-supplier{
+  background:#f8f3ea !important;
+}
+
+body #pane-relation #relationCounterpartyTable tbody tr:hover td.portrait-type-cell.is-customer{
+  background:#e8eef5 !important;
+}
+
+body #pane-relation #relationCounterpartyTable tbody tr:hover td.portrait-type-cell.is-supplier{
+  background:#f1eadf !important;
+}
+
+body #pane-relation #relationCounterpartyTable tbody td.is-inflow{
+  color:var(--audit-pro-in,#4f8df7) !important;
+  font-weight:700 !important;
+}
+
+body #pane-relation #relationCounterpartyTable tbody td.is-sales-vat{
+  color:var(--audit-pro-sales,#2aa99a) !important;
+  font-weight:700 !important;
+}
+
+body #pane-relation #relationCounterpartyTable tbody td.is-outflow{
+  color:var(--audit-pro-out,#d95785) !important;
+  font-weight:700 !important;
+}
+
+body #pane-relation #relationCounterpartyTable tbody td.is-purchase-vat{
+  color:var(--audit-pro-purchase,#dd8b22) !important;
+  font-weight:700 !important;
+}
+
+/* 个人交易：沿用已知关联方交易的卡片、图表和明细表风格，仅保留 3 个个人类型 KPI。 */
+.personal-filter-cards{
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+}
+
+body #personalCounterpartyTable .portrait-group-toggle-cell{
+  background:#f3f6fb !important;
+}
+
+body #personalCounterpartyTable .portrait-group-toggle{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  min-width:0 !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#1e3a5f !important;
+  box-shadow:none !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  line-height:18px !important;
+  transform:none !important;
+}
+
+body #personalCounterpartyTable .portrait-group-toggle:hover{
+  border:0 !important;
+  background:transparent !important;
+  color:#1d4ed8 !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+
+body #personalCounterpartyTable .portrait-group-toggle i{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  color:#64748b !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  line-height:1 !important;
+}
+
+body #pane-personal\—transaction .personal-table-wrap{
+  width:100% !important;
+  max-width:100% !important;
+  overflow:auto !important;
+  border:1px solid var(--audit-table-border-outer,#e7eef6) !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  box-shadow:inset 0 0 0 .5px rgba(231,238,246,.82) !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable{
+  width:max-content !important;
+  min-width:100% !important;
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+  table-layout:auto !important;
+  color:#334155 !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable th,
+body #pane-personal\—transaction #personalCounterpartyTable td{
+  height:30px !important;
+  min-width:92px !important;
+  max-width:none !important;
+  padding:4px 7px !important;
+  overflow:visible !important;
+  border-right:1px solid var(--audit-table-border-cell,#eef3f8) !important;
+  border-bottom:1px solid var(--audit-table-border-row,#f1f5f9) !important;
+  background-clip:padding-box !important;
+  font-size:11px !important;
+  line-height:18px !important;
+  text-overflow:clip !important;
+  white-space:nowrap !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable th{
+  border-right-color:var(--audit-table-border-head,#dbe5f0) !important;
+  border-bottom-color:var(--audit-table-border-head,#dbe5f0) !important;
+  background:var(--audit-table-head-bg,#f6f9fd) !important;
+  color:#334155 !important;
+  font-weight:700 !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable thead tr:first-child th[colspan],
+body #pane-personal\—transaction #personalCounterpartyTable .portrait-group-toggle-cell{
+  background:#f3f6fb !important;
+  color:#263a57 !important;
+  font-weight:800 !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable th:first-child,
+body #pane-personal\—transaction #personalCounterpartyTable td:first-child{
+  min-width:210px !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable th:nth-child(2),
+body #pane-personal\—transaction #personalCounterpartyTable td:nth-child(2){
+  min-width:146px !important;
+  width:146px !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable th[data-sort],
+body #pane-personal\—transaction #personalCounterpartyTable thead th:not(.no-sort):not(.portrait-group-toggle-cell){
+  position:relative !important;
+  padding-right:32px !important;
+  cursor:pointer !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable th.no-sort{
+  padding-right:7px !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable th .ba-th-tools{
+  right:6px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable .portrait-mini{
+  width:126px !important;
+  margin:0 auto !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable th:last-child,
+body #pane-personal\—transaction #personalCounterpartyTable td:last-child{
+  border-right:0 !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable tbody tr:last-child td{
+  border-bottom:0 !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable tbody tr:hover td{
+  background:var(--audit-table-hover-bg,#f8fbff) !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable .is-num{
+  text-align:right !important;
+  font-variant-numeric:tabular-nums !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable tbody td.is-inflow{
+  color:var(--audit-pro-in,#4f8df7) !important;
+  font-weight:700 !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable tbody td.is-sales-vat{
+  color:var(--audit-pro-sales,#2aa99a) !important;
+  font-weight:700 !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable tbody td.is-outflow{
+  color:var(--audit-pro-out,#d95785) !important;
+  font-weight:700 !important;
+}
+
+body #pane-personal\—transaction #personalCounterpartyTable tbody td.is-purchase-vat{
+  color:var(--audit-pro-purchase,#dd8b22) !important;
+  font-weight:700 !important;
 }

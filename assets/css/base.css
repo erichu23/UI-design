@@ -8,7 +8,14 @@ html,body{width:100%;height:100%}
     --platform-font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";
     --primary-color:#1e49e2; --primary-color-opacity:rgba(30,73,226,.4);
     --deep-blue:#00338d; --base-space:16px;
-    --table-head-background:#F6F8FE; --table-border:1px solid #f0f0f0;
+    --table-head-background:#F6F8FE; --table-border:1px solid #e8eef6;
+    --audit-table-border-outer:#e7eef6;
+    --audit-table-border-head:#dbe5f0;
+    --audit-table-border-cell:#eef3f8;
+    --audit-table-border-row:#f1f5f9;
+    --audit-table-head-bg:#f6f9fd;
+    --audit-table-head-group-bg:#eef5fc;
+    --audit-table-hover-bg:#f8fbff;
     --warning-color:#faad14; --body-background:#f5f7fa;
     /* 兼容内容页自用变量 */
     --primary:#2563eb; --primary-600:#1e40af; --muted:#64748b; --text:#0f172a;
@@ -81,10 +88,33 @@ html,body{width:100%;height:100%}
   .select:focus{outline:none;border-color:var(--primary-600);box-shadow:0 0 0 3px rgba(37,99,235,.25)}
   .chart{height:300px}
 
-  .table{width:100%;border-collapse:collapse;font-size:13px}
-  .table th,.table td{border:1px solid var(--border);padding:8px;text-align:center;white-space:nowrap}
-  .table th{background:#f1f5ff;color:#1e293b;font-weight:600}
-  .table tr:hover td{background:#f9fbff}
+  .table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    font-size:13px;
+    background:#fff;
+  }
+  .table th,
+  .table td{
+    border-right:1px solid var(--audit-table-border-cell);
+    border-bottom:1px solid var(--audit-table-border-row);
+    padding:8px;
+    text-align:center;
+    white-space:nowrap;
+    background-clip:padding-box;
+  }
+  .table th{
+    border-right-color:var(--audit-table-border-head);
+    border-bottom-color:var(--audit-table-border-head);
+    background:var(--audit-table-head-bg);
+    color:#1e293b;
+    font-weight:600;
+  }
+  .table th:last-child,
+  .table td:last-child{border-right:0}
+  .table tbody tr:last-child td{border-bottom:0}
+  .table tr:hover td{background:var(--audit-table-hover-bg)}
   .table-tabs{display:flex;gap:10px;margin:10px 0}
   .table-tab{padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:#f8fafc;color:var(--muted);cursor:pointer}
   .table-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}

@@ -769,13 +769,23 @@
 #pane-biz #tblDeal{
   width: 100% !important;
   margin: 0 !important;
-  border-collapse: collapse !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
   table-layout: auto !important;
 }
 
 #pane-biz #tblDeal th,
 #pane-biz #tblDeal td{
   box-sizing: border-box !important;
+  border-right-color: var(--audit-table-border-cell,#eef3f8) !important;
+  border-bottom-color: var(--audit-table-border-row,#f1f5f9) !important;
+  background-clip: padding-box !important;
+}
+
+#pane-biz #tblDeal th{
+  border-right-color: var(--audit-table-border-head,#dbe5f0) !important;
+  border-bottom-color: var(--audit-table-border-head,#dbe5f0) !important;
+  background-color: var(--audit-table-head-bg,#f6f9fd) !important;
 }
 
 /* =========================

@@ -53,6 +53,10 @@
   overflow:hidden;
 }
 
+.wp-card-section.wp-temp-hidden{
+  display:none !important;
+}
+
 .wp-card-head{
   display:flex;
   align-items:center;
@@ -223,33 +227,38 @@
 
 .wp-table{
   width:100%;
-  border-collapse:collapse;
+  border-collapse:separate;
+  border-spacing:0;
   table-layout:fixed;
   background:#fff;
 }
 
 .wp-table thead th{
-  background:#f1f5ff;
+  background:var(--audit-table-head-bg,#f6f9fd);
+  background-clip:padding-box;
   color:#1e293b;
   font-weight:600;
   font-size:13px;
   text-align:center;
   padding:8px;
-  border:1px solid var(--border);
+  border-right:1px solid var(--audit-table-border-head,#dbe5f0);
+  border-bottom:1px solid var(--audit-table-border-head,#dbe5f0);
 }
 
 .wp-table tbody td{
   padding:8px;
   font-size:13px;
   color:#0f172a;
-  border:1px solid var(--border);
+  border-right:1px solid var(--audit-table-border-cell,#eef3f8);
+  border-bottom:1px solid var(--audit-table-border-row,#f1f5f9);
   vertical-align:middle;
   background:#fff;
+  background-clip:padding-box;
   text-align:center;
 }
 
 .wp-table tbody tr:hover td{
-  background:#f9fbff;
+  background:var(--audit-table-hover-bg,#f8fbff);
 }
 
 .wp-table th.num,

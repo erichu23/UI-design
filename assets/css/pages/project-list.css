@@ -150,7 +150,8 @@ body{
 
 .pl-table{
   width:100%;
-  border-collapse:collapse;
+  border-collapse:separate;
+  border-spacing:0;
   font-size:13px;
   background:#fff;
 }
@@ -160,15 +161,27 @@ body{
   color:#62748a;
   font-weight:600;
   background:#fbfcfe;
-  border:1px solid #e6edf5;
-  border-bottom:none;
+  border-right:1px solid var(--audit-table-border-head,#dbe5f0);
+  border-bottom:1px solid var(--audit-table-border-head,#dbe5f0);
   padding:10px;
+  background-clip:padding-box;
 }
 
 .pl-table td{
-  border:1px solid #e6edf5;
+  border-right:1px solid var(--audit-table-border-cell,#eef3f8);
+  border-bottom:1px solid var(--audit-table-border-row,#f1f5f9);
   padding:10px;
   color:#334155;
+  background-clip:padding-box;
+}
+
+.pl-table th:last-child,
+.pl-table td:last-child{
+  border-right:0;
+}
+
+.pl-table tbody tr:last-child td{
+  border-bottom:0;
 }
 
 .pl-table tr:hover{

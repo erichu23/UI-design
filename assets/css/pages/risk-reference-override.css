@@ -3407,3 +3407,64 @@ html body .risk-pager-actions,
 html body .filter-menu .filter-actions{
   gap:var(--audit-action-btn-gap, 6px) !important;
 }
+
+/* 全局表格线条最终统一：只调整外框与网格线视觉，不改变列宽、行高、padding 与交互。 */
+html body{
+  --audit-table-border-outer:#e7eef6;
+  --audit-table-border-head:#dbe5f0;
+  --audit-table-border-cell:#eef3f8;
+  --audit-table-border-row:#f1f5f9;
+  --audit-table-head-bg:#f6f9fd;
+  --audit-table-head-group-bg:#eef5fc;
+  --audit-table-hover-bg:#f8fbff;
+}
+
+html body .scroll-wrap,
+html body .risk-table-zoom-scroll,
+html body .table-area{
+  border-color:var(--audit-table-border-outer) !important;
+  box-shadow:inset 0 0 0 .5px rgba(231,238,246,.82) !important;
+}
+
+html body table thead th,
+html body .detail-table thead th,
+html body .risk-table-zoom-scroll table thead th,
+html body #cpTable thead th,
+html body #txTable thead th{
+  border-right-color:var(--audit-table-border-head) !important;
+  border-bottom-color:var(--audit-table-border-head) !important;
+  background:var(--audit-table-head-bg) !important;
+  background-clip:padding-box !important;
+}
+
+html body table thead tr.group-header th,
+html body table thead tr.sub-header th,
+html body .risk-table-zoom-scroll thead tr.group-header th,
+html body .risk-table-zoom-scroll thead tr.sub-header th,
+html body #cpTable thead tr:nth-child(1) th,
+html body #txTable thead tr:nth-child(1) th,
+html body #cpTable thead tr:nth-child(3) th,
+html body #txTable thead tr:nth-child(3) th{
+  background:var(--audit-table-head-group-bg) !important;
+}
+
+html body table tbody td,
+html body .detail-table tbody td,
+html body .risk-table-zoom-scroll table tbody td,
+html body #cpTable tbody td,
+html body #txTable tbody td{
+  border-right-color:var(--audit-table-border-cell) !important;
+  border-bottom-color:var(--audit-table-border-row) !important;
+  background-clip:padding-box !important;
+}
+
+html body #cpTable thead th:first-child,
+html body #txTable thead th:first-child,
+html body #cpTable tbody td:first-child,
+html body #txTable tbody td:first-child,
+html body #cpTable thead th:last-child,
+html body #txTable thead th:last-child,
+html body #cpTable tbody td:last-child,
+html body #txTable tbody td:last-child{
+  border-color:var(--audit-table-border-outer) !important;
+}

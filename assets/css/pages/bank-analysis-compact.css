@@ -1977,15 +1977,15 @@ body .tab-pane .ba-note-input:focus{
 
 /* 银行流水分析统一表格皮肤：保留各表结构，只统一线条、底色、行高和 hover。 */
 body{
-  --bank-table-border-outer:#edf2f7;
-  --bank-table-border-head:#dce6f1;
-  --bank-table-border-cell:#edf2f7;
-  --bank-table-border-row:#f0f4f8;
-  --bank-table-head-bg:#f4f8fd;
+  --bank-table-border-outer:var(--audit-table-border-outer,#e7eef6);
+  --bank-table-border-head:var(--audit-table-border-head,#dbe5f0);
+  --bank-table-border-cell:var(--audit-table-border-cell,#eef3f8);
+  --bank-table-border-row:var(--audit-table-border-row,#f1f5f9);
+  --bank-table-head-bg:var(--audit-table-head-bg,#f6f9fd);
   --bank-table-head-group-bg:#eef5fc;
   --bank-table-body-bg:#fff;
   --bank-table-subtle-bg:#f9fbfe;
-  --bank-table-hover-bg:#f8fbff;
+  --bank-table-hover-bg:var(--audit-table-hover-bg,#f8fbff);
   --bank-table-text:#334155;
   --bank-table-muted:#94a3b8;
 }
@@ -2008,7 +2008,8 @@ body .tab-pane .wp-table,
 body .tab-pane #tblAccountSummary,
 body .tab-pane .bank-reconcile-table,
 body .tab-pane #tblMissingSameName,
-body .tab-pane #portraitCounterpartyTable{
+body .tab-pane #portraitCounterpartyTable,
+body .tab-pane #relationCounterpartyTable{
   border-collapse:separate !important;
   border-spacing:0 !important;
   color:var(--bank-table-text);
@@ -2019,7 +2020,8 @@ body .tab-pane .wp-table thead th,
 body .tab-pane #tblAccountSummary thead th,
 body .tab-pane .bank-reconcile-table thead th,
 body .tab-pane #tblMissingSameName thead th,
-body .tab-pane #portraitCounterpartyTable thead th{
+body .tab-pane #portraitCounterpartyTable thead th,
+body .tab-pane #relationCounterpartyTable thead th{
   height:30px !important;
   border-right:1px solid var(--bank-table-border-head) !important;
   border-bottom:1px solid var(--bank-table-border-head) !important;
@@ -2032,7 +2034,8 @@ body .tab-pane .table thead tr:first-child th[colspan],
 body .tab-pane .wp-table thead tr:first-child th[colspan],
 body .tab-pane .bank-reconcile-table thead tr:first-child th[colspan],
 body .tab-pane #tblMissingSameName thead tr:first-child th[colspan],
-body .tab-pane #tblAccountSummary thead tr:first-child th[colspan]{
+body .tab-pane #tblAccountSummary thead tr:first-child th[colspan],
+body .tab-pane #relationCounterpartyTable thead tr:first-child th[colspan]{
   background:var(--bank-table-head-group-bg) !important;
   color:#263a57 !important;
   font-weight:800 !important;
@@ -2043,7 +2046,8 @@ body .tab-pane .wp-table tbody td,
 body .tab-pane #tblAccountSummary tbody td,
 body .tab-pane .bank-reconcile-table tbody td,
 body .tab-pane #tblMissingSameName tbody td,
-body .tab-pane #portraitCounterpartyTable tbody td{
+body .tab-pane #portraitCounterpartyTable tbody td,
+body .tab-pane #relationCounterpartyTable tbody td{
   height:30px !important;
   border-right:1px solid var(--bank-table-border-cell) !important;
   border-bottom:1px solid var(--bank-table-border-row) !important;
@@ -2062,7 +2066,9 @@ body .tab-pane .bank-reconcile-table tbody td:last-child,
 body .tab-pane #tblMissingSameName thead th:last-child,
 body .tab-pane #tblMissingSameName tbody td:last-child,
 body .tab-pane #portraitCounterpartyTable thead th:last-child,
-body .tab-pane #portraitCounterpartyTable tbody td:last-child{
+body .tab-pane #portraitCounterpartyTable tbody td:last-child,
+body .tab-pane #relationCounterpartyTable thead th:last-child,
+body .tab-pane #relationCounterpartyTable tbody td:last-child{
   border-right:0 !important;
 }
 
@@ -2071,7 +2077,8 @@ body .tab-pane .wp-table tbody tr:hover td,
 body .tab-pane #tblAccountSummary tbody tr:hover td,
 body .tab-pane .bank-reconcile-table tbody tr:hover td,
 body .tab-pane #tblMissingSameName tbody tr:hover td,
-body .tab-pane #portraitCounterpartyTable tbody tr:hover td{
+body .tab-pane #portraitCounterpartyTable tbody tr:hover td,
+body .tab-pane #relationCounterpartyTable tbody tr:hover td{
   background:var(--bank-table-hover-bg) !important;
 }
 
@@ -2141,12 +2148,14 @@ body .tab-pane #tblAccountSummary thead th,
 body .tab-pane .bank-reconcile-table thead th,
 body .tab-pane #tblMissingSameName thead th,
 body .tab-pane #portraitCounterpartyTable thead th,
+body .tab-pane #relationCounterpartyTable thead th,
 body .tab-pane .table tbody td,
 body .tab-pane .wp-table tbody td,
 body .tab-pane #tblAccountSummary tbody td,
 body .tab-pane .bank-reconcile-table tbody td,
 body .tab-pane #tblMissingSameName tbody td,
-body .tab-pane #portraitCounterpartyTable tbody td{
+body .tab-pane #portraitCounterpartyTable tbody td,
+body .tab-pane #relationCounterpartyTable tbody td{
   border-right-width:.5px !important;
   border-bottom-width:.5px !important;
 }
@@ -2162,7 +2171,8 @@ body .tab-pane .wp-table,
 body .tab-pane #tblAccountSummary,
 body .tab-pane .bank-reconcile-table,
 body .tab-pane #tblMissingSameName,
-body .tab-pane #portraitCounterpartyTable{
+body .tab-pane #portraitCounterpartyTable,
+body .tab-pane #relationCounterpartyTable{
   width:max-content !important;
   min-width:100% !important;
   table-layout:auto !important;
@@ -2179,7 +2189,9 @@ body .tab-pane .bank-reconcile-table td,
 body .tab-pane #tblMissingSameName th,
 body .tab-pane #tblMissingSameName td,
 body .tab-pane #portraitCounterpartyTable th,
-body .tab-pane #portraitCounterpartyTable td{
+body .tab-pane #portraitCounterpartyTable td,
+body .tab-pane #relationCounterpartyTable th,
+body .tab-pane #relationCounterpartyTable td{
   max-width:none !important;
   overflow:visible !important;
   text-overflow:clip !important;
@@ -2210,7 +2222,25 @@ body .tab-pane .table-wrap,
 body .tab-pane .risk-table-wrap,
 body .tab-pane .content > div[style*="overflow"]{
   border-radius:8px !important;
-  box-shadow:inset 0 0 0 .5px var(--bank-table-border-outer) !important;
+  box-shadow:inset 0 0 0 .5px rgba(231,238,246,.82) !important;
+  background-clip:padding-box !important;
+}
+
+body .tab-pane .table thead th,
+body .tab-pane .wp-table thead th,
+body .tab-pane #tblAccountSummary thead th,
+body .tab-pane .bank-reconcile-table thead th,
+body .tab-pane #tblMissingSameName thead th,
+body .tab-pane #portraitCounterpartyTable thead th,
+body .tab-pane #relationCounterpartyTable thead th,
+body .tab-pane .table tbody td,
+body .tab-pane .wp-table tbody td,
+body .tab-pane #tblAccountSummary tbody td,
+body .tab-pane .bank-reconcile-table tbody td,
+body .tab-pane #tblMissingSameName tbody td,
+body .tab-pane #portraitCounterpartyTable tbody td,
+body .tab-pane #relationCounterpartyTable tbody td{
+  background-clip:padding-box !important;
 }
 
 body .tab-pane .table tbody tr:last-child td,
@@ -2218,7 +2248,8 @@ body .tab-pane .wp-table tbody tr:last-child td,
 body .tab-pane #tblAccountSummary tbody tr:last-child td,
 body .tab-pane .bank-reconcile-table tbody tr:last-child td,
 body .tab-pane #tblMissingSameName tbody tr:last-child td,
-body .tab-pane #portraitCounterpartyTable tbody tr:last-child td{
+body .tab-pane #portraitCounterpartyTable tbody tr:last-child td,
+body .tab-pane #relationCounterpartyTable tbody tr:last-child td{
   border-bottom:0 !important;
 }
 
@@ -2408,43 +2439,52 @@ body .tab-pane #portraitCounterpartyTable tbody tr:last-child td{
 }
 
 /* 流水画像表格：强制使用与数据综合分析一致的对手方类型底色和金额色系。 */
-body #portraitCounterpartyTable tbody td.portrait-type-cell{
+body #portraitCounterpartyTable tbody td.portrait-type-cell,
+body #relationCounterpartyTable tbody td.portrait-type-cell{
   color:#334155 !important;
   font-weight:500 !important;
 }
 
-body #portraitCounterpartyTable tbody td.portrait-type-cell.is-customer{
+body #portraitCounterpartyTable tbody td.portrait-type-cell.is-customer,
+body #relationCounterpartyTable tbody td.portrait-type-cell.is-customer{
   background:#f1f5f9 !important;
 }
 
-body #portraitCounterpartyTable tbody td.portrait-type-cell.is-supplier{
+body #portraitCounterpartyTable tbody td.portrait-type-cell.is-supplier,
+body #relationCounterpartyTable tbody td.portrait-type-cell.is-supplier{
   background:#f8f3ea !important;
 }
 
-body #portraitCounterpartyTable tbody tr:hover td.portrait-type-cell.is-customer{
+body #portraitCounterpartyTable tbody tr:hover td.portrait-type-cell.is-customer,
+body #relationCounterpartyTable tbody tr:hover td.portrait-type-cell.is-customer{
   background:#e8eef5 !important;
 }
 
-body #portraitCounterpartyTable tbody tr:hover td.portrait-type-cell.is-supplier{
+body #portraitCounterpartyTable tbody tr:hover td.portrait-type-cell.is-supplier,
+body #relationCounterpartyTable tbody tr:hover td.portrait-type-cell.is-supplier{
   background:#f1eadf !important;
 }
 
-body #portraitCounterpartyTable tbody td.is-inflow{
+body #portraitCounterpartyTable tbody td.is-inflow,
+body #relationCounterpartyTable tbody td.is-inflow{
   color:#1d4ed8 !important;
   font-weight:800 !important;
 }
 
-body #portraitCounterpartyTable tbody td.is-sales-vat{
+body #portraitCounterpartyTable tbody td.is-sales-vat,
+body #relationCounterpartyTable tbody td.is-sales-vat{
   color:#0f766e !important;
   font-weight:800 !important;
 }
 
-body #portraitCounterpartyTable tbody td.is-outflow{
+body #portraitCounterpartyTable tbody td.is-outflow,
+body #relationCounterpartyTable tbody td.is-outflow{
   color:#be185d !important;
   font-weight:800 !important;
 }
 
-body #portraitCounterpartyTable tbody td.is-purchase-vat{
+body #portraitCounterpartyTable tbody td.is-purchase-vat,
+body #relationCounterpartyTable tbody td.is-purchase-vat{
   color:#b45309 !important;
   font-weight:800 !important;
 }
@@ -2602,12 +2642,14 @@ body .tab-pane .table td.amount-in,
 body .tab-pane .table td .amount-in,
 body .tab-pane .table td.is-inflow,
 body #portraitCounterpartyTable tbody td.is-inflow,
+body #relationCounterpartyTable tbody td.is-inflow,
 body .statement-flow-table td.amount-in{
   color:var(--audit-pro-in) !important;
   font-weight:700 !important;
 }
 
-body #portraitCounterpartyTable tbody td.is-sales-vat{
+body #portraitCounterpartyTable tbody td.is-sales-vat,
+body #relationCounterpartyTable tbody td.is-sales-vat{
   color:var(--audit-pro-sales) !important;
   font-weight:700 !important;
 }
@@ -2616,12 +2658,14 @@ body .tab-pane .table td.amount-out,
 body .tab-pane .table td .amount-out,
 body .tab-pane .table td.is-outflow,
 body #portraitCounterpartyTable tbody td.is-outflow,
+body #relationCounterpartyTable tbody td.is-outflow,
 body .statement-flow-table td.amount-out{
   color:var(--audit-pro-out) !important;
   font-weight:700 !important;
 }
 
-body #portraitCounterpartyTable tbody td.is-purchase-vat{
+body #portraitCounterpartyTable tbody td.is-purchase-vat,
+body #relationCounterpartyTable tbody td.is-purchase-vat{
   color:var(--audit-pro-purchase) !important;
   font-weight:700 !important;
 }
@@ -2727,6 +2771,7 @@ body .tab-pane .table td.amount-in,
 body .tab-pane .table td .amount-in,
 body .tab-pane .table td.is-inflow,
 body #portraitCounterpartyTable tbody td.is-inflow,
+body #relationCounterpartyTable tbody td.is-inflow,
 body .statement-flow-table td.amount-in,
 body .tab-pane .flow-in{
   color:var(--audit-pro-in) !important;
@@ -2734,6 +2779,7 @@ body .tab-pane .flow-in{
 }
 
 body #portraitCounterpartyTable tbody td.is-sales-vat,
+body #relationCounterpartyTable tbody td.is-sales-vat,
 body .tab-pane .table td.is-sales-vat{
   color:var(--audit-pro-sales) !important;
   font-weight:700 !important;
@@ -2743,6 +2789,7 @@ body .tab-pane .table td.amount-out,
 body .tab-pane .table td .amount-out,
 body .tab-pane .table td.is-outflow,
 body #portraitCounterpartyTable tbody td.is-outflow,
+body #relationCounterpartyTable tbody td.is-outflow,
 body .statement-flow-table td.amount-out,
 body .tab-pane .flow-out{
   color:var(--audit-pro-out) !important;
@@ -2750,6 +2797,7 @@ body .tab-pane .flow-out{
 }
 
 body #portraitCounterpartyTable tbody td.is-purchase-vat,
+body #relationCounterpartyTable tbody td.is-purchase-vat,
 body .tab-pane .table td.is-purchase-vat{
   color:var(--audit-pro-purchase) !important;
   font-weight:700 !important;
