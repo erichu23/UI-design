@@ -11,7 +11,7 @@
   <!-- ECharts -->
   <script defer src="../assets/vendor/echarts/echarts.min.js?v=5.6.0-local"></script>
   <script defer src="../assets/vendor/leaflet/leaflet.js?v=1.9.4-local"></script>
-  <link rel="stylesheet" href="../assets/css/base.css?v=20260723-button-size1"/>
+  <link rel="stylesheet" href="../assets/css/base.css?v=20260807-blacklist3"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260622-tab-rebuild7"/>
   <link rel="stylesheet" href="../assets/css/pages/account.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/biz.css?v=20260507-routine"/>
@@ -357,6 +357,7 @@
       </div>
       <div class="portrait-table-viewbar">
         <div class="portrait-table-tabs" id="portraitTableTabs"><button class="is-active" data-view="summary" type="button">合计数据</button><button data-view="business" type="button">工商信息</button></div>
+        <div class="counterparty-blacklist-note">当前工作簿下总计有0个对手方存在配合造假行为，请关注！（AQPP-Audit提供的全量配合造假清单见<a href="javascript:void(0)">第三方配合造假名单.xlsx</a>）</div>
         <div class="portrait-table-actions"><button class="btn" id="portraitColumnsBtn" type="button">自定义表头</button><button class="btn primary" id="portraitExportBtn" type="button">导出清单</button></div>
       </div>
       <div class="portrait-table-wrap"><table class="table" id="portraitCounterpartyTable"><thead id="portraitCounterpartyHead"></thead><tbody id="portraitCounterpartyBody"></tbody></table></div>
@@ -599,6 +600,7 @@
       </div>
       <div class="portrait-table-viewbar relation-table-viewbar">
         <div class="portrait-table-tabs" id="relationTableTabs"><button class="is-active" data-view="summary" type="button">合计数据</button><button data-view="business" type="button">工商信息</button></div>
+        <div class="counterparty-blacklist-note">当前工作簿下总计有0个对手方存在配合造假行为，请关注！（AQPP-Audit提供的全量配合造假清单见<a href="javascript:void(0)">第三方配合造假名单.xlsx</a>）</div>
         <div class="portrait-table-actions"><button class="btn" id="relationColumnsBtn" type="button">自定义表头</button><button class="btn primary" id="relationExportBtn" type="button">导出清单</button></div>
       </div>
       <div class="portrait-table-wrap relation-table-wrap"><table class="table" id="relationCounterpartyTable"><thead id="relationCounterpartyHead"></thead><tbody id="relationCounterpartyBody"></tbody></table></div>
@@ -1023,7 +1025,7 @@
 
 <script defer src="../assets/js/core/shared.js?v=20260723-column-popover1"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260508-fast2"></script>
-<script defer src="../assets/js/pages/portrait.js?v=20260727-relation-tab1"></script>
+<script defer src="../assets/js/pages/portrait.js?v=20260807-blacklist3"></script>
 <script defer src="../assets/js/pages/routine.js?v=20260508-fast2"></script>
 </body>
 </html>

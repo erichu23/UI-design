@@ -8688,3 +8688,489 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   font-size:13px !important;
   font-weight:800 !important;
 }
+
+/* 数据综合分析：表格视觉与银行流水/增值税分析统一 */
+.ds3-vat-page{
+  --ds3-table-border-outer:var(--audit-table-border-outer,#e7eef6);
+  --ds3-table-border-head:var(--audit-table-border-head,#dbe5f0);
+  --ds3-table-border-cell:var(--audit-table-border-cell,#eef3f8);
+  --ds3-table-border-row:var(--audit-table-border-row,#f1f5f9);
+  --ds3-table-head-bg:var(--audit-table-head-bg,#f6f9fd);
+  --ds3-table-head-group-bg:var(--audit-table-head-group-bg,#eef5fc);
+  --ds3-table-hover-bg:var(--audit-table-hover-bg,#f8fbff);
+  --ds3-amount-in:#1d4ed8;
+  --ds3-amount-sales:#0f766e;
+  --ds3-amount-out:#be185d;
+  --ds3-amount-purchase:#b45309;
+}
+
+.ds3-vat-page .ds3-table-wrap,
+.ds3-vat-page .ds3-selected-table-wrap,
+.ds3-vat-page .ds3-rule-table-wrap,
+.ds3-vat-page .ds3-linked-table-wrap,
+.ds3-vat-page #ds3DetailModal .ds3-detail-table-wrap,
+.ds3-vat-page .ds3-panel .ds3-table-wrap{
+  border:1px solid var(--ds3-table-border-outer) !important;
+  border-radius:7px !important;
+  background:#fff !important;
+  box-shadow:none !important;
+}
+
+.ds3-vat-page table.ds3-table,
+.ds3-vat-page #ds3DetailModal table{
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+  table-layout:auto !important;
+  color:#334155 !important;
+}
+
+.ds3-vat-page table.ds3-table thead th,
+.ds3-vat-page #ds3DetailModal table thead th,
+.ds3-vat-page .ds3-rule-table-wrap table thead th,
+.ds3-vat-page .ds3-linked-table-wrap table thead th{
+  border-right:1px solid var(--ds3-table-border-head) !important;
+  border-bottom:1px solid var(--ds3-table-border-head) !important;
+  background:var(--ds3-table-head-bg) !important;
+  color:#334155 !important;
+  font-weight:700 !important;
+  background-clip:padding-box !important;
+}
+
+.ds3-vat-page table.ds3-table thead tr:first-child th[colspan],
+.ds3-vat-page table.ds3-table .ds3-group-toggle-cell,
+.ds3-vat-page table.ds3-table .ds3-year-head,
+.ds3-vat-page #ds3DetailModal table thead tr:first-child th[colspan]{
+  background:var(--ds3-table-head-group-bg) !important;
+  color:#263a57 !important;
+  font-weight:800 !important;
+}
+
+.ds3-vat-page table.ds3-table tbody td,
+.ds3-vat-page #ds3DetailModal table tbody td,
+.ds3-vat-page .ds3-rule-table-wrap table tbody td,
+.ds3-vat-page .ds3-linked-table-wrap table tbody td{
+  border-right:1px solid var(--ds3-table-border-cell) !important;
+  border-bottom:1px solid var(--ds3-table-border-row) !important;
+  background:#fff !important;
+  color:#334155;
+  background-clip:padding-box !important;
+}
+
+.ds3-vat-page table.ds3-table th:last-child,
+.ds3-vat-page table.ds3-table td:last-child,
+.ds3-vat-page #ds3DetailModal table th:last-child,
+.ds3-vat-page #ds3DetailModal table td:last-child{
+  border-right:0 !important;
+}
+
+.ds3-vat-page table.ds3-table tbody tr:last-child td,
+.ds3-vat-page #ds3DetailModal table tbody tr:last-child td{
+  border-bottom:0 !important;
+}
+
+.ds3-vat-page table.ds3-table tbody tr:hover td,
+.ds3-vat-page #ds3DetailModal table tbody tr:hover td,
+.ds3-vat-page .ds3-rule-table-wrap table tbody tr:hover td,
+.ds3-vat-page .ds3-linked-table-wrap table tbody tr:hover td{
+  background:var(--ds3-table-hover-bg) !important;
+}
+
+.ds3-vat-page table.ds3-table td.ds3-num-inflow,
+.ds3-vat-page #ds3DetailModal table td.ds3-num-inflow,
+.ds3-vat-page #ds3SelectedTable td.ds3-num-inflow{
+  color:var(--ds3-amount-in) !important;
+  font-weight:800 !important;
+}
+
+.ds3-vat-page table.ds3-table td.ds3-num-output,
+.ds3-vat-page #ds3DetailModal table td.ds3-num-output,
+.ds3-vat-page #ds3SelectedTable td.ds3-num-output{
+  color:var(--ds3-amount-sales) !important;
+  font-weight:800 !important;
+}
+
+.ds3-vat-page table.ds3-table td.ds3-num-outflow,
+.ds3-vat-page #ds3DetailModal table td.ds3-num-outflow,
+.ds3-vat-page #ds3SelectedTable td.ds3-num-outflow{
+  color:var(--ds3-amount-out) !important;
+  font-weight:800 !important;
+}
+
+.ds3-vat-page table.ds3-table td.ds3-num-input,
+.ds3-vat-page #ds3DetailModal table td.ds3-num-input,
+.ds3-vat-page #ds3SelectedTable td.ds3-num-input{
+  color:var(--ds3-amount-purchase) !important;
+  font-weight:800 !important;
+}
+
+.ds3-vat-page .ds3-th-tools{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:6px !important;
+  width:100% !important;
+  min-width:0 !important;
+}
+
+.ds3-vat-page .ds3-th-tools.is-left{
+  justify-content:space-between !important;
+}
+
+.ds3-vat-page .ds3-th-label{
+  min-width:0 !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  white-space:nowrap !important;
+}
+
+.ds3-vat-page .ds3-th-actions{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:3px !important;
+  flex:0 0 auto !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-th-action,
+.ds3-vat-page #ds3DetailModal .ds3-th-action,
+.ds3-vat-page #ds3InvoiceTable .ds3-th-action,
+.ds3-vat-page #ds3SelectedTable .ds3-th-action{
+  width:auto !important;
+  min-width:0 !important;
+  height:16px !important;
+  min-height:16px !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:3px !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#b5c1ce !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-th-action:hover,
+.ds3-vat-page #ds3DetailModal .ds3-th-action:hover,
+.ds3-vat-page #ds3InvoiceTable .ds3-th-action:hover,
+.ds3-vat-page #ds3SelectedTable .ds3-th-action:hover{
+  background:#eaf1ff !important;
+  color:#1d4ed8 !important;
+}
+
+.ds3-vat-page .ds3-sort-btn{
+  width:12px !important;
+  flex:0 0 12px !important;
+}
+
+.ds3-vat-page .ds3-sort-stack{
+  width:12px !important;
+  height:16px !important;
+  display:inline-flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:0 !important;
+  color:transparent !important;
+}
+
+.ds3-vat-page .ds3-sort-stack span{
+  position:relative !important;
+  display:block !important;
+  width:12px !important;
+  height:7px !important;
+  line-height:7px !important;
+  font-size:0 !important;
+  color:transparent !important;
+  transform:none !important;
+}
+
+.ds3-vat-page .ds3-sort-stack span::before{
+  content:"" !important;
+  position:absolute !important;
+  left:3px !important;
+  border-left:3.5px solid transparent !important;
+  border-right:3.5px solid transparent !important;
+}
+
+.ds3-vat-page .ds3-sort-stack span:first-child::before{
+  top:1px !important;
+  border-bottom:5px solid #b5c1ce !important;
+}
+
+.ds3-vat-page .ds3-sort-stack span:last-child::before{
+  bottom:1px !important;
+  border-top:5px solid #b5c1ce !important;
+}
+
+.ds3-vat-page .ds3-sort-stack.asc span:first-child::before{
+  border-bottom-color:#2f6fed !important;
+}
+
+.ds3-vat-page .ds3-sort-stack.desc span:last-child::before{
+  border-top-color:#2f6fed !important;
+}
+
+.ds3-vat-page .ds3-filter-btn{
+  width:13px !important;
+  min-width:13px !important;
+  height:13px !important;
+  min-height:13px !important;
+  flex:0 0 13px !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+}
+
+.ds3-vat-page .ds3-filter-glyph{
+  position:relative !important;
+  display:block !important;
+  width:10px !important;
+  height:10px !important;
+}
+
+.ds3-vat-page .ds3-filter-glyph::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  width:10px !important;
+  height:10px !important;
+  background:#b5c1ce !important;
+  clip-path:polygon(8% 14%,92% 14%,60% 52%,60% 88%,40% 88%,40% 52%) !important;
+}
+
+.ds3-vat-page .ds3-filter-btn:hover .ds3-filter-glyph::before,
+.ds3-vat-page .ds3-filter-btn.is-active .ds3-filter-glyph::before{
+  background:#2f6fed !important;
+}
+
+/* 数据综合分析：固定列最终清理，去掉历史叠加阴影造成的双线和滚动重影 */
+.ds3-vat-page #ds3FilterTable .ds3-sticky-check,
+.ds3-vat-page #ds3FilterTable .ds3-sticky-month,
+.ds3-vat-page #ds3FilterTable .ds3-sticky-cp,
+.ds3-vat-page #ds3FilterTable .ds3-sticky-action,
+.ds3-vat-page #ds3FilterTable .ds3-sticky-remark,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-check,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-month,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-cp,
+.ds3-vat-page #ds3InvoiceTable .ds3-sticky-cp,
+.ds3-vat-page #ds3InvoiceTable .ds3-sticky-action,
+.ds3-vat-page #ds3InvoiceTable .ds3-sticky-remark{
+  position:sticky !important;
+  background:#fff !important;
+  background-clip:border-box !important;
+  box-shadow:none !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-check,
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-month,
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-cp,
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-action,
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-remark,
+.ds3-vat-page #ds3SelectedTable thead .ds3-sticky-check,
+.ds3-vat-page #ds3SelectedTable thead .ds3-sticky-month,
+.ds3-vat-page #ds3SelectedTable thead .ds3-sticky-cp,
+.ds3-vat-page #ds3InvoiceTable thead .ds3-sticky-cp,
+.ds3-vat-page #ds3InvoiceTable thead .ds3-sticky-action,
+.ds3-vat-page #ds3InvoiceTable thead .ds3-sticky-remark{
+  background:var(--ds3-table-head-bg) !important;
+  z-index:32 !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-sticky-check,
+.ds3-vat-page #ds3FilterTable .ds3-sticky-month,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-check,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-month{
+  z-index:18 !important;
+  border-right:1px solid var(--ds3-table-border-cell) !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-sticky-cp,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-cp,
+.ds3-vat-page #ds3InvoiceTable .ds3-sticky-cp{
+  z-index:19 !important;
+  border-right:1px solid var(--ds3-table-border-head) !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-sticky-action,
+.ds3-vat-page #ds3FilterTable .ds3-sticky-remark,
+.ds3-vat-page #ds3InvoiceTable .ds3-sticky-action,
+.ds3-vat-page #ds3InvoiceTable .ds3-sticky-remark{
+  z-index:19 !important;
+  border-left:1px solid var(--ds3-table-border-head) !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-check,
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-month,
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-cp,
+.ds3-vat-page #ds3SelectedTable thead .ds3-sticky-check,
+.ds3-vat-page #ds3SelectedTable thead .ds3-sticky-month,
+.ds3-vat-page #ds3SelectedTable thead .ds3-sticky-cp,
+.ds3-vat-page #ds3InvoiceTable thead .ds3-sticky-cp{
+  border-right:1px solid var(--ds3-table-border-head) !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-action,
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-remark,
+.ds3-vat-page #ds3InvoiceTable thead .ds3-sticky-action,
+.ds3-vat-page #ds3InvoiceTable thead .ds3-sticky-remark{
+  border-left:1px solid var(--ds3-table-border-head) !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-sticky-cp::before,
+.ds3-vat-page #ds3FilterTable .ds3-sticky-cp::after,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-cp::before,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-cp::after,
+.ds3-vat-page #ds3InvoiceTable .ds3-sticky-cp::before,
+.ds3-vat-page #ds3InvoiceTable .ds3-sticky-cp::after{
+  content:none !important;
+  display:none !important;
+}
+
+/* 数据综合分析：主表固定列重新校准
+   旧样式把 nth-child(1) 当作对手方名称，但当前第一列是复选框；
+   这里统一重置第一列和固定列，避免双线、重影和第一列异样。 */
+.ds3-vat-page #ds3FilterTable{
+  --ds3-check-col:32px !important;
+  --ds3-month-col:76px !important;
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+}
+
+.ds3-vat-page #ds3FilterTable th,
+.ds3-vat-page #ds3FilterTable td,
+.ds3-vat-page #ds3SelectedTable th,
+.ds3-vat-page #ds3SelectedTable td,
+.ds3-vat-page #ds3InvoiceTable th,
+.ds3-vat-page #ds3InvoiceTable td{
+  box-shadow:none !important;
+  outline:0 !important;
+  border-right:1px solid var(--ds3-table-border-cell) !important;
+  border-bottom:1px solid var(--ds3-table-border-row) !important;
+  background-clip:padding-box !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead th,
+.ds3-vat-page #ds3SelectedTable thead th,
+.ds3-vat-page #ds3InvoiceTable thead th{
+  border-right-color:var(--ds3-table-border-head) !important;
+  border-bottom-color:var(--ds3-table-border-head) !important;
+  background:var(--ds3-table-head-bg) !important;
+}
+
+.ds3-vat-page #ds3FilterTable th:first-child,
+.ds3-vat-page #ds3FilterTable td:first-child{
+  overflow:visible !important;
+  text-overflow:clip !important;
+  white-space:nowrap !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-check-cell,
+.ds3-vat-page #ds3SelectedTable .ds3-check-cell{
+  width:var(--ds3-check-col) !important;
+  min-width:var(--ds3-check-col) !important;
+  max-width:var(--ds3-check-col) !important;
+  padding:0 6px !important;
+  text-align:center !important;
+  vertical-align:middle !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-check-cell input,
+.ds3-vat-page #ds3SelectedTable .ds3-check-cell input{
+  display:block !important;
+  width:14px !important;
+  height:14px !important;
+  margin:0 auto !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-sticky-check,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-check{
+  position:sticky !important;
+  left:0 !important;
+  z-index:24 !important;
+  background:#fff !important;
+  border-right:1px solid var(--ds3-table-border-cell) !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-check,
+.ds3-vat-page #ds3SelectedTable thead .ds3-sticky-check{
+  z-index:44 !important;
+  background:var(--ds3-table-head-bg) !important;
+  border-right:1px solid var(--ds3-table-border-head) !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-sticky-month,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-month{
+  position:sticky !important;
+  left:var(--ds3-check-col) !important;
+  z-index:23 !important;
+  width:var(--ds3-month-col) !important;
+  min-width:var(--ds3-month-col) !important;
+  max-width:var(--ds3-month-col) !important;
+  background:#fff !important;
+  border-right:1px solid var(--ds3-table-border-cell) !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-month,
+.ds3-vat-page #ds3SelectedTable thead .ds3-sticky-month{
+  z-index:43 !important;
+  background:var(--ds3-table-head-bg) !important;
+  border-right:1px solid var(--ds3-table-border-head) !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-sticky-cp,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-cp,
+.ds3-vat-page #ds3InvoiceTable .ds3-sticky-cp{
+  position:sticky !important;
+  left:var(--ds3-check-col) !important;
+  z-index:22 !important;
+  min-width:180px !important;
+  max-width:none !important;
+  background:#fff !important;
+  border-right:1px solid var(--ds3-table-border-head) !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-sticky-month + .ds3-sticky-cp,
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-month + .ds3-sticky-cp{
+  left:calc(var(--ds3-check-col) + var(--ds3-month-col)) !important;
+}
+
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-cp,
+.ds3-vat-page #ds3InvoiceTable .ds3-sticky-cp{
+  left:0 !important;
+}
+
+.ds3-vat-page #ds3SelectedTable .ds3-sticky-month + .ds3-sticky-cp{
+  left:calc(var(--ds3-check-col) + var(--ds3-month-col)) !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-cp,
+.ds3-vat-page #ds3SelectedTable thead .ds3-sticky-cp,
+.ds3-vat-page #ds3InvoiceTable thead .ds3-sticky-cp{
+  z-index:42 !important;
+  background:var(--ds3-table-head-bg) !important;
+  border-right:1px solid var(--ds3-table-border-head) !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-row-main-name,
+.ds3-vat-page #ds3SelectedTable .ds3-row-main-name,
+.ds3-vat-page #ds3InvoiceTable .ds3-row-main-name{
+  display:inline !important;
+  max-width:none !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  white-space:nowrap !important;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-sticky-action,
+.ds3-vat-page #ds3FilterTable .ds3-sticky-remark,
+.ds3-vat-page #ds3InvoiceTable .ds3-sticky-action,
+.ds3-vat-page #ds3InvoiceTable .ds3-sticky-remark{
+  background:#fff !important;
+  box-shadow:none !important;
+}
+
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-action,
+.ds3-vat-page #ds3FilterTable thead .ds3-sticky-remark,
+.ds3-vat-page #ds3InvoiceTable thead .ds3-sticky-action,
+.ds3-vat-page #ds3InvoiceTable thead .ds3-sticky-remark{
+  background:var(--ds3-table-head-bg) !important;
+  box-shadow:none !important;
+}

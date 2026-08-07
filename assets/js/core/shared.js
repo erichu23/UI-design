@@ -1642,36 +1642,75 @@
     return text || '未命名字段';
   }
 
-  function getLeafHeaderColumns(table) {
+  function getHeaderLayout(table) {
+    if (table._baHeaderLayout) return table._baHeaderLayout;
     const headerRows = Array.from(table.tHead?.rows || []);
     if (!headerRows.length) return [];
     const headerGrid = [];
-    const columns = [];
+    const layout = [];
     headerRows.forEach((row, rowIndex) => {
       headerGrid[rowIndex] ||= [];
       let colIndex = 0;
       Array.from(row.cells).forEach(th => {
         while (headerGrid[rowIndex][colIndex]) colIndex += 1;
-        const rowSpan = th.rowSpan || 1;
-        const colSpan = th.colSpan || 1;
+        const rowSpan = Number(th.dataset.baOriginalRowspan || th.rowSpan || 1);
+        const colSpan = Number(th.dataset.baOriginalColspan || th.colSpan || 1);
+        th.dataset.baOriginalRowspan = String(rowSpan);
+        th.dataset.baOriginalColspan = String(colSpan);
         for (let r = 0; r < rowSpan; r += 1) {
           headerGrid[rowIndex + r] ||= [];
           for (let c = 0; c < colSpan; c += 1) headerGrid[rowIndex + r][colIndex + c] = true;
         }
-        if (colSpan === 1 && rowIndex + rowSpan >= headerRows.length) {
-          const label = getHeaderLabel(th);
-          if (label) columns.push({ index: colIndex + 1, label });
-        }
+        layout.push({
+          th,
+          rowIndex,
+          start: colIndex,
+          end: colIndex + colSpan - 1,
+          rowSpan,
+          colSpan,
+          isLeaf: colSpan === 1 && rowIndex + rowSpan >= headerRows.length
+        });
         colIndex += colSpan;
       });
     });
+    table._baHeaderLayout = layout;
+    return layout;
+  }
+
+  function getLeafHeaderColumns(table) {
+    const layout = getHeaderLayout(table);
+    const columns = [];
+    layout.forEach(meta => {
+      if (!meta.isLeaf) return;
+      if (meta.th.dataset.fixedColumn === 'true') return;
+      const label = getHeaderLabel(meta.th);
+      if (label) columns.push({ index: meta.start + 1, label });
+    });
     return columns;
+  }
+
+  function syncCustomizedHeaderColumns(table, hidden) {
+    const layout = getHeaderLayout(table);
+    layout.forEach(meta => {
+      const visibleSpan = Array.from({ length: meta.colSpan }, (_, offset) => meta.start + offset + 1)
+        .filter(index => !hidden.has(index)).length;
+      if (meta.colSpan > 1) {
+        meta.th.style.display = visibleSpan ? '' : 'none';
+        meta.th.colSpan = Math.max(1, visibleSpan);
+        return;
+      }
+      meta.th.style.display = hidden.has(meta.start + 1) ? 'none' : '';
+      meta.th.colSpan = 1;
+    });
   }
 
   function applyCustomizedColumns(table) {
     if (!table) return;
     const key = getTableKey(table);
     const hidden = columnPrefs.get(key) || new Set();
+    getHeaderLayout(table).forEach(meta => {
+      if (meta.isLeaf && meta.th.dataset.fixedColumn === 'true') hidden.delete(meta.start + 1);
+    });
     let style = document.getElementById(`ba-col-style-${key}`);
     if (!style) {
       style = document.createElement('style');
@@ -1680,8 +1719,9 @@
     }
     const selector = `#${cssIdent(key)}`;
     style.textContent = Array.from(hidden)
-      .map(index => `${selector} tr > :nth-child(${index}){display:none!important;}`)
+      .map(index => `${selector} tbody tr > :nth-child(${index}),${selector} tfoot tr > :nth-child(${index}){display:none!important;}`)
       .join('\n');
+    syncCustomizedHeaderColumns(table, hidden);
     table.classList.toggle('ba-has-hidden-columns', hidden.size > 0);
   }
 

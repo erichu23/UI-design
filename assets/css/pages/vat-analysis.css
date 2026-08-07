@@ -1,0 +1,1147 @@
+/* 增值税数据分析：先复用银行流水分析的工作台规格，后续按 tab 逐步填充内容。 */
+body{
+  background:var(--body-background,#f5f7fa);
+  color:#0f172a;
+  font-family:var(--platform-font-family);
+}
+
+.vat-page{
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+  min-width:0;
+  min-height:0;
+  padding-top:0;
+  overflow:hidden;
+}
+
+body .vat-kpi-strip{
+  display:block;
+  margin:6px var(--bank-page-x,12px) 0;
+}
+
+body .vat-kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  grid-template-rows:30px;
+  grid-template-areas:"k1 k2 k3 k4 k5 k6 k7";
+  gap:4px;
+}
+
+body .vat-kpi-grid .kpi{
+  border:1px solid #edf2f7;
+  background:#fff;
+  box-shadow:0 1px 2px rgba(15,23,42,.025);
+}
+
+body .vat-kpi-grid .kpi-value{
+  color:#1e293b;
+  font-variant-numeric:tabular-nums;
+}
+
+body .vat-kpi-grid .vat-kpi-total{
+  background:linear-gradient(180deg,#ffffff,#f8fbff);
+}
+
+body .vat-kpi-grid .vat-kpi-sales{
+  border-color:#d8efe9;
+  background:linear-gradient(180deg,#ffffff,#f3fbf8);
+}
+
+body .vat-kpi-grid .vat-kpi-sales .kpi-value{
+  color:#168475;
+}
+
+body .vat-kpi-grid .vat-kpi-purchase{
+  border-color:#f2e3cc;
+  background:linear-gradient(180deg,#ffffff,#fff8ef);
+}
+
+body .vat-kpi-grid .vat-kpi-purchase .kpi-value{
+  color:#b96916;
+}
+
+body .vat-tab-container{
+  margin-top:7px !important;
+}
+
+body .vat-tab-container .tabbar{
+  justify-content:flex-start;
+}
+
+body .vat-tab-container .tab{
+  flex:0 0 auto;
+}
+
+body .vat-empty-pane{
+  padding-top:7px;
+}
+
+body .vat-tax-overview-pane{
+  padding-top:7px;
+}
+
+body .vat-page .tab-pane{
+  min-height:0;
+  flex:1 1 auto;
+  overflow:hidden;
+}
+
+body .vat-page .tab-pane.active{
+  display:flex;
+  flex-direction:column;
+}
+
+body .vat-page .tab-scroll{
+  flex:1 1 auto;
+  min-height:0;
+  overflow:auto;
+  padding:7px var(--bank-page-x,12px) 12px;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(148,163,184,.26) transparent;
+  -webkit-overflow-scrolling:touch;
+}
+
+body .vat-page .tab-scroll::-webkit-scrollbar{
+  width:4px;
+  height:4px;
+}
+
+body .vat-page .tab-scroll::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+body .vat-page .tab-scroll::-webkit-scrollbar-thumb{
+  border-radius:999px;
+  background:rgba(148,163,184,.26);
+}
+
+body .vat-overview-card .content{
+  padding:8px 10px 10px;
+}
+
+body .vat-head-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-left:auto;
+}
+
+body .vat-trend-card .content{
+  padding:6px 10px 8px;
+}
+
+body .vat-trend-actions{
+  gap:7px;
+}
+
+body .vat-year-filter{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  height:28px;
+  color:#475569;
+  font-size:11px;
+  font-weight:700;
+}
+
+body .vat-year-filter select{
+  width:84px;
+  height:28px;
+  padding:0 24px 0 9px;
+  border:1px solid #dbe7f4;
+  border-radius:7px;
+  background:#fff;
+  color:#334155;
+  font-size:11px;
+  font-weight:700;
+  outline:none;
+}
+
+body .vat-year-filter select:hover,
+body .vat-year-filter select:focus{
+  border-color:#bcd0e8;
+  box-shadow:0 0 0 2px rgba(37,99,235,.08);
+}
+
+body .vat-trend-chart{
+  width:100%;
+  height:248px;
+  min-height:230px;
+  background:transparent;
+}
+
+body .vat-structure-card{
+  margin-top:7px;
+}
+
+body .vat-structure-card .content{
+  padding:12px 10px 10px;
+  overflow:visible;
+}
+
+body .vat-mode-tabs{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  height:30px;
+  margin-left:12px;
+  padding:0 2px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+}
+
+body .vat-mode-tabs button{
+  position:relative;
+  height:30px;
+  padding:0 2px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#475569;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+body .vat-mode-tabs button::after{
+  content:"";
+  position:absolute;
+  right:0;
+  bottom:1px;
+  left:0;
+  height:2px;
+  border-radius:999px;
+  background:transparent;
+}
+
+body .vat-mode-tabs button:hover{
+  color:#164b7d;
+  background:transparent;
+}
+
+body .vat-mode-tabs button.is-active{
+  color:#0f2d52;
+  background:transparent;
+}
+
+body .vat-mode-tabs button.is-active::after{
+  background:#1d4ed8;
+}
+
+body .vat-structure-filter-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(156px,1fr));
+  gap:8px;
+  margin:0 0 12px;
+  overflow:visible;
+}
+
+body .vat-filter-card{
+  position:relative;
+  display:flex;
+  appearance:none;
+  -webkit-appearance:none;
+  box-sizing:border-box;
+  min-width:0;
+  height:74px !important;
+  min-height:74px !important;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  overflow:visible;
+  padding:10px 9px;
+  border:1px solid #e3ebf5;
+  border-radius:8px;
+  background:linear-gradient(180deg,#fff 0%,#fbfdff 100%);
+  color:#334155;
+  cursor:pointer;
+  line-height:normal;
+  box-shadow:0 1px 3px rgba(15,23,42,.035);
+}
+
+body .vat-filter-card:hover{
+  border-color:#dbe7f4;
+  background:#fbfdff;
+}
+
+body .vat-filter-card.is-active{
+  border-color:#2563eb;
+  background:linear-gradient(180deg,#f6fbff 0%,#eef6ff 100%);
+  box-shadow:0 0 0 2px rgba(37,99,235,.12),0 4px 10px rgba(22,75,125,.08);
+}
+
+body .vat-filter-card.is-active::before{
+  content:"";
+  position:absolute;
+  top:9px;
+  bottom:9px;
+  left:0;
+  width:3px;
+  border-radius:0 999px 999px 0;
+  background:#2563eb;
+}
+
+body .vat-filter-card span{
+  display:flex;
+  min-width:0;
+  max-width:calc(100% - 40px);
+  flex-direction:column;
+  justify-content:center;
+  gap:6px;
+  text-align:left;
+}
+
+body .vat-filter-card span b{
+  display:block;
+  width:100%;
+  overflow:hidden;
+  color:#334155;
+  font-size:12px;
+  line-height:17px;
+  text-overflow:clip;
+  white-space:nowrap;
+}
+
+body .vat-filter-card span em{
+  display:block;
+  width:100%;
+  overflow:hidden;
+  color:#475569;
+  font-size:12px;
+  font-style:normal;
+  font-weight:800;
+  line-height:17px;
+  text-overflow:clip;
+  white-space:nowrap;
+}
+
+body .vat-filter-card strong{
+  display:inline-flex;
+  width:32px;
+  height:32px;
+  flex:0 0 32px;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:
+    radial-gradient(circle at center,#fff 55%,transparent 56%),
+    conic-gradient(#168475 var(--pct),#e8eef5 0);
+  box-shadow:inset 0 0 0 1px rgba(226,232,240,.78);
+}
+
+body .vat-filter-card.is-purchase strong{
+  background:
+    radial-gradient(circle at center,#fff 55%,transparent 56%),
+    conic-gradient(#b96916 var(--pct),#e8eef5 0);
+}
+
+body .vat-filter-card.is-compare{
+  height:88px !important;
+  min-height:88px !important;
+  display:grid;
+  grid-template-rows:18px 1fr;
+  align-items:stretch;
+  gap:5px;
+  padding:8px 10px 9px;
+}
+
+body .vat-compare-title{
+  display:block;
+  min-width:0;
+  overflow:hidden;
+  color:#334155;
+  font-size:12px;
+  line-height:18px;
+  text-align:left;
+  text-overflow:clip;
+  white-space:nowrap;
+}
+
+body .vat-compare-body{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 32px minmax(0,1fr);
+  align-items:center;
+  gap:2px;
+}
+
+body .vat-compare-side{
+  display:flex;
+  min-width:0;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+}
+
+body .vat-compare-side strong{
+  width:28px;
+  height:28px;
+  flex:0 0 28px;
+}
+
+body .vat-compare-side em{
+  overflow:hidden;
+  color:#475569;
+  font-size:10.5px;
+  font-style:normal;
+  font-weight:800;
+  line-height:14px;
+  text-overflow:clip;
+  white-space:nowrap;
+}
+
+body .vat-compare-body > i{
+  display:inline-flex;
+  justify-self:center;
+  align-items:center;
+  justify-content:center;
+  width:28px;
+  height:18px;
+  border-radius:999px;
+  background:#eef5ff;
+  color:#1d4ed8;
+  font-size:9px;
+  font-style:normal;
+  font-weight:900;
+}
+
+body .vat-compare-side .vat-sales-ring{
+  background:
+    radial-gradient(circle at center,#fff 55%,transparent 56%),
+    conic-gradient(#168475 var(--pct),#e8eef5 0);
+}
+
+body .vat-compare-side .vat-purchase-ring{
+  background:
+    radial-gradient(circle at center,#fff 55%,transparent 56%),
+    conic-gradient(#b96916 var(--pct),#e8eef5 0);
+}
+
+@media (max-width:1320px){
+  body .vat-structure-filter-cards{
+    grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  }
+}
+
+body .vat-structure-insight-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.55fr) minmax(260px,.85fr);
+  gap:8px;
+  margin-bottom:8px;
+}
+
+body .vat-business-insight-grid{
+  grid-template-columns:minmax(0,1.35fr) minmax(220px,.7fr) minmax(250px,.8fr);
+}
+
+body .vat-structure-panel{
+  min-width:0;
+  border:1px solid #edf2f7;
+  border-radius:8px;
+  background:#fff;
+}
+
+body .vat-structure-panel-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:30px;
+  padding:5px 8px;
+  border-bottom:1px solid #edf2f7;
+  color:#334155;
+}
+
+body .vat-structure-panel-head span{
+  font-size:12px;
+  font-weight:800;
+}
+
+body .vat-structure-panel-head em{
+  color:#94a3b8;
+  font-size:10.5px;
+  font-style:normal;
+  font-weight:700;
+}
+
+body .vat-structure-chart{
+  height:216px;
+}
+
+body .vat-master-chart{
+  height:216px;
+}
+
+body .vat-structure-top-list{
+  height:216px;
+  padding:6px 8px;
+  overflow:auto;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(148,163,184,.26) transparent;
+}
+
+body .vat-structure-top-list::-webkit-scrollbar{
+  width:4px;
+}
+
+body .vat-structure-top-list::-webkit-scrollbar-thumb{
+  border-radius:999px;
+  background:rgba(148,163,184,.26);
+}
+
+body .vat-top-row{
+  position:relative;
+  display:grid;
+  grid-template-columns:26px minmax(0,1fr) auto;
+  align-items:center;
+  gap:6px;
+  min-height:24px;
+  padding:2px 0;
+  color:#334155;
+  font-size:11px;
+}
+
+body .vat-top-row em{
+  color:#94a3b8;
+  font-style:normal;
+  font-weight:800;
+}
+
+body .vat-top-row span{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:700;
+}
+
+body .vat-top-row b{
+  position:relative;
+  z-index:1;
+  font-variant-numeric:tabular-nums;
+}
+
+body .vat-top-row i{
+  position:absolute;
+  left:32px;
+  right:auto;
+  bottom:1px;
+  height:3px;
+  border-radius:999px;
+  background:rgba(22,132,117,.2);
+}
+
+body .vat-top-row.is-purchase i{
+  background:rgba(185,105,22,.22);
+}
+
+body .vat-top-row.is-compare i{
+  background:rgba(71,85,105,.18);
+}
+
+body .vat-table-viewbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  min-height:30px;
+  margin-bottom:6px;
+}
+
+body .vat-table-tabs{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+body .vat-table-tabs button{
+  height:26px;
+  padding:0 10px;
+  border:0;
+  border-bottom:2px solid #164b7d;
+  background:transparent;
+  color:#0f2d52;
+  font-size:11px;
+  font-weight:800;
+}
+
+body .vat-structure-table-wrap{
+  max-height:360px;
+}
+
+body .vat-structure-table{
+  table-layout:fixed;
+  border-collapse:separate;
+  border-spacing:0;
+}
+
+body .vat-structure-table th,
+body .vat-structure-table td{
+  box-sizing:border-box;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:clip;
+  white-space:nowrap;
+}
+
+body .vat-structure-table th:first-child,
+body .vat-structure-table td:first-child{
+  min-width:210px;
+}
+
+body .vat-structure-table .vat-structure-sticky-1{
+  position:sticky;
+  left:0;
+  z-index:8;
+  width:210px;
+  min-width:210px;
+  max-width:210px;
+  background:#fff;
+  box-shadow:1px 0 0 #dbe7f4;
+}
+
+body .vat-structure-table .vat-structure-sticky-2{
+  position:sticky;
+  left:210px;
+  z-index:8;
+  width:118px;
+  min-width:118px;
+  max-width:118px;
+  background:#fff;
+  box-shadow:1px 0 0 #dbe7f4;
+}
+
+body .vat-structure-table thead .vat-structure-sticky-1,
+body .vat-structure-table thead .vat-structure-sticky-2{
+  z-index:12;
+  background:#f6f9fd;
+}
+
+body .vat-structure-table .vat-year-head{
+  background:#eef5ff;
+  color:#1f4f82;
+  text-align:center;
+}
+
+body .vat-structure-table .portrait-year-group-head th,
+body .vat-structure-table .portrait-year-sub-head th{
+  background:#f6f9fd;
+  color:#334155;
+  font-weight:800;
+}
+
+body .vat-structure-table .portrait-year-group-head .vat-year-head{
+  background:#eef5ff;
+  color:#1f4f82;
+}
+
+body .vat-structure-table .vat-year-head .vat-year-toggle,
+body .vat-structure-table .vat-year-head .vat-year-toggle:hover,
+body .vat-structure-table .vat-year-head .vat-year-toggle:focus{
+  height:auto !important;
+  min-height:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  outline:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  line-height:1.2 !important;
+}
+
+body .vat-year-toggle{
+  display:inline-flex;
+  height:22px;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#164b7d;
+  font-size:11px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+body .vat-year-toggle:hover{
+  background:transparent;
+  color:#0f2d52;
+}
+
+body .vat-year-toggle i{
+  color:#64748b;
+  font-style:normal;
+  font-weight:900;
+}
+
+@media (max-width:1180px){
+  body .vat-structure-insight-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+body .vat-table-wrap{
+  width:100%;
+  max-width:100%;
+  overflow:auto;
+  border:1px solid var(--audit-table-border-outer,#e7eef6);
+  border-radius:8px;
+  background:#fff;
+  box-shadow:inset 0 0 0 .5px rgba(231,238,246,.82);
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+
+body .vat-table-wrap::-webkit-scrollbar{
+  display:none;
+}
+
+body .vat-overview-table{
+  --vat-sticky-company-width:168px;
+  --vat-sticky-tax-width:164px;
+  width:max-content;
+  min-width:100%;
+  table-layout:auto;
+  border-collapse:separate;
+  border-spacing:0;
+  color:#334155;
+}
+
+body .vat-overview-table th,
+body .vat-overview-table td{
+  height:30px;
+  min-width:104px;
+  max-width:none;
+  padding:4px 7px;
+  overflow:visible;
+  border-right:1px solid var(--audit-table-border-cell,#eef3f8);
+  border-bottom:1px solid var(--audit-table-border-row,#f1f5f9);
+  background-clip:padding-box;
+  font-size:11px;
+  line-height:18px;
+  text-overflow:clip;
+  white-space:nowrap;
+}
+
+body .vat-overview-table thead tr:first-child > th:nth-child(1),
+body .vat-overview-table tbody > tr > td:nth-child(1){
+  min-width:var(--vat-sticky-company-width);
+  width:var(--vat-sticky-company-width);
+}
+
+body .vat-overview-table thead tr:first-child > th:nth-child(2),
+body .vat-overview-table tbody > tr > td:nth-child(2){
+  min-width:var(--vat-sticky-tax-width);
+  width:var(--vat-sticky-tax-width);
+}
+
+body .vat-overview-table th{
+  position:relative;
+  padding-right:32px;
+  border-right-color:var(--audit-table-border-head,#dbe5f0);
+  border-bottom-color:var(--audit-table-border-head,#dbe5f0);
+  background:var(--audit-table-head-bg,#f6f9fd);
+  color:#334155;
+  font-weight:700;
+}
+
+body .vat-overview-table .vat-group-head{
+  height:28px;
+  padding-right:7px;
+  font-weight:800;
+  text-align:center;
+}
+
+body .vat-overview-table th.no-sort{
+  padding-right:7px;
+}
+
+body .vat-overview-table .vat-sales-head{
+  background:#eef9f5;
+  color:#157466;
+}
+
+body .vat-overview-table .vat-purchase-head{
+  background:#fff5e8;
+  color:#a65f12;
+}
+
+body .vat-overview-table .vat-total-head{
+  background:#f3f6fb;
+  color:#263a57;
+}
+
+body .vat-overview-table .vat-file-head{
+  background:#f6f9fd;
+  color:#475569;
+}
+
+body .vat-overview-table.vat-fixed-first-two thead tr:first-child > th:nth-child(1),
+body .vat-overview-table.vat-fixed-first-two thead tr:first-child > th:nth-child(2),
+body .vat-overview-table.vat-fixed-first-two tbody > tr > td:nth-child(1),
+body .vat-overview-table.vat-fixed-first-two tbody > tr > td:nth-child(2){
+  position:sticky;
+  background:#fff;
+  background-clip:padding-box;
+}
+
+body .vat-overview-table.vat-fixed-first-two thead tr:first-child > th:nth-child(1){
+  left:0;
+  z-index:9;
+  background:var(--audit-table-head-bg,#f6f9fd);
+}
+
+body .vat-overview-table.vat-fixed-first-two thead tr:first-child > th:nth-child(2){
+  left:var(--vat-sticky-company-width);
+  z-index:9;
+  background:var(--audit-table-head-bg,#f6f9fd);
+  box-shadow:8px 0 12px -12px rgba(15,23,42,.45);
+}
+
+body .vat-overview-table.vat-fixed-first-two tbody > tr > td:nth-child(1){
+  left:0;
+  z-index:3;
+}
+
+body .vat-overview-table.vat-fixed-first-two tbody > tr > td:nth-child(2){
+  left:var(--vat-sticky-company-width);
+  z-index:3;
+  box-shadow:8px 0 12px -12px rgba(15,23,42,.4);
+}
+
+body .vat-overview-table .sum-row td{
+  background:#f8fbff;
+}
+
+body .vat-overview-table tbody tr:hover td{
+  background:var(--audit-table-hover-bg,#f8fbff);
+}
+
+body .vat-overview-table.vat-fixed-first-two .sum-row > td:nth-child(1),
+body .vat-overview-table.vat-fixed-first-two .sum-row > td:nth-child(2){
+  background:#f8fbff;
+}
+
+body .vat-overview-table.vat-fixed-first-two tbody tr:hover > td:nth-child(1),
+body .vat-overview-table.vat-fixed-first-two tbody tr:hover > td:nth-child(2){
+  background:var(--audit-table-hover-bg,#f8fbff);
+}
+
+body .vat-overview-table .vat-num,
+body .vat-overview-table .vat-rate{
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+
+body .vat-overview-table .vat-sales{
+  color:#168475 !important;
+  font-weight:700 !important;
+}
+
+body .vat-overview-table .vat-purchase{
+  color:#b96916 !important;
+  font-weight:700 !important;
+}
+
+body .vat-overview-table .sum-row .vat-sales{
+  color:#0f766e !important;
+}
+
+body .vat-overview-table .sum-row .vat-purchase{
+  color:#a65f12 !important;
+}
+
+body .vat-overview-table .ba-th-tools{
+  right:6px !important;
+  top:50% !important;
+  display:inline-flex !important;
+  transform:translateY(-50%) !important;
+}
+
+body .vat-overview-table th:last-child,
+body .vat-overview-table td:last-child{
+  border-right:0;
+}
+
+body .vat-overview-table tbody tr:last-child td{
+  border-bottom:0;
+}
+
+body .vat-empty{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:120px;
+  border:1px dashed #dbe5f0;
+  border-radius:8px;
+  background:#fbfdff;
+  color:#94a3b8;
+  font-size:12px;
+  font-weight:600;
+}
+
+body .vat-missing-card .content{
+  padding:8px 10px 10px;
+}
+
+body .vat-missing-kpis{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:4px;
+  margin:0 0 8px;
+}
+
+body .vat-missing-kpis .top-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:30px;
+  padding:4px 8px;
+  border:1px solid #edf2f7;
+  border-radius:7px;
+  background:#fff;
+  box-shadow:0 1px 2px rgba(15,23,42,.025);
+}
+
+body .vat-missing-kpis .vat-kpi-sales{
+  border-color:#d8efe9;
+  background:linear-gradient(180deg,#ffffff,#f3fbf8);
+}
+
+body .vat-missing-kpis .vat-kpi-purchase{
+  border-color:#f2e3cc;
+  background:linear-gradient(180deg,#ffffff,#fff8ef);
+}
+
+body .vat-missing-kpis .lbl,
+body .vat-missing-kpis .num{
+  font-size:11px;
+  line-height:18px;
+}
+
+body .vat-missing-kpis .num{
+  margin-left:auto;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+body .vat-missing-table-wrap{
+  max-height:none;
+  overflow:auto;
+}
+
+body .vat-missing-table{
+  --vat-sticky-company-width:240px;
+  --vat-sticky-tax-width:150px;
+  min-width:1760px;
+}
+
+body .vat-missing-table th,
+body .vat-missing-table td{
+  min-width:100px;
+}
+
+body .vat-missing-table th:nth-child(1),
+body .vat-missing-table td:nth-child(1){
+  min-width:240px;
+}
+
+body .vat-missing-table th:nth-child(2),
+body .vat-missing-table td:nth-child(2){
+  min-width:150px;
+}
+
+body .vat-missing-table th:nth-child(13),
+body .vat-missing-table td:nth-child(13){
+  min-width:160px;
+}
+
+body .vat-missing-table th:nth-child(14),
+body .vat-missing-table td:nth-child(14){
+  min-width:136px;
+}
+
+body .vat-missing-table th:nth-child(15),
+body .vat-missing-table td:nth-child(15){
+  min-width:70px;
+  text-align:center;
+}
+
+body .vat-missing-table tbody tr.group-row td{
+  background:#f8fbff;
+  font-weight:700;
+}
+
+body .vat-missing-table tbody tr.detail-row td:first-child{
+  color:#475569;
+}
+
+body .vat-missing-table .expand-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:22px;
+  height:22px;
+  margin-right:6px;
+  border:1px solid #dbe7f4;
+  border-radius:999px;
+  background:#fff;
+  color:#475569;
+  font-size:10px;
+  line-height:1;
+  cursor:pointer;
+  transition:background .15s ease,border-color .15s ease,color .15s ease,transform .15s ease;
+}
+
+body .vat-missing-table .expand-btn:hover{
+  border-color:#bcd0e8;
+  background:#f5f9ff;
+  color:#1d4ed8;
+}
+
+body .vat-missing-table .expand-btn:not(.expanded){
+  transform:rotate(-90deg);
+}
+
+body .vat-missing-table .text-muted{
+  color:#8a98aa;
+  font-weight:600;
+}
+
+body .vat-missing-table .ba-note-input{
+  width:100%;
+  height:22px;
+  padding:0 7px;
+  border:1px solid #dbe7f4;
+  border-radius:6px;
+  background:#fff;
+  color:#334155;
+  font-size:11px;
+  outline:none;
+}
+
+body .vat-missing-table .ba-note-input:focus{
+  border-color:#9bb9e6;
+  box-shadow:0 0 0 2px rgba(37,99,235,.08);
+}
+
+body .vat-missing-table td.actions a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:22px;
+  height:22px;
+  border-radius:6px;
+  color:#2563eb;
+  text-decoration:none;
+}
+
+body .vat-missing-table td.actions a::before{
+  content:"";
+  width:14px;
+  height:16px;
+  border:1.6px solid currentColor;
+  border-radius:3px;
+  background:
+    linear-gradient(currentColor,currentColor) 4px 5px/6px 1.4px no-repeat,
+    linear-gradient(currentColor,currentColor) 4px 9px/6px 1.4px no-repeat;
+}
+
+body .vat-missing-table td.actions a:hover{
+  background:#eef5ff;
+}
+
+@media (max-width:1180px){
+  body .vat-kpi-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    grid-template-rows:30px 30px;
+    grid-template-areas:
+      "k1 k2 k3 k4"
+      "k5 k6 k7 k7";
+  }
+}
+
+/* 购销税额构成表最终覆盖：避免通用 .vat-overview-table 和银行流水表格规则改回 auto 布局。 */
+body .vat-page table.vat-structure-table{
+  width:max-content !important;
+  min-width:100% !important;
+  table-layout:fixed !important;
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+}
+
+body .vat-page table.vat-structure-table th,
+body .vat-page table.vat-structure-table td{
+  box-sizing:border-box !important;
+  min-width:0 !important;
+  max-width:none !important;
+  overflow:hidden !important;
+  text-overflow:clip !important;
+  white-space:nowrap !important;
+}
+
+body .vat-page table.vat-structure-table .vat-structure-sticky-1{
+  position:sticky !important;
+  left:0 !important;
+  z-index:20 !important;
+  width:210px !important;
+  min-width:210px !important;
+  max-width:210px !important;
+  background:#fff !important;
+  box-shadow:1px 0 0 #dbe7f4, 8px 0 12px -14px rgba(15,23,42,.45) !important;
+}
+
+body .vat-page table.vat-structure-table .vat-structure-sticky-2{
+  position:sticky !important;
+  left:210px !important;
+  z-index:20 !important;
+  width:90px !important;
+  min-width:90px !important;
+  max-width:90px !important;
+  background:#fff !important;
+  box-shadow:1px 0 0 #dbe7f4, 8px 0 12px -14px rgba(15,23,42,.45) !important;
+}
+
+body .vat-page table.vat-structure-table .vat-structure-sticky-3{
+  position:sticky !important;
+  left:300px !important;
+  z-index:20 !important;
+  width:118px !important;
+  min-width:118px !important;
+  max-width:118px !important;
+  background:#fff !important;
+  box-shadow:1px 0 0 #dbe7f4, 8px 0 12px -14px rgba(15,23,42,.45) !important;
+}
+
+body .vat-page table.vat-structure-table thead .vat-structure-sticky-1,
+body .vat-page table.vat-structure-table thead .vat-structure-sticky-2,
+body .vat-page table.vat-structure-table thead .vat-structure-sticky-3{
+  padding-right:32px !important;
+}
+
+body .vat-page table.vat-structure-table thead .vat-structure-sticky-1,
+body .vat-page table.vat-structure-table thead .vat-structure-sticky-2,
+body .vat-page table.vat-structure-table thead .vat-structure-sticky-3{
+  z-index:30 !important;
+  background:#f6f9fd !important;
+}
+
+body .vat-page table.vat-structure-table .vat-year-head .vat-year-toggle,
+body .vat-page table.vat-structure-table .vat-year-head .vat-year-toggle:hover,
+body .vat-page table.vat-structure-table .vat-year-head .vat-year-toggle:focus{
+  height:auto !important;
+  min-height:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  outline:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  line-height:1.2 !important;
+}
+
+body .vat-pagination.audit-pager{
+  margin-top:6px !important;
+  padding:2px 0 0 !important;
+}

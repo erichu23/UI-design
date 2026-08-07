@@ -1,25 +1,1070 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-Hans-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>功能升级中</title>
-  <link rel="stylesheet" href="../assets/css/pages/upgrade.css?v=20260626-scrollbar1"/>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <script defer src="../assets/vendor/echarts/echarts.min.js?v=5.6.0-local"></script>
+  <link rel="stylesheet" href="../assets/css/base.css?v=20260807-blacklist3"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260622-tab-rebuild7"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260723-button-size1"/>
+  <link rel="stylesheet" href="../assets/css/pages/vat-analysis.css?v=20260807-blacklist3"/>
 </head>
 <body>
-  <div class="upgrade-card">
-    <div class="icon">⚙️</div>
-    <h1>增值税数据分析</h1>
-    <div class="status">功能正在升级</div>
-    <p>
-      当前模块正在进行功能优化与交互完善，后续将支持更完整的数据分析、
-      异常识别与结果展示。
-    </p>
-    <p>
-      请稍后访问，敬请期待升级后的完整版本。
-    </p>
+  <div class="vat-page">
+    <div class="kpi-and-issue vat-kpi-strip">
+      <div class="kpi-grid vat-kpi-grid">
+        <div class="kpi k1">
+          <div class="kpi-label">被审计单位公司</div>
+          <div class="kpi-value">6 家</div>
+        </div>
+        <div class="kpi k2">
+          <div class="kpi-label">对手方</div>
+          <div class="kpi-value">100 家</div>
+        </div>
+        <div class="kpi k3">
+          <div class="kpi-label">税号</div>
+          <div class="kpi-value">18 个</div>
+        </div>
+        <div class="kpi k4 vat-kpi-total">
+          <div class="kpi-label">进销项金额汇总</div>
+          <div class="kpi-value">1,423,810</div>
+        </div>
+        <div class="kpi k5 vat-kpi-sales">
+          <div class="kpi-label">销项金额汇总</div>
+          <div class="kpi-value">742,680</div>
+        </div>
+        <div class="kpi k6 vat-kpi-purchase">
+          <div class="kpi-label">进项金额汇总</div>
+          <div class="kpi-value">681,130</div>
+        </div>
+        <div class="kpi k7">
+          <div class="kpi-label">发票数量汇总</div>
+          <div class="kpi-value">18,426 张</div>
+        </div>
+      </div>
+    </div>
 
- 
+    <div class="tab-container vat-tab-container">
+      <div class="tabbar" id="topTabs">
+        <div class="tab active" data-top="tax-overview">税号总览</div>
+        <div class="tab" data-top="business-substance">经营实质</div>
+        <div class="tab" data-top="related-trade">已知关联交易</div>
+        <div class="tab" data-top="special-invoice-query">特定开收票查询</div>
+        <div class="tab" data-top="invoice-query">发票查询</div>
+        <div class="tab" data-top="tax-return-check">税表核对</div>
+        <i class="inkbar" id="inkbar"></i>
+      </div>
+      <div class="tab-intro" id="tabIntro"></div>
+      <div class="biz-filter-bar vat-filter-bar" id="vatFilterBar">
+        <div class="filter-card">
+          <div class="filter-area">
+            <label>被审计单位公司：</label>
+            <span class="select-wrap">
+              <select class="select" id="vatCompanyFilter">
+                <option value="all">全部</option>
+                <option>华东制造集团有限公司</option>
+                <option>上海星河科技有限公司</option>
+                <option>深圳启明电子有限公司</option>
+                <option>广州远航贸易有限公司</option>
+                <option>苏州精密制造有限公司</option>
+                <option>华南物流服务有限公司</option>
+              </select>
+              <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
+            </span>
+            <label class="negate"><input id="vatCompanyExclude" type="checkbox"/>不包含</label>
+            <label>税号：</label>
+            <span class="select-wrap">
+              <select class="select" id="vatTaxNoFilter">
+                <option value="all">全部</option>
+                <option>91310000MA1K202501</option>
+                <option>91310115MA1H202502</option>
+                <option>91440300MA5G202503</option>
+                <option>91440101MA9W202504</option>
+                <option>91320594MA2D202505</option>
+              </select>
+              <i class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
+            </span>
+            <label class="negate"><input id="vatTaxNoExclude" type="checkbox"/>不包含</label>
+            <label>分析时间：</label>
+            <input id="vatBeginDate" type="date"/>
+            <span class="range-sep">至</span>
+            <input id="vatEndDate" type="date"/>
+            <button class="query" id="vatQueryBtn" type="button">查询</button>
+            <button class="reset" id="vatResetBtn" type="button">重置</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="tab-pane active" id="pane-tax-overview">
+      <div class="tab-scroll vat-tax-overview-pane">
+        <div class="card vat-overview-card">
+          <div class="head">
+            <div class="title">购销税额总览</div>
+            <div class="vat-head-actions">
+              <button class="btn" type="button" onclick="window.openBankColumnChooser?.(this, document.getElementById('vatTaxOverviewTable'))">自定义表头</button>
+              <button class="btn primary" type="button" onclick="alert('已生成当前增值税分析结果')">生成分析结果</button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="vat-table-wrap">
+              <table class="table vat-overview-table vat-fixed-first-two" id="vatTaxOverviewTable">
+                <thead>
+                  <tr>
+                    <th class="no-sort vat-sticky-col-1" rowspan="2" data-fixed-column="true">被审计单位公司</th>
+                    <th class="no-sort vat-sticky-col-2" rowspan="2" data-fixed-column="true">本方税号</th>
+                    <th class="vat-group-head vat-sales-head" colspan="4">销项</th>
+                    <th class="vat-group-head vat-purchase-head" colspan="4">进项</th>
+                    <th class="vat-group-head vat-total-head" colspan="4">价税合计与占比</th>
+                    <th class="vat-group-head vat-file-head" colspan="3">发票数量与文件</th>
+                  </tr>
+                  <tr>
+                    <th>销项发票金额</th>
+                    <th>销项发票税额</th>
+                    <th>销项税税率</th>
+                    <th>销项价税合计</th>
+                    <th>进项发票金额</th>
+                    <th>进项发票税额</th>
+                    <th>进项税税率</th>
+                    <th>进项价税合计</th>
+                    <th>销项价税合计</th>
+                    <th>进项价税合计</th>
+                    <th>销项价税合计占比</th>
+                    <th>进项价税合计占比</th>
+                    <th>销项发票数量</th>
+                    <th>进项发票数量</th>
+                    <th>发票文件</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="sum-row">
+                    <td><strong>合计</strong></td>
+                    <td></td>
+                    <td class="vat-num vat-sales"><strong>657,239.0</strong></td>
+                    <td class="vat-num vat-sales"><strong>85,441.0</strong></td>
+                    <td class="vat-rate vat-sales"><strong>13.0%</strong></td>
+                    <td class="vat-num vat-sales"><strong>742,680.0</strong></td>
+                    <td class="vat-num vat-purchase"><strong>602,769.9</strong></td>
+                    <td class="vat-num vat-purchase"><strong>78,360.1</strong></td>
+                    <td class="vat-rate vat-purchase"><strong>13.0%</strong></td>
+                    <td class="vat-num vat-purchase"><strong>681,130.0</strong></td>
+                    <td class="vat-num vat-sales"><strong>742,680.0</strong></td>
+                    <td class="vat-num vat-purchase"><strong>681,130.0</strong></td>
+                    <td class="vat-rate vat-sales"><strong>52.2%</strong></td>
+                    <td class="vat-rate vat-purchase"><strong>47.8%</strong></td>
+                    <td class="vat-num"><strong>9,842</strong></td>
+                    <td class="vat-num"><strong>8,584</strong></td>
+                    <td><strong>36</strong></td>
+                  </tr>
+                  <tr>
+                    <td>华东制造集团有限公司</td>
+                    <td>91310000MA1K202501</td>
+                    <td class="vat-num vat-sales">218,640.5</td>
+                    <td class="vat-num vat-sales">28,423.3</td>
+                    <td class="vat-rate vat-sales">13.0%</td>
+                    <td class="vat-num vat-sales">247,063.8</td>
+                    <td class="vat-num vat-purchase">204,821.4</td>
+                    <td class="vat-num vat-purchase">26,626.8</td>
+                    <td class="vat-rate vat-purchase">13.0%</td>
+                    <td class="vat-num vat-purchase">231,448.2</td>
+                    <td class="vat-num vat-sales">247,063.8</td>
+                    <td class="vat-num vat-purchase">231,448.2</td>
+                    <td class="vat-rate vat-sales">33.3%</td>
+                    <td class="vat-rate vat-purchase">34.0%</td>
+                    <td class="vat-num">3,204</td>
+                    <td class="vat-num">2,846</td>
+                    <td>8</td>
+                  </tr>
+                  <tr>
+                    <td>上海星河科技有限公司</td>
+                    <td>91310115MA1H202502</td>
+                    <td class="vat-num vat-sales">146,298.2</td>
+                    <td class="vat-num vat-sales">19,018.8</td>
+                    <td class="vat-rate vat-sales">13.0%</td>
+                    <td class="vat-num vat-sales">165,317.0</td>
+                    <td class="vat-num vat-purchase">137,085.5</td>
+                    <td class="vat-num vat-purchase">17,821.1</td>
+                    <td class="vat-rate vat-purchase">13.0%</td>
+                    <td class="vat-num vat-purchase">154,906.6</td>
+                    <td class="vat-num vat-sales">165,317.0</td>
+                    <td class="vat-num vat-purchase">154,906.6</td>
+                    <td class="vat-rate vat-sales">22.3%</td>
+                    <td class="vat-rate vat-purchase">22.7%</td>
+                    <td class="vat-num">2,106</td>
+                    <td class="vat-num">1,934</td>
+                    <td>6</td>
+                  </tr>
+                  <tr>
+                    <td>深圳启明电子有限公司</td>
+                    <td>91440300MA5G202503</td>
+                    <td class="vat-num vat-sales">118,764.8</td>
+                    <td class="vat-num vat-sales">15,439.4</td>
+                    <td class="vat-rate vat-sales">13.0%</td>
+                    <td class="vat-num vat-sales">134,204.2</td>
+                    <td class="vat-num vat-purchase">101,559.6</td>
+                    <td class="vat-num vat-purchase">13,202.7</td>
+                    <td class="vat-rate vat-purchase">13.0%</td>
+                    <td class="vat-num vat-purchase">114,762.3</td>
+                    <td class="vat-num vat-sales">134,204.2</td>
+                    <td class="vat-num vat-purchase">114,762.3</td>
+                    <td class="vat-rate vat-sales">18.1%</td>
+                    <td class="vat-rate vat-purchase">16.8%</td>
+                    <td class="vat-num">1,612</td>
+                    <td class="vat-num">1,426</td>
+                    <td>5</td>
+                  </tr>
+                  <tr>
+                    <td>广州远航贸易有限公司</td>
+                    <td>91440101MA9W202504</td>
+                    <td class="vat-num vat-sales">92,310.7</td>
+                    <td class="vat-num vat-sales">12,000.4</td>
+                    <td class="vat-rate vat-sales">13.0%</td>
+                    <td class="vat-num vat-sales">104,311.1</td>
+                    <td class="vat-num vat-purchase">86,774.2</td>
+                    <td class="vat-num vat-purchase">11,280.6</td>
+                    <td class="vat-rate vat-purchase">13.0%</td>
+                    <td class="vat-num vat-purchase">98,054.8</td>
+                    <td class="vat-num vat-sales">104,311.1</td>
+                    <td class="vat-num vat-purchase">98,054.8</td>
+                    <td class="vat-rate vat-sales">14.0%</td>
+                    <td class="vat-rate vat-purchase">14.4%</td>
+                    <td class="vat-num">1,208</td>
+                    <td class="vat-num">1,104</td>
+                    <td>5</td>
+                  </tr>
+                  <tr>
+                    <td>苏州精密制造有限公司</td>
+                    <td>91320594MA2D202505</td>
+                    <td class="vat-num vat-sales">81,224.8</td>
+                    <td class="vat-num vat-sales">10,559.2</td>
+                    <td class="vat-rate vat-sales">13.0%</td>
+                    <td class="vat-num vat-sales">91,784.0</td>
+                    <td class="vat-num vat-purchase">72,426.3</td>
+                    <td class="vat-num vat-purchase">9,415.4</td>
+                    <td class="vat-rate vat-purchase">13.0%</td>
+                    <td class="vat-num vat-purchase">81,841.7</td>
+                    <td class="vat-num vat-sales">91,784.0</td>
+                    <td class="vat-num vat-purchase">81,841.7</td>
+                    <td class="vat-rate vat-sales">12.4%</td>
+                    <td class="vat-rate vat-purchase">12.0%</td>
+                    <td class="vat-num">1,012</td>
+                    <td class="vat-num">934</td>
+                    <td>6</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination vat-pagination" id="vatTaxOverviewPager"></div>
+          </div>
+        </div>
+
+        <div class="card vat-missing-card">
+          <div class="head">
+            <div class="title">缺失同名购销方</div>
+            <div class="vat-head-actions">
+              <button class="btn primary" type="button" id="vatMissingAnalyze">生成分析结果</button>
+              <button class="btn primary" type="button" id="vatMissingInvoice">生成发票</button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="verify-metric-strip vat-missing-kpis">
+              <div class="top-item vat-kpi-sales"><div class="lbl small">销项金额汇总</div><div class="num vat-sales">143,860.4</div></div>
+              <div class="top-item vat-kpi-sales"><div class="lbl small">销项价税合计汇总</div><div class="num vat-sales">162,562.2</div></div>
+              <div class="top-item vat-kpi-purchase"><div class="lbl small">进项金额汇总</div><div class="num vat-purchase">118,430.6</div></div>
+              <div class="top-item vat-kpi-purchase"><div class="lbl small">进项价税合计汇总</div><div class="num vat-purchase">133,826.6</div></div>
+              <div class="top-item"><div class="lbl small">已解释/总数</div><div class="num">3 / 9</div></div>
+            </div>
+            <div class="vat-table-wrap vat-missing-table-wrap">
+              <table class="table vat-overview-table vat-missing-table vat-fixed-first-two" id="vatMissingBuyerSellerTable">
+                <thead>
+                  <tr>
+                    <th>对手方名称（被审计单位）</th>
+                    <th>缺失同名税号</th>
+                    <th>销项发票金额</th>
+                    <th>销项发票税额</th>
+                    <th>销项价税合计</th>
+                    <th>销项价税合计占比</th>
+                    <th>进项发票金额</th>
+                    <th>进项发票税额</th>
+                    <th>进项价税合计</th>
+                    <th>进项价税合计占比</th>
+                    <th>销项发票数量</th>
+                    <th>进项发票数量</th>
+                    <th class="no-sort">缺失原因</th>
+                    <th class="no-sort">支持性索引文件</th>
+                    <th class="no-sort">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="group-row" data-group="buyer-seller-1">
+                    <td><button class="expand-btn expanded" type="button" title="展开/收起明细">▼</button><strong>华东制造集团有限公司</strong> <span class="text-muted">已解释/总数：1/3</span></td>
+                    <td></td>
+                    <td class="vat-num vat-sales"><strong>62,180.5</strong></td>
+                    <td class="vat-num vat-sales"><strong>8,083.5</strong></td>
+                    <td class="vat-num vat-sales"><strong>70,264.0</strong></td>
+                    <td class="vat-rate vat-sales"><strong>43.2%</strong></td>
+                    <td class="vat-num vat-purchase"><strong>48,320.0</strong></td>
+                    <td class="vat-num vat-purchase"><strong>6,281.6</strong></td>
+                    <td class="vat-num vat-purchase"><strong>54,601.6</strong></td>
+                    <td class="vat-rate vat-purchase"><strong>46.1%</strong></td>
+                    <td class="vat-num"><strong>842</strong></td>
+                    <td class="vat-num"><strong>638</strong></td>
+                    <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                  <tr class="detail-row group-buyer-seller-1">
+                    <td>　└ 华东制造集团有限公司</td>
+                    <td>91310000MA1K889001</td>
+                    <td class="vat-num vat-sales">35,260.2</td>
+                    <td class="vat-num vat-sales">4,583.8</td>
+                    <td class="vat-num vat-sales">39,844.0</td>
+                    <td class="vat-rate vat-sales">56.7%</td>
+                    <td class="vat-num vat-purchase">18,420.0</td>
+                    <td class="vat-num vat-purchase">2,394.6</td>
+                    <td class="vat-num vat-purchase">20,814.6</td>
+                    <td class="vat-rate vat-purchase">38.1%</td>
+                    <td class="vat-num">486</td>
+                    <td class="vat-num">246</td>
+                    <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
+                    <td></td>
+                    <td class="actions"><a href="#" title="发票明细"></a></td>
+                  </tr>
+                  <tr class="detail-row group-buyer-seller-1">
+                    <td>　└ 华东制造集团有限公司</td>
+                    <td>91310000MA1K889002</td>
+                    <td class="vat-num vat-sales">18,940.0</td>
+                    <td class="vat-num vat-sales">2,462.2</td>
+                    <td class="vat-num vat-sales">21,402.2</td>
+                    <td class="vat-rate vat-sales">30.5%</td>
+                    <td class="vat-num vat-purchase">16,300.0</td>
+                    <td class="vat-num vat-purchase">2,119.0</td>
+                    <td class="vat-num vat-purchase">18,419.0</td>
+                    <td class="vat-rate vat-purchase">33.7%</td>
+                    <td class="vat-num">214</td>
+                    <td class="vat-num">208</td>
+                    <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
+                    <td></td>
+                    <td class="actions"><a href="#" title="发票明细"></a></td>
+                  </tr>
+                  <tr class="detail-row group-buyer-seller-1">
+                    <td>　└ 华东制造集团有限公司</td>
+                    <td>91310000MA1K889003</td>
+                    <td class="vat-num vat-sales">7,980.3</td>
+                    <td class="vat-num vat-sales">1,037.5</td>
+                    <td class="vat-num vat-sales">9,017.8</td>
+                    <td class="vat-rate vat-sales">12.8%</td>
+                    <td class="vat-num vat-purchase">13,600.0</td>
+                    <td class="vat-num vat-purchase">1,768.0</td>
+                    <td class="vat-num vat-purchase">15,368.0</td>
+                    <td class="vat-rate vat-purchase">28.1%</td>
+                    <td class="vat-num">142</td>
+                    <td class="vat-num">184</td>
+                    <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
+                    <td></td>
+                    <td class="actions"><a href="#" title="发票明细"></a></td>
+                  </tr>
+                  <tr class="group-row" data-group="buyer-seller-2">
+                    <td><button class="expand-btn expanded" type="button" title="展开/收起明细">▼</button><strong>上海星河科技有限公司</strong> <span class="text-muted">已解释/总数：2/4</span></td>
+                    <td></td>
+                    <td class="vat-num vat-sales"><strong>51,406.7</strong></td>
+                    <td class="vat-num vat-sales"><strong>6,682.9</strong></td>
+                    <td class="vat-num vat-sales"><strong>58,089.6</strong></td>
+                    <td class="vat-rate vat-sales"><strong>35.7%</strong></td>
+                    <td class="vat-num vat-purchase"><strong>42,780.4</strong></td>
+                    <td class="vat-num vat-purchase"><strong>5,561.5</strong></td>
+                    <td class="vat-num vat-purchase"><strong>48,341.9</strong></td>
+                    <td class="vat-rate vat-purchase"><strong>40.8%</strong></td>
+                    <td class="vat-num"><strong>690</strong></td>
+                    <td class="vat-num"><strong>524</strong></td>
+                    <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                  <tr class="detail-row group-buyer-seller-2">
+                    <td>　└ 上海星河科技有限公司</td>
+                    <td>91310115MA1H418601</td>
+                    <td class="vat-num vat-sales">29,120.5</td>
+                    <td class="vat-num vat-sales">3,785.7</td>
+                    <td class="vat-num vat-sales">32,906.2</td>
+                    <td class="vat-rate vat-sales">56.7%</td>
+                    <td class="vat-num vat-purchase">21,490.4</td>
+                    <td class="vat-num vat-purchase">2,793.7</td>
+                    <td class="vat-num vat-purchase">24,284.1</td>
+                    <td class="vat-rate vat-purchase">50.2%</td>
+                    <td class="vat-num">388</td>
+                    <td class="vat-num">268</td>
+                    <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
+                    <td></td>
+                    <td class="actions"><a href="#" title="发票明细"></a></td>
+                  </tr>
+                  <tr class="detail-row group-buyer-seller-2">
+                    <td>　└ 上海星河科技有限公司</td>
+                    <td>91310115MA1H418602</td>
+                    <td class="vat-num vat-sales">22,286.2</td>
+                    <td class="vat-num vat-sales">2,897.2</td>
+                    <td class="vat-num vat-sales">25,183.4</td>
+                    <td class="vat-rate vat-sales">43.3%</td>
+                    <td class="vat-num vat-purchase">21,290.0</td>
+                    <td class="vat-num vat-purchase">2,767.8</td>
+                    <td class="vat-num vat-purchase">24,057.8</td>
+                    <td class="vat-rate vat-purchase">49.8%</td>
+                    <td class="vat-num">302</td>
+                    <td class="vat-num">256</td>
+                    <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
+                    <td></td>
+                    <td class="actions"><a href="#" title="发票明细"></a></td>
+                  </tr>
+                  <tr class="group-row" data-group="buyer-seller-3">
+                    <td><button class="expand-btn expanded" type="button" title="展开/收起明细">▼</button><strong>深圳启明电子有限公司</strong> <span class="text-muted">已解释/总数：0/2</span></td>
+                    <td></td>
+                    <td class="vat-num vat-sales"><strong>30,273.2</strong></td>
+                    <td class="vat-num vat-sales"><strong>3,935.5</strong></td>
+                    <td class="vat-num vat-sales"><strong>34,208.6</strong></td>
+                    <td class="vat-rate vat-sales"><strong>21.0%</strong></td>
+                    <td class="vat-num vat-purchase"><strong>27,330.2</strong></td>
+                    <td class="vat-num vat-purchase"><strong>3,552.9</strong></td>
+                    <td class="vat-num vat-purchase"><strong>30,883.1</strong></td>
+                    <td class="vat-rate vat-purchase"><strong>26.1%</strong></td>
+                    <td class="vat-num"><strong>408</strong></td>
+                    <td class="vat-num"><strong>356</strong></td>
+                    <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                  <tr class="detail-row group-buyer-seller-3">
+                    <td>　└ 深圳启明电子有限公司</td>
+                    <td>91440300MA5G779701</td>
+                    <td class="vat-num vat-sales">30,273.2</td>
+                    <td class="vat-num vat-sales">3,935.5</td>
+                    <td class="vat-num vat-sales">34,208.6</td>
+                    <td class="vat-rate vat-sales">100.0%</td>
+                    <td class="vat-num vat-purchase">27,330.2</td>
+                    <td class="vat-num vat-purchase">3,552.9</td>
+                    <td class="vat-num vat-purchase">30,883.1</td>
+                    <td class="vat-rate vat-purchase">100.0%</td>
+                    <td class="vat-num">408</td>
+                    <td class="vat-num">356</td>
+                    <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
+                    <td></td>
+                    <td class="actions"><a href="#" title="发票明细"></a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination vat-pagination" id="vatMissingBuyerSellerPager"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-pane hide" id="pane-business-substance">
+      <div class="tab-scroll vat-empty-pane">
+        <div class="card vat-trend-card">
+          <div class="head">
+            <div class="title">购销趋势</div>
+            <div class="vat-head-actions vat-trend-actions">
+              <label class="vat-year-filter">
+                <span>年度</span>
+                <select id="vatTrendYear">
+                  <option value="2025" selected>2025</option>
+                  <option value="2024">2024</option>
+                  <option value="2023">2023</option>
+                </select>
+              </label>
+              <button class="btn" type="button" id="vatTrendNoteBtn">备注说明</button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="vat-trend-chart" id="vatPurchaseSalesTrendChart"></div>
+          </div>
+        </div>
+        <div class="card vat-structure-card" data-vat-structure="business">
+          <div class="head">
+            <div class="title">购销税额构成</div>
+            <div class="vat-mode-tabs" id="vatBusinessStructureModes">
+              <button class="is-active" data-mode="sales" type="button">销项税</button>
+              <button data-mode="purchase" type="button">进项税</button>
+              <button data-mode="compare" type="button">销项税VS进项税</button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="vat-structure-filter-cards" id="vatBusinessTypeCards"></div>
+            <div class="vat-structure-insight-grid vat-business-insight-grid">
+              <div class="vat-structure-panel">
+                <div class="vat-structure-panel-head"><span id="vatBusinessChartTitle">月度分年销项税构成（全体对手方）</span></div>
+                <div class="vat-structure-chart" id="vatBusinessStructureChart"></div>
+              </div>
+              <div class="vat-structure-panel vat-master-panel">
+                <div class="vat-structure-panel-head"><span id="vatBusinessMasterTitle">发票购销方主档匹配（全体对手方）</span></div>
+                <div class="vat-master-chart" id="vatBusinessMasterChart"></div>
+              </div>
+              <div class="vat-structure-panel vat-structure-top-panel">
+                <div class="vat-structure-panel-head"><span id="vatBusinessTopTitle">TOP20 对手方</span><em id="vatBusinessTopMetric">销项税</em></div>
+                <div class="vat-structure-top-list" id="vatBusinessTop20"></div>
+              </div>
+            </div>
+            <div class="vat-table-viewbar">
+              <div class="vat-table-tabs"></div>
+              <div class="counterparty-blacklist-note">当前工作簿下总计有0个对手方存在配合造假行为，请关注！（AQPP-Audit提供的全量配合造假清单见<a href="javascript:void(0)">第三方配合造假名单.xlsx</a>）</div>
+              <div class="vat-head-actions"><button class="btn" type="button" onclick="window.openBankColumnChooser?.(this, document.getElementById('vatBusinessStructureTable'))">自定义表头</button><button class="btn primary" type="button">导出清单</button></div>
+            </div>
+            <div class="vat-table-wrap vat-structure-table-wrap">
+              <table class="table vat-overview-table vat-structure-table" id="vatBusinessStructureTable">
+                <thead id="vatBusinessStructureHead"></thead>
+                <tbody id="vatBusinessStructureBody"></tbody>
+              </table>
+            </div>
+            <div class="pagination vat-pagination" id="vatBusinessStructurePager"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-pane hide" id="pane-related-trade">
+      <div class="tab-scroll vat-empty-pane">
+        <div class="card vat-structure-card" data-vat-structure="related">
+          <div class="head">
+            <div class="title">已知关联方购销税额分析</div>
+            <div class="vat-mode-tabs" id="vatRelatedStructureModes">
+              <button class="is-active" data-mode="sales" type="button">销项税</button>
+              <button data-mode="purchase" type="button">进项税</button>
+              <button data-mode="compare" type="button">销项税VS进项税</button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="vat-structure-filter-cards" id="vatRelatedTypeCards"></div>
+            <div class="vat-structure-insight-grid">
+              <div class="vat-structure-panel">
+                <div class="vat-structure-panel-head"><span id="vatRelatedChartTitle">关联方月度分年销项税构成（已知关联方）</span></div>
+                <div class="vat-structure-chart" id="vatRelatedStructureChart"></div>
+              </div>
+              <div class="vat-structure-panel vat-structure-top-panel">
+                <div class="vat-structure-panel-head"><span id="vatRelatedTopTitle">TOP20 关联方</span><em id="vatRelatedTopMetric">销项税</em></div>
+                <div class="vat-structure-top-list" id="vatRelatedTop20"></div>
+              </div>
+            </div>
+            <div class="vat-table-viewbar">
+              <div class="vat-table-tabs"></div>
+              <div class="counterparty-blacklist-note">当前工作簿下总计有0个对手方存在配合造假行为，请关注！（AQPP-Audit提供的全量配合造假清单见<a href="javascript:void(0)">第三方配合造假名单.xlsx</a>）</div>
+              <div class="vat-head-actions"><button class="btn" type="button" onclick="window.openBankColumnChooser?.(this, document.getElementById('vatRelatedStructureTable'))">自定义表头</button><button class="btn primary" type="button">导出清单</button></div>
+            </div>
+            <div class="vat-table-wrap vat-structure-table-wrap">
+              <table class="table vat-overview-table vat-structure-table" id="vatRelatedStructureTable">
+                <thead id="vatRelatedStructureHead"></thead>
+                <tbody id="vatRelatedStructureBody"></tbody>
+              </table>
+            </div>
+            <div class="pagination vat-pagination" id="vatRelatedStructurePager"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-pane hide" id="pane-special-invoice-query">
+      <div class="tab-scroll vat-empty-pane">
+        <div class="card">
+          <div class="head"><div class="title">特定开收票查询</div></div>
+          <div class="content"><div class="vat-empty">当前板块内容待配置</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-pane hide" id="pane-invoice-query">
+      <div class="tab-scroll vat-empty-pane">
+        <div class="card">
+          <div class="head"><div class="title">发票查询</div></div>
+          <div class="content"><div class="vat-empty">当前板块内容待配置</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-pane hide" id="pane-tax-return-check">
+      <div class="tab-scroll vat-empty-pane">
+        <div class="card">
+          <div class="head"><div class="title">税表核对</div></div>
+          <div class="content"><div class="vat-empty">当前板块内容待配置</div></div>
+        </div>
+      </div>
+    </section>
   </div>
+
+  <script defer src="../assets/js/core/shared.js?v=20260806-table-k1"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      document.querySelectorAll('#vatMissingBuyerSellerTable .group-row .expand-btn').forEach(function(btn){
+        btn.addEventListener('click', function(ev){
+          ev.preventDefault();
+          ev.stopPropagation();
+          const row = btn.closest('.group-row');
+          const group = row?.dataset.group;
+          if (!group) return;
+          const expanded = btn.classList.toggle('expanded');
+          btn.textContent = expanded ? '▼' : '▼';
+          document.querySelectorAll('#vatMissingBuyerSellerTable .group-' + group).forEach(function(detailRow){
+            detailRow.style.display = expanded ? '' : 'none';
+          });
+        });
+      });
+      document.getElementById('vatMissingAnalyze')?.addEventListener('click', function(){
+        alert('已生成缺失同名购销方分析结果');
+      });
+      document.getElementById('vatMissingInvoice')?.addEventListener('click', function(){
+        alert('已生成当前范围发票');
+      });
+      document.getElementById('vatResetBtn')?.addEventListener('click', function(){
+        ['vatCompanyFilter','vatTaxNoFilter'].forEach(function(id){
+          const el = document.getElementById(id);
+          if (el) el.value = 'all';
+        });
+        ['vatCompanyExclude','vatTaxNoExclude'].forEach(function(id){
+          const el = document.getElementById(id);
+          if (el) el.checked = false;
+        });
+        ['vatBeginDate','vatEndDate'].forEach(function(id){
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+      });
+      document.getElementById('vatQueryBtn')?.addEventListener('click', function(){
+        alert('已按当前筛选条件刷新增值税分析结果');
+      });
+      const vatTrendRows = {
+        2025: {
+          sales: [52.8, 48.6, 55.2, 59.4, 62.1, 57.8, 64.6, 68.3, 61.7, 70.4, 73.2, 88.6],
+          purchase: [45.2, 43.8, 49.1, 51.6, 53.4, 50.8, 55.7, 58.2, 54.1, 59.8, 62.4, 76.1]
+        },
+        2024: {
+          sales: [45.5, 42.4, 47.2, 49.8, 52.6, 50.1, 55.0, 57.4, 53.3, 60.2, 63.6, 72.5],
+          purchase: [39.6, 38.9, 42.7, 44.5, 46.4, 45.2, 48.1, 50.6, 47.9, 51.8, 54.1, 63.2]
+        },
+        2023: {
+          sales: [39.2, 37.5, 41.6, 43.9, 46.1, 44.6, 48.2, 50.1, 47.4, 52.7, 55.0, 60.6],
+          purchase: [34.8, 33.5, 36.9, 38.2, 40.4, 39.3, 42.5, 44.1, 41.8, 45.6, 47.3, 52.8]
+        }
+      };
+      let vatTrendChart = null;
+      function renderVatTrendChart(){
+        const el = document.getElementById('vatPurchaseSalesTrendChart');
+        if (!el || !window.echarts) return;
+        const year = document.getElementById('vatTrendYear')?.value || '2025';
+        const rows = vatTrendRows[year] || vatTrendRows[2025];
+        const months = Array.from({ length: 12 }, function(_, index){ return String(index + 1).padStart(2, '0') + '月'; });
+        vatTrendChart = echarts.getInstanceByDom(el) || echarts.init(el, null, { renderer:'canvas', useDirtyRect:true });
+        vatTrendChart.setOption({
+          color:['#168475','#b96916'],
+          tooltip:{
+            trigger:'axis',
+            confine:true,
+            axisPointer:{ type:'line', lineStyle:{ color:'#94a3b8', type:'dashed' } },
+            formatter:function(params){
+              const idx = params[0]?.dataIndex || 0;
+              return '<div style="font-size:12px;line-height:1.8"><b>' + year + '年' + months[idx] + '</b><br/>销项金额：' + rows.sales[idx].toLocaleString('zh-CN') + '<br/>进项金额：' + rows.purchase[idx].toLocaleString('zh-CN') + '</div>';
+            }
+          },
+          legend:{
+            top:8,
+            right:14,
+            itemWidth:12,
+            itemHeight:8,
+            textStyle:{ fontSize:11, color:'#475569' },
+            data:['销项金额','进项金额']
+          },
+          grid:{ left:54, right:18, top:42, bottom:58 },
+          dataZoom:[
+            { type:'inside', start:0, end:100 },
+            { type:'slider', height:10, bottom:12, borderColor:'transparent', backgroundColor:'#eef2f7', fillerColor:'rgba(22,132,117,.14)', handleSize:0, showDetail:false, brushSelect:false, moveHandleSize:0 }
+          ],
+          xAxis:{
+            type:'category',
+            boundaryGap:false,
+            data:months,
+            axisLine:{ lineStyle:{ color:'#cbd5e1' } },
+            axisTick:{ alignWithLabel:true, lineStyle:{ color:'#cbd5e1' } },
+            axisLabel:{ color:'#64748b', fontSize:10, interval:0, hideOverlap:true, margin:10 }
+          },
+          yAxis:{
+            type:'value',
+            name:'金额',
+            nameGap:12,
+            nameTextStyle:{ color:'#475569', fontSize:10, fontWeight:600 },
+            splitLine:{ lineStyle:{ color:'#eef2f7' } },
+            axisLabel:{ color:'#64748b', fontSize:10, formatter:function(value){ return Number(value).toLocaleString('zh-CN'); } }
+          },
+          series:[
+            { name:'销项金额', type:'line', smooth:true, symbolSize:4, showSymbol:true, lineStyle:{ width:2, color:'#168475' }, itemStyle:{ color:'#168475', borderColor:'#fff', borderWidth:1 }, areaStyle:{ color:'rgba(22,132,117,.045)' }, data:rows.sales },
+            { name:'进项金额', type:'line', smooth:true, symbolSize:4, showSymbol:true, lineStyle:{ width:2, color:'#b96916' }, itemStyle:{ color:'#b96916', borderColor:'#fff', borderWidth:1 }, areaStyle:{ color:'rgba(185,105,22,.04)' }, data:rows.purchase }
+          ]
+        }, true);
+        vatTrendChart.resize();
+      }
+      document.getElementById('vatTrendYear')?.addEventListener('change', renderVatTrendChart);
+      document.getElementById('vatTrendNoteBtn')?.addEventListener('click', function(){
+        alert('展示当前年度销项金额与进项金额的月度变化，用于观察购销节奏和季节性波动。');
+      });
+      const vatCounterparties = [
+        ['华东制造集团有限公司','已知关联方',188.2,142.6,'客户'],['上海星河科技有限公司','客户',162.4,118.9],['深圳启明电子有限公司','供应商',126.7,139.8],['广州远航贸易有限公司','客户',112.2,87.6],['苏州精密制造有限公司','供应商',94.8,116.4],
+        ['上海辰越贸易有限公司','已知关联方',88.5,62.7,'供应商'],['宁波弘泰企业管理合伙企业','已知关联方',72.4,58.1,'其他'],['杭州云启材料有限公司','供应商',68.1,76.5],['南京海川电子有限公司','客户',64.7,44.6],['成都天衡供应链有限公司','供应商',58.9,69.3],
+        ['青岛远景装备有限公司','客户',54.4,36.5],['武汉瑞诚科技有限公司','客户',49.6,34.8],['厦门海联贸易有限公司','供应商',46.2,52.1],['天津北辰物流有限公司','供应商',42.8,48.7],['重庆嘉源实业有限公司','客户',39.5,25.9],
+        ['北京中科服务有限公司','已知关联方',36.8,30.4,'员工'],['佛山精工制造有限公司','供应商',34.1,42.6],['无锡凯达贸易有限公司','客户',31.7,23.8],['郑州金泰材料有限公司','供应商',29.5,35.7],['长沙宏远科技有限公司','客户',26.9,19.4],
+        ['合肥启航电子有限公司','供应商',24.6,31.8],['济南华信咨询有限公司','个人',21.8,12.9],['南通星辉材料有限公司','供应商',19.7,25.4],['福州铭诚贸易有限公司','其他',17.6,11.6],['上海员工备用金汇总','员工',15.2,9.8]
+      ].map(function(row, index){
+        const salesBase = row[2], purchaseBase = row[3];
+        return {
+          name: row[0],
+          type: row[1],
+          category: row[4] || row[1],
+          monthly: {
+            2023: Array.from({ length:12 }, function(_, m){ return { sales:+(salesBase * (.052 + (m % 4) * .006) * (.78 + index % 5 * .025)).toFixed(1), purchase:+(purchaseBase * (.052 + (m % 5) * .005) * (.76 + index % 4 * .03)).toFixed(1) }; }),
+            2024: Array.from({ length:12 }, function(_, m){ return { sales:+(salesBase * (.062 + (m % 4) * .007) * (.88 + index % 5 * .022)).toFixed(1), purchase:+(purchaseBase * (.061 + (m % 5) * .006) * (.86 + index % 4 * .026)).toFixed(1) }; }),
+            2025: Array.from({ length:12 }, function(_, m){ return { sales:+(salesBase * (.072 + (m % 4) * .008) * (.96 + index % 5 * .018)).toFixed(1), purchase:+(purchaseBase * (.071 + (m % 5) * .007) * (.94 + index % 4 * .022)).toFixed(1) }; })
+          }
+        };
+      });
+      const vatStructureState = {
+        business:{ mode:'sales', filter:'all', yearExpanded:false, page:1, pageSize:20 },
+        related:{ mode:'sales', filter:'related', yearExpanded:false, page:1, pageSize:20 }
+      };
+      const vatStaticTableState = {
+        overview:{ page:1, pageSize:20 },
+        missing:{ page:1, pageSize:20 }
+      };
+      const vatYears = [2023, 2024, 2025];
+      const vatTypeDefs = [
+        { key:'all', label:'全体对手方' },
+        { key:'related', label:'已知关联方' },
+        { key:'supplier', label:'供应商' },
+        { key:'customer', label:'客户' },
+        { key:'employee', label:'员工' },
+        { key:'other', label:'其他' },
+        { key:'personal', label:'个人' }
+      ];
+      const vatRelatedTypeDefs = [
+        { key:'related', label:'已知关联方' },
+        { key:'supplier', label:'供应商' },
+        { key:'customer', label:'客户' },
+        { key:'employee', label:'员工' },
+        { key:'other', label:'其他' },
+        { key:'personal', label:'个人' }
+      ];
+      function vatSum(row, year, key){
+        return row.monthly[year].reduce(function(sum, item){ return sum + item[key]; }, 0);
+      }
+      function vatTotal(row, key){
+        return vatYears.reduce(function(sum, year){ return sum + vatSum(row, year, key); }, 0);
+      }
+      function vatMatchesFilter(row, filter, scope){
+        const type = scope === 'related' ? row.category : row.type;
+        if (filter === 'related') return row.type === '已知关联方';
+        if (filter === 'employee') return type === '员工';
+        if (filter === 'customer') return type === '客户';
+        if (filter === 'supplier') return type === '供应商';
+        if (filter === 'other') return type === '其他';
+        if (filter === 'personal') return type === '个人';
+        return true;
+      }
+      function vatRows(scope){
+        const state = vatStructureState[scope];
+        const base = scope === 'related' ? vatCounterparties.filter(function(row){ return row.type === '已知关联方'; }) : vatCounterparties;
+        return base.filter(function(row){ return vatMatchesFilter(row, state.filter, scope); });
+      }
+      function vatMetricValue(row, mode){
+        if (mode === 'purchase') return vatTotal(row, 'purchase') * .13;
+        if (mode === 'compare') return (vatTotal(row, 'sales') + vatTotal(row, 'purchase')) * .13;
+        return vatTotal(row, 'sales') * .13;
+      }
+      function vatMetricLabel(mode){
+        return mode === 'purchase' ? '进项税' : mode === 'compare' ? '销项税VS进项税' : '销项税';
+      }
+      function vatTypeLabel(scope, filter){
+        const defs = scope === 'related' ? vatRelatedTypeDefs : vatTypeDefs;
+        return (defs.find(function(def){ return def.key === filter; }) || defs[0]).label;
+      }
+      function vatFmt(value){
+        return Number(value || 0).toLocaleString('zh-CN', { minimumFractionDigits:1, maximumFractionDigits:1 });
+      }
+      function vatMasterBucket(row){
+        if (row.category === '个人' || row.type === '个人') return '识别号不一致/缺失';
+        if (row.type === '其他' || row.category === '其他') return '主档未匹配';
+        if (row.name.includes('咨询') || row.name.includes('合伙企业')) return '主档未匹配';
+        return '主档一致';
+      }
+      function renderVatTypeCards(scope){
+        const prefix = scope === 'related' ? 'vatRelated' : 'vatBusiness';
+        const wrap = document.getElementById(prefix + 'TypeCards');
+        if (!wrap) return;
+        const state = vatStructureState[scope];
+        const mode = state.mode;
+        const base = scope === 'related' ? vatCounterparties.filter(function(row){ return row.type === '已知关联方'; }) : vatCounterparties;
+        const defs = scope === 'related' ? vatRelatedTypeDefs : vatTypeDefs;
+        const total = Math.max(base.reduce(function(sum, row){ return sum + vatMetricValue(row, mode); }, 0), 1);
+        const salesTotal = Math.max(base.reduce(function(sum, row){ return sum + vatTotal(row, 'sales') * .13; }, 0), 1);
+        const purchaseTotal = Math.max(base.reduce(function(sum, row){ return sum + vatTotal(row, 'purchase') * .13; }, 0), 1);
+        wrap.innerHTML = defs.map(function(def){
+          const list = base.filter(function(row){ return vatMatchesFilter(row, def.key, scope); });
+          const amount = list.reduce(function(sum, row){ return sum + vatMetricValue(row, mode); }, 0);
+          const pct = def.key === 'all' ? 100 : amount / total * 100;
+          if (mode === 'compare') {
+            const salesAmount = list.reduce(function(sum, row){ return sum + vatTotal(row, 'sales') * .13; }, 0);
+            const purchaseAmount = list.reduce(function(sum, row){ return sum + vatTotal(row, 'purchase') * .13; }, 0);
+            const salesPct = def.key === 'all' ? 100 : salesAmount / salesTotal * 100;
+            const purchasePct = def.key === 'all' ? 100 : purchaseAmount / purchaseTotal * 100;
+            return '<button class="vat-filter-card is-compare ' + (state.filter === def.key ? 'is-active ' : '') + '" data-vat-filter="' + def.key + '" type="button"><b class="vat-compare-title">' + def.label + '</b><div class="vat-compare-body"><span class="vat-compare-side"><strong class="vat-sales-ring" style="--pct:' + Math.min(100, salesPct).toFixed(1) + '%"></strong><em>销项 ' + salesPct.toFixed(1) + '%</em></span><i>VS</i><span class="vat-compare-side"><strong class="vat-purchase-ring" style="--pct:' + Math.min(100, purchasePct).toFixed(1) + '%"></strong><em>进项 ' + purchasePct.toFixed(1) + '%</em></span></div></button>';
+          }
+          return '<button class="vat-filter-card ' + (state.filter === def.key ? 'is-active ' : '') + (mode === 'purchase' ? 'is-purchase' : '') + '" data-vat-filter="' + def.key + '" type="button"><span><b>' + def.label + '</b><em>占比 ' + pct.toFixed(1) + '%</em></span><strong style="--pct:' + Math.min(100, pct).toFixed(1) + '%"></strong></button>';
+        }).join('');
+      }
+      function vatTableColumns(mode){
+        const salesCols = ['销项金额','销项税额','销项价税合计','销项税率','销项占比','销项发票数量'];
+        const purchaseCols = ['进项金额','进项税额','进项价税合计','进项税率','进项占比','进项发票数量'];
+        if (mode === 'purchase') return purchaseCols;
+        if (mode === 'compare') return salesCols.concat(purchaseCols);
+        return salesCols;
+      }
+      function vatTableDenominator(rows, mode){
+        return Math.max(rows.reduce(function(sum, row){
+          const salesTotal = vatTotal(row, 'sales') * 1.13;
+          const purchaseTotal = vatTotal(row, 'purchase') * 1.13;
+          if (mode === 'purchase') return sum + purchaseTotal;
+          if (mode === 'compare') return sum + salesTotal + purchaseTotal;
+          return sum + salesTotal;
+        }, 0), 1);
+      }
+      function vatMetricCells(row, year, denominator, mode){
+        const sales = vatSum(row, year, 'sales');
+        const purchase = vatSum(row, year, 'purchase');
+        const salesTax = sales * .13;
+        const purchaseTax = purchase * .13;
+        const salesTotal = sales + salesTax;
+        const purchaseTotal = purchase + purchaseTax;
+        const base = Math.max(denominator || (salesTotal + purchaseTotal), 1);
+        const salesCells = '<td class="vat-num vat-sales">' + vatFmt(sales) + '</td><td class="vat-num vat-sales">' + vatFmt(salesTax) + '</td><td class="vat-num vat-sales">' + vatFmt(salesTotal) + '</td><td class="vat-rate vat-sales">13.0%</td><td class="vat-rate vat-sales">' + (salesTotal / base * 100).toFixed(1) + '%</td><td class="vat-num">' + Math.round(sales * 8.5) + '</td>';
+        const purchaseCells = '<td class="vat-num vat-purchase">' + vatFmt(purchase) + '</td><td class="vat-num vat-purchase">' + vatFmt(purchaseTax) + '</td><td class="vat-num vat-purchase">' + vatFmt(purchaseTotal) + '</td><td class="vat-rate vat-purchase">13.0%</td><td class="vat-rate vat-purchase">' + (purchaseTotal / base * 100).toFixed(1) + '%</td><td class="vat-num">' + Math.round(purchase * 8.1) + '</td>';
+        if (mode === 'purchase') return purchaseCells;
+        if (mode === 'compare') return salesCells + purchaseCells;
+        return salesCells;
+      }
+      function syncVatStructureColgroup(table, metricColumnCount){
+        if (!table) return;
+        let colgroup = table.querySelector('colgroup');
+        if (!colgroup) {
+          colgroup = document.createElement('colgroup');
+          table.insertBefore(colgroup, table.firstChild);
+        }
+        const metricCols = Array.from({ length:metricColumnCount }, function(){ return '<col style="width:112px">'; }).join('');
+        colgroup.innerHTML = '<col style="width:210px"><col style="width:90px"><col style="width:118px">' + metricCols;
+        table.style.minWidth = (418 + metricColumnCount * 112) + 'px';
+      }
+      function renderVatStructure(scope){
+        const prefix = scope === 'related' ? 'vatRelated' : 'vatBusiness';
+        const mode = vatStructureState[scope].mode;
+        const rows = vatRows(scope);
+        renderVatTypeCards(scope);
+        const months = Array.from({ length:12 }, function(_, index){ return String(index + 1).padStart(2, '0') + '月'; });
+        const chartEl = document.getElementById(prefix + 'StructureChart');
+        if (chartEl && window.echarts) {
+          const chart = echarts.getInstanceByDom(chartEl) || echarts.init(chartEl, null, { renderer:'canvas', useDirtyRect:true });
+          const salesColors = { 2023:'#b7e3d8', 2024:'#67b9a8', 2025:'#168475' };
+          const purchaseColors = { 2023:'#f1d2aa', 2024:'#d99d52', 2025:'#b96916' };
+          const seriesFor = function(key, label, colors){
+            return vatYears.map(function(year){
+              return {
+                name: year + label,
+                type:'bar',
+                barMaxWidth:10,
+                barGap:key === 'purchase' ? '18%' : '8%',
+                barCategoryGap:'28%',
+                itemStyle:{ color:colors[year], borderRadius:[3,3,0,0] },
+                data:months.map(function(_, monthIndex){
+                  return +rows.reduce(function(sum, row){ return sum + row.monthly[year][monthIndex][key] * .13; }, 0).toFixed(1);
+                })
+              };
+            });
+          };
+          const series = mode === 'compare'
+            ? [].concat(seriesFor('sales', '销项税', salesColors), seriesFor('purchase', '进项税', purchaseColors))
+            : mode === 'purchase'
+              ? seriesFor('purchase', '进项税', purchaseColors)
+              : seriesFor('sales', '销项税', salesColors);
+          const chartTitle = document.getElementById(prefix + 'ChartTitle');
+          if (chartTitle) chartTitle.textContent = (scope === 'related' ? '关联方' : '') + '月度分年' + vatMetricLabel(mode) + '构成（' + vatTypeLabel(scope, vatStructureState[scope].filter) + '）';
+          chart.setOption({
+            tooltip:{ trigger:'axis', axisPointer:{ type:'shadow' }, confine:true, formatter:function(items){ return (items[0]?.axisValue || '') + '<br/>' + items.map(function(item){ return item.marker + item.seriesName + '：' + vatFmt(item.value); }).join('<br/>'); } },
+            legend:{ top:0, right:6, itemWidth:9, itemHeight:6, textStyle:{ fontSize:10, color:'#64748b' }, selectedMode:false },
+            grid:{ left:52, right:12, top:30, bottom:42 },
+            xAxis:{ type:'category', data:months, axisLabel:{ fontSize:10, color:'#64748b' }, axisLine:{ lineStyle:{ color:'#dbe5f0' } }, axisTick:{ alignWithLabel:true } },
+            yAxis:{ type:'value', axisLabel:{ fontSize:10, color:'#64748b', formatter:function(v){ return Number(v).toLocaleString('zh-CN'); } }, splitLine:{ lineStyle:{ color:'#edf2f7' } } },
+            dataZoom:[{ type:'slider', height:10, bottom:6, left:58, right:18, brushSelect:false, borderColor:'transparent', backgroundColor:'rgba(226,232,240,.42)', fillerColor:'rgba(37,99,235,.14)', handleSize:10, handleStyle:{ color:'#94a3b8', borderColor:'#94a3b8' }, moveHandleSize:0, showDetail:false, showDataShadow:false }],
+            series:series
+          }, true);
+          chart.resize();
+        }
+        const masterEl = document.getElementById(prefix + 'MasterChart');
+        if (masterEl && window.echarts) {
+          const masterChart = echarts.getInstanceByDom(masterEl) || echarts.init(masterEl, null, { renderer:'canvas', useDirtyRect:true });
+          const masterTitle = document.getElementById(prefix + 'MasterTitle');
+          if (masterTitle) masterTitle.textContent = '发票购销方主档匹配（' + vatTypeLabel(scope, vatStructureState[scope].filter) + '）';
+          const bucketMap = rows.reduce(function(acc, row){
+            const key = vatMasterBucket(row);
+            acc[key] = (acc[key] || 0) + vatMetricValue(row, mode);
+            return acc;
+          }, {});
+          const masterData = [
+            { name:'主档一致', value:+(bucketMap['主档一致'] || 0).toFixed(1), itemStyle:{ color:'#3b82f6' } },
+            { name:'主档未匹配', value:+(bucketMap['主档未匹配'] || 0).toFixed(1), itemStyle:{ color:'#f6b45d' } },
+            { name:'识别号不一致/缺失', value:+(bucketMap['识别号不一致/缺失'] || 0).toFixed(1), itemStyle:{ color:'#f08aa0' } }
+          ];
+          masterChart.setOption({
+            tooltip:{ trigger:'item', confine:true, formatter:function(item){ return item.marker + item.name + '：' + vatFmt(item.value) + '<br/>占比：' + item.percent.toFixed(1) + '%'; } },
+            legend:{ bottom:0, left:'center', itemWidth:9, itemHeight:6, textStyle:{ fontSize:10, color:'#64748b' } },
+            series:[{
+              name:'发票购销方主档匹配',
+              type:'pie',
+              radius:['48%','72%'],
+              center:['50%','44%'],
+              avoidLabelOverlap:true,
+              label:{ formatter:'{b}\n{d}%', color:'#475569', fontSize:10, lineHeight:14 },
+              labelLine:{ length:8, length2:6, lineStyle:{ color:'#cbd5e1' } },
+              itemStyle:{ borderColor:'#fff', borderWidth:2 },
+              data:masterData
+            }]
+          }, true);
+          masterChart.resize();
+        }
+        const topWrap = document.getElementById(prefix + 'Top20');
+        if (topWrap) {
+          const sorted = rows.slice().sort(function(a, b){ return vatMetricValue(b, mode) - vatMetricValue(a, mode); }).slice(0, 20);
+          const max = Math.max.apply(null, sorted.map(function(row){ return vatMetricValue(row, mode); }).concat([1]));
+          document.getElementById(prefix + 'TopMetric').textContent = vatMetricLabel(mode);
+          document.getElementById(prefix + 'TopTitle').textContent = (scope === 'related' ? 'TOP20 关联方' : 'TOP20 对手方');
+          topWrap.innerHTML = sorted.map(function(row, index){
+            const value = vatMetricValue(row, mode);
+            const cls = mode === 'purchase' ? 'is-purchase' : mode === 'compare' ? 'is-compare' : '';
+            return '<div class="vat-top-row ' + cls + '"><em>' + String(index + 1).padStart(2, '0') + '</em><span>' + row.name + '</span><b>' + vatFmt(value) + '</b><i style="width:' + Math.max(4, value / max * 100).toFixed(1) + '%"></i></div>';
+          }).join('');
+        }
+        const head = document.getElementById(prefix + 'StructureHead');
+        const body = document.getElementById(prefix + 'StructureBody');
+        const pager = document.getElementById(prefix + 'StructurePager');
+        if (head && body) {
+          const expanded = vatStructureState[scope].yearExpanded;
+          const icon = expanded ? '«' : '»';
+          const cols = vatTableColumns(mode);
+          const colSpan = cols.length;
+          const metricColumnCount = colSpan * (expanded ? 4 : 1);
+          const table = document.getElementById(prefix + 'StructureTable');
+          syncVatStructureColgroup(table, metricColumnCount);
+          const yearHeads = expanded ? vatYears.map(function(year){ return '<th colspan="' + colSpan + '" class="vat-year-head">' + year + '年</th>'; }).join('') : '';
+          const yearSubs = expanded ? vatYears.flatMap(function(){ return cols; }) : [];
+          head.innerHTML = '<tr class="portrait-year-group-head"><th rowspan="2" class="vat-structure-sticky-1" data-fixed-column="true" data-sort="name">对手方名称</th><th rowspan="2" class="vat-structure-sticky-2" data-fixed-column="true" data-sort="blacklist">黑名单</th><th rowspan="2" class="vat-structure-sticky-3" data-fixed-column="true" data-sort="type">对手方类型</th><th colspan="' + colSpan + '" class="vat-year-head"><button class="vat-year-toggle" id="' + prefix + 'YearToggle" type="button"><span>合计</span><i>' + icon + '</i></button></th>' + yearHeads + '</tr><tr class="portrait-year-sub-head">' + cols.concat(yearSubs).map(function(label){ return '<th>' + label + '</th>'; }).join('') + '</tr>';
+          document.getElementById(prefix + 'YearToggle')?.addEventListener('click', function(){
+            vatStructureState[scope].yearExpanded = !vatStructureState[scope].yearExpanded;
+            renderVatStructure(scope);
+          });
+          const tableTotal = vatTableDenominator(rows, mode);
+          const sortedRows = rows.slice().sort(function(a,b){ return vatMetricValue(b, mode) - vatMetricValue(a, mode); });
+          const totalPages = Math.max(1, Math.ceil(sortedRows.length / vatStructureState[scope].pageSize));
+          vatStructureState[scope].page = Math.min(vatStructureState[scope].page, totalPages);
+          const pageStart = (vatStructureState[scope].page - 1) * vatStructureState[scope].pageSize;
+          const pageRows = sortedRows.slice(pageStart, pageStart + vatStructureState[scope].pageSize);
+          body.innerHTML = pageRows.map(function(row){
+            const totalRow = { monthly:{ total:[{ sales:vatTotal(row, 'sales'), purchase:vatTotal(row, 'purchase') }] } };
+            const totalCells = vatMetricCells(totalRow, 'total', tableTotal, mode);
+            const yearCells = expanded ? vatYears.map(function(year){ return vatMetricCells(row, year, tableTotal, mode); }).join('') : '';
+            const displayType = scope === 'related' ? row.category : row.type;
+            return '<tr><td class="vat-structure-sticky-1">' + row.name + '</td><td class="counterparty-blacklist-cell vat-structure-sticky-2">-</td><td class="vat-structure-sticky-3">' + displayType + '</td>' + totalCells + yearCells + '</tr>';
+          }).join('');
+          if (pager && window.renderAuditPager) {
+            window.renderAuditPager(pager, {
+              total:sortedRows.length,
+              page:vatStructureState[scope].page,
+              pageSize:vatStructureState[scope].pageSize,
+              onPage:function(page){ vatStructureState[scope].page = page; renderVatStructure(scope); },
+              onPageSize:function(size){ vatStructureState[scope].pageSize = size; vatStructureState[scope].page = 1; renderVatStructure(scope); }
+            });
+          }
+          if (table) {
+            delete table.dataset.baEnhanced;
+            table.querySelectorAll('.ba-th-tools').forEach(function(el){ el.remove(); });
+            window.dispatchEvent(new CustomEvent('bank-analysis:tab-change'));
+          }
+        }
+      }
+      function renderVatStructures(){
+        renderVatStructure('business');
+        renderVatStructure('related');
+      }
+      document.getElementById('vatBusinessStructureModes')?.addEventListener('click', function(ev){
+        const btn = ev.target.closest('button[data-mode]');
+        if (!btn) return;
+        vatStructureState.business.mode = btn.dataset.mode;
+        vatStructureState.business.page = 1;
+        document.querySelectorAll('#vatBusinessStructureModes button').forEach(function(item){ item.classList.toggle('is-active', item === btn); });
+        renderVatStructure('business');
+      });
+      document.getElementById('vatBusinessTypeCards')?.addEventListener('click', function(ev){
+        const btn = ev.target.closest('.vat-filter-card[data-vat-filter]');
+        if (!btn) return;
+        vatStructureState.business.filter = btn.dataset.vatFilter || 'all';
+        vatStructureState.business.page = 1;
+        renderVatStructure('business');
+      });
+      document.getElementById('vatRelatedStructureModes')?.addEventListener('click', function(ev){
+        const btn = ev.target.closest('button[data-mode]');
+        if (!btn) return;
+        vatStructureState.related.mode = btn.dataset.mode;
+        vatStructureState.related.page = 1;
+        document.querySelectorAll('#vatRelatedStructureModes button').forEach(function(item){ item.classList.toggle('is-active', item === btn); });
+        renderVatStructure('related');
+      });
+      document.getElementById('vatRelatedTypeCards')?.addEventListener('click', function(ev){
+        const btn = ev.target.closest('.vat-filter-card[data-vat-filter]');
+        if (!btn) return;
+        vatStructureState.related.filter = btn.dataset.vatFilter || 'related';
+        vatStructureState.related.page = 1;
+        renderVatStructure('related');
+      });
+      document.querySelector('[data-top="business-substance"]')?.addEventListener('click', function(){
+        setTimeout(function(){ renderVatTrendChart(); renderVatStructure('business'); }, 80);
+      });
+      document.querySelector('[data-top="related-trade"]')?.addEventListener('click', function(){
+        setTimeout(function(){ renderVatStructure('related'); }, 80);
+      });
+      window.addEventListener('resize', function(){
+        vatTrendChart?.resize();
+        ['vatBusinessStructureChart','vatBusinessMasterChart','vatRelatedStructureChart'].forEach(function(id){
+          const el = document.getElementById(id);
+          if (el && window.echarts) echarts.getInstanceByDom(el)?.resize();
+        });
+      });
+      setTimeout(function(){ renderVatTrendChart(); renderVatStructures(); }, 80);
+      function renderVatPagedStaticTable(tableId, pagerId, stateKey){
+        if (!window.renderAuditPager) return;
+        const table = document.getElementById(tableId);
+        const pager = document.getElementById(pagerId);
+        const state = vatStaticTableState[stateKey];
+        if (!table || !pager || !state) return;
+        const rows = Array.from(table.tBodies[0]?.rows || []);
+        const totalPages = Math.max(1, Math.ceil(rows.length / state.pageSize));
+        state.page = Math.min(state.page, totalPages);
+        const start = (state.page - 1) * state.pageSize;
+        rows.forEach(function(row, index){
+          row.style.display = index >= start && index < start + state.pageSize ? '' : 'none';
+        });
+        window.renderAuditPager(pager, {
+          total:rows.length,
+          page:state.page,
+          pageSize:state.pageSize,
+          onPage:function(page){ state.page = page; renderVatPagedStaticTable(tableId, pagerId, stateKey); },
+          onPageSize:function(size){ state.pageSize = size; state.page = 1; renderVatPagedStaticTable(tableId, pagerId, stateKey); }
+        });
+      }
+      function renderVatStaticPagers(){
+        renderVatPagedStaticTable('vatTaxOverviewTable', 'vatTaxOverviewPager', 'overview');
+        renderVatPagedStaticTable('vatMissingBuyerSellerTable', 'vatMissingBuyerSellerPager', 'missing');
+      }
+      renderVatStaticPagers();
+    });
+  </script>
 </body>
 </html>
