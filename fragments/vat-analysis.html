@@ -4,10 +4,10 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <script defer src="../assets/vendor/echarts/echarts.min.js?v=5.6.0-local"></script>
-  <link rel="stylesheet" href="../assets/css/base.css?v=20260807-blacklist3"/>
+  <link rel="stylesheet" href="../assets/css/base.css?v=20260807-vat-note-modal1"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260622-tab-rebuild7"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260723-button-size1"/>
-  <link rel="stylesheet" href="../assets/css/pages/vat-analysis.css?v=20260807-blacklist3"/>
+  <link rel="stylesheet" href="../assets/css/pages/vat-analysis.css?v=20260807-vat-note-modal1"/>
 </head>
 <body>
   <div class="vat-page">
@@ -472,7 +472,9 @@
                   <option value="2023">2023</option>
                 </select>
               </label>
-              <button class="btn" type="button" id="vatTrendNoteBtn">备注说明</button>
+              <button class="vat-note-link" type="button" id="vatTrendNoteBtn" title="备注说明">
+                <i class="fa-regular fa-pen-to-square"></i><u>备注说明</u>
+              </button>
             </div>
           </div>
           <div class="content">
@@ -587,6 +589,26 @@
         </div>
       </div>
     </section>
+
+    <div class="vat-note-modal" id="vatTrendNoteModal" aria-hidden="true">
+      <div class="vat-note-panel" role="dialog" aria-modal="true" aria-labelledby="vatTrendNoteTitle">
+        <div class="vat-note-head">
+          <div>
+            <div class="vat-note-title" id="vatTrendNoteTitle">购销趋势备注说明</div>
+            <div class="vat-note-subtitle">用于记录项目组对销项金额、进项金额月度变化的说明。</div>
+          </div>
+          <button class="vat-note-close" id="vatTrendNoteClose" type="button" aria-label="关闭">×</button>
+        </div>
+        <div class="vat-note-body">
+          <textarea id="vatTrendNoteText" placeholder="请输入备注说明，例如：12月销项金额上升主要受期末集中开票影响，需结合期后回款进一步核对。"></textarea>
+          <div class="vat-note-meta" id="vatTrendNoteMeta">备注仅做项目记录，不参与计算。</div>
+        </div>
+        <div class="vat-note-actions">
+          <button class="btn" id="vatTrendNoteCancel" type="button">取消</button>
+          <button class="btn primary" id="vatTrendNoteSave" type="button">保存备注</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script defer src="../assets/js/core/shared.js?v=20260806-table-k1"></script>
@@ -663,17 +685,17 @@
             }
           },
           legend:{
-            top:8,
+            top:2,
             right:14,
             itemWidth:12,
             itemHeight:8,
             textStyle:{ fontSize:11, color:'#475569' },
             data:['销项金额','进项金额']
           },
-          grid:{ left:54, right:18, top:42, bottom:58 },
+          grid:{ left:50, right:16, top:30, bottom:42 },
           dataZoom:[
             { type:'inside', start:0, end:100 },
-            { type:'slider', height:10, bottom:12, borderColor:'transparent', backgroundColor:'#eef2f7', fillerColor:'rgba(22,132,117,.14)', handleSize:0, showDetail:false, brushSelect:false, moveHandleSize:0 }
+            { type:'slider', height:8, bottom:4, borderColor:'transparent', backgroundColor:'#eef2f7', fillerColor:'rgba(22,132,117,.14)', handleSize:0, showDetail:false, brushSelect:false, moveHandleSize:0 }
           ],
           xAxis:{
             type:'category',
@@ -681,12 +703,12 @@
             data:months,
             axisLine:{ lineStyle:{ color:'#cbd5e1' } },
             axisTick:{ alignWithLabel:true, lineStyle:{ color:'#cbd5e1' } },
-            axisLabel:{ color:'#64748b', fontSize:10, interval:0, hideOverlap:true, margin:10 }
+            axisLabel:{ color:'#64748b', fontSize:10, interval:0, hideOverlap:true, margin:8 }
           },
           yAxis:{
             type:'value',
             name:'金额',
-            nameGap:12,
+            nameGap:8,
             nameTextStyle:{ color:'#475569', fontSize:10, fontWeight:600 },
             splitLine:{ lineStyle:{ color:'#eef2f7' } },
             axisLabel:{ color:'#64748b', fontSize:10, formatter:function(value){ return Number(value).toLocaleString('zh-CN'); } }
@@ -699,8 +721,36 @@
         vatTrendChart.resize();
       }
       document.getElementById('vatTrendYear')?.addEventListener('change', renderVatTrendChart);
-      document.getElementById('vatTrendNoteBtn')?.addEventListener('click', function(){
-        alert('展示当前年度销项金额与进项金额的月度变化，用于观察购销节奏和季节性波动。');
+      const vatTrendNoteKey = 'auditCompass:vatTrendNote';
+      function openVatTrendNote(){
+        const modal = document.getElementById('vatTrendNoteModal');
+        const text = document.getElementById('vatTrendNoteText');
+        const meta = document.getElementById('vatTrendNoteMeta');
+        if (!modal || !text) return;
+        text.value = localStorage.getItem(vatTrendNoteKey) || '';
+        if (meta) meta.textContent = text.value ? '已读取上次保存的备注。' : '备注仅做项目记录，不参与计算。';
+        modal.classList.add('is-show');
+        modal.setAttribute('aria-hidden', 'false');
+        setTimeout(function(){ text.focus(); }, 30);
+      }
+      function closeVatTrendNote(){
+        const modal = document.getElementById('vatTrendNoteModal');
+        if (!modal) return;
+        modal.classList.remove('is-show');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+      document.getElementById('vatTrendNoteBtn')?.addEventListener('click', openVatTrendNote);
+      document.getElementById('vatTrendNoteClose')?.addEventListener('click', closeVatTrendNote);
+      document.getElementById('vatTrendNoteCancel')?.addEventListener('click', closeVatTrendNote);
+      document.getElementById('vatTrendNoteModal')?.addEventListener('click', function(ev){
+        if (ev.target === ev.currentTarget) closeVatTrendNote();
+      });
+      document.getElementById('vatTrendNoteSave')?.addEventListener('click', function(){
+        const text = document.getElementById('vatTrendNoteText');
+        const meta = document.getElementById('vatTrendNoteMeta');
+        localStorage.setItem(vatTrendNoteKey, text?.value || '');
+        if (meta) meta.textContent = '备注已保存。';
+        closeVatTrendNote();
       });
       const vatCounterparties = [
         ['华东制造集团有限公司','已知关联方',188.2,142.6,'客户'],['上海星河科技有限公司','客户',162.4,118.9],['深圳启明电子有限公司','供应商',126.7,139.8],['广州远航贸易有限公司','客户',112.2,87.6],['苏州精密制造有限公司','供应商',94.8,116.4],

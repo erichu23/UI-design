@@ -128,11 +128,55 @@ body .vat-head-actions{
 }
 
 body .vat-trend-card .content{
-  padding:6px 10px 8px;
+  padding:4px 10px 5px;
 }
 
 body .vat-trend-actions{
   gap:7px;
+}
+
+body .tab-pane .vat-trend-actions button.vat-note-link,
+body .vat-note-link{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  width:auto !important;
+  min-width:0 !important;
+  height:28px !important;
+  min-height:28px !important;
+  padding:0 2px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#2563eb !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+  line-height:28px !important;
+  cursor:pointer;
+  box-shadow:none !important;
+}
+
+body .tab-pane .vat-trend-actions button.vat-note-link i,
+body .vat-note-link i{
+  font-size:12px;
+  line-height:1;
+  color:#3b82f6 !important;
+}
+
+body .tab-pane .vat-trend-actions button.vat-note-link u,
+body .vat-note-link u{
+  text-underline-offset:3px;
+  text-decoration-thickness:1px;
+}
+
+body .tab-pane .vat-trend-actions button.vat-note-link:hover,
+body .vat-note-link:hover{
+  border:0 !important;
+  background:transparent !important;
+  color:#1d4ed8 !important;
+  box-shadow:none !important;
 }
 
 body .vat-year-filter{
@@ -166,9 +210,124 @@ body .vat-year-filter select:focus{
 
 body .vat-trend-chart{
   width:100%;
-  height:248px;
-  min-height:230px;
+  height:196px;
+  min-height:188px;
   background:transparent;
+}
+
+body .vat-note-modal{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(15,23,42,.38);
+}
+
+body .vat-note-modal.is-show{
+  display:flex;
+}
+
+body .vat-note-panel{
+  width:min(520px, calc(100vw - 36px));
+  border:1px solid #dbe7f4;
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 22px 60px rgba(15,23,42,.22);
+  overflow:hidden;
+}
+
+body .vat-note-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 16px 10px;
+  border-bottom:1px solid #e8eef6;
+  background:#fbfdff;
+}
+
+body .vat-note-title{
+  color:#0f172a;
+  font-size:14px;
+  font-weight:800;
+  line-height:20px;
+}
+
+body .vat-note-subtitle{
+  margin-top:2px;
+  color:#64748b;
+  font-size:11px;
+  line-height:18px;
+}
+
+body .vat-note-close{
+  appearance:none;
+  -webkit-appearance:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:26px;
+  min-width:26px;
+  height:26px;
+  min-height:26px;
+  padding:0;
+  border:1px solid #dbe7f4;
+  border-radius:50%;
+  background:#fff;
+  color:#64748b;
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+}
+
+body .vat-note-close:hover{
+  border-color:#bcd0e8;
+  color:#1d4ed8;
+  background:#f7faff;
+}
+
+body .vat-note-body{
+  padding:14px 16px 10px;
+}
+
+body .vat-note-body textarea{
+  width:100%;
+  min-height:128px;
+  resize:vertical;
+  padding:10px 11px;
+  border:1px solid #dbe7f4;
+  border-radius:8px;
+  background:#fff;
+  color:#334155;
+  font-size:12px;
+  line-height:20px;
+  outline:none;
+  box-sizing:border-box;
+}
+
+body .vat-note-body textarea:focus{
+  border-color:#9dbbe3;
+  box-shadow:0 0 0 3px rgba(37,99,235,.08);
+}
+
+body .vat-note-meta{
+  margin-top:7px;
+  color:#94a3b8;
+  font-size:11px;
+  line-height:18px;
+}
+
+body .vat-note-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  padding:10px 16px 14px;
+  border-top:1px solid #edf2f7;
+  background:#fff;
 }
 
 body .vat-structure-card{
