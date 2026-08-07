@@ -395,14 +395,7 @@
 }
 
 .portrait-filter-card::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:11px;
-  bottom:11px;
-  width:2px;
-  border-radius:0 999px 999px 0;
-  background:#dbe6f2;
+  content:none;
 }
 
 .portrait-filter-card:hover{
@@ -413,12 +406,12 @@
 
 .portrait-filter-card.is-active{
   border-color:#b8cdef !important;
-  background:linear-gradient(180deg,#fbfdff,#f7faff) !important;
-  box-shadow:0 2px 7px rgba(47,111,237,.07);
+  background:linear-gradient(180deg,#f8fbff 0%,#eef6ff 100%) !important;
+  box-shadow:inset 0 0 0 1px rgba(37,99,235,.08),0 3px 9px rgba(47,111,237,.06);
 }
 
 .portrait-filter-card.is-active::before{
-  background:#2f6fed;
+  content:none;
 }
 
 .portrait-filter-card span{

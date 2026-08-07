@@ -485,9 +485,9 @@
           <div class="head">
             <div class="title">购销税额构成</div>
             <div class="vat-mode-tabs" id="vatBusinessStructureModes">
-              <button class="is-active" data-mode="sales" type="button">销项税</button>
+              <button class="is-active" data-mode="compare" type="button">销项税VS进项税</button>
+              <button data-mode="sales" type="button">销项税</button>
               <button data-mode="purchase" type="button">进项税</button>
-              <button data-mode="compare" type="button">销项税VS进项税</button>
             </div>
           </div>
           <div class="content">
@@ -529,9 +529,9 @@
           <div class="head">
             <div class="title">已知关联方购销税额分析</div>
             <div class="vat-mode-tabs" id="vatRelatedStructureModes">
-              <button class="is-active" data-mode="sales" type="button">销项税</button>
+              <button class="is-active" data-mode="compare" type="button">销项税VS进项税</button>
+              <button data-mode="sales" type="button">销项税</button>
               <button data-mode="purchase" type="button">进项税</button>
-              <button data-mode="compare" type="button">销项税VS进项税</button>
             </div>
           </div>
           <div class="content">
@@ -772,8 +772,8 @@
         };
       });
       const vatStructureState = {
-        business:{ mode:'sales', filter:'all', yearExpanded:false, page:1, pageSize:20 },
-        related:{ mode:'sales', filter:'related', yearExpanded:false, page:1, pageSize:20 }
+        business:{ mode:'compare', filter:'all', yearExpanded:false, page:1, pageSize:20 },
+        related:{ mode:'compare', filter:'related', yearExpanded:false, page:1, pageSize:20 }
       };
       const vatStaticTableState = {
         overview:{ page:1, pageSize:20 },
@@ -879,6 +879,11 @@
           if (mode === 'compare') return sum + salesTotal + purchaseTotal;
           return sum + salesTotal;
         }, 0), 1);
+      }
+      function vatTypeClass(type){
+        if (type === '客户') return 'is-customer';
+        if (type === '供应商') return 'is-supplier';
+        return '';
       }
       function vatMetricCells(row, year, denominator, mode){
         const sales = vatSum(row, year, 'sales');
@@ -1022,7 +1027,7 @@
             const totalCells = vatMetricCells(totalRow, 'total', tableTotal, mode);
             const yearCells = expanded ? vatYears.map(function(year){ return vatMetricCells(row, year, tableTotal, mode); }).join('') : '';
             const displayType = scope === 'related' ? row.category : row.type;
-            return '<tr><td class="vat-structure-sticky-1">' + row.name + '</td><td class="counterparty-blacklist-cell vat-structure-sticky-2">-</td><td class="vat-structure-sticky-3">' + displayType + '</td>' + totalCells + yearCells + '</tr>';
+            return '<tr><td class="vat-structure-sticky-1">' + row.name + '</td><td class="counterparty-blacklist-cell vat-structure-sticky-2">-</td><td class="vat-structure-sticky-3 portrait-type-cell vat-type-cell ' + vatTypeClass(displayType) + '">' + displayType + '</td>' + totalCells + yearCells + '</tr>';
           }).join('');
           if (pager && window.renderAuditPager) {
             window.renderAuditPager(pager, {

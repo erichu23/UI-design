@@ -426,20 +426,13 @@ body .vat-filter-card:hover{
 }
 
 body .vat-filter-card.is-active{
-  border-color:#2563eb;
-  background:linear-gradient(180deg,#f6fbff 0%,#eef6ff 100%);
-  box-shadow:0 0 0 2px rgba(37,99,235,.12),0 4px 10px rgba(22,75,125,.08);
+  border-color:#b8cdef;
+  background:linear-gradient(180deg,#f8fbff 0%,#eef6ff 100%);
+  box-shadow:inset 0 0 0 1px rgba(37,99,235,.08),0 3px 9px rgba(47,111,237,.06);
 }
 
 body .vat-filter-card.is-active::before{
-  content:"";
-  position:absolute;
-  top:9px;
-  bottom:9px;
-  left:0;
-  width:3px;
-  border-radius:0 999px 999px 0;
-  background:#2563eb;
+  content:none;
 }
 
 body .vat-filter-card span{
@@ -497,13 +490,14 @@ body .vat-filter-card.is-purchase strong{
 }
 
 body .vat-filter-card.is-compare{
-  height:88px !important;
-  min-height:88px !important;
+  height:104px !important;
+  min-height:104px !important;
   display:grid;
   grid-template-rows:18px 1fr;
   align-items:stretch;
-  gap:5px;
-  padding:8px 10px 9px;
+  gap:7px;
+  padding:9px 5px 10px;
+  overflow:visible;
 }
 
 body .vat-compare-title{
@@ -520,32 +514,45 @@ body .vat-compare-title{
 
 body .vat-compare-body{
   display:grid;
-  grid-template-columns:minmax(0,1fr) 32px minmax(0,1fr);
-  align-items:center;
-  gap:2px;
-}
-
-body .vat-compare-side{
-  display:flex;
-  min-width:0;
+  width:100%;
+  grid-template-columns:68px 22px 68px;
   align-items:center;
   justify-content:center;
-  gap:5px;
+  min-height:62px;
+  gap:1px;
+  transform:translateX(12px);
 }
 
-body .vat-compare-side strong{
-  width:28px;
-  height:28px;
-  flex:0 0 28px;
+body .vat-filter-card .vat-compare-side{
+  display:flex;
+  width:68px;
+  min-width:68px;
+  max-width:68px;
+  height:62px;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:4px;
+  text-align:center;
 }
 
-body .vat-compare-side em{
-  overflow:hidden;
+body .vat-filter-card .vat-compare-side strong{
+  width:30px;
+  height:30px;
+  flex:0 0 30px;
+}
+
+body .vat-filter-card .vat-compare-side em{
+  display:block;
+  width:100%;
+  overflow:visible;
   color:#475569;
-  font-size:10.5px;
+  font-size:9.5px;
   font-style:normal;
   font-weight:800;
-  line-height:14px;
+  line-height:15px;
+  min-height:15px;
+  text-align:center;
   text-overflow:clip;
   white-space:nowrap;
 }
@@ -553,9 +560,10 @@ body .vat-compare-side em{
 body .vat-compare-body > i{
   display:inline-flex;
   justify-self:center;
+  align-self:center;
   align-items:center;
   justify-content:center;
-  width:28px;
+  width:22px;
   height:18px;
   border-radius:999px;
   background:#eef5ff;
@@ -1303,4 +1311,82 @@ body .vat-page table.vat-structure-table .vat-year-head .vat-year-toggle:focus{
 body .vat-pagination.audit-pager{
   margin-top:6px !important;
   padding:2px 0 0 !important;
+}
+
+/* 购销税额构成卡片最终覆盖：避开银行流水通用 button !important 样式。 */
+body .vat-page .vat-structure-filter-cards:has(.vat-filter-card.is-compare){
+  grid-template-columns:repeat(auto-fit,minmax(178px,1fr)) !important;
+}
+
+body .vat-page .vat-filter-card{
+  border-color:#e3ebf5 !important;
+  background:linear-gradient(180deg,#fff 0%,#fbfdff 100%) !important;
+  box-shadow:0 1px 3px rgba(15,23,42,.035) !important;
+}
+
+body .vat-page .vat-filter-card:hover{
+  border-color:#dbe7f4 !important;
+  background:#fbfdff !important;
+}
+
+body .vat-page .vat-filter-card.is-active{
+  border-color:#b8cdef !important;
+  background:linear-gradient(180deg,#f8fbff 0%,#eef6ff 100%) !important;
+  box-shadow:inset 0 0 0 1px rgba(37,99,235,.08),0 3px 9px rgba(47,111,237,.06) !important;
+}
+
+body .vat-page .vat-filter-card.is-active::before{
+  content:none !important;
+}
+
+body .vat-page .vat-filter-card.is-compare .vat-compare-body{
+  display:flex !important;
+  width:100% !important;
+  min-height:62px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:4px !important;
+  transform:none !important;
+  padding-left:14px !important;
+  box-sizing:border-box !important;
+}
+
+body .vat-page .vat-filter-card.is-compare .vat-compare-side{
+  width:66px !important;
+  min-width:66px !important;
+  max-width:66px !important;
+  height:62px !important;
+}
+
+body .vat-page .vat-filter-card.is-compare .vat-compare-side em{
+  overflow:visible !important;
+  font-size:9.5px !important;
+  white-space:nowrap !important;
+}
+
+body .vat-page .vat-filter-card.is-compare .vat-compare-body > i{
+  width:22px !important;
+  flex:0 0 22px !important;
+}
+
+/* 购销税额构成表：对手方类型列复用银行流水分析的浅底色。 */
+body .vat-page table.vat-structure-table tbody td.vat-type-cell{
+  color:#334155 !important;
+  font-weight:500 !important;
+}
+
+body .vat-page table.vat-structure-table tbody td.vat-type-cell.is-customer{
+  background:#f1f5f9 !important;
+}
+
+body .vat-page table.vat-structure-table tbody td.vat-type-cell.is-supplier{
+  background:#f8f3ea !important;
+}
+
+body .vat-page table.vat-structure-table tbody tr:hover td.vat-type-cell.is-customer{
+  background:#e8eef5 !important;
+}
+
+body .vat-page table.vat-structure-table tbody tr:hover td.vat-type-cell.is-supplier{
+  background:#f1eadf !important;
 }
