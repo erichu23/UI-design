@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="./assets/css/base.css?v=20260807-vat-note-modal1"/>
   <link rel="stylesheet" href="./assets/css/footer.css?v=20260507-routine"/>
 
-  <link rel="stylesheet" href="./assets/css/layout.css?v=20260807-ds-no-k1"/>
+  <link rel="stylesheet" href="./assets/css/layout.css?v=20260811-unit3"/>
 </head>
 
 <body>
@@ -42,25 +42,29 @@
     </div>
 
     <nav class="layout-header-nav">
-      <div class="header-dropdown">
-        <button class="nav-btn header-btn">千元/K ▾</button>
-        <ul class="dropdown-menu">
-          <li data-value="yuan">元</li>
-          <li data-value="k">千元/K</li>
-          <li data-value="w">万元/W</li>
-          <li data-value="m">百万/M</li>
-          <li data-value="b">亿元/B</li>
+      <div class="header-dropdown" id="amountUnitDropdown">
+        <button class="nav-btn header-btn amount-unit-btn" id="amountUnitButton" type="button" aria-haspopup="listbox" aria-expanded="false">
+          <span id="amountUnitValue">百万元/M</span><span class="header-dropdown-chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="dropdown-menu amount-unit-menu" id="amountUnitMenu" role="listbox" aria-label="金额显示单位">
+          <li data-value="yuan" role="option" tabindex="-1">元</li>
+          <li data-value="k" role="option" tabindex="-1">千元/K</li>
+          <li data-value="w" role="option" tabindex="-1">万元/W</li>
+          <li data-value="m" role="option" tabindex="-1">百万元/M</li>
+          <li data-value="b" role="option" tabindex="-1">亿元/B</li>
         </ul>
       </div>
 
-      <div class="header-dropdown">
-        <button class="nav-btn header-btn">0 ▾</button>
-        <ul class="dropdown-menu">
-          <li data-value="0">0</li>
-          <li data-value="1">0.0</li>
-          <li data-value="2">0.00</li>
-          <li data-value="3">0.000</li>
-          <li data-value="4">0.0000</li>
+      <div class="header-dropdown" id="amountDecimalDropdown">
+        <button class="nav-btn header-btn amount-decimal-btn" id="amountDecimalButton" type="button" aria-haspopup="listbox" aria-expanded="false" title="小数位数">
+          <span id="amountDecimalValue">0</span><span class="header-dropdown-chevron" aria-hidden="true"></span>
+        </button>
+        <ul class="dropdown-menu amount-decimal-menu" id="amountDecimalMenu" role="listbox" aria-label="小数位数">
+          <li data-value="0" role="option" tabindex="-1">0</li>
+          <li data-value="1" role="option" tabindex="-1">0.0</li>
+          <li data-value="2" role="option" tabindex="-1">0.00</li>
+          <li data-value="3" role="option" tabindex="-1">0.000</li>
+          <li data-value="4" role="option" tabindex="-1">0.0000</li>
         </ul>
       </div>
 
@@ -127,7 +131,7 @@
       <li class="sb-row top-entry current-project-list"
           onclick="goProjectList()">
         <i class="fa-solid fa-bars ico"></i>
-        <span class="sb-txt">项目列表</span>
+        <span class="sb-txt">返回项目列表</span>
       </li>
 
       <li class="sb-toggle open" id="workbookMenuGroup">
@@ -138,20 +142,14 @@
         </div>
 
         <ul class="sb-submenu">
-          <li class="sb-row active module-item upload-analysis"
-              onclick="switchFrame('./fragments/data-upload.html','数据上传',this)">
+          <li class="sb-row active module-item data-management"
+              onclick="switchFrame('./fragments/data-management.html?v=20260811-balance-restore1','数据上传及管理',this)">
             <i class="fa-regular fa-circle-check ico"></i>
-            <span class="sb-txt">数据上传</span>
-          </li>
-
-          <li class="sb-row active module-item data-validation"
-              onclick="switchFrame('./fragments/data-validation.html?v=20260701-data-validation1','数据校验',this)">
-            <i class="fa-regular fa-circle-check ico"></i>
-            <span class="sb-txt">数据校验</span>
+            <span class="sb-txt">数据上传及管理</span>
           </li>
 
           <li class="sb-row active module-item bank-analysis"
-              onclick="switchFrame('./fragments/bank-analysis.html?v=20260807-vat-note-modal1','银行流水分析',this)">
+              onclick="switchFrame('./fragments/bank-analysis.html?v=20260811-guide-right1','银行流水分析',this)">
             <i class="fa-regular fa-circle-check ico"></i>
             <span class="sb-txt">银行流水分析</span>
           </li>
@@ -162,16 +160,16 @@
             <span class="sb-txt">增值税数据分析</span>
           </li>
 
-          <li class="sb-row active module-item finance-analysis"
-              onclick="switchFrame('./fragments/finance-analysis.html','财务数据分析',this)">
-            <i class="fa-regular fa-circle-check ico"></i>
-            <span class="sb-txt">财务数据分析</span>
-          </li>
-
           <li class="sb-row active module-item data-summary"
-              onclick="switchFrame('./fragments/data-summary.html?v=20260807-ds-no-k1','数据综合分析',this)">
+              onclick="switchFrame('./fragments/data-summary.html?v=20260811-unit5','数据综合分析',this)">
             <i class="fa-regular fa-circle-check ico"></i>
             <span class="sb-txt">数据综合分析</span>
+          </li>
+
+          <li class="sb-row active module-item workingpaper-export"
+              onclick="switchFrame('./fragments/workingpaper-export.html?v=20260811-materiality1','资金流水核查底稿导出',this)">
+            <i class="fa-regular fa-file-lines ico"></i>
+            <span class="sb-txt">资金流水核查底稿导出</span>
           </li>
         </ul>
       </li>
@@ -243,6 +241,12 @@
       <span class="crumb" id="crumbBook">-</span>
       <span class="sep">/</span>
       <b class="crumb" id="module-title">项目列表</b>
+      <div class="breadcrumb-data-issue" id="breadcrumbDataIssue" hidden>
+        <span class="breadcrumb-data-issue-dot" aria-hidden="true"></span>
+        <strong>仅供预览分析：</strong>
+        <span class="breadcrumb-data-issue-message">当前数据存在未认领、银行账号主档不完整等问题，请完成处理后再执行分析。</span>
+        <button class="breadcrumb-data-issue-link" id="breadcrumbDataIssueLink" type="button">前往数据校验&nbsp;›</button>
+      </div>
     </div>
 
     <!-- iframe模块区域 -->
@@ -262,6 +266,6 @@
 </footer>
 
 <!-- 平台外壳脚本 -->
-<script defer src="./assets/js/core/app-shell.js?v=20260807-ds-no-k1"></script>
+<script defer src="./assets/js/core/app-shell.js?v=20260811-guide-right1"></script>
 </body>
 </html>

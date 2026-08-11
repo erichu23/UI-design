@@ -18,6 +18,10 @@ body .kpi-and-issue{
   align-items:stretch;
 }
 
+body .kpi-and-issue.kpi-only{
+  grid-template-columns:minmax(0,1fr);
+}
+
 body .kpi-grid{
   display:grid;
   grid-template-columns:repeat(7,minmax(0,1fr));
@@ -218,7 +222,7 @@ body .tab-container .tab-guide-btn{
   flex:0 0 auto;
   height:26px;
   min-height:26px;
-  margin-left:6px;
+  margin-left:auto;
   padding:0 11px;
   border:1px solid #2f6fed;
   border-radius:7px;
@@ -1159,19 +1163,25 @@ body .bank-balance-trend-card .content{
 
 body .bank-balance-trend-card .account-trend-stack{
   display:grid;
-  grid-template-rows:repeat(2, minmax(146px, 1fr));
-  gap:2px;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
 }
 
 body .bank-balance-trend-card .account-trend-chart{
-  height:150px !important;
-  min-height:150px !important;
+  height:190px !important;
+  min-height:190px !important;
   border:0 !important;
   border-radius:0 !important;
   box-shadow:none !important;
   background:transparent !important;
   padding:0 !important;
   margin:0 !important;
+}
+
+@media (max-width:900px){
+  body .bank-balance-trend-card .account-trend-stack{
+    grid-template-columns:1fr;
+  }
 }
 
 body .account-summary-table-wrap{
@@ -2900,6 +2910,112 @@ body #tblAccountSummary{
   min-width:1260px !important;
 }
 
+/* 资金总览：合计与三年度金额列组，交互和经营分析汇总表保持一致。 */
+body .tab-pane .account-summary-table-wrap{
+  max-width:100% !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  scrollbar-width:thin !important;
+  scrollbar-color:rgba(148,163,184,.28) transparent !important;
+}
+
+body .tab-pane .account-summary-table-wrap::-webkit-scrollbar{
+  display:block !important;
+  width:4px !important;
+  height:4px !important;
+}
+
+body .tab-pane .account-summary-table-wrap::-webkit-scrollbar-thumb{
+  border-radius:999px !important;
+  background:rgba(148,163,184,.28) !important;
+}
+
+body #tblAccountSummary{
+  width:max-content !important;
+  min-width:100% !important;
+  table-layout:auto !important;
+}
+
+body .account-summary-table-wrap.is-year-expanded #tblAccountSummary{
+  min-width:1880px !important;
+}
+
+body #tblAccountSummary th,
+body #tblAccountSummary td{
+  min-width:88px !important;
+  white-space:nowrap !important;
+}
+
+body #tblAccountSummary th:first-child,
+body #tblAccountSummary td:first-child{
+  min-width:180px !important;
+}
+
+body #tblAccountSummary .monthly-flow-head,
+body #tblAccountSummary .monthly-flow-cell{
+  min-width:150px !important;
+}
+
+body #tblAccountSummary .account-year-head{
+  min-width:276px !important;
+  text-align:center !important;
+}
+
+body #tblAccountSummary .account-group-toggle-cell{
+  text-align:center !important;
+  background:var(--bank-table-head-group-bg,#eef5fc) !important;
+}
+
+body #tblAccountSummary .account-group-toggle{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  width:auto !important;
+  min-width:0 !important;
+  height:auto !important;
+  min-height:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#1e3a5f !important;
+  box-shadow:none !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  line-height:18px !important;
+  cursor:pointer !important;
+}
+
+body #tblAccountSummary .account-group-toggle:hover{
+  color:#1d4ed8 !important;
+}
+
+body #tblAccountSummary .account-group-toggle i{
+  color:#64748b !important;
+  font-size:13px !important;
+  font-style:normal !important;
+  line-height:1 !important;
+}
+
+body #tblAccountSummary .account-year-sub-head th,
+body #tblAccountSummary .account-year-group-head th{
+  text-align:center !important;
+}
+
+body #tblAccountSummary .is-num{
+  text-align:right !important;
+  font-variant-numeric:tabular-nums;
+}
+
+body #tblAccountSummary .flow-in{
+  color:var(--flow-in) !important;
+}
+
+body #tblAccountSummary .flow-out{
+  color:var(--flow-out) !important;
+}
+
 body #tblAccountSummary .check-window{
   overflow-x:auto !important;
   overflow-y:hidden !important;
@@ -3641,4 +3757,29 @@ body .portrait-table-card #portraitColumnsBtn{
 
 body .portrait-table-card #portraitExportBtn{
   margin-left:var(--audit-action-btn-gap, 6px) !important;
+}
+
+body .account-trend-year-select{
+  margin-left:auto !important;
+  width:108px !important;
+  min-width:108px !important;
+  max-width:108px !important;
+  flex:0 0 108px !important;
+  height:27px !important;
+  min-height:27px !important;
+  padding:0 7px;
+  border:1px solid #d7e2ee;
+  border-radius:6px;
+  background:#fff;
+  color:#334155;
+  font-size:11px;
+  font-weight:650;
+  outline:none;
+  cursor:pointer;
+}
+
+body .account-trend-year-select:hover{border-color:#afc0d3;}
+body .account-trend-year-select:focus{
+  border-color:#6f9ce8;
+  box-shadow:0 0 0 2px rgba(47,111,237,.10);
 }

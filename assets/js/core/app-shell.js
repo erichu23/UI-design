@@ -136,16 +136,128 @@ function initCollapsedSidebarFlyout(){
 const APP_FRAME_STATE_KEY = 'auditCompass.currentFrameState';
 const DEFAULT_PROJECT = 'Test2';
 const DEFAULT_BOOK = '20251022';
-const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260626-ds-position1';
-const DATA_VALIDATION_SRC = './fragments/data-validation.html?v=20260701-data-validation1';
-const DATA_SUMMARY_SRC = './fragments/data-summary.html?v=20260626-ds-position1';
+const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260811-guide-right1';
+const DATA_MANAGEMENT_SRC = './fragments/data-management.html?v=20260811-balance-restore1';
+const DATA_SUMMARY_SRC = './fragments/data-summary.html?v=20260811-unit5';
+const WORKINGPAPER_EXPORT_SRC = './fragments/workingpaper-export.html?v=20260811-materiality1';
 const PROJECT_LIST_SRC = './fragments/project-list.html';
+const AMOUNT_UNIT_KEY = 'auditCompass.amountUnit';
+const AMOUNT_DECIMAL_KEY = 'auditCompass.amountDecimals';
+const AMOUNT_UNIT_LABELS = { yuan:'元', k:'千元/K', w:'万元/W', m:'百万元/M', b:'亿元/B' };
+
+function getAmountDisplayState(){
+  const storedUnit = localStorage.getItem(AMOUNT_UNIT_KEY);
+  const unit = AMOUNT_UNIT_LABELS[storedUnit] ? storedUnit : 'm';
+  const decimals = Math.max(0, Math.min(4, Number(localStorage.getItem(AMOUNT_DECIMAL_KEY) ?? 0) || 0));
+  if (!storedUnit) localStorage.setItem(AMOUNT_UNIT_KEY, unit);
+  return { unit, decimals };
+}
+
+function syncAmountDisplayControls(){
+  const { unit, decimals } = getAmountDisplayState();
+  const unitValue = document.getElementById('amountUnitValue');
+  const decimalValue = document.getElementById('amountDecimalValue');
+  if (unitValue) unitValue.textContent = AMOUNT_UNIT_LABELS[unit];
+  if (decimalValue) decimalValue.textContent = decimals === 0 ? '0' : `0.${'0'.repeat(decimals)}`;
+  document.querySelectorAll('#amountUnitMenu [data-value]').forEach(item => {
+    const selected = item.dataset.value === unit;
+    item.classList.toggle('is-selected', selected);
+    item.setAttribute('aria-selected', String(selected));
+  });
+  document.querySelectorAll('#amountDecimalMenu [data-value]').forEach(item => {
+    const selected = Number(item.dataset.value) === decimals;
+    item.classList.toggle('is-selected', selected);
+    item.setAttribute('aria-selected', String(selected));
+  });
+}
+
+function reloadCurrentModuleForAmountDisplay(){
+  const frame = document.getElementById('module-frame');
+  try { frame?.contentWindow?.location.reload(); } catch (error) { if (frame) frame.src = frame.src; }
+}
+
+function injectAmountUnitRuntime(){
+  const frame = document.getElementById('module-frame');
+  const doc = frame?.contentDocument;
+  if (!doc?.head || doc.getElementById('auditUnitRuntime')) return;
+  const script = doc.createElement('script');
+  script.id = 'auditUnitRuntime';
+  script.src = new URL('./assets/js/core/unit-runtime.js?v=20260811-unit-sync1', window.location.href).href;
+  doc.head.appendChild(script);
+}
+
+function initAmountDisplayControls(){
+  syncAmountDisplayControls();
+  const dropdowns = Array.from(document.querySelectorAll('.header-dropdown'));
+  const hoverTimers = new WeakMap();
+  const setDropdownOpen = (dropdown, open) => {
+    if (!dropdown) return;
+    dropdown.classList.toggle('is-open', open);
+    dropdown.querySelector('.header-btn')?.setAttribute('aria-expanded', String(open));
+  };
+  const clearHoverTimer = dropdown => {
+    const timer = hoverTimers.get(dropdown);
+    if (timer) window.clearTimeout(timer);
+    hoverTimers.delete(dropdown);
+  };
+  const closeDropdowns = except => dropdowns.forEach(dropdown => {
+    if (dropdown === except) return;
+    clearHoverTimer(dropdown);
+    setDropdownOpen(dropdown, false);
+  });
+  dropdowns.forEach(dropdown => {
+    const button = dropdown.querySelector('.header-btn');
+    const menu = dropdown.querySelector('.dropdown-menu');
+    if (!button || !menu) return;
+    dropdown.addEventListener('pointerenter', () => {
+      clearHoverTimer(dropdown);
+      closeDropdowns(dropdown);
+      const timer = window.setTimeout(() => setDropdownOpen(dropdown, true), 70);
+      hoverTimers.set(dropdown, timer);
+    });
+    dropdown.addEventListener('pointerleave', () => {
+      clearHoverTimer(dropdown);
+      const timer = window.setTimeout(() => setDropdownOpen(dropdown, false), 260);
+      hoverTimers.set(dropdown, timer);
+    });
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      clearHoverTimer(dropdown);
+      closeDropdowns(dropdown);
+      setDropdownOpen(dropdown, true);
+      menu.querySelector('.is-selected')?.focus({preventScroll:true});
+    });
+    menu.addEventListener('click', event => event.stopPropagation());
+  });
+  document.querySelectorAll('#amountUnitMenu [data-value]').forEach(item => item.addEventListener('click', event => {
+    event.stopPropagation();
+    localStorage.setItem(AMOUNT_UNIT_KEY, item.dataset.value);
+    syncAmountDisplayControls();
+    closeDropdowns();
+    reloadCurrentModuleForAmountDisplay();
+  }));
+  document.querySelectorAll('#amountDecimalMenu [data-value]').forEach(item => item.addEventListener('click', event => {
+    event.stopPropagation();
+    localStorage.setItem(AMOUNT_DECIMAL_KEY, item.dataset.value);
+    syncAmountDisplayControls();
+    closeDropdowns();
+    reloadCurrentModuleForAmountDisplay();
+  }));
+  document.addEventListener('click', () => closeDropdowns());
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') closeDropdowns(); });
+  const frame = document.getElementById('module-frame');
+  frame?.addEventListener('load', () => window.setTimeout(injectAmountUnitRuntime, 0));
+  if (frame?.contentDocument?.readyState === 'complete') injectAmountUnitRuntime();
+}
 
 function normalizeFrameSrc(src){
   if (!src) return src;
   if (src.includes('bank-analysis.html')) return BANK_ANALYSIS_SRC;
-  if (src.includes('data-validation.html')) return DATA_VALIDATION_SRC;
+  if (src.includes('data-management.html')) return DATA_MANAGEMENT_SRC;
+  if (src.includes('data-upload.html')) return DATA_MANAGEMENT_SRC;
+  if (src.includes('data-validation.html')) return DATA_MANAGEMENT_SRC;
   if (src.includes('data-summary.html')) return DATA_SUMMARY_SRC;
+  if (src.includes('workingpaper-export.html')) return WORKINGPAPER_EXPORT_SRC;
   return src;
 }
 
@@ -205,6 +317,8 @@ function setProjectListState(){
   if (titleEl) titleEl.textContent = '项目列表';
   if (crumbProject) crumbProject.textContent = '项目列表';
   if (crumbBook) crumbBook.textContent = '-';
+  const issueEntry = document.getElementById('breadcrumbDataIssue');
+  if (issueEntry) issueEntry.hidden = true;
 
   document.querySelectorAll('.module-item').forEach(item => item.classList.remove('current'));
   document.querySelector('.current-project-list')?.classList.add('current');
@@ -220,6 +334,8 @@ function setWorkspaceState(project, book, title){
   if (titleEl) titleEl.textContent = title || '银行流水分析';
   if (crumbProject) crumbProject.textContent = project || 'Test2';
   if (crumbBook) crumbBook.textContent = book || '20251022';
+  const issueEntry = document.getElementById('breadcrumbDataIssue');
+  if (issueEntry) issueEntry.hidden = title !== '银行流水分析';
 
   document.querySelector('.current-project-list')?.classList.remove('current');
 }
@@ -272,6 +388,12 @@ document.getElementById('backToProjectList')?.addEventListener('click', function
   goProjectList();
 });
 
+document.getElementById('breadcrumbDataIssueLink')?.addEventListener('click', function(){
+  try { localStorage.setItem('dataManagement.activeTab', 'verify'); } catch (e) {}
+  const menu = document.querySelector('.module-item.data-management');
+  switchFrame(DATA_MANAGEMENT_SRC, '数据上传及管理', menu);
+});
+
 function restoreFrameState(){
   const frame = document.getElementById('module-frame');
   const breadcrumb = document.getElementById('breadcrumbBar');
@@ -304,5 +426,6 @@ function restoreFrameState(){
   }
 
   initCollapsedSidebarFlyout();
+  initAmountDisplayControls();
   restoreFrameState();
 })();

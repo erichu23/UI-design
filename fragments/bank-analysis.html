@@ -12,18 +12,18 @@
   <script defer src="../assets/vendor/echarts/echarts.min.js?v=5.6.0-local"></script>
   <script defer src="../assets/vendor/leaflet/leaflet.js?v=1.9.4-local"></script>
   <link rel="stylesheet" href="../assets/css/base.css?v=20260807-blacklist3"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260622-tab-rebuild7"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260811-daily-trend1"/>
   <link rel="stylesheet" href="../assets/css/pages/account.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/biz.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/routine.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260507-routine"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260723-button-size1"/>
-  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260727-relation-tab1"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260811-guide-right1"/>
+  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260811-feature-bars3"/>
   <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260624-riskflow1"/>
 </head>
 <body>
   <!-- 2) KPI + 数据问题分析（整块） -->
-<div class="kpi-and-issue">
+<div class="kpi-and-issue kpi-only">
 <!-- 左侧 KPI 总容器：左1列(前三个纵排) + 右2列(后四个2×2) -->
 <div class="kpi-grid">
 <div class="kpi k1">
@@ -55,54 +55,19 @@
 <div class="kpi-value neg"><a class="link-num danger" href="javascript:;">725,311K</a></div>
 </div>
 </div>
-<!-- 右侧：数据问题分析 -->
-<!-- 数据问题分析卡 -->
-<aside class="issue-card">
-  <div class="issue-body-simple">
-    <p class="issue-note">
-      <b>仅供预览分析：</b>
-      当前数据存在未认领 / 银行账号主档不完整的问题
-    </p>
-
-    <p class="issue-inline">
-      <span class="dot-danger"></span>
-      <span>存在未认领的原始流水文件，请及时认领。</span>
-      <a class="issue-inline-link" href="javascript:void(0)">点击跳转 »</a>
-    </p>
-
-    <p class="issue-inline">
-      <span class="dot-danger"></span>
-      <span>银行流水中，存在未在银行账号主档维护的账号，请补充银行账号主档。</span>
-      <a class="issue-inline-link" href="#详情">点击跳转 »</a>
-    </p>
-
-    <p class="issue-inline">
-      <span class="dot-danger"></span>
-      <span>存在汇率未转换的流水，请及时补充汇率主档。</span>
-      <a class="issue-inline-link" href="#详情">点击跳转 »</a>
-    </p>
-
-    <p class="issue-inline">
-      <span class="dot-danger"></span>
-      <span>存在当日不连续的流水文件，可在月度分布处手工打标首尾笔重新验证，请及时处理并确认无误。</span>
-      <a class="issue-inline-link" href="#详情">点击跳转 »</a>
-    </p>
-  </div>
-
-  <a class="issue-toggle" href="javascript:void(0)">查看详情</a>
-</aside>
 </div>
 <!-- 3) Tabs（紧贴在KPI/问题卡下面） -->
 <div class="tab-container">
 <div class="tabbar" id="topTabs">
 <div class="tab active" data-top="account">账户总览</div>
 <div class="tab" data-top="biz">经营分析</div>
-  <div class="tab" data-top="relation">已知关联方交易</div>
-<div class="tab" data-top="personal—transaction">个人交易</div>
+<!-- 暂时停用：已知关联方交易、个人交易。保留对应页面代码，后续可直接恢复入口。 -->
+<!-- <div class="tab" data-top="relation">已知关联方交易</div> -->
+<!-- <div class="tab" data-top="personal—transaction">个人交易</div> -->
 <div class="tab" data-top="transaction">特殊交易识别</div>
-<div class="tab" data-top="workingpaper">资金流水核查底稿导出</div>
+<!-- 资金流水核查底稿导出已迁移为数据综合分析下方的独立页面。 -->
+<!-- <div class="tab" data-top="workingpaper">资金流水核查底稿导出</div> -->
 <div class="tab" data-top="statement">流水查询</div>
-<div class="tab-materiality"><label for="bankMateriality">重要性水平</label><input id="bankMateriality" placeholder="请输入" type="text"/><span>元</span></div>
 <button class="tab-guide-btn" id="bankOperationGuideBtn" type="button">操作指引</button>
 <i class="inkbar" id="inkbar"></i>
 </div>
@@ -137,7 +102,7 @@
 <section class="tab-pane active" id="pane-account">
 <div class="tab-scroll">
 <div class="card bank-balance-trend-card">
-<div class="head"><div class="title">资金变动趋势</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div></div>
+<div class="head"><div class="title">资金变动趋势</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><select class="account-trend-year-select" id="accountTrendYearSelect" aria-label="资金变动趋势年份"><option value="2023-2025" selected>2023—2025</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option></select></div>
 <div class="content">
 <div class="account-trend-stack">
 <div class="chart-md account-trend-chart" id="chart-account-balance"></div>
@@ -161,135 +126,12 @@
 </div>
 </div>
 <div class="content">
-<!-- 状态图例（靠右） -->
-<div class="small account-check-legend">
-<span><i class="chk-dot chk-warn"></i>当日余额不连续</span>
-<span><i class="chk-dot chk-none"></i>无流水数据</span>
-<span><i class="chk-dot chk-ok"></i>检验无误</span>
-<span><i class="chk-dot chk-err"></i>余额错误</span>
-</div>
 <!-- 总览表 -->
 <div class="account-summary-table-wrap">
-<div class="check-scope" id="checkScope">
 <table class="table" id="tblAccountSummary">
-<thead>
-<tr>
-<th>被审计单位公司</th>
-<th>本方账号</th>
-<th>银行名称</th>
-<th class="monthly-flow-head no-sort">月度流入/流出</th>
-<th>流入总额</th>
-<th>流出总额</th>
-<th>交易总额</th>
-<th>交易总额占比</th>
-<th>交易笔数</th>
-<th>对手方数量</th>
-<th>流水文件</th>
-<th class="no-sort">操作</th>
-<th class="check-col no-sort">
-<div class="check-head">
-<button class="arrow-btn" id="btnToggleCheck" title="展开/收起三年校验月份">
-<svg aria-hidden="true" viewbox="0 0 16 16">
-<path d="M6.2 3.5l5 4.5-5 4.5V3.5z"></path>
-</svg>
-</button>
-<span>校验情况</span>
-<span class="check-nav" aria-label="切换校验月份">
-<button class="check-nav-btn" id="checkScrollPrev" type="button" title="向前查看月份">‹</button>
-<button class="check-nav-btn" id="checkScrollNext" type="button" title="向后查看月份">›</button>
-</span>
-</div>
-<div class="check-window check-window-head">
-<div class="y-labels">
-<span class="y y-2023">2023</span>
-<span class="sep-label">｜</span>
-<span class="y y-2024">2024</span>
-<span class="sep-label">｜</span>
-<span class="y y-2025">2025</span>
-</div>
-</div>
-</th>
-</tr>
-</thead>
-<tbody id="accountSummaryBody">
-<!-- 合计行 -->
-<tr class="sum-row">
-<td><strong>合计</strong></td><td></td><td></td>
-<td></td>
-<td style="color:var(--flow-in)"><strong>3,596,044K</strong></td><td style="color:var(--flow-out)"><strong>2,551,804K</strong></td><td><strong>6,147,847K</strong></td>
-<td><strong>100.00%</strong></td><td><strong>6,398</strong></td><td><strong>401</strong></td><td></td><td></td>
-<td class="check-col">
-<div class="check-window">
-<div class="months-grid">
-<span class="month-num col-2023">1</span><span class="month-num col-2023">2</span>
-<span class="month-num col-2023">3</span><span class="month-num col-2023">4</span>
-<span class="month-num col-2023">5</span><span class="month-num col-2023">6</span>
-<span class="month-num col-2023">7</span><span class="month-num col-2023">8</span>
-<span class="month-num col-2023">9</span><span class="month-num col-2023">10</span>
-<span class="month-num col-2023">11</span><span class="month-num col-2023">12</span>
-<span class="col-sep"></span>
-<span class="month-num">1</span><span class="month-num">2</span>
-<span class="month-num">3</span><span class="month-num">4</span>
-<span class="month-num">5</span><span class="month-num">6</span>
-<span class="month-num">7</span><span class="month-num">8</span>
-<span class="month-num">9</span><span class="month-num">10</span>
-<span class="month-num">11</span><span class="month-num">12</span>
-</div>
-</div>
-</td>
-</tr>
-<!-- 数据行（仅一行圆点） -->
-<tr>
-<td>华东制造集团有限公司</td>
-<td>1001***0821</td>
-<td>工行上海分行</td>
-<td class="monthly-flow-cell"><div class="monthly-flow-bars" aria-label="月度流入流出分布"></div></td>
-<td style="color:var(--flow-in)">3,596,044K</td>
-<td style="color:var(--flow-out)">2,551,804K</td>
-<td><b>6,147,847K</b></td>
-<td>100.00%</td>
-<td>6,398</td>
-<td>401</td>
-<td>1</td>
-<td class="actions">
-<a href="javascript:void(0)" title="账号详情"><i class="fa-solid fa-eye"></i></a>
-<a href="#" title="文件详情"><i class="fa-regular fa-file-lines"></i></a>
-</td>
-<td class="check-col">
-<div class="check-window">
-<div class="months-grid check-row">
-<i class="chk-dot chk-ok col-2023" title="2023-01"></i>
-<i class="chk-dot chk-ok col-2023" title="2023-02"></i>
-<i class="chk-dot chk-err col-2023" title="2023-03"></i>
-<i class="chk-dot chk-ok col-2023" title="2023-04"></i>
-<i class="chk-dot chk-ok col-2023" title="2023-05"></i>
-<i class="chk-dot chk-ok col-2023" title="2023-06"></i>
-<i class="chk-dot chk-warn col-2023" title="2023-07"></i>
-<i class="chk-dot chk-ok col-2023" title="2023-08"></i>
-<i class="chk-dot chk-ok col-2023" title="2023-09"></i>
-<i class="chk-dot chk-ok col-2023" title="2023-10"></i>
-<i class="chk-dot chk-err col-2023" title="2023-11"></i>
-<i class="chk-dot chk-ok col-2023" title="2023-12"></i>
-<span class="col-sep"></span>
-<i class="chk-dot chk-ok" title="2024-01"></i>
-<i class="chk-dot chk-ok" title="2024-02"></i>
-<i class="chk-dot chk-ok" title="2024-03"></i>
-<i class="chk-dot chk-warn" title="2024-04"></i>
-<i class="chk-dot chk-ok" title="2024-05"></i>
-<i class="chk-dot chk-ok" title="2024-06"></i>
-<i class="chk-dot chk-none" title="2024-07"></i>
-<i class="chk-dot chk-ok" title="2024-08"></i>
-<i class="chk-dot chk-ok" title="2024-09"></i>
-<i class="chk-dot chk-ok" title="2024-10"></i>
-<i class="chk-dot chk-err" title="2024-11"></i>
-<i class="chk-dot chk-ok" title="2024-12"></i>
-</div>
-</div>
-</td>
-</tr>
-</tbody>
+<thead id="accountSummaryHead"></thead>
+<tbody id="accountSummaryBody"></tbody>
 </table>
-</div>
 </div>
 <div class="pagination" id="pagination-account"></div>
 </div>
@@ -341,7 +183,7 @@
 
   <div class="portrait-chart-grid">
     <div class="card portrait-chart-card"><div class="head"><div class="title">月度收支构成分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-legend"><span class="is-in">流入</span><span class="is-out">流出</span></div></div><div class="content"><div class="portrait-chart" id="portraitMonthlyChart"></div></div></div>
-    <div class="card portrait-chart-card portrait-feature-card"><div class="head"><div class="title">对手方交易特征分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-feature-tools"><div class="portrait-segment" id="portraitBubbleTabs"><button class="is-active" data-mode="inflow" type="button">流入</button><button data-mode="outflow" type="button">流出</button><button data-mode="total" type="button">交易总额</button></div><label class="portrait-topn-control">前<input id="portraitFeatureTopN" type="number" min="5" max="100" step="1" value="20"/>大</label></div></div><div class="content"><div class="portrait-feature-table-wrap"><table class="portrait-feature-table"><thead><tr><th>对手方名称</th><th id="portraitFeatureAmountHead">流入金额</th></tr></thead><tbody id="portraitFeatureBody"></tbody></table></div></div></div>
+    <div class="card portrait-chart-card portrait-feature-card"><div class="head"><div class="title">对手方交易特征分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-feature-tools"><div class="portrait-segment" id="portraitBubbleTabs"><button class="is-active" data-mode="inflow" type="button">流入</button><button data-mode="outflow" type="button">流出</button><button data-mode="total" type="button">交易总额</button></div><label class="portrait-topn-control">前<input id="portraitFeatureTopN" type="number" min="5" max="100" step="1" value="20"/>大</label></div></div><div class="content"><div class="portrait-feature-scroll-shell"><div class="portrait-feature-table-wrap" id="portraitFeatureScroll"><table class="portrait-feature-table"><thead><tr><th>对手方名称</th><th id="portraitFeatureAmountHead">流入金额</th></tr></thead><tbody id="portraitFeatureBody"></tbody></table></div><div class="portrait-feature-scroll-rail" aria-hidden="true"><i id="portraitFeatureScrollThumb"></i></div></div></div></div>
   </div>
 
   <div class="card portrait-table-card">
@@ -527,7 +369,8 @@
 </div>
 </section>
 <!-- ===================== 个人交易 ===================== -->
-<section class="tab-pane hide" id="pane-personal—transaction">
+<!-- 暂时停用：个人交易页面内容保留，不参与当前 Tab 切换。 -->
+<section class="tab-pane hide" id="pane-personal—transaction" hidden aria-hidden="true">
 <div class="tab-scroll relation-page personal-page">
   <div class="card relation-analysis-card personal-analysis-card">
     <div class="head">
@@ -571,7 +414,8 @@
 </div></section>
 
 <!-- =====================已知关联交易 面板 ===================== -->
-<section class="tab-pane hide" id="pane-relation">
+<!-- 暂时停用：已知关联方交易页面内容保留，不参与当前 Tab 切换。 -->
+<section class="tab-pane hide" id="pane-relation" hidden aria-hidden="true">
 <div class="tab-scroll relation-page">
   <div class="card relation-analysis-card">
     <div class="head">
@@ -797,7 +641,7 @@
 </section>
 <!-- ===================== 资金流水核查底稿导出 ===================== -->
 <section class="tab-pane hide" id="pane-transaction">
-<iframe class="risk-reference-frame" src="./fund-flow-check.html?v=20260626-ds-position1" title="高风险核查"></iframe>
+<iframe class="risk-reference-frame" src="./fund-flow-check.html?v=20260811-cfo-rank-compact22" title="高风险核查"></iframe>
 <div class="risk-page" hidden>
   <aside class="risk-sidebar" id="riskSidebar"><div class="risk-sidebar-head"><div><b>核查程序</b><span id="riskProcedureCount">29 项</span></div><button id="riskSidebarToggle" type="button" title="收起核查程序">‹</button></div><div class="risk-procedure-list" id="riskProcedureList"></div><button class="risk-add-btn" id="riskAddProcedure" type="button">+ 新增核查程序</button></aside>
   <div class="risk-main">
@@ -809,7 +653,8 @@
 </section>
 
 <!-- ===================== 资金流水核查底稿导出 ===================== -->
-<section class="tab-pane hide" id="pane-workingpaper">
+<!-- 原银行流水分析内的底稿导出页面保留，当前由独立页面承载。 -->
+<section class="tab-pane hide" id="pane-workingpaper" hidden aria-hidden="true">
   <div class="tab-scroll wp-page">
 
     <!-- 信息测试 - 准确性测试 -->
@@ -1023,9 +868,9 @@
 </section></div>
 
 
-<script defer src="../assets/js/core/shared.js?v=20260723-column-popover1"></script>
+<script defer src="../assets/js/core/shared.js?v=20260811-account-years1"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260508-fast2"></script>
-<script defer src="../assets/js/pages/portrait.js?v=20260807-blacklist3"></script>
+<script defer src="../assets/js/pages/portrait.js?v=20260811-unit-sync1"></script>
 <script defer src="../assets/js/pages/routine.js?v=20260508-fast2"></script>
 </body>
 </html>

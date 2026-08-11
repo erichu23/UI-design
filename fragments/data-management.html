@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-Hans-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin/>
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/></noscript>
+  <script defer src="../assets/vendor/echarts/echarts.min.js?v=5.6.0-local"></script>
+  <link rel="stylesheet" href="../assets/css/base.css?v=20260811-data-management19"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260811-data-management19"/>
+  <link rel="stylesheet" href="../assets/css/pages/account.css?v=20260811-data-management19"/>
+  <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260811-data-management19"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260811-data-management19"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-upload.css?v=20260811-data-management19"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-validation.css?v=20260811-data-management19"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260811-data-management27"/>
+  <title>数据上传及管理</title>
+</head>
+<body>
+<div class="data-validation-page data-management-page">
+  <div class="tab-container data-validation-tab-card data-management-tab-card">
+    <div class="tabbar" id="dataManagementTabs">
+      <button class="tab active" type="button" data-management-tab="upload">数据上传</button>
+      <button class="tab" type="button" data-management-tab="verify">数据校验</button>
+      <button class="tab" type="button" data-management-tab="scope-control">分析范围管控</button>
+      <button class="du-template-btn dm-template-btn" type="button">下载导入模板</button>
+      <i class="inkbar" id="dataManagementInkbar"></i>
+    </div>
+  </div>
+
+  <section class="dm-tab-pane tab-pane active" id="pane-upload" data-management-pane="upload">
+    <div class="tab-scroll dm-upload-scroll">
+      <div class="du-page dm-upload-content">
+        <!-- 主档数据管理 -->
+            <section class="du-card">
+              <div class="du-card-head">
+                <div class="du-card-title">
+                  <span class="du-card-bar"></span>
+                  <span>主档数据管理</span>
+                </div>
+              </div>
+        
+              <div class="du-table-wrap">
+                <table class="du-table">
+                  <thead>
+                    <tr>
+                      <th style="width:60px;">序号</th>
+                      <th>数据采集项</th>
+                      <th style="width:110px;">采集状态</th>
+                      <th style="width:120px;">创建人</th>
+                      <th style="width:120px;">创建时间</th>
+                      <th style="width:120px;">更新人</th>
+                      <th style="width:120px;">更新时间</th>
+                      <th style="width:140px;">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>被审计单位主档信息（必有上传）</td>
+                      <td><span class="du-status done"><i></i> 已采集</span></td>
+                      <td>Ken</td>
+                      <td>2026-04-08</td>
+                      <td>Ken</td>
+                      <td>2026-04-08</td>
+                      <td class="du-actions">
+                        <a href="javascript:void(0)">导入</a>
+                        <a href="javascript:void(0)">导入记录</a>
+                        <a href="javascript:void(0)">查看数据</a>
+                      </td>
+                    </tr>
+                    <tr data-issue-focus="bank-account-master">
+                      <td>2</td>
+                      <td>被审计单位银行账号主档信息</td>
+                      <td><span class="du-status pending"><i></i> 未采集</span></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="du-actions">
+                        <a href="javascript:void(0)">导入</a>
+                        <a href="javascript:void(0)">导入记录</a>
+                        <a href="javascript:void(0)">查看数据</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td>关联方主档信息</td>
+                      <td><span class="du-status pending"><i></i> 未采集</span></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="du-actions">
+                        <a href="javascript:void(0)">导入</a>
+                        <a href="javascript:void(0)">导入记录</a>
+                        <a href="javascript:void(0)">查看数据</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>4</td>
+                      <td>客户主档信息</td>
+                      <td><span class="du-status pending"><i></i> 未采集</span></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="du-actions">
+                        <a href="javascript:void(0)">导入</a>
+                        <a href="javascript:void(0)">导入记录</a>
+                        <a href="javascript:void(0)">查看数据</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>5</td>
+                      <td>供应商主档信息</td>
+                      <td><span class="du-status pending"><i></i> 未采集</span></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="du-actions">
+                        <a href="javascript:void(0)">导入</a>
+                        <a href="javascript:void(0)">导入记录</a>
+                        <a href="javascript:void(0)">查看数据</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>6</td>
+                      <td>员工主档信息</td>
+                      <td><span class="du-status pending"><i></i> 未采集</span></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="du-actions">
+                        <a href="javascript:void(0)">导入</a>
+                        <a href="javascript:void(0)">导入记录</a>
+                        <a href="javascript:void(0)">查看数据</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+        
+            <!-- 流水数据管理 -->
+            <section class="du-card">
+              <div class="du-card-head">
+                <div class="du-card-title">
+                  <span class="du-card-bar"></span>
+                  <span>流水数据管理</span>
+                </div>
+              </div>
+        
+              <div class="du-tabbar" id="duUploadTabs">
+                <button class="du-tab active" data-upload-tab="bank" type="button">银行流水数据上传</button>
+                <button class="du-tab" data-upload-tab="vat" type="button">增值税数据上传</button>
+              </div>
+        
+              <div class="du-table-wrap du-upload-panel active" data-upload-panel="bank">
+                <table class="du-table">
+                  <thead>
+                    <tr>
+                      <th style="width:60px;">序号</th>
+                      <th>数据采集项</th>
+                      <th style="width:110px;">采集状态</th>
+                      <th style="width:120px;">创建人</th>
+                      <th style="width:120px;">创建时间</th>
+                      <th style="width:120px;">更新人</th>
+                      <th style="width:120px;">更新时间</th>
+                      <th style="width:140px;">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr data-issue-focus="bank-upload">
+                      <td>1</td>
+                      <td>银行流水（账龄电子明细及支付宝/微信数据）</td>
+                      <td><span class="du-status pending"><i></i> 未采集</span></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="du-actions">
+                        <a href="javascript:void(0)">导入</a>
+                        <a href="javascript:void(0)">导入记录</a>
+                        <a href="javascript:void(0)">查看数据</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>银行流水（手工账明细流水数据）</td>
+                      <td><span class="du-status pending"><i></i> 未采集</span></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="du-actions">
+                        <a href="javascript:void(0)">导入</a>
+                        <a href="javascript:void(0)">导入记录</a>
+                        <a href="javascript:void(0)">查看数据</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td>总账科目余额表</td>
+                      <td><span class="du-status pending"><i></i> 未采集</span></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="du-actions">
+                        <a href="javascript:void(0)">导入</a>
+                        <a href="javascript:void(0)">导入记录</a>
+                        <a href="javascript:void(0)">查看数据</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>4</td>
+                      <td>分账号科目余额表</td>
+                      <td><span class="du-status pending"><i></i> 未采集</span></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="du-actions">
+                        <a href="javascript:void(0)">导入</a>
+                        <a href="javascript:void(0)">导入记录</a>
+                        <a href="javascript:void(0)">查看数据</a>
+                      </td>
+                    </tr>
+                    <tr data-issue-focus="exchange-rate">
+                      <td>5</td>
+                      <td>汇率主档信息</td>
+                      <td><span class="du-status pending"><i></i> 未采集</span></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="du-actions">
+                        <a href="javascript:void(0)">导入</a>
+                        <a href="javascript:void(0)">导入记录</a>
+                        <a href="javascript:void(0)">查看数据</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+        
+              <div class="du-table-wrap du-upload-panel" data-upload-panel="vat">
+                <table class="du-table">
+                  <thead>
+                    <tr>
+                      <th style="width:60px;">序号</th>
+                      <th>数据采集项</th>
+                      <th style="width:110px;">采集状态</th>
+                      <th style="width:120px;">创建人</th>
+                      <th style="width:120px;">创建时间</th>
+                      <th style="width:120px;">更新人</th>
+                      <th style="width:120px;">更新时间</th>
+                      <th style="width:140px;">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>增值税销项税发票清单</td>
+                      <td><span class="du-status pending"><i></i> 未采集</span></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="du-actions">
+                        <a href="javascript:void(0)">导入</a>
+                        <a href="javascript:void(0)">导入记录</a>
+                        <a href="javascript:void(0)">查看数据</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>增值税进项税发票清单</td>
+                      <td><span class="du-status pending"><i></i> 未采集</span></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="du-actions">
+                        <a href="javascript:void(0)">导入</a>
+                        <a href="javascript:void(0)">导入记录</a>
+                        <a href="javascript:void(0)">查看数据</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td>增值税申报表</td>
+                      <td><span class="du-status pending"><i></i> 未采集</span></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="du-actions">
+                        <a href="javascript:void(0)">导入</a>
+                        <a href="javascript:void(0)">导入记录</a>
+                        <a href="javascript:void(0)">查看数据</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+        
+              <div class="du-footer">
+                <button class="du-analyze-btn" type="button" disabled>执行分析</button>
+              </div>
+            </section>
+          </div>
+    </div>
+  </section>
+
+  <section class="dm-tab-pane tab-pane" id="pane-verify" data-management-pane="verify" hidden>
+    <div class="tab-scroll">
+      <div class="dm-pane-content">
+      <div class="card dm-data-issues-card" id="dataIssueOverview">
+        <div class="head">
+          <div class="title">数据问题概览</div>
+          <div class="dm-issue-count"><strong>4</strong><span>项待处理</span></div>
+        </div>
+        <div class="content dm-issue-list">
+          <div class="dm-issue-row">
+            <span class="dm-issue-dot" aria-hidden="true"></span>
+            <div class="dm-issue-main">
+              <b>未认领流水</b>
+              <span>存在未认领的原始流水文件，请及时认领。</span>
+            </div>
+            <button class="dm-issue-link" type="button" data-issue-target="bank-upload">点击跳转 »</button>
+          </div>
+          <div class="dm-issue-row">
+            <span class="dm-issue-dot" aria-hidden="true"></span>
+            <div class="dm-issue-main">
+              <b>银行账号主档不完整</b>
+              <span>银行流水中存在未在银行账号主档维护的账号，请补充银行账号主档。</span>
+            </div>
+            <button class="dm-issue-link" type="button" data-issue-target="bank-account-master">点击跳转 »</button>
+          </div>
+          <div class="dm-issue-row">
+            <span class="dm-issue-dot" aria-hidden="true"></span>
+            <div class="dm-issue-main">
+              <b>汇率主档不完整</b>
+              <span>存在汇率未转换的流水，请及时补充汇率主档。</span>
+            </div>
+            <button class="dm-issue-link" type="button" data-issue-target="exchange-rate">点击跳转 »</button>
+          </div>
+          <div class="dm-issue-row">
+            <span class="dm-issue-dot" aria-hidden="true"></span>
+            <div class="dm-issue-main">
+              <b>当日余额不连续</b>
+              <span>存在当日余额不连续的流水文件，请在余额连续性校验中处理并确认。</span>
+            </div>
+            <button class="dm-issue-link" type="button" data-issue-target="balance-check">点击跳转 »</button>
+          </div>
+        </div>
+      </div>
+      <!-- ========== 余额连续性校验 ========== -->
+<div class="card dm-balance-continuity-card">
+<div class="head">
+<div class="title">余额连续性校验</div>
+<!-- 紧跟标题：业务逻辑 / 操作提示 -->
+<!-- 右侧：自定义表头 / 生成分析结果 -->
+<div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+<button class="btn" id="btnCustomizeCols">自定义表头</button>
+<button class="btn primary" id="btnBalanceAnalyze">生成分析结果</button>
+</div>
+</div>
+<div class="content">
+<!-- 状态图例（靠右） -->
+<div class="small account-check-legend">
+<span><i class="chk-dot chk-warn"></i>当日余额不连续</span>
+<span><i class="chk-dot chk-none"></i>无流水数据</span>
+<span><i class="chk-dot chk-ok"></i>检验无误</span>
+<span><i class="chk-dot chk-err"></i>余额错误</span>
+</div>
+<!-- 总览表 -->
+<div class="account-summary-table-wrap">
+<div class="check-scope" id="checkScope">
+<table class="table" id="tblAccountSummary">
+<thead>
+<tr>
+<th>被审计单位公司</th>
+<th>本方账号</th>
+<th>银行名称</th>
+<th class="monthly-flow-head no-sort">月度流入/流出</th>
+<th>流入总额</th>
+<th>流出总额</th>
+<th>交易总额</th>
+<th>交易总额占比</th>
+<th>交易笔数</th>
+<th>对手方数量</th>
+<th>流水文件</th>
+<th class="no-sort">操作</th>
+<th class="check-col no-sort">
+<div class="check-head">
+<button class="arrow-btn" id="btnToggleCheck" title="展开/收起三年校验月份">
+<svg aria-hidden="true" viewbox="0 0 16 16">
+<path d="M6.2 3.5l5 4.5-5 4.5V3.5z"></path>
+</svg>
+</button>
+<span>校验情况</span>
+<span class="check-nav" aria-label="切换校验月份">
+<button class="check-nav-btn" id="checkScrollPrev" type="button" title="向前查看月份">‹</button>
+<button class="check-nav-btn" id="checkScrollNext" type="button" title="向后查看月份">›</button>
+</span>
+</div>
+<div class="check-window check-window-head">
+<div class="y-labels">
+<span class="y y-2023">2023</span>
+<span class="sep-label">｜</span>
+<span class="y y-2024">2024</span>
+<span class="sep-label">｜</span>
+<span class="y y-2025">2025</span>
+</div>
+</div>
+</th>
+</tr>
+</thead>
+<tbody id="accountSummaryBody">
+<!-- 合计行 -->
+<tr class="sum-row">
+<td><strong>合计</strong></td><td></td><td></td>
+<td></td>
+<td style="color:var(--flow-in)"><strong>3,596,044K</strong></td><td style="color:var(--flow-out)"><strong>2,551,804K</strong></td><td><strong>6,147,847K</strong></td>
+<td><strong>100.00%</strong></td><td><strong>6,398</strong></td><td><strong>401</strong></td><td></td><td></td>
+<td class="check-col">
+<div class="check-window">
+<div class="months-grid">
+<span class="month-num col-2023">1</span><span class="month-num col-2023">2</span>
+<span class="month-num col-2023">3</span><span class="month-num col-2023">4</span>
+<span class="month-num col-2023">5</span><span class="month-num col-2023">6</span>
+<span class="month-num col-2023">7</span><span class="month-num col-2023">8</span>
+<span class="month-num col-2023">9</span><span class="month-num col-2023">10</span>
+<span class="month-num col-2023">11</span><span class="month-num col-2023">12</span>
+<span class="col-sep"></span>
+<span class="month-num">1</span><span class="month-num">2</span>
+<span class="month-num">3</span><span class="month-num">4</span>
+<span class="month-num">5</span><span class="month-num">6</span>
+<span class="month-num">7</span><span class="month-num">8</span>
+<span class="month-num">9</span><span class="month-num">10</span>
+<span class="month-num">11</span><span class="month-num">12</span>
+</div>
+</div>
+</td>
+</tr>
+<!-- 数据行（仅一行圆点） -->
+<tr>
+<td>华东制造集团有限公司</td>
+<td>1001***0821</td>
+<td>工行上海分行</td>
+<td class="monthly-flow-cell"><div class="monthly-flow-bars" aria-label="月度流入流出分布"></div></td>
+<td style="color:var(--flow-in)">3,596,044K</td>
+<td style="color:var(--flow-out)">2,551,804K</td>
+<td><b>6,147,847K</b></td>
+<td>100.00%</td>
+<td>6,398</td>
+<td>401</td>
+<td>1</td>
+<td class="actions">
+<a href="javascript:void(0)" title="账号详情"><i class="fa-solid fa-eye"></i></a>
+<a href="#" title="文件详情"><i class="fa-regular fa-file-lines"></i></a>
+</td>
+<td class="check-col">
+<div class="check-window">
+<div class="months-grid check-row">
+<i class="chk-dot chk-ok col-2023" title="2023-01"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-02"></i>
+<i class="chk-dot chk-err col-2023" title="2023-03"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-04"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-05"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-06"></i>
+<i class="chk-dot chk-warn col-2023" title="2023-07"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-08"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-09"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-10"></i>
+<i class="chk-dot chk-err col-2023" title="2023-11"></i>
+<i class="chk-dot chk-ok col-2023" title="2023-12"></i>
+<span class="col-sep"></span>
+<i class="chk-dot chk-ok" title="2024-01"></i>
+<i class="chk-dot chk-ok" title="2024-02"></i>
+<i class="chk-dot chk-ok" title="2024-03"></i>
+<i class="chk-dot chk-warn" title="2024-04"></i>
+<i class="chk-dot chk-ok" title="2024-05"></i>
+<i class="chk-dot chk-ok" title="2024-06"></i>
+<i class="chk-dot chk-none" title="2024-07"></i>
+<i class="chk-dot chk-ok" title="2024-08"></i>
+<i class="chk-dot chk-ok" title="2024-09"></i>
+<i class="chk-dot chk-ok" title="2024-10"></i>
+<i class="chk-dot chk-err" title="2024-11"></i>
+<i class="chk-dot chk-ok" title="2024-12"></i>
+</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="pagination" id="pagination-account"></div>
+</div>
+</div>
+      <div class="card">
+      <div class="head">
+      <div class="title">缺失同名账户</div>
+      <div class="head-inline bank-help-actions">
+      <button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button>
+      <button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+      <button class="btn primary" id="btnAnalyze">生成分析结果</button>
+      <button class="btn primary" id="btnFlow">生成流水</button>
+      </div>
+      </div>
+      <div class="content">
+      <div class="verify-metric-strip">
+      <div class="top-item"><div class="lbl small">交易总额</div><div class="num">286,420 K</div></div>
+      <div class="top-item"><div class="lbl small">流入本方总额</div><div class="num" style="color:var(--flow-in)">
+      171,260 K
+      </div></div>
+      <div class="top-item"><div class="lbl small">本方流出总额</div><div class="num" style="color:var(--flow-out)">
+      115,160 K</div></div>
+      <div class="top-item"><div class="lbl small">已解释/总数</div><div class="num">2 / 8</div></div>
+      </div>
+      <div style="overflow:auto;">
+      <table class="table" id="tblMissingSameName">
+      <thead>
+      <tr>
+      <th>对手方名称（被审计单位）</th>
+      <th>缺失银行账号</th>
+      <th>流入本方总额</th>
+      <th>占比</th>
+      <th>本方流出总额</th>
+      <th>占比</th>
+      <th>交易次数</th>
+      <th>占比</th>
+      <th class="no-sort">缺失原因</th>
+      <th class="no-sort">支持性文件索引</th>
+      <th class="no-sort">操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <!-- ====== 汇总行（可展开/收起） ====== -->
+      <tr class="group-row" data-group="abc">
+      <td>
+      <button class="expand-btn expanded" title="展开/收起明细">▼</button>
+      <strong>华东制造集团有限公司</strong>　<span class="text-muted">已解释/总数：2/8</span>
+      </td>
+      <td></td>
+      <td style="color:var(--flow-in)"><strong>1,253,100K</strong></td>
+      <td><strong>100.00%</strong></td>
+      <td style="color:var(--flow-out)"><strong>105,000K</strong></td>
+      <td><strong>100.00%</strong></td>
+      <td><strong>45</strong></td>
+      <td><strong>100.00%</strong></td>
+      <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
+      <td></td>
+      <td></td>
+      </tr>
+      <!-- ====== 明细行（默认显示） ====== -->
+      <tr class="detail-row group-abc">
+      <td>　└ 华东制造集团有限公司</td>
+      <td>6214 **** 8890</td>
+      <td style="color:var(--flow-in)">1,021,100K</td>
+      <td>81.49%</td>
+      <td style="color:var(--flow-out)">0K</td>
+      <td>0.00%</td>
+      <td>37</td>
+      <td>82.22%</td>
+      <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
+      <td></td>
+      <td class="actions">
+      <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
+      </td>
+      </tr>
+      <tr class="detail-row group-abc">
+      <td>　└ 华东制造集团有限公司</td>
+      <td>3941 **** 2193</td>
+      <td style="color:var(--flow-in)">232,000K</td>
+      <td>18.51%</td>
+      <td style="color:var(--flow-out)">2,000K</td>
+      <td>1.90%</td>
+      <td>6</td>
+      <td>13.33%</td>
+      <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
+      <td></td>
+      <td class="actions">
+      <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
+      </td>
+      </tr>
+      <tr class="detail-row group-abc">
+      <td>　└ 华东制造集团有限公司</td>
+      <td>2170 **** 7797</td>
+      <td style="color:var(--flow-in)">0K</td>
+      <td>0.00%</td>
+      <td style="color:var(--flow-out)">8,000K</td>
+      <td>7.62%</td>
+      <td>1</td>
+      <td>2.22%</td>
+      <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
+      <td></td>
+      <td class="actions">
+      <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
+      </td>
+      </tr>
+      <tr class="detail-row group-abc">
+      <td>　└ 华东制造集团有限公司</td>
+      <td>5784 **** 7907</td>
+      <td style="color:var(--flow-in)">0K</td>
+      <td>0.00%</td>
+      <td style="color:var(--flow-out)">95,000K</td>
+      <td>90.48%</td>
+      <td>1</td>
+      <td>2.22%</td>
+      <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
+      <td></td>
+      <td class="actions">
+      <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
+      </td>
+      </tr>
+      </tbody>
+      </table>
+      </div>
+      </div>
+      </div>
+      <div class="card">
+      <div class="head"><div class="title">总账核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><button class="btn bank-head-push">导出清单</button></div>
+      <div class="content"><div style="overflow:auto"><table class="table bank-reconcile-table">
+      <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">与发行人的关系</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">银行流水数据</th><th colspan="4">科目余额表-总账数据</th><th colspan="4">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" class="no-sort">文档索引</th></tr><tr><th><span>期初金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>期初差异</span><em>a1-a2</em></th><th><span>借方差异</span><em>b1-b2</em></th><th><span>贷方差异</span><em>c1-c2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
+      <tbody id="generalLedgerReconcileBody"><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2025</td><td>RMB</td><td>1,218,000</td><td class="amount-in">243,344K</td><td class="amount-out">221,614K</td><td>1,239,730</td><td>1,218,000</td><td>221,614</td><td>243,344</td><td>1,239,730</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2025</td><td>RMB</td><td>1,896,000</td><td class="amount-in">282,511K</td><td class="amount-out">261,319K</td><td>1,917,192</td><td>1,896,000</td><td>261,319</td><td>282,511</td><td>1,917,192</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
+      </table></div><div class="pagination reconcile-pagination" id="generalLedgerReconcilePager"></div></div></div>
+      <div class="card">
+      <div class="head"><div class="title">分账号核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><button class="btn bank-head-push">导出清单</button></div>
+      <div class="content"><div style="overflow:auto"><table class="table bank-reconcile-table">
+      <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">与发行人的关系</th><th rowspan="2">银行账号</th><th rowspan="2">开户银行</th><th rowspan="2">数据来源</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">银行流水数据</th><th colspan="4">科目余额表-分账号数据</th><th colspan="4">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" class="no-sort">文档索引</th></tr><tr><th><span>期初金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>期初差异</span><em>a1-a2</em></th><th><span>借方差异</span><em>b1-b2</em></th><th><span>贷方差异</span><em>c1-c2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
+      <tbody id="accountReconcileBody"><tr><td>华东制造集团有限公司</td><td>发行人</td><td>1001***0821</td><td>工行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>1,128,000</td><td class="amount-in">140,680K</td><td class="amount-out">128,640K</td><td>1,140,040</td><td>1,128,000</td><td>128,640</td><td>140,680</td><td>1,140,040</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>上海星河科技有限公司</td><td>发行人</td><td>1002***4186</td><td>建行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>915,000</td><td class="amount-in">112,430K</td><td class="amount-out">103,260K</td><td>924,170</td><td>915,000</td><td>103,260</td><td>112,430</td><td>924,170</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
+      </table></div><div class="pagination reconcile-pagination" id="accountReconcilePager"></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dm-tab-pane tab-pane" id="pane-scope-control" data-management-pane="scope-control" hidden>
+    <div class="tab-scroll">
+      <div class="dm-pane-content">
+      <div class="card dm-scope-card">
+        <div class="head"><div class="title">分析范围管控</div></div>
+        <div class="content">
+          <div class="dm-empty-state">
+            <b>分析范围管控</b>
+            <span>用于后续统一维护本工作簿纳入分析的公司、账户、税号、期间和数据范围。</span>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script defer src="../assets/js/core/shared.js?v=20260811-data-management19"></script>
+<script defer src="../assets/js/pages/data-management-balance.js?v=20260811-balance-restore1"></script>
+<script defer src="../assets/js/core/echarts-stable.js?v=20260811-data-management19"></script>
+<script>
+  (function(){
+    const managementRoot = document.querySelector('.data-management-page');
+    const managementTabbar = document.getElementById('dataManagementTabs');
+    const managementTabs = Array.from(document.querySelectorAll('[data-management-tab]'));
+    const managementPanes = Array.from(document.querySelectorAll('[data-management-pane]'));
+    const managementInkbar = document.getElementById('dataManagementInkbar');
+    const MANAGEMENT_TAB_KEY = 'dataManagement.activeTab';
+
+    function placeManagementInkbar(tab){
+      if (!managementTabbar || !managementInkbar || !tab) return;
+      const wrapRect = managementTabbar.getBoundingClientRect();
+      const tabRect = tab.getBoundingClientRect();
+      managementInkbar.style.left = `${tabRect.left - wrapRect.left + managementTabbar.scrollLeft}px`;
+      managementInkbar.style.width = `${tabRect.width}px`;
+    }
+
+    function activateManagementPane(key){
+      if (!managementRoot || !managementTabs.some(tab => tab.dataset.managementTab === key)) return;
+      managementTabs.forEach(tab => {
+        const active = tab.dataset.managementTab === key;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-selected', String(active));
+      });
+      managementPanes.forEach(pane => {
+        const active = pane.dataset.managementPane === key;
+        pane.hidden = !active;
+        pane.classList.toggle('active', active);
+      });
+      const activeTab = managementTabs.find(tab => tab.dataset.managementTab === key);
+      requestAnimationFrame(() => placeManagementInkbar(activeTab));
+      try { localStorage.setItem(MANAGEMENT_TAB_KEY, key); } catch (error) {}
+      requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
+    }
+
+    managementTabs.forEach(tab => {
+      tab.addEventListener('click', () => activateManagementPane(tab.dataset.managementTab));
+    });
+
+    managementTabbar?.addEventListener('scroll', () => {
+      placeManagementInkbar(managementTabs.find(tab => tab.classList.contains('active')));
+    }, { passive:true });
+
+    window.addEventListener('resize', () => {
+      placeManagementInkbar(managementTabs.find(tab => tab.classList.contains('active')));
+    });
+
+    let savedManagementKey = '';
+    try { savedManagementKey = localStorage.getItem(MANAGEMENT_TAB_KEY) || ''; } catch (error) {}
+    const initialTab = managementTabs.find(tab => tab.dataset.managementTab === savedManagementKey)
+      || managementTabs.find(tab => tab.classList.contains('active'))
+      || managementTabs[0];
+    activateManagementPane(initialTab?.dataset.managementTab || 'upload');
+
+    const uploadTabs = document.querySelectorAll('[data-upload-tab]');
+    const uploadPanels = document.querySelectorAll('[data-upload-panel]');
+    uploadTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-upload-tab');
+        uploadTabs.forEach(item => item.classList.toggle('active', item === tab));
+        uploadPanels.forEach(panel => panel.classList.toggle('active', panel.getAttribute('data-upload-panel') === target));
+      });
+    });
+
+    const issueFocusOverlay = document.createElement('div');
+    issueFocusOverlay.className = 'dm-issue-focus-overlay';
+    issueFocusOverlay.setAttribute('aria-hidden', 'true');
+    (document.querySelector('.data-management-page') || document.body).appendChild(issueFocusOverlay);
+
+    let issueFocusTimer = 0;
+    let issueFocusDelay = 0;
+    let currentIssueFocus = null;
+
+    const updateIssueFocusOverlay = () => {
+      if (!currentIssueFocus) return;
+      const { elements, mode } = currentIssueFocus;
+      const visibleRects = elements
+        .map(element => element.getBoundingClientRect())
+        .filter(rect => rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < window.innerHeight);
+      const fallbackRect = elements[0]?.getBoundingClientRect();
+      const rects = visibleRects.length ? visibleRects : (fallbackRect ? [fallbackRect] : []);
+      if (!rects.length) return;
+
+      let left = Math.min(...rects.map(rect => rect.left));
+      let right = Math.max(...rects.map(rect => rect.right));
+      let top = Math.min(...rects.map(rect => rect.top));
+      let bottom = Math.max(...rects.map(rect => rect.bottom));
+
+      if (mode === 'column') {
+        const scopeRect = elements[0]?.closest('.check-scope')?.getBoundingClientRect();
+        if (scopeRect) {
+          left = Math.max(left, scopeRect.left);
+          right = Math.min(right, scopeRect.right);
+          top = Math.max(top, scopeRect.top, 6);
+          bottom = Math.min(scopeRect.bottom, window.innerHeight - 8);
+        }
+      } else {
+        const wrapRect = elements[0]?.closest('.du-table-wrap')?.getBoundingClientRect();
+        if (wrapRect) {
+          left = Math.max(left, wrapRect.left + 2);
+          right = Math.min(right, wrapRect.right - 2);
+        }
+      }
+
+      issueFocusOverlay.style.left = `${Math.round(left)}px`;
+      issueFocusOverlay.style.top = `${Math.round(top)}px`;
+      issueFocusOverlay.style.width = `${Math.max(24, Math.round(right - left))}px`;
+      issueFocusOverlay.style.height = `${Math.max(24, Math.round(bottom - top))}px`;
+    };
+
+    const showIssueFocus = (target, mode = 'row') => {
+      const elements = target instanceof Element ? [target] : Array.from(target || []).filter(Boolean);
+      window.clearTimeout(issueFocusTimer);
+      window.clearTimeout(issueFocusDelay);
+      issueFocusOverlay.classList.remove('is-visible');
+      currentIssueFocus = null;
+      if (!elements.length) return;
+
+      elements[0].scrollIntoView({ behavior:'smooth', block:'center', inline:'nearest' });
+      issueFocusDelay = window.setTimeout(() => {
+        currentIssueFocus = { elements, mode };
+        updateIssueFocusOverlay();
+        void issueFocusOverlay.offsetWidth;
+        issueFocusOverlay.classList.add('is-visible');
+        issueFocusTimer = window.setTimeout(() => {
+          issueFocusOverlay.classList.remove('is-visible');
+          currentIssueFocus = null;
+        }, 3200);
+      }, 360);
+    };
+
+    document.addEventListener('scroll', updateIssueFocusOverlay, true);
+    window.addEventListener('resize', updateIssueFocusOverlay);
+
+    document.querySelectorAll('[data-issue-target]').forEach(button => {
+      button.addEventListener('click', () => {
+        const target = button.dataset.issueTarget;
+        if (target === 'balance-check') {
+          activateManagementPane('verify');
+          requestAnimationFrame(() => {
+            const checkColumn = document.querySelectorAll('.dm-balance-continuity-card .check-col');
+            showIssueFocus(checkColumn, 'column');
+          });
+          return;
+        }
+        activateManagementPane('upload');
+        requestAnimationFrame(() => {
+          if (target === 'bank-upload') {
+            document.querySelector('[data-upload-tab="bank"]')?.click();
+            showIssueFocus(document.querySelector('[data-issue-focus="bank-upload"]'));
+          } else if (target === 'exchange-rate') {
+            document.querySelector('[data-upload-tab="bank"]')?.click();
+            showIssueFocus(document.querySelector('[data-issue-focus="exchange-rate"]'));
+          } else {
+            showIssueFocus(document.querySelector('[data-issue-focus="bank-account-master"]'));
+          }
+        });
+      });
+    });
+
+    const accountIssueConfig = {
+      '1001***0821': {
+        title:'当日余额不连续',
+        detail:'部分月份存在余额连续性问题，请核对期初、期末余额及交易衔接。',
+        target:'balance-check'
+      },
+      '1002***4186': {
+        title:'银行账号主档不完整',
+        detail:'该账号尚未完整维护至银行账号主档，请补充并确认主档信息。',
+        target:'bank-account-master'
+      },
+      '2001***7739': {
+        title:'未认领流水',
+        detail:'该账号存在尚未认领的原始流水文件，请完成数据认领。',
+        target:'bank-upload'
+      },
+      '3001***6290': {
+        title:'汇率主档不完整',
+        detail:'该账号存在未完成汇率转换的流水，请补充汇率主档。',
+        target:'exchange-rate'
+      }
+    };
+
+    const accountIssuePopover = document.createElement('div');
+    accountIssuePopover.className = 'dm-account-issue-popover';
+    accountIssuePopover.setAttribute('role', 'tooltip');
+    accountIssuePopover.innerHTML = `
+      <div class="dm-account-issue-title"><span aria-hidden="true">i</span><strong></strong></div>
+      <div class="dm-account-issue-detail"></div>
+      <button class="dm-account-issue-jump" type="button">点击跳转&nbsp;›</button>`;
+    (document.querySelector('.data-management-page') || document.body).appendChild(accountIssuePopover);
+
+    let accountIssueHideTimer = 0;
+    const hideAccountIssuePopover = () => {
+      window.clearTimeout(accountIssueHideTimer);
+      accountIssuePopover.classList.remove('is-visible');
+    };
+    const queueHideAccountIssuePopover = () => {
+      window.clearTimeout(accountIssueHideTimer);
+      accountIssueHideTimer = window.setTimeout(hideAccountIssuePopover, 180);
+    };
+    const showAccountIssuePopover = marker => {
+      window.clearTimeout(accountIssueHideTimer);
+      const rect = marker.getBoundingClientRect();
+      const popoverWidth = 272;
+      const left = Math.max(8, Math.min(rect.left, window.innerWidth - popoverWidth - 8));
+      const estimatedHeight = 92;
+      const placeAbove = rect.bottom + estimatedHeight > window.innerHeight - 8;
+      accountIssuePopover.querySelector('strong').textContent = marker.dataset.issueTitle || '';
+      accountIssuePopover.querySelector('.dm-account-issue-detail').textContent = marker.dataset.issueDetail || '';
+      accountIssuePopover.dataset.issueTarget = marker.dataset.issueTarget || '';
+      accountIssuePopover.style.left = `${Math.round(left)}px`;
+      accountIssuePopover.style.top = `${Math.round(placeAbove ? rect.top - estimatedHeight - 6 : rect.bottom + 6)}px`;
+      accountIssuePopover.classList.add('is-visible');
+    };
+
+    accountIssuePopover.addEventListener('mouseenter', () => window.clearTimeout(accountIssueHideTimer));
+    accountIssuePopover.addEventListener('mouseleave', queueHideAccountIssuePopover);
+    accountIssuePopover.querySelector('.dm-account-issue-jump').addEventListener('click', () => {
+      const target = accountIssuePopover.dataset.issueTarget;
+      hideAccountIssuePopover();
+      document.querySelector(`[data-issue-target="${target}"]`)?.click();
+    });
+
+    const decorateAccountIssues = () => {
+      document.querySelectorAll('#accountSummaryBody tr:not(.sum-row)').forEach(row => {
+        const accountCell = row.children[1];
+        if (!accountCell || accountCell.querySelector('.dm-account-issue-marker')) return;
+        const account = accountCell.textContent.trim();
+        const issue = accountIssueConfig[account];
+        if (!issue) return;
+
+        accountCell.textContent = '';
+        const wrap = document.createElement('span');
+        wrap.className = 'dm-account-with-issue';
+        const marker = document.createElement('button');
+        marker.className = 'dm-account-issue-marker';
+        marker.type = 'button';
+        marker.textContent = 'i';
+        marker.dataset.issueTitle = issue.title;
+        marker.dataset.issueDetail = issue.detail;
+        marker.dataset.issueTarget = issue.target;
+        marker.setAttribute('aria-label', `${account}：${issue.title}`);
+        const accountText = document.createElement('span');
+        accountText.textContent = account;
+        wrap.append(marker, accountText);
+        accountCell.appendChild(wrap);
+
+        marker.addEventListener('mouseenter', () => showAccountIssuePopover(marker));
+        marker.addEventListener('mouseleave', queueHideAccountIssuePopover);
+        marker.addEventListener('focus', () => showAccountIssuePopover(marker));
+        marker.addEventListener('blur', queueHideAccountIssuePopover);
+        marker.addEventListener('click', event => {
+          event.stopPropagation();
+          showAccountIssuePopover(marker);
+        });
+      });
+    };
+
+    const queueAccountIssueDecoration = () => window.setTimeout(decorateAccountIssues, 0);
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', queueAccountIssueDecoration, { once:true });
+    } else {
+      queueAccountIssueDecoration();
+    }
+  })();
+</script>
+</body>
+</html>

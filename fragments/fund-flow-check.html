@@ -1925,11 +1925,33 @@
   }
   .cfo-pareto-wrap {
     position: relative;
-    height: 200px;
-    flex: 1;
+    height: 162px;
+    flex: 0 0 162px;
     min-width: 0;
   }
-  #paretoCvs { display: block; width: 100%; height: 200px; cursor: default; }
+  .cfo-chart-column {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    height: 226px;
+    flex-direction: column;
+  }
+  .cfo-chart-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex: 0 0 40px;
+    gap: 2px;
+    min-height: 40px;
+    margin: 0 0 4px;
+    color: #64748b;
+    font-size: 9px;
+    line-height: 17px;
+    white-space: nowrap;
+  }
+  .cfo-chart-summary span { display:flex; min-width:0; align-items:center; justify-content:space-between; overflow:hidden; padding:0 5px; border:1px solid #e8eef6; border-radius:4px; background:#f8fafd; text-overflow:ellipsis; }
+  .cfo-chart-summary b { margin-left: 3px; color: #263a57; font-size: 10px; }
+  .cfo-chart-summary i { display:none; }
+  #paretoCvs { display: block; width: 100%; height: 162px; cursor: default; }
   .cfo-chart-tooltip {
     position: absolute;
     z-index: 8;
@@ -2019,25 +2041,30 @@
   /* 帕累托图例 */
   .cfo-pareto-legend {
     display: flex;
-    gap: 12px;
-    margin-top: 6px;
-    flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
+    gap: 3px;
+    min-height: 20px;
+    margin-top: 0;
+    overflow: hidden;
+    flex-wrap: nowrap;
   }
   .cfo-pareto-legend-item {
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 10px;
+    gap: 1px;
+    font-size: 8px;
     color: var(--gray-500);
+    white-space: nowrap;
   }
   .cfo-pareto-legend-item .dot {
-    width: 8px; height: 8px; border-radius: 2px;
+    display:none;
   }
   .cfo-pareto-legend-item .line {
-    width: 14px; height: 2px; background: var(--danger);
-    border-radius: 1px;
+    display:none;
   }
+  .cfo-pareto-legend-item:nth-child(2) { color:#b64062; }
+  .cfo-pareto-legend-item:nth-child(3) { color:#7b8798; }
   .cfo-pareto-row {
     display: flex;
     gap: 10px;
@@ -2046,9 +2073,108 @@
   .cfo-kpi-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    min-width: 110px;
+    gap: 5px;
+    width: 208px;
+    min-width: 208px;
+    max-width: 208px;
     flex-shrink: 0;
+  }
+  .cfo-rank-table-wrap {
+    width: 100%;
+    height: 226px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    border: 1px solid #e6edf5;
+    border-radius: 5px;
+    background: #fff;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148,163,184,.28) transparent;
+  }
+  .cfo-rank-table-wrap::-webkit-scrollbar { width: 4px; height: 4px; }
+  .cfo-rank-table-wrap::-webkit-scrollbar-thumb { border-radius: 999px; background: rgba(148,163,184,.28); }
+  .cfo-rank-table {
+    width: 100% !important;
+    min-width: 100% !important;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed !important;
+    font-size: 9px;
+  }
+  .cfo-kpi-sidebar .cfo-rank-table th,
+  .cfo-kpi-sidebar .cfo-rank-table td { box-sizing: border-box; min-width: 0 !important; padding: 4px 5px !important; white-space: nowrap !important; }
+  .cfo-rank-table th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    height: 23px;
+    padding: 3px 4px;
+    border-bottom: 1px solid #dfe8f2;
+    background: #f3f7fc;
+    color: #52657d;
+    font-weight: 700;
+    text-align: left;
+  }
+  .cfo-rank-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #f3f7fc;
+    box-shadow: 0 1px 0 #dfe8f2;
+  }
+  .cfo-pareto-legend .cfo-thresh-hint { margin-left:0; font-size:8px; }
+  .cfo-rank-table td {
+    height: 30px;
+    padding: 4px;
+    border-bottom: 1px solid #edf2f7;
+    color: #475569;
+    line-height: 1.25;
+    vertical-align: middle;
+  }
+  .cfo-rank-table tr:last-child td { border-bottom: 0; }
+  .cfo-kpi-sidebar .cfo-rank-table .is-rank { width: 22px !important; color: #94a3b8; text-align: center; }
+  .cfo-kpi-sidebar .cfo-rank-table .is-name { width:114px !important; overflow:hidden; white-space:nowrap !important; color:#263a57; line-height:1.25; text-overflow:clip; }
+  .cfo-kpi-sidebar .cfo-rank-table .is-value { width:70px !important; padding-right:8px !important; text-align:right; font-variant-numeric:tabular-nums; }
+  .cfo-rank-table .is-value b { display:block; color:#334155; font-size:9px; line-height:1.2; }
+  .cfo-rank-table .is-value small { display:block; margin-top:1px; color:#94a3b8; font-size:8px; line-height:1.1; }
+
+  /* 单行看板：两张主分析卡 + 最右侧构成卡。 */
+  .cfo-dash-body {
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(100px,.2fr);
+    align-items: stretch;
+  }
+  .cfo-dash-body > .cfo-card {
+    min-width: 0;
+    overflow: hidden;
+  }
+  .cfo-pareto-row {
+    min-width: 0;
+  }
+  .cfo-chart-column { min-width:146px; }
+  .cfo-right-col {
+    display: grid;
+    grid-template-columns:1fr;
+    grid-template-rows:repeat(2,minmax(0,1fr));
+    gap:6px;
+  }
+  .cfo-right-col .cfo-pie-card {
+    min-width: 0;
+    min-height:0;
+    padding:8px;
+  }
+  .cfo-right-col .cfo-pie-body {
+    min-height:70px;
+    flex-direction:column;
+    justify-content:center;
+    gap:2px;
+  }
+  .cfo-right-col canvas {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  @media (max-width: 980px) {
+    .cfo-dash-body { grid-template-columns:minmax(390px,1fr) minmax(390px,1fr) minmax(100px,.2fr); overflow-x:auto; }
+    .cfo-chart-column { min-width: 146px; }
   }
   .cfo-kpi-chip {
     background: #fff;
@@ -2070,7 +2196,8 @@
   /* ─── END CFO DASHBOARD ─────────────────────────────────────────────────── */
 
   </style>
-  <link rel="stylesheet" href="../assets/css/pages/risk-reference-override.css?v=20260723-button-size1">
+  <link rel="stylesheet" href="../assets/css/pages/risk-reference-override.css?v=20260811-cfo-rank-compact3">
+  <script src="../assets/js/core/unit-runtime.js?v=20260811-unit5"></script>
 </head>
 <body>
 
@@ -2539,7 +2666,7 @@
     </div>
 
     <!-- CFO ANALYTICS DASHBOARD (交易对手方数据看板) -->
-    <div class="cfo-dashboard" id="cfoDashboard">
+    <div class="cfo-dashboard" id="cfoDashboard" data-audit-unit-ignore>
       <div class="cfo-dash-header">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
         <span class="cfo-dash-title">交易对手方数据看板</span>
@@ -2560,16 +2687,19 @@
             <span class="cfo-tag" id="paretoTag">TOP 3 覆盖 —%</span>
           </div>
           <div class="cfo-pareto-row">
-            <div class="cfo-pareto-wrap">
-              <canvas id="paretoCvs"></canvas>
-              <div class="cfo-chart-tooltip" id="paretoTooltip"></div>
+            <div class="cfo-chart-column">
+              <div class="cfo-chart-summary" id="paretoSummary"></div>
+              <div class="cfo-pareto-wrap">
+                <canvas id="paretoCvs"></canvas>
+                <div class="cfo-chart-tooltip" id="paretoTooltip"></div>
+              </div>
+              <div class="cfo-pareto-legend">
+                <div class="cfo-pareto-legend-item" id="paretoAmountLegendItem"><span class="dot" id="paretoAmountLegendDot" style="background:#3b82f6"></span>金额（左轴）</div>
+                <div class="cfo-pareto-legend-item"><span class="line"></span>累计占比（右轴）</div>
+                <div class="cfo-pareto-legend-item"><span class="dot" style="background:#94a3b8;opacity:.45"></span><span id="paretoThreshLabel">80%线</span><span class="cfo-thresh-hint">（可拖动）</span></div>
+              </div>
             </div>
             <div class="cfo-kpi-sidebar" id="paretoKpiStrip"><!-- JS填充 --></div>
-          </div>
-          <div class="cfo-pareto-legend">
-            <div class="cfo-pareto-legend-item"><span class="dot" style="background:#3b82f6"></span>金额（左轴）</div>
-            <div class="cfo-pareto-legend-item"><span class="line"></span>累计占比（右轴）</div>
-            <div class="cfo-pareto-legend-item"><span class="dot" style="background:#94a3b8;opacity:.45"></span><span id="paretoThreshLabel">80%线</span><span class="cfo-thresh-hint">（可拖动）</span></div>
           </div>
         </div>
 
@@ -2580,16 +2710,19 @@
             <span class="cfo-tag" id="relatedParetoTag">—</span>
           </div>
           <div class="cfo-pareto-row">
-            <div class="cfo-pareto-wrap">
-              <canvas id="relatedParetoCvs"></canvas>
-              <div class="cfo-chart-tooltip" id="relatedParetoTooltip"></div>
+            <div class="cfo-chart-column">
+              <div class="cfo-chart-summary" id="relatedParetoSummary"></div>
+              <div class="cfo-pareto-wrap">
+                <canvas id="relatedParetoCvs"></canvas>
+                <div class="cfo-chart-tooltip" id="relatedParetoTooltip"></div>
+              </div>
+              <div class="cfo-pareto-legend">
+                <div class="cfo-pareto-legend-item" id="relatedAmountLegendItem"><span class="dot" id="relatedAmountLegendDot" style="background:#3b82f6"></span>金额（左轴）</div>
+                <div class="cfo-pareto-legend-item"><span class="line" style="background:#2563eb"></span>累计占比（右轴）</div>
+                <div class="cfo-pareto-legend-item"><span class="dot" style="background:#94a3b8;opacity:.45"></span>80%线</div>
+              </div>
             </div>
             <div class="cfo-kpi-sidebar" id="relatedParetoKpi"><!-- JS填充 --></div>
-          </div>
-          <div class="cfo-pareto-legend">
-            <div class="cfo-pareto-legend-item"><span class="dot" style="background:#5bb8a8"></span>金额（左轴）</div>
-            <div class="cfo-pareto-legend-item"><span class="line" style="background:#2563eb"></span>累计占比（右轴）</div>
-            <div class="cfo-pareto-legend-item"><span class="dot" style="background:#94a3b8;opacity:.45"></span>80%线</div>
           </div>
         </div>
 
@@ -2674,7 +2807,7 @@
 <!-- COUNTERPARTY TABLE -->
       <div class="table-panel" id="cpPanel">
         <div class="scroll-wrap">
-          <table id="cpTable">
+          <table id="cpTable" data-audit-unit-ignore>
             <thead>
               <!-- 第0行：总组头 -->
               <tr class="group-header" id="cpGroupHeaderRow">
@@ -2718,7 +2851,7 @@
       <!-- TRANSACTION TABLE -->
       <div class="table-panel bottom-panel" id="txPanel" style="display:none">
         <div class="scroll-wrap">
-          <table id="txTable">
+          <table id="txTable" data-audit-unit-ignore>
             <thead>
               <!-- 第0行：总组头 -->
               <tr class="group-header" id="txGroupHeaderRow">
@@ -4000,15 +4133,29 @@ function buildHitChecksHTML(hits) {
 }
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
+function getCfoAuditUnit() {
+  try {
+    if (window.AuditUnit?.ready) return window.AuditUnit;
+    if (window.parent && window.parent !== window && window.parent.AuditUnit?.ready) return window.parent.AuditUnit;
+    if (window.top && window.top !== window && window.top.AuditUnit?.ready) return window.top.AuditUnit;
+  } catch (error) {}
+  return null;
+}
 // fmtAmt: 输入为万元单位，直接格式化显示（不带单位，表头已标注）
 function fmtAmt(n) {
+  const unit = getCfoAuditUnit();
+  if (unit) return unit.formatFromWan(Number(n) || 0);
   return n.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
 // fmtAmtFromYuan: 输入为元单位，转换为万并格式化
 function fmtAmtFromYuan(n) {
+  const unit = getCfoAuditUnit();
+  if (unit) return unit.formatFromYuan(Number(n) || 0);
   return (n / 10000).toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
 function fmtFull(n) {
+  const unit = getCfoAuditUnit();
+  if (unit) return unit.formatFromYuan(Number(n) || 0);
   return '¥' + n.toLocaleString('zh-CN') + '元';
 }
 function escapeHtml(value) {
@@ -6448,10 +6595,18 @@ function toggleCfoDash() {
 
 // ── 辅助：格式化万元 ──
 function fmtWan(v) {
+  const unit = getCfoAuditUnit();
+  if (unit) return unit.formatFromWan(Number(v) || 0);
   if (v >= 10000) return (v / 10000).toFixed(0) + '亿';
   return v.toFixed(1) + '万';
 }
 function fmtPct(v) { return (v * 100).toFixed(1) + '%'; }
+function fmtCfoTableAmount(v) {
+  const value = Number(v) || 0;
+  const unit = getCfoAuditUnit();
+  if (unit) return unit.formatFromWan(value);
+  return value >= 10000 ? `${(value / 10000).toFixed(1)}亿` : `${value.toFixed(1)}万`;
+}
 
 function shortCfoAxisName(name, maxLen = 7) {
   const text = String(name || '').replace(/[（）()]/g, '').replace(/\s+/g, '');
@@ -6460,10 +6615,28 @@ function shortCfoAxisName(name, maxLen = 7) {
 }
 
 function shouldDrawCfoAxisLabel(index, total, barGap) {
-  if (total <= 8) return true;
-  if (index === 0 || index === total - 1) return true;
-  const step = barGap < 18 ? 4 : barGap < 24 ? 3 : 2;
-  return index % step === 0;
+  return index >= 0 && index < total;
+}
+
+function renderCfoRankPanel(targetId, summaryTargetId, items, getVal, total, cumPcts, summaryItems) {
+  const panel = document.getElementById(targetId);
+  if (!panel) return;
+  const summary = (summaryItems || []).slice(0,4).map(item => `<span title="${item[0]} ${item[1]}">${item[0]}<b>${item[1]}</b></span>`).join('');
+  const summaryTarget = document.getElementById(summaryTargetId);
+  if (summaryTarget) summaryTarget.innerHTML = summary;
+  const rows = items.map((item, index) => `
+    <tr title="${item.name || '未命名对手方'}">
+      <td class="is-rank">${index + 1}</td>
+      <td class="is-name">${item.name || '未命名对手方'}</td>
+      <td class="is-value"><b>${fmtCfoTableAmount(getVal(item) || 0)}</b><small>累计 ${fmtPct(cumPcts[index] || 0)}</small></td>
+    </tr>`).join('');
+  panel.innerHTML = `
+    <div class="cfo-rank-table-wrap">
+      <table class="cfo-rank-table">
+        <thead><tr><th class="is-rank">序</th><th class="is-name">对手方</th><th class="is-value">金额 / 累计</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="3">暂无数据</td></tr>'}</tbody>
+      </table>
+    </div>`;
 }
 
 function bindCfoParetoTooltip(cvs, tooltipId, points, renderHtml) {
@@ -6511,6 +6684,14 @@ function bindCfoParetoTooltip(cvs, tooltipId, points, renderHtml) {
 
 // ── 帕累托图 (Canvas) ──
 let paretoField = 'inflow';  // 当前字段
+const CFO_FIELD_COLORS = {
+  inflow:   { main:'#3b82f6', light:'#dbeafe' },
+  outflow:  { main:'#d94b76', light:'#fbe1e9' },
+  total:    { main:'#64748b', light:'#e2e8f0' },
+  salesTax: { main:'#17877c', light:'#d9f1ed' },
+  inputTax: { main:'#d97706', light:'#ffedd5' }
+};
+function getCfoFieldColors() { return CFO_FIELD_COLORS[paretoField] || CFO_FIELD_COLORS.total; }
 let paretoThresh = 0.8;      // 阈值线百分比 (0~1)
 let paretoDragging = false;
 
@@ -6537,6 +6718,11 @@ function drawParetoChart() {
   };
 
   const fieldLabel = { inflow: '流入', outflow: '流出', total: '交易总额', salesTax: '销项税价合计', inputTax: '进项税价合计' }[paretoField] || paretoField;
+  const fieldColors = getCfoFieldColors();
+  const amountLegendDot = document.getElementById('paretoAmountLegendDot');
+  if (amountLegendDot) amountLegendDot.style.background = fieldColors.main;
+  const amountLegendItem = document.getElementById('paretoAmountLegendItem');
+  if (amountLegendItem) amountLegendItem.style.color = fieldColors.main;
 
   // 按当前字段降序
   const sorted = [...cpData]
@@ -6562,21 +6748,17 @@ function drawParetoChart() {
   const threshLabel = document.getElementById('paretoThreshLabel');
   if (threshLabel) threshLabel.textContent = `${(paretoThresh * 100).toFixed(0)}%线`;
 
-  // KPI 侧栏
-  const strip = document.getElementById('paretoKpiStrip');
-  if (strip) {
-    strip.innerHTML = `
-      <div class="cfo-kpi-chip">${fieldLabel}合计<strong>${fmtWan(total)}</strong></div>
-      <div class="cfo-kpi-chip">对手方数<strong>${cpData.filter(d=>getVal(d)>0).length} 家</strong></div>
-      <div class="cfo-kpi-chip">TOP1 占比<strong class="accent">${fmtPct(items[0]?getVal(items[0])/total:0)}</strong></div>
-      <div class="cfo-kpi-chip">TOP${nThresh+1} 合计<strong class="accent">${fmtPct(cumPcts[nThresh])}</strong></div>
-    `;
-  }
+  renderCfoRankPanel('paretoKpiStrip', 'paretoSummary', items, getVal, total, cumPcts, [
+    [`${fieldLabel}合计`, fmtWan(total)],
+    ['对手方数', `${cpData.filter(d=>getVal(d)>0).length} 家`],
+    ['TOP1占比', fmtPct(items[0]?getVal(items[0])/total:0)],
+    [`TOP${nThresh+1}覆盖`, fmtPct(cumPcts[nThresh] || 0)]
+  ]);
 
   // 高分辨率 canvas
   const dpr = window.devicePixelRatio || 1;
   const W = cvs.parentElement.offsetWidth || 400;
-  const H = 200;
+  const H = 162;
   cvs.width  = W * dpr;
   cvs.height = H * dpr;
   cvs.style.width  = W + 'px';
@@ -6585,7 +6767,7 @@ function drawParetoChart() {
   const ctx = cvs.getContext('2d');
   ctx.scale(dpr, dpr);
 
-  const padL = 50, padR = 42, padT = 8, padB = 72;
+  const padL = 36, padR = 26, padT = 8, padB = 18;
   const gW = W - padL - padR;
   const gH = H - padT - padB;
 
@@ -6616,7 +6798,7 @@ function drawParetoChart() {
 
   // ── 右侧 Y 轴：占比（跳过阈值线附近避免重叠） ──
   ctx.fillStyle = '#9ca3af';
-  ctx.font = `9px -apple-system, PingFang SC, sans-serif`;
+  ctx.font = `${items.length > 14 ? 6 : 9}px -apple-system, PingFang SC, sans-serif`;
   ctx.textAlign = 'left';
   const yThreshPx = padT + gH * (1 - paretoThresh);
   [0, 0.25, 0.5, 0.75, 1].forEach(p => {
@@ -6667,7 +6849,7 @@ function drawParetoChart() {
     const bH = (getVal(d) / maxVal) * gH;
     const y  = padT + gH - bH;
     const isTop = i <= nThresh;
-    ctx.fillStyle = isTop ? '#3b82f6' : '#dbeafe';
+    ctx.fillStyle = isTop ? fieldColors.main : fieldColors.light;
     ctx.fillRect(x, y, barW, bH);
   });
 
@@ -6693,18 +6875,15 @@ function drawParetoChart() {
     ctx.fill();
   });
 
-  // X轴标签 — 仍保留原图结构，但按空间抽样显示，避免名称堆叠
+  // X轴只显示排名序号，完整公司名称由右侧排名表承载。
   ctx.fillStyle = '#6b7280';
   ctx.font = `9px -apple-system, PingFang SC, sans-serif`;
-  ctx.textAlign = 'right';
+  ctx.textAlign = 'center';
   items.forEach((d, i) => {
     if (!shouldDrawCfoAxisLabel(i, items.length, barGap)) return;
     const cx = padL + barGap * i + barGap / 2;
-    ctx.save();
-    ctx.translate(cx, padT + gH + 8);
-    ctx.rotate(-Math.PI / 4);  // 倾斜约45度，提升密集场景可读性
-    ctx.fillText(shortCfoAxisName(d.name), 0, 0);
-    ctx.restore();
+    const labelY = padT + gH + 13;
+    ctx.fillText(String(i + 1), cx, labelY);
   });
 
   bindCfoParetoTooltip(
@@ -6735,7 +6914,7 @@ function drawParetoChart() {
   function getYFromEvent(e) {
     const rect = cvs.getBoundingClientRect();
     const scaleY = 200 / rect.height;  // canvas logical height
-    const padT = 8, gH = 200 - 8 - 72;
+    const padT = 8, gH = 162 - 8 - 18;
     const y = (e.clientY - rect.top) * scaleY;
     const pct = 1 - (y - padT) / gH;
     return Math.max(0.1, Math.min(0.98, pct));
@@ -6744,7 +6923,7 @@ function drawParetoChart() {
   function isNearThreshLine(e) {
     const rect = cvs.getBoundingClientRect();
     const scaleY = 200 / rect.height;
-    const padT = 8, gH = 200 - 8 - 72;
+    const padT = 8, gH = 162 - 8 - 18;
     const yThresh = padT + gH * (1 - paretoThresh);
     const mouseY = (e.clientY - rect.top) * scaleY;
     return Math.abs(mouseY - yThresh) < 8;
@@ -6783,6 +6962,11 @@ function drawRelatedParetoChart() {
     return d[paretoField] || 0;
   };
   const fieldLabel = { inflow: '流入', outflow: '流出', total: '交易总额', salesTax: '销项税价合计', inputTax: '进项税价合计' }[paretoField] || paretoField;
+  const fieldColors = getCfoFieldColors();
+  const amountLegendDot = document.getElementById('relatedAmountLegendDot');
+  if (amountLegendDot) amountLegendDot.style.background = fieldColors.main;
+  const amountLegendItem = document.getElementById('relatedAmountLegendItem');
+  if (amountLegendItem) amountLegendItem.style.color = fieldColors.main;
 
   // 仅展示关联方
   const relatedData = cpData.filter(d => d.typeTag === '关联方');
@@ -6795,17 +6979,13 @@ function drawRelatedParetoChart() {
   let cum = 0;
   const cumPcts = items.map(d => { cum += getVal(d); return allTotal > 0 ? cum / allTotal : 0; });
 
-  // KPI
-  const kpi = document.getElementById('relatedParetoKpi');
-  if (kpi) {
-    const top1Pct = items[0] && allTotal > 0 ? getVal(items[0]) / allTotal : 0;
-    kpi.innerHTML = `
-      <div class="cfo-kpi-chip">关联方${fieldLabel}合计<strong>${total >= 10000 ? (total/10000).toFixed(1)+'亿' : total.toFixed(0)+'万'}</strong></div>
-      <div class="cfo-kpi-chip">关联方数量<strong>${relatedData.length} 家</strong></div>
-      <div class="cfo-kpi-chip">占总${fieldLabel}<strong class="accent">${allTotal>0?(total/allTotal*100).toFixed(1)+'%':'—'}</strong></div>
-      <div class="cfo-kpi-chip">TOP1 占比<strong class="accent">${(top1Pct*100).toFixed(1)}%</strong></div>
-    `;
-  }
+  const top1Pct = items[0] && allTotal > 0 ? getVal(items[0]) / allTotal : 0;
+  renderCfoRankPanel('relatedParetoKpi', 'relatedParetoSummary', items, getVal, allTotal, cumPcts, [
+    [`关联方${fieldLabel}`, fmtWan(total)],
+    ['关联方数量', `${relatedData.length} 家`],
+    [`占总${fieldLabel}`, allTotal>0?fmtPct(total/allTotal):'—'],
+    ['TOP1占比', fmtPct(top1Pct)]
+  ]);
 
   // 更新 tag
   const tag = document.getElementById('relatedParetoTag');
@@ -6830,13 +7010,13 @@ function drawRelatedParetoChart() {
 
   const dpr = window.devicePixelRatio || 1;
   const W = cvs.parentElement.offsetWidth || 300;
-  const H = 200;
+  const H = 162;
   cvs.width = W*dpr; cvs.height = H*dpr;
   cvs.style.width = W+'px'; cvs.style.height = H+'px';
   const ctx = cvs.getContext('2d');
   ctx.scale(dpr, dpr);
 
-  const padL=50, padR=42, padT=8, padB=72;
+  const padL=36, padR=26, padT=8, padB=18;
   const gW=W-padL-padR, gH=H-padT-padB;
   const barGap=gW/items.length, barW=Math.max(4, barGap*0.65);
 
@@ -6881,7 +7061,7 @@ function drawRelatedParetoChart() {
     const x = padL + barGap * i + (barGap - barW) / 2;
     const inflowH = ((d.inflow || 0) / biMax) * halfH;
     if (inflowH > 0) {
-      ctx.fillStyle = '#3b82f6';
+      ctx.fillStyle = fieldColors.main;
       ctx.fillRect(x, zeroY - inflowH, barW, inflowH);
     }
   });
@@ -6891,8 +7071,10 @@ function drawRelatedParetoChart() {
     const x = padL + barGap * i + (barGap - barW) / 2;
     const outflowH = ((d.outflow || 0) / biMax) * halfH;
     if (outflowH > 0) {
-      ctx.fillStyle = '#c94a68';
+      ctx.fillStyle = fieldColors.main;
+      ctx.globalAlpha = .58;
       ctx.fillRect(x, zeroY, barW, outflowH);
+      ctx.globalAlpha = 1;
     }
   });
 
@@ -6929,13 +7111,13 @@ function drawRelatedParetoChart() {
     ctx.fillStyle = '#64748b'; ctx.fill();
   });
 
-  // X轴标签：按空间抽样显示，防止多家公司名称堆叠
-  ctx.fillStyle='#6b7280'; ctx.font='9px -apple-system,PingFang SC,sans-serif'; ctx.textAlign='right';
+  // X轴只显示排名序号，完整公司名称由右侧排名表承载。
+  ctx.fillStyle='#6b7280'; ctx.font=`${items.length > 14 ? 6 : 9}px -apple-system,PingFang SC,sans-serif`; ctx.textAlign='center';
   items.forEach((d,i) => {
     if (!shouldDrawCfoAxisLabel(i, items.length, barGap)) return;
     const cx=padL+barGap*i+barGap/2;
-    ctx.save(); ctx.translate(cx,padT+gH+8); ctx.rotate(-Math.PI/4);
-    ctx.fillText(shortCfoAxisName(d.name), 0, 0); ctx.restore();
+    const labelY=padT+gH+13;
+    ctx.fillText(String(i + 1), cx, labelY);
   });
 
   bindCfoParetoTooltip(
@@ -7145,6 +7327,16 @@ window.addEventListener('resize', () => {
 
 // 渲染 CFO 看板
 renderCfoDashboard();
+window.addEventListener('audit-unit-ready', renderCfoDashboard);
+(function syncCfoUnit(attempt = 0) {
+  if (getCfoAuditUnit()) {
+    renderCpTable();
+    renderTxTable();
+    renderCfoDashboard();
+    return;
+  }
+  if (attempt < 30) window.setTimeout(() => syncCfoUnit(attempt + 1), 100);
+})();
 
 </script>
 </body>

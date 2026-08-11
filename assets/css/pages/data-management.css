@@ -1,0 +1,572 @@
+/* 数据上传及管理：合并数据上传、数据校验和分析范围管控。 */
+.data-management-page{
+  --dm-page-x:12px;
+  gap:0 !important;
+}
+
+.data-management-tab-card .tabbar{
+  gap:7px;
+  padding-right:10px;
+}
+
+.data-management-tab-card .dm-template-btn{
+  display:none;
+  margin-left:auto;
+  min-width:86px;
+  min-height:24px;
+  height:24px;
+  padding:0 9px;
+  border-radius:6px;
+  font-size:11px;
+  font-weight:700;
+  line-height:22px;
+}
+
+.data-management-tab-card .tabbar:has(.tab[data-management-tab="upload"].active) .dm-template-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.data-management-page .tab-container .tab-intro,
+.data-management-page .data-management-tab-card .tab-intro{
+  display:none !important;
+  height:0 !important;
+  min-height:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+  overflow:hidden !important;
+}
+
+.data-management-page .data-validation-tab-card{
+  margin-bottom:0;
+}
+
+.data-management-page .dm-tab-pane{
+  border:0 !important;
+  border-radius:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  box-shadow:none !important;
+  background:transparent !important;
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+}
+
+.data-management-page .dm-tab-pane.active{
+  display:flex !important;
+  flex:1 1 auto !important;
+  flex-direction:column !important;
+  gap:0 !important;
+}
+
+.data-management-page .dm-tab-pane[hidden]{
+  display:none !important;
+}
+
+.data-management-page > .dm-tab-pane > .tab-scroll{
+  width:100%;
+  height:100%;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:6px var(--bank-page-x) 10px !important;
+  overflow:auto !important;
+  box-sizing:border-box;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(100,116,139,.28) transparent;
+}
+
+.data-management-page > .dm-tab-pane > .tab-scroll::-webkit-scrollbar{
+  width:6px;
+  height:6px;
+}
+
+.data-management-page > .dm-tab-pane > .tab-scroll::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+.data-management-page > .dm-tab-pane > .tab-scroll::-webkit-scrollbar-thumb{
+  border-radius:999px;
+  background:rgba(100,116,139,.25);
+}
+
+.data-management-page > .dm-tab-pane > .tab-scroll::-webkit-scrollbar-thumb:hover{
+  background:rgba(71,85,105,.38);
+}
+
+.data-management-page .dm-pane-content{
+  display:grid !important;
+  align-content:start !important;
+  gap:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+
+.data-management-page #pane-verify > .tab-scroll,
+.data-management-page #pane-scope-control > .tab-scroll{
+  overflow:auto !important;
+}
+
+.data-management-page .dm-pane-content > .card:first-child{
+  margin-top:0 !important;
+}
+
+/* 数据校验、分析范围管控与银行流水分析共用同一套卡片标题和按钮规格。 */
+.data-management-page .dm-tab-pane .card{
+  margin:0 0 6px !important;
+  border:1px solid #edf2f7 !important;
+  border-radius:8px !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.025) !important;
+}
+
+.data-management-page .dm-tab-pane .card > .head{
+  min-height:36px !important;
+  padding:5px 10px !important;
+  gap:var(--audit-action-btn-gap, 6px) !important;
+  border-bottom:1px solid #edf2f7 !important;
+  background:#fafcff !important;
+  box-sizing:border-box;
+}
+
+.data-management-page .dm-tab-pane .card > .head::before{
+  left:10px !important;
+  width:3px !important;
+  height:14px !important;
+  border-radius:999px !important;
+  background:linear-gradient(180deg,rgba(47,111,237,.72),rgba(47,111,237,.18)) !important;
+}
+
+.data-management-page .dm-tab-pane .card > .head > .title{
+  margin-left:14px !important;
+  margin-right:auto !important;
+  font-size:12px !important;
+  line-height:1.25 !important;
+  font-weight:600 !important;
+  color:#1e293b !important;
+}
+
+.data-management-page .dm-tab-pane .card > .head > div[style*="display:flex"],
+.data-management-page .dm-tab-pane .card > .head > .head-inline{
+  margin-left:0 !important;
+  gap:var(--audit-action-btn-gap, 6px) !important;
+}
+
+.data-management-page .dm-tab-pane .btn:not(.card-fold-btn):not(.audit-pager-btn),
+.data-management-page .dm-tab-pane button.btn:not(.card-fold-btn):not(.audit-pager-btn){
+  min-width:var(--audit-action-btn-min-w, 56px) !important;
+  min-height:var(--audit-action-btn-h, 28px) !important;
+  height:var(--audit-action-btn-h, 28px) !important;
+  padding:0 var(--audit-action-btn-px, 12px) !important;
+  border-radius:var(--audit-action-btn-radius, 7px) !important;
+  font-size:var(--audit-action-btn-font, 12px) !important;
+  line-height:calc(var(--audit-action-btn-h, 28px) - 2px) !important;
+  box-sizing:border-box !important;
+}
+
+.data-management-page .dm-tab-pane .card-fold-btn{
+  width:26px !important;
+  min-width:26px !important;
+  height:26px !important;
+  min-height:26px !important;
+  flex:0 0 26px !important;
+  margin-left:0 !important;
+  padding:0 !important;
+  border:1px solid #dbe5f0 !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  box-shadow:0 1px 2px rgba(15,23,42,.04) !important;
+}
+
+.data-management-page .dm-tab-pane .card-fold-btn:hover{
+  border-color:#b9c9dc !important;
+  background:#f8fbff !important;
+}
+
+.data-management-page .dm-data-issues-card .content{
+  padding:0 !important;
+}
+
+.data-management-page .dm-issue-count{
+  display:inline-flex;
+  align-items:baseline;
+  gap:3px;
+  margin-left:auto;
+  color:#64748b;
+  font-size:11px;
+  line-height:1;
+}
+
+.data-management-page .dm-issue-count strong{
+  color:#c2414f;
+  font-size:12px;
+  font-weight:800;
+}
+
+.data-management-page .dm-issue-list{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+
+.data-management-page .dm-issue-row{
+  display:grid;
+  grid-template-columns:12px minmax(260px,1fr) auto;
+  align-items:center;
+  gap:9px;
+  min-height:34px;
+  padding:4px 10px;
+  border-bottom:0;
+}
+
+.data-management-page .dm-issue-row:nth-child(-n+2){
+  border-bottom:1px solid #f1f5f9;
+}
+
+.data-management-page .dm-issue-row:nth-child(odd){
+  border-right:1px solid #f1f5f9;
+}
+
+.data-management-page .dm-issue-row:hover{
+  background:#fffafa;
+}
+
+.data-management-page .dm-issue-dot{
+  display:inline-flex;
+  width:12px;
+  height:12px;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  border:1px solid #c94a57;
+  border-radius:50%;
+  background:transparent;
+  color:#c94a57;
+  box-shadow:none;
+  font:700 8px/1 Arial,sans-serif;
+}
+
+.data-management-page .dm-issue-dot::before{
+  content:"i";
+}
+
+.data-management-page .dm-issue-main{
+  display:flex;
+  align-items:baseline;
+  min-width:0;
+  gap:10px;
+}
+
+.data-management-page .dm-issue-main b{
+  flex:0 0 auto;
+  color:#334155;
+  font-size:11.5px;
+  font-weight:700;
+}
+
+.data-management-page .dm-issue-main span{
+  min-width:0;
+  overflow:hidden;
+  color:#718096;
+  font-size:11px;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.data-management-page .dm-tab-pane button.dm-issue-link{
+  min-width:0 !important;
+  min-height:0 !important;
+  height:auto !important;
+  padding:0 0 1px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#1d4ed8 !important;
+  box-shadow:none !important;
+  font-size:11px !important;
+  line-height:18px !important;
+  font-weight:700 !important;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  cursor:pointer;
+}
+
+.data-management-page .dm-tab-pane button.dm-issue-link:hover{
+  color:#173ea6 !important;
+}
+
+@keyframes dmIssueFocusFrame{
+  0%{ opacity:0; transform:scale(.994); }
+  12%{ opacity:1; transform:scale(1); }
+  30%{ opacity:.72; }
+  48%{ opacity:1; }
+  68%{ opacity:.76; }
+  84%{ opacity:1; }
+  100%{ opacity:0; transform:scale(1); }
+}
+
+.data-management-page .dm-issue-focus-overlay{
+  position:fixed;
+  z-index:9999;
+  display:none;
+  box-sizing:border-box;
+  pointer-events:none;
+  border:2px solid #2f80d1;
+  border-radius:7px;
+  background:rgba(226,240,255,.16);
+  box-shadow:0 0 0 4px rgba(47,128,209,.13), 0 8px 22px rgba(29,78,216,.12);
+  transform-origin:center;
+}
+
+.data-management-page .dm-issue-focus-overlay.is-visible{
+  display:block;
+  animation:dmIssueFocusFrame 3.1s ease-in-out both;
+}
+
+.data-management-page .dm-account-with-issue{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  white-space:nowrap;
+}
+
+.data-management-page .dm-account-issue-marker{
+  display:inline-flex;
+  flex:0 0 auto;
+  width:13px;
+  height:13px;
+  min-width:13px !important;
+  min-height:13px !important;
+  padding:0 !important;
+  align-items:center;
+  justify-content:center;
+  border:1px solid #c94a57 !important;
+  border-radius:50% !important;
+  background:transparent !important;
+  color:#c94a57 !important;
+  box-shadow:none !important;
+  font:700 8px/1 Arial,sans-serif !important;
+  cursor:help;
+}
+
+.data-management-page .dm-account-issue-marker:hover,
+.data-management-page .dm-account-issue-marker:focus-visible{
+  border-color:#a83240 !important;
+  background:#fff7f8 !important;
+  color:#a83240 !important;
+  outline:0;
+}
+
+.data-management-page .dm-account-issue-popover{
+  position:fixed;
+  z-index:10020;
+  display:none;
+  width:272px;
+  box-sizing:border-box;
+  padding:9px 10px 8px;
+  border:1px solid #d9e4f0;
+  border-radius:7px;
+  background:#fff;
+  box-shadow:0 10px 26px rgba(25,55,90,.14);
+  color:#475569;
+  font-size:11px;
+  line-height:17px;
+}
+
+.data-management-page .dm-account-issue-popover.is-visible{
+  display:block;
+}
+
+.data-management-page .dm-account-issue-title{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:3px;
+  color:#334155;
+}
+
+.data-management-page .dm-account-issue-title > span{
+  display:inline-flex;
+  width:13px;
+  height:13px;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  border:1px solid #c94a57;
+  border-radius:50%;
+  color:#c94a57;
+  font:700 8px/1 Arial,sans-serif;
+}
+
+.data-management-page .dm-account-issue-title strong{
+  font-size:11.5px;
+  font-weight:700;
+}
+
+.data-management-page .dm-account-issue-detail{
+  color:#64748b;
+}
+
+.data-management-page .dm-account-issue-jump{
+  display:inline-flex;
+  width:auto !important;
+  min-width:0 !important;
+  height:auto !important;
+  min-height:0 !important;
+  margin-top:4px;
+  padding:0 0 1px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#1d4ed8 !important;
+  box-shadow:none !important;
+  font-size:11px !important;
+  line-height:17px !important;
+  font-weight:700 !important;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  cursor:pointer;
+}
+
+.data-management-page .dm-account-issue-jump:hover{
+  color:#173ea6 !important;
+}
+
+@media (prefers-reduced-motion:reduce){
+  .data-management-page .dm-issue-focus-overlay.is-visible{
+    animation:none;
+    opacity:1;
+  }
+}
+
+.data-management-page #pane-upload > .tab-scroll{
+  display:block !important;
+  height:100% !important;
+  overflow:auto !important;
+}
+
+.data-management-page .dm-upload-content{
+  padding:0 !important;
+}
+
+.data-management-page .du-card{
+  margin-bottom:6px;
+}
+
+.data-management-page .du-card-head{
+  min-height:34px;
+  padding:5px 10px;
+}
+
+.data-management-page .du-template-btn:not(.dm-template-btn){
+  min-height:24px;
+  height:24px;
+  padding:0 9px;
+  border-radius:6px;
+  font-size:11px;
+}
+
+.data-management-page .du-table-wrap{
+  padding:8px 10px 9px;
+}
+
+.data-management-page .du-footer{
+  padding:0 10px 9px;
+}
+
+/* 流水数据管理内部切换恢复为原文字 Tab，避免被通用按钮样式包成胶囊。 */
+.data-management-page #pane-upload .du-tab{
+  min-width:0 !important;
+  min-height:29px !important;
+  height:29px !important;
+  padding:0 2px 5px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#6b7b91 !important;
+  box-shadow:none !important;
+  font-size:12px !important;
+  line-height:24px !important;
+  font-weight:600 !important;
+}
+
+.data-management-page #pane-upload .du-tab:hover{
+  border:0 !important;
+  background:transparent !important;
+  color:#1d4ed8 !important;
+  box-shadow:none !important;
+}
+
+.data-management-page #pane-upload .du-tab.active{
+  border:0 !important;
+  background:transparent !important;
+  color:#002b5c !important;
+  box-shadow:none !important;
+  font-weight:800 !important;
+}
+
+.data-management-page #pane-upload .du-tab.active::after{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:-1px !important;
+  height:2px !important;
+  border-radius:999px !important;
+  background:#003366 !important;
+}
+
+.data-management-page .dm-balance-continuity-card .content{
+  padding-top:6px;
+}
+
+.data-management-page .dm-scope-card .content{
+  padding:14px;
+}
+
+.data-management-page .dm-empty-state{
+  display:flex;
+  min-height:150px;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:7px;
+  border:1px dashed #dbe7f4;
+  border-radius:8px;
+  background:#fbfdff;
+  color:#64748b;
+  text-align:center;
+}
+
+.data-management-page .dm-empty-state b{
+  color:#1e293b;
+  font-size:13px;
+}
+
+.data-management-page .dm-empty-state span{
+  max-width:520px;
+  font-size:12px;
+  line-height:20px;
+}
+
+@media (max-width:900px){
+  .data-management-tab-card .dm-template-btn{
+    margin-left:4px;
+  }
+
+  .data-management-page .dm-issue-list{
+    grid-template-columns:1fr;
+  }
+
+  .data-management-page .dm-issue-row{
+    grid-template-columns:12px minmax(0,1fr) auto;
+    border-right:0;
+    border-bottom:1px solid #f1f5f9;
+  }
+
+  .data-management-page .dm-issue-row:last-child{
+    border-bottom:0;
+  }
+
+}

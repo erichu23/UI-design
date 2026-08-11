@@ -1,0 +1,23 @@
+html,body{height:100%;margin:0;background:#f5f8fc;overflow:hidden;}
+.workingpaper-export-page #pane-workingpaper{display:block;height:100%;}
+.workingpaper-export-page #pane-workingpaper .tab-scroll.wp-page{height:100%;padding:10px 12px 16px;overflow:auto;box-sizing:border-box;}
+.workingpaper-export-page .wp-card-section{margin-bottom:10px;border-color:#e8eef5;}
+.workingpaper-export-page .wp-parameter-card{min-height:42px;margin-bottom:10px;background:#fff;}
+.workingpaper-export-page .wp-parameter-content{display:flex;align-items:center;gap:14px;min-height:42px;padding:5px 12px;box-sizing:border-box;}
+.workingpaper-export-page .wp-parameter-heading{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;color:#24364d;font-size:12px;}
+.workingpaper-export-page .wp-parameter-mark{width:3px;height:14px;border-radius:999px;background:#9fc1ef;}
+.workingpaper-export-page .wp-materiality-field{display:inline-flex;align-items:center;gap:6px;color:#475569;font-size:12px;font-weight:600;white-space:nowrap;}
+.workingpaper-export-page .wp-materiality-field input{width:126px;height:28px;padding:0 9px;border:1px solid #cfdbe8;border-radius:6px;background:#fff;color:#172b45;font-size:12px;text-align:right;outline:none;box-sizing:border-box;}
+.workingpaper-export-page .wp-materiality-field input:focus{border-color:#7aa7e8;box-shadow:0 0 0 2px rgba(47,111,237,.09);}
+.workingpaper-export-page .wp-materiality-field em{color:#64748b;font-style:normal;font-weight:500;}
+.workingpaper-export-page .wp-parameter-hint{color:#94a3b8;font-size:11px;white-space:nowrap;}
+.workingpaper-export-page .wp-card-body{padding:10px 12px 12px;}
+.workingpaper-export-page .wp-card-desc{margin-bottom:8px;line-height:1.55;}
+.workingpaper-export-page .wp-table-wrap{max-width:100%;overflow:auto;border:.5px solid #e7eef6;border-radius:7px;}
+.workingpaper-export-page .wp-table{width:100%;min-width:980px;}
+.workingpaper-export-page .wp-bottom-actions{display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:2px 0 4px;}
+.workingpaper-export-page .wp-bottom-actions .btn{height:30px;min-height:30px;padding:0 14px;}
+.workingpaper-export-page #btnExportRiskReport{border-color:#b9c9dc;color:#27415f;background:#fff;}
+.workingpaper-export-page .wp-export-toast{position:fixed;right:18px;bottom:18px;z-index:20;padding:8px 12px;border:1px solid #cfe0f7;border-radius:6px;background:#f3f8ff;color:#295786;font-size:12px;box-shadow:0 5px 18px rgba(30,64,110,.12);opacity:0;transform:translateY(6px);pointer-events:none;transition:.18s ease;}
+.workingpaper-export-page .wp-export-toast.is-visible{opacity:1;transform:translateY(0);}
+@media(max-width:760px){.workingpaper-export-page .wp-parameter-content{flex-wrap:wrap;gap:6px 12px}.workingpaper-export-page .wp-parameter-hint{flex-basis:100%;padding-left:10px}}

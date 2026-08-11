@@ -3468,3 +3468,118 @@ html body #cpTable tbody td:last-child,
 html body #txTable tbody td:last-child{
   border-color:var(--audit-table-border-outer) !important;
 }
+
+/* 交易对手方数据看板：两组图表与紧凑榜单同排，构成图收纳在右侧。 */
+html body .cfo-dash-body{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(100px,.2fr) !important;
+  align-items:stretch !important;
+  overflow-x:hidden !important;
+  overflow-y:visible !important;
+}
+
+html body .cfo-dash-body > .cfo-card{
+  width:auto !important;
+  min-width:0 !important;
+  height:auto !important;
+  align-self:stretch !important;
+}
+
+html body .cfo-dash-body .cfo-pareto-row{
+  min-width:0 !important;
+}
+
+html body .cfo-dash-body .cfo-chart-column{
+  min-width:146px !important;
+  height:226px !important;
+}
+
+html body .cfo-dash-body .cfo-pareto-wrap{
+  height:162px !important;
+  min-height:162px !important;
+}
+
+html body .cfo-dash-body .cfo-right-col{
+  grid-column:auto !important;
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  grid-template-rows:repeat(2,131px) !important;
+  width:auto !important;
+  min-width:0 !important;
+  height:268px !important;
+  min-height:0 !important;
+  align-self:stretch !important;
+  gap:6px !important;
+}
+
+html body .cfo-dash-body .cfo-right-col .cfo-pie-card{
+  width:auto !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  height:131px !important;
+  flex:none !important;
+  padding:6px !important;
+}
+
+html body .cfo-dash-body .cfo-right-col canvas{
+  width:56px !important;
+  height:56px !important;
+}
+
+html body .cfo-dash-body .cfo-right-col .cfo-pie-canvas-wrap{
+  width:56px !important;
+  height:56px !important;
+  flex:0 0 56px !important;
+}
+
+html body .cfo-dash-body .cfo-right-col .cfo-pie-title{
+  margin-bottom:3px !important;
+}
+
+html body .cfo-dash-body .cfo-right-col .cfo-pie-body{
+  min-height:0 !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:1px !important;
+}
+
+html body .cfo-dash-body .cfo-right-col .cfo-pie-legend{
+  width:100% !important;
+  min-width:0 !important;
+  gap:1px !important;
+}
+
+html body .cfo-dash-body .cfo-right-col .cfo-pie-legend-item{
+  justify-content:center !important;
+  gap:2px !important;
+  font-size:7px !important;
+  line-height:1.1 !important;
+  white-space:nowrap !important;
+}
+
+html body .cfo-dash-body .cfo-right-col .cfo-pie-legend-dot{
+  width:5px !important;
+  height:5px !important;
+}
+
+html body .cfo-dash-body .cfo-right-col .cfo-pie-note{
+  margin-top:1px !important;
+  font-size:7px !important;
+  line-height:1.2 !important;
+  white-space:nowrap !important;
+}
+
+html body .cfo-rank-table thead,
+html body .cfo-rank-table thead th{
+  position:sticky !important;
+  top:0 !important;
+  z-index:8 !important;
+  background:#f3f7fc !important;
+}
+
+@media (max-width:980px){
+  html body .cfo-dash-body{
+    grid-template-columns:minmax(390px,1fr) minmax(390px,1fr) minmax(100px,.2fr) !important;
+    overflow-x:auto !important;
+  }
+}

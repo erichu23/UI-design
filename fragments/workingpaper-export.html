@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-Hans-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="../assets/css/base.css?v=20260807-blacklist3"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260811-daily-trend1"/>
+  <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260811-workingpaper1"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260811-account-years1"/>
+  <link rel="stylesheet" href="../assets/css/pages/workingpaper-export.css?v=20260811-workingpaper1"/>
+</head>
+<body class="workingpaper-export-page">
+  <section class="tab-pane" id="pane-workingpaper">
+    <div class="tab-scroll wp-page">
+      <section class="wp-card-section wp-parameter-card" aria-labelledby="wpParameterTitle">
+        <div class="wp-parameter-content">
+          <div class="wp-parameter-heading">
+            <span class="wp-parameter-mark" aria-hidden="true"></span>
+            <strong id="wpParameterTitle">底稿参数设置</strong>
+          </div>
+          <label class="wp-materiality-field" for="workingpaperMateriality">
+            <span>重要性水平</span>
+            <input id="workingpaperMateriality" type="text" inputmode="decimal" placeholder="请输入" autocomplete="off"/>
+            <em>元</em>
+          </label>
+        </div>
+      </section>
+
+      <section class="wp-card-section" id="wpBlock1">
+        <div class="wp-card-head">
+          <div class="wp-card-title-wrap"><div class="wp-card-title-group"><div class="wp-card-title">信息测试 - 完整性测试</div></div></div>
+          <button class="wp-fold-btn" type="button" data-fold-target="wpBlock1" title="收起/展开"></button>
+        </div>
+        <div class="wp-card-body">
+          <div class="wp-card-desc">
+            请为每个账户确认银行流水获取方式。不同的获取方式需执行对应审计程序，用于评价资金流水的完整性（对应底稿中的 &lt;1.2 网银交易流水完整性测试&gt;）。
+          </div>
+          <div class="wp-table-wrap">
+            <table class="table wp-table" id="wpTable1">
+              <thead><tr><th>被审计单位名称</th><th>银行账号</th><th>本方银行</th><th class="num">交易总额</th><th class="num">交易笔数</th><th>银行流水获取方式</th><th>更新人</th><th>更新时间</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="wp-pager audit-pager" id="wpTable1Pager">
+            <span class="audit-pager-total">共 <b id="wpTable1Total">0</b> 条</span><button class="audit-pager-btn audit-pager-arrow" disabled>‹</button><button class="audit-pager-btn is-active">1</button><button class="audit-pager-btn audit-pager-arrow" disabled>›</button><label class="audit-pager-size"><select><option selected>20 条/页</option></select></label><span class="audit-pager-jump-label">跳至</span><input class="audit-pager-jump" type="number" min="1" inputmode="numeric"><span class="audit-pager-jump-label">页</span><b id="wpTable1TotalMirror" hidden>0</b>
+          </div>
+        </div>
+      </section>
+
+      <section class="wp-card-section" id="wpBlock2">
+        <div class="wp-card-head">
+          <div class="wp-card-title-wrap"><div class="wp-card-title-group"><div class="wp-card-title">信息测试 - 准确性测试</div></div></div>
+          <button class="wp-fold-btn" type="button" data-fold-target="wpBlock2" title="收起/展开"></button>
+        </div>
+        <div class="wp-card-body">
+          <div class="wp-inline-row">
+            <div class="wp-inline-label">是否使用系统内置的随机抽样工具进行直接测试：</div>
+            <label class="wp-switch"><input type="checkbox" id="directTestSwitch" checked><span class="slider"></span><span class="switch-text" id="directTestText">是</span></label>
+          </div>
+          <div class="wp-card-desc">若依赖控制测试，或使用非随机抽样的方式进行直接测试，可选择否。</div>
+          <div class="wp-form-row" id="sampleConfigRow"><div class="field"><label>设置风险等级：</label><select id="riskSel"><option value="">选择风险等级…</option><option value="重大+">重要的+</option><option value="重大">重要的</option><option value="提高">提高的</option><option value="基础">基础的</option></select></div></div>
+          <div class="wp-card-desc" id="wpDirectTestDesc">系统根据直接测试方案的属性抽样样本量表，自动计算最小样本量并进行随机抽样。用于评价资金流水的准确性（对应底稿中的 &lt;1.3 网银交易流水准确性测试&gt;）。</div>
+          <div class="wp-table-wrap" id="wpTable2Wrap">
+            <table class="table wp-table" id="wpTable2"><thead><tr><th>被审计单位名称</th><th>银行账号</th><th>本方银行</th><th class="num">交易总额</th><th class="num">交易笔数</th><th>最小样本量（自动计算）</th></tr></thead><tbody></tbody></table>
+          </div>
+          <div class="wp-pager audit-pager" id="wpTable2Pager"><span class="audit-pager-total">共 <b id="wpTable2Total">0</b> 条</span><button class="audit-pager-btn audit-pager-arrow" disabled>‹</button><button class="audit-pager-btn is-active">1</button><button class="audit-pager-btn audit-pager-arrow" disabled>›</button><label class="audit-pager-size"><select><option selected>20 条/页</option></select></label><span class="audit-pager-jump-label">跳至</span><input class="audit-pager-jump" type="number" min="1" inputmode="numeric"><span class="audit-pager-jump-label">页</span></div>
+        </div>
+      </section>
+
+      <div class="wp-bottom-actions">
+        <button class="btn primary" id="btnGenRisk" type="button">导出底稿</button>
+        <button class="btn" id="btnExportRiskReport" type="button">导出风险评估报告</button>
+      </div>
+      <div class="wp-export-toast" id="wpExportToast" role="status" aria-live="polite"></div>
+    </div>
+  </section>
+  <script defer src="../assets/js/core/shared.js?v=20260811-account-years1"></script>
+  <script defer src="../assets/js/pages/workingpaper-export.js?v=20260811-materiality1"></script>
+</body>
+</html>
