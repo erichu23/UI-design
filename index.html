@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="./assets/css/base.css?v=20260807-vat-note-modal1"/>
   <link rel="stylesheet" href="./assets/css/footer.css?v=20260507-routine"/>
 
-  <link rel="stylesheet" href="./assets/css/layout.css?v=20260811-unit3"/>
+  <link rel="stylesheet" href="./assets/css/layout.css?v=20260813-sidebar-hint1"/>
 </head>
 
 <body>
@@ -38,11 +38,11 @@
   
     <div class="layout-header-name">
       KPMG Audit Compass
-      <span class="layout-header-project">Test2 20260606</span>
+      <span class="layout-header-project" id="headerWorkbookName" hidden></span>
     </div>
 
     <nav class="layout-header-nav">
-      <div class="header-dropdown" id="amountUnitDropdown">
+      <div class="header-dropdown" id="amountUnitDropdown" hidden>
         <button class="nav-btn header-btn amount-unit-btn" id="amountUnitButton" type="button" aria-haspopup="listbox" aria-expanded="false">
           <span id="amountUnitValue">百万元/M</span><span class="header-dropdown-chevron" aria-hidden="true"></span>
         </button>
@@ -55,7 +55,7 @@
         </ul>
       </div>
 
-      <div class="header-dropdown" id="amountDecimalDropdown">
+      <div class="header-dropdown" id="amountDecimalDropdown" hidden>
         <button class="nav-btn header-btn amount-decimal-btn" id="amountDecimalButton" type="button" aria-haspopup="listbox" aria-expanded="false" title="小数位数">
           <span id="amountDecimalValue">0</span><span class="header-dropdown-chevron" aria-hidden="true"></span>
         </button>
@@ -84,25 +84,31 @@
 
       <button class="nav-btn nav-icon-btn" title="打印">
         <span class="icon">
-          <svg aria-hidden="true" viewBox="0 0 16 16">
-            <path d="M4 2.5A1.5 1.5 0 0 1 5.5 1h5A1.5 1.5 0 0 1 12 2.5V4H4V2.5ZM4 5.5h8v2h1a1 1 0 0 1 1 1v4.25a.75.75 0 0 1-.75.75H12v-3H4v3H2.75A.75.75 0 0 1 2 12.75V8.5a1 1 0 0 1 1-1h1v-2Zm1 5h6v3H5v-3Zm7-6.5h1a1 1 0 1 1 0 2h-1v-2Z"></path>
-          </svg>
+          <i class="fa-solid fa-print" aria-hidden="true"></i>
         </span>
       </button>
 
-      <button class="nav-btn nav-icon-btn" title="发送反馈">
-        <span class="icon">
-          <svg aria-hidden="true" viewBox="0 0 16 16">
-            <path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v5A1.5 1.5 0 0 0 2.5 10H4v3.25a.75.75 0 0 0 1.28.53L8.06 10h5.44A1.5 1.5 0 0 0 15 8.5v-5A1.5 1.5 0 0 0 13.5 2h-11Z"></path>
-          </svg>
-        </span>
-      </button>
+      <div class="header-help-wrap" id="headerHelpWrap">
+        <button class="nav-btn nav-icon-btn" id="headerHelpButton" type="button" title="帮助与反馈" aria-haspopup="menu" aria-expanded="false">
+          <span class="icon">
+            <i class="fa-solid fa-question" aria-hidden="true"></i>
+          </span>
+        </button>
+        <div class="header-help-menu" id="headerHelpMenu" role="menu" aria-label="帮助与反馈" hidden>
+          <button type="button" role="menuitem" data-feedback-open="issue">
+            <i class="fa-regular fa-message" aria-hidden="true"></i>
+            <span><strong>发送问题反馈</strong><small>反馈使用问题或功能建议</small></span>
+          </button>
+          <button type="button" role="menuitem" data-feedback-open="review">
+            <i class="fa-regular fa-star" aria-hidden="true"></i>
+            <span><strong>发送用户评价</strong><small>评价当前模块的使用体验</small></span>
+          </button>
+        </div>
+      </div>
 
       <button class="nav-btn nav-icon-btn" title="设置">
         <span class="icon">
-          <svg aria-hidden="true" viewBox="0 0 16 16">
-            <path d="M8.93 1.5a.75.75 0 0 0-1.86 0l-.26.78a4.5 4.5 0 0 0-1.23.71l-.8-.31a.75.75 0 0 0-.95.95l.31.8a4.5 4.5 0 0 0-.71 1.23l-.78.26a.75.75 0 0 0 0 1.86l.78.26c.16.45.4.87.71 1.23l-.31.8a.75.75 0 0 0 .95.95l.8-.31c.36.31.78.55 1.23.71l.26.78a.75.75 0 0 0 1.86 0l.26-.78a4.5 4.5 0 0 0 1.23-.71l.8.31a.75.75 0 0 0 .95-.95l-.31-.8c.31-.36.55-.78.71-1.23l.78-.26a.75.75 0 0 0 0-1.86l-.78-.26a4.5 4.5 0 0 0-.71-1.23l.31-.8a.75.75 0 0 0-.95-.95l-.8.31a4.5 4.5 0 0 0-1.23-.71L8.93 1.5ZM8 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z"></path>
-          </svg>
+          <i class="fa-solid fa-gear" aria-hidden="true"></i>
         </span>
       </button>
     </nav>
@@ -136,8 +142,8 @@
 
       <li class="sb-toggle open" id="workbookMenuGroup">
         <div class="sb-toggle-head" onclick="toggleSb(this.parentElement)">
-          <i class="fa-solid fa-folder ico"></i>
-          <span class="sb-txt">工作簿详情</span>
+          <i class="fa-regular fa-copy ico"></i>
+          <span class="sb-txt">工作簿数据分析</span>
           <i class="fa-solid fa-angle-right caret"></i>
         </div>
 
@@ -149,9 +155,9 @@
           </li>
 
           <li class="sb-row active module-item bank-analysis"
-              onclick="switchFrame('./fragments/bank-analysis.html?v=20260811-rank-scroll1','银行流水分析',this)">
+              onclick="switchFrame('./fragments/bank-analysis.html?v=20260813-fund-flow-name1','资金流水分析',this)">
             <i class="fa-regular fa-circle-check ico"></i>
-            <span class="sb-txt">银行流水分析</span>
+            <span class="sb-txt">资金流水分析</span>
           </li>
 
           <li class="sb-row active module-item vat-analysis"
@@ -253,10 +259,65 @@
     <iframe
       id="module-frame"
       class="module-frame"
-      src="./fragments/project-list.html">
+      src="./fragments/project-list.html?v=20260813-project-list11">
     </iframe>
   </section>
 </div>
+
+<!-- 帮助与反馈 -->
+<div class="platform-feedback-modal" id="issueFeedbackModal" aria-hidden="true">
+  <div class="platform-feedback-panel platform-feedback-panel-lg" role="dialog" aria-modal="true" aria-labelledby="issueFeedbackTitle">
+    <div class="platform-feedback-head">
+      <div>
+        <h2 id="issueFeedbackTitle">问题反馈</h2>
+        <p>请描述遇到的问题，我们会结合当前工作簿和模块定位处理。</p>
+      </div>
+      <button class="platform-feedback-close" type="button" data-feedback-close aria-label="关闭">×</button>
+    </div>
+    <form class="platform-feedback-body" id="issueFeedbackForm" autocomplete="off">
+      <div class="platform-feedback-user"><i class="fa-regular fa-user" aria-hidden="true"></i>反馈提交者：<strong>Hu, Eric H.Y. (SH/AQPP)</strong></div>
+      <div class="platform-feedback-grid platform-feedback-grid-2">
+        <label class="platform-feedback-field is-required"><span>项目ID</span><select id="feedbackProjectId" required><option value="20220318">20220318</option></select></label>
+        <label class="platform-feedback-field is-required"><span>项目名称</span><select id="feedbackProjectName" required><option value="Test2">Test2</option></select></label>
+        <label class="platform-feedback-field is-required"><span>工作簿名称</span><select id="feedbackWorkbook" required><option value="">请选择</option></select></label>
+        <label class="platform-feedback-field is-required"><span>模块</span><select id="feedbackModule" required><option value="">请选择</option><option>数据上传及管理</option><option>资金流水分析</option><option>增值税数据分析</option><option>数据综合分析</option><option>资金流水核查底稿导出</option></select></label>
+        <label class="platform-feedback-field"><span>功能</span><select id="feedbackFunction"><option value="">请选择</option><option>数据上传与校验</option><option>筛选与查询</option><option>图表分析</option><option>表格查看</option><option>导出与报告</option><option>其他</option></select></label>
+        <label class="platform-feedback-field"><span>主题</span><input id="feedbackSubject" type="text" maxlength="80" placeholder="请输入问题主题"/></label>
+      </div>
+      <label class="platform-feedback-field platform-feedback-field-block is-required"><span>问题描述</span><textarea id="feedbackDescription" required maxlength="1000" placeholder="请描述操作步骤、实际结果和期望结果"></textarea><small class="platform-feedback-count">最多输入 1000 个字符</small></label>
+      <div class="platform-feedback-upload">
+        <span class="platform-feedback-upload-label">附件</span>
+        <label class="platform-feedback-upload-btn"><i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>上传文件<input id="feedbackFiles" type="file" multiple accept=".csv,.doc,.docx,.htm,.html,.json,.jpg,.jpeg,.pdf,.ppt,.pptx,.xls,.xlsx,.zip,.png,.txt"/></label>
+        <span class="platform-feedback-upload-summary" id="feedbackFileSummary">未选择文件</span>
+        <p>最多上传 10 个文件，单个文件不超过 100MB。</p>
+      </div>
+      <div class="platform-feedback-actions"><button class="platform-action-primary" type="submit">确认提交</button><button class="platform-action-secondary" type="reset">重置</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="platform-feedback-modal" id="userReviewModal" aria-hidden="true">
+  <div class="platform-feedback-panel" role="dialog" aria-modal="true" aria-labelledby="userReviewTitle">
+    <div class="platform-feedback-head">
+      <div>
+        <h2 id="userReviewTitle">用户评价</h2>
+        <p>您的评价将帮助我们持续改善平台体验。</p>
+      </div>
+      <button class="platform-feedback-close" type="button" data-feedback-close aria-label="关闭">×</button>
+    </div>
+    <form class="platform-feedback-body" id="userReviewForm" autocomplete="off">
+      <div class="platform-feedback-grid">
+        <label class="platform-feedback-field is-required"><span>模块</span><select id="reviewModule" required><option value="">请选择</option><option>数据上传及管理</option><option>资金流水分析</option><option>增值税数据分析</option><option>数据综合分析</option><option>资金流水核查底稿导出</option></select></label>
+        <label class="platform-feedback-field"><span>功能</span><select id="reviewFunction"><option value="">请选择</option><option>数据上传与校验</option><option>筛选与查询</option><option>图表分析</option><option>表格查看</option><option>导出与报告</option><option>其他</option></select></label>
+        <div class="platform-feedback-field is-required platform-rating-field"><span>评分</span><div class="platform-rating" id="userRating" role="radiogroup" aria-label="评分"><button type="button" data-rating="1" aria-label="1星">★</button><button type="button" data-rating="2" aria-label="2星">★</button><button type="button" data-rating="3" aria-label="3星">★</button><button type="button" data-rating="4" aria-label="4星">★</button><button type="button" data-rating="5" aria-label="5星">★</button><input id="reviewRatingValue" type="hidden" value="0"/></div></div>
+        <label class="platform-feedback-field platform-feedback-field-block is-required"><span>意见</span><textarea id="reviewComment" required maxlength="500" placeholder="请填写您对当前模块的意见或建议"></textarea></label>
+      </div>
+      <div class="platform-feedback-actions"><button class="platform-action-primary" type="submit">确认提交</button><button class="platform-action-secondary" type="reset">重置</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="platform-feedback-toast" id="platformFeedbackToast" role="status" aria-live="polite"></div>
 
 <!-- Footer -->
 
@@ -266,6 +327,6 @@
 </footer>
 
 <!-- 平台外壳脚本 -->
-<script defer src="./assets/js/core/app-shell.js?v=20260811-rank-scroll1"></script>
+<script defer src="./assets/js/core/app-shell.js?v=20260813-sidebar-hint1"></script>
 </body>
 </html>

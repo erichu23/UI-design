@@ -3887,7 +3887,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   padding:0 !important;
 }
 
-/* 折叠按钮统一为银行流水分析圆形箭头样式 */
+/* 折叠按钮统一为资金流水分析圆形箭头样式 */
 .ds3-vat-page .ds3-fold{
   width:26px !important;
   height:26px !important;
@@ -7252,7 +7252,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   flex:0 0 auto;
 }
 
-/* 数据综合分析筛选区：同步银行流水分析的一行式筛选风格 */
+/* 数据综合分析筛选区：同步资金流水分析的一行式筛选风格 */
 .ds3-vat-page .ds3-filter-block .ds3-block-head{
   min-height:34px;
   padding:6px 10px 4px;
@@ -7387,7 +7387,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   }
 }
 
-/* 与银行流水分析筛选器保持同款控件尺寸和视觉 */
+/* 与资金流水分析筛选器保持同款控件尺寸和视觉 */
 .ds3-vat-page .ds3-filter-block .ds3-block-body{
   padding:7px 10px 8px;
   background:#fff;
@@ -7489,7 +7489,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 /* =========================================================
    专业版统一色板与控件：数据综合分析
    - 表格正文金额使用浅色，合计/分组行稍深
-   - 按钮与银行流水分析保持一致
+   - 按钮与资金流水分析保持一致
    ========================================================= */
 .ds3-vat-page{
   --audit-pro-in:#3b82f6;
@@ -7599,7 +7599,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 
 /* =========================================================
    专业版最终统一：数据综合分析表格色号、细线与按钮
-   与银行流水分析保持同一套浅色金额和细边框语言。
+   与资金流水分析保持同一套浅色金额和细边框语言。
    ========================================================= */
 .ds3-vat-page{
   --audit-pro-in:#4f8df7;
@@ -7732,7 +7732,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   font-weight:800 !important;
 }
 
-/* 全平台字体统一：以银行流水分析继承的系统字体栈为准。 */
+/* 全平台字体统一：以资金流水分析继承的系统字体栈为准。 */
 .ds3-vat-page,
 .ds3-vat-page *,
 .ds3-vat-page button,
@@ -7756,7 +7756,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   color:#fff !important;
 }
 
-/* 对手方对比明细：普通明细行使用银行流水分析同款浅色，避免被旧合计表规则压成深色。 */
+/* 对手方对比明细：普通明细行使用资金流水分析同款浅色，避免被旧合计表规则压成深色。 */
 .ds3-vat-page #ds3FilterTable tbody tr:not(.sum-row):not(.group-row):not(.ds3-total-row) > td.ds3-num-inflow,
 .ds3-vat-page #ds3SelectedTable tbody tr:not(.sum-row):not(.group-row):not(.ds3-total-row) > td.ds3-num-inflow{
   color:var(--audit-pro-in) !important;
@@ -7840,7 +7840,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   overflow-x:auto !important;
 }
 
-/* 数据综合分析：补齐与银行流水分析一致的业务逻辑 / 操作提示入口 */
+/* 数据综合分析：补齐与资金流水分析一致的业务逻辑 / 操作提示入口 */
 .ds3-vat-page .ds3-help-actions{
   display:inline-flex;
   align-items:center;
@@ -7984,7 +7984,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   max-width:44px;
 }
 
-/* 数据综合分析 card 标题样式对齐银行流水分析：左侧整高蓝色竖条 */
+/* 数据综合分析 card 标题样式对齐资金流水分析：左侧整高蓝色竖条 */
 .ds3-vat-page .ds3-block{
   margin-top:6px !important;
   border:1px solid #edf2f7 !important;
@@ -8128,7 +8128,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   margin-left:0 !important;
 }
 
-/* 数据综合分析顶部分析 Tab：对齐银行流水分析文字 Tab + 底部蓝色光标 */
+/* 数据综合分析顶部分析 Tab：对齐资金流水分析文字 Tab + 底部蓝色光标 */
 .ds3-vat-page .ds3-filter-block .ds3-block-head{
   padding:0 10px !important;
   min-height:34px !important;
@@ -8196,7 +8196,7 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
   padding:0 9px !important;
 }
 
-/* 数据综合分析最终修正：标题按钮贴近、规则标题统一、筛选区对齐银行流水分析 */
+/* 数据综合分析最终修正：标题按钮贴近、规则标题统一、筛选区对齐资金流水分析 */
 .ds3-vat-page .ds3-block-head{
   display:flex !important;
   align-items:center !important;

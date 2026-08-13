@@ -60,11 +60,14 @@ function initCollapsedSidebarFlyout(){
   const renderFlyout = (group) => {
     const title = getGroupTitle(group);
     const iconClass = getGroupIconClass(group);
+    const isWorkbookMenu = group.id === 'workbookMenuGroup';
+    const contextDisabled = sidebar.classList.contains('is-project-list') && isWorkbookMenu;
     const rows = Array.from(group.querySelectorAll(':scope > .sb-submenu > .sb-row'));
     const itemsHtml = rows.length ? rows.map((row, index) => {
       const text = row.querySelector('.sb-txt')?.textContent.trim() || '未命名页面';
+      // 悬浮菜单沿用展开侧边栏的模块图标，只通过颜色表达可用状态。
       const icon = row.querySelector('i')?.className || 'fa-regular fa-circle ico';
-      const disabled = !row.getAttribute('onclick');
+      const disabled = contextDisabled || !row.getAttribute('onclick');
       const current = row.classList.contains('current');
       return `
         <button class="sidebar-flyout-item ${current ? 'is-current' : ''} ${disabled ? 'is-disabled' : ''}"
@@ -73,7 +76,7 @@ function initCollapsedSidebarFlyout(){
                 ${disabled ? 'disabled' : ''}>
           <i class="${icon}"></i>
           <span>${text}</span>
-          <small>${disabled ? '待配置' : '进入'}</small>
+          <small>${contextDisabled ? '请先进入工作簿' : (disabled ? '待配置' : '进入')}</small>
         </button>
       `;
     }).join('') : '<div class="sidebar-flyout-empty">暂无可进入页面</div>';
@@ -85,13 +88,16 @@ function initCollapsedSidebarFlyout(){
       </div>
       <div class="sidebar-flyout-list">${itemsHtml}</div>
     `;
+    flyout.classList.toggle('is-workbook-menu', isWorkbookMenu);
+    flyout.classList.toggle('is-context-disabled', contextDisabled);
+    flyout.classList.remove('is-shortcut');
 
     flyout.querySelectorAll('[data-flyout-index]').forEach(btn => {
       btn.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
         const row = rows[Number(btn.dataset.flyoutIndex)];
-        if (!row || !row.getAttribute('onclick')) return;
+        if (contextDisabled || !row || !row.getAttribute('onclick')) return;
         row.click();
         closeFlyout();
       });
@@ -110,6 +116,28 @@ function initCollapsedSidebarFlyout(){
     flyout.classList.add('is-open');
   };
 
+  const openProjectListHint = row => {
+    if (!sidebar.classList.contains('is-collapsed')) return;
+    cancelClose();
+    activeGroup = row;
+    const iconClass = row.querySelector('.ico')?.className || 'fa-solid fa-bars ico';
+    flyout.innerHTML = `
+      <button class="sidebar-flyout-shortcut" type="button">
+        <i class="${iconClass}" aria-hidden="true"></i>
+        <span>返回项目列表</span>
+      </button>
+    `;
+    flyout.classList.remove('is-workbook-menu', 'is-context-disabled');
+    flyout.classList.add('is-shortcut', 'is-open');
+    const rect = row.getBoundingClientRect();
+    flyout.style.left = `${rect.right + 8}px`;
+    flyout.style.top = `${Math.max(50, rect.top - 3)}px`;
+    flyout.querySelector('.sidebar-flyout-shortcut')?.addEventListener('click', () => {
+      row.click();
+      closeFlyout();
+    });
+  };
+
   sidebar.querySelectorAll('.sb-toggle').forEach(group => {
     const head = group.querySelector(':scope > .sb-toggle-head');
     if (!head) return;
@@ -124,6 +152,10 @@ function initCollapsedSidebarFlyout(){
     });
   });
 
+  const projectListEntry = sidebar.querySelector('.current-project-list');
+  projectListEntry?.addEventListener('mouseenter', () => openProjectListHint(projectListEntry));
+  projectListEntry?.addEventListener('focusin', () => openProjectListHint(projectListEntry));
+
   sidebar.addEventListener('mouseleave', scheduleClose);
   flyout.addEventListener('mouseenter', cancelClose);
   flyout.addEventListener('mouseleave', scheduleClose);
@@ -136,14 +168,15 @@ function initCollapsedSidebarFlyout(){
 const APP_FRAME_STATE_KEY = 'auditCompass.currentFrameState';
 const DEFAULT_PROJECT = 'Test2';
 const DEFAULT_BOOK = '20251022';
-const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260811-rank-scroll1';
+const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260813-fund-flow-name1';
 const DATA_MANAGEMENT_SRC = './fragments/data-management.html?v=20260811-balance-restore1';
 const DATA_SUMMARY_SRC = './fragments/data-summary.html?v=20260811-unit5';
 const WORKINGPAPER_EXPORT_SRC = './fragments/workingpaper-export.html?v=20260811-materiality1';
-const PROJECT_LIST_SRC = './fragments/project-list.html';
+const PROJECT_LIST_SRC = './fragments/project-list.html?v=20260813-project-list11';
 const AMOUNT_UNIT_KEY = 'auditCompass.amountUnit';
 const AMOUNT_DECIMAL_KEY = 'auditCompass.amountDecimals';
 const AMOUNT_UNIT_LABELS = { yuan:'元', k:'千元/K', w:'万元/W', m:'百万元/M', b:'亿元/B' };
+const LEGACY_BANK_TITLE = '\u94f6\u884c\u6d41\u6c34\u5206\u6790';
 
 function getAmountDisplayState(){
   const storedUnit = localStorage.getItem(AMOUNT_UNIT_KEY);
@@ -312,11 +345,26 @@ function setProjectListState(){
   const titleEl = document.getElementById('module-title');
   const crumbProject = document.getElementById('crumbProject');
   const crumbBook = document.getElementById('crumbBook');
+  const headerWorkbookName = document.getElementById('headerWorkbookName');
+  const amountUnitDropdown = document.getElementById('amountUnitDropdown');
+  const amountDecimalDropdown = document.getElementById('amountDecimalDropdown');
 
   if (sidebar) sidebar.classList.add('is-project-list');
   if (titleEl) titleEl.textContent = '项目列表';
   if (crumbProject) crumbProject.textContent = '项目列表';
   if (crumbBook) crumbBook.textContent = '-';
+  if (headerWorkbookName) {
+    headerWorkbookName.textContent = '';
+    headerWorkbookName.hidden = true;
+  }
+  if (amountUnitDropdown) {
+    amountUnitDropdown.classList.remove('is-open');
+    amountUnitDropdown.hidden = true;
+  }
+  if (amountDecimalDropdown) {
+    amountDecimalDropdown.classList.remove('is-open');
+    amountDecimalDropdown.hidden = true;
+  }
   const issueEntry = document.getElementById('breadcrumbDataIssue');
   if (issueEntry) issueEntry.hidden = true;
 
@@ -329,13 +377,23 @@ function setWorkspaceState(project, book, title){
   const titleEl = document.getElementById('module-title');
   const crumbProject = document.getElementById('crumbProject');
   const crumbBook = document.getElementById('crumbBook');
+  const headerWorkbookName = document.getElementById('headerWorkbookName');
+  const amountUnitDropdown = document.getElementById('amountUnitDropdown');
+  const amountDecimalDropdown = document.getElementById('amountDecimalDropdown');
 
+  const normalizedTitle = title === LEGACY_BANK_TITLE ? '资金流水分析' : (title || '资金流水分析');
   if (sidebar) sidebar.classList.remove('is-project-list');
-  if (titleEl) titleEl.textContent = title || '银行流水分析';
+  if (titleEl) titleEl.textContent = normalizedTitle;
   if (crumbProject) crumbProject.textContent = project || 'Test2';
   if (crumbBook) crumbBook.textContent = book || '20251022';
+  if (headerWorkbookName) {
+    headerWorkbookName.textContent = book || DEFAULT_BOOK;
+    headerWorkbookName.hidden = false;
+  }
+  if (amountUnitDropdown) amountUnitDropdown.hidden = false;
+  if (amountDecimalDropdown) amountDecimalDropdown.hidden = false;
   const issueEntry = document.getElementById('breadcrumbDataIssue');
-  if (issueEntry) issueEntry.hidden = title !== '银行流水分析';
+  if (issueEntry) issueEntry.hidden = normalizedTitle !== '资金流水分析';
 
   document.querySelector('.current-project-list')?.classList.remove('current');
 }
@@ -376,12 +434,12 @@ function enterWorkbook(project, book){
   if (frame) frame.src = BANK_ANALYSIS_SRC;
   if (breadcrumb) breadcrumb.style.display = 'flex';
 
-  setWorkspaceState(project, book, '银行流水分析');
+  setWorkspaceState(project, book, '资金流水分析');
 
   document.querySelectorAll('.module-item').forEach(item => item.classList.remove('current'));
   if (bankMenu) bankMenu.classList.add('current');
 
-  saveFrameState(BANK_ANALYSIS_SRC, '银行流水分析', project, book);
+  saveFrameState(BANK_ANALYSIS_SRC, '资金流水分析', project, book);
 }
 
 document.getElementById('backToProjectList')?.addEventListener('click', function(){
@@ -409,9 +467,167 @@ function restoreFrameState(){
   const restoredSrc = normalizeFrameSrc(saved.src);
   if (frame) frame.src = restoredSrc;
   if (breadcrumb) breadcrumb.style.display = 'flex';
-  setWorkspaceState(saved.project, saved.book, saved.title);
+  const restoredTitle = saved.title === LEGACY_BANK_TITLE ? '资金流水分析' : saved.title;
+  setWorkspaceState(saved.project, saved.book, restoredTitle);
   setCurrentModuleBySrc(restoredSrc);
-  saveFrameState(restoredSrc, saved.title, saved.project, saved.book);
+  saveFrameState(restoredSrc, restoredTitle, saved.project, saved.book);
+}
+
+function initHeaderFeedback(){
+  const wrap = document.getElementById('headerHelpWrap');
+  const trigger = document.getElementById('headerHelpButton');
+  const menu = document.getElementById('headerHelpMenu');
+  const issueModal = document.getElementById('issueFeedbackModal');
+  const reviewModal = document.getElementById('userReviewModal');
+  const issueForm = document.getElementById('issueFeedbackForm');
+  const reviewForm = document.getElementById('userReviewForm');
+  const rating = document.getElementById('userRating');
+  const ratingValue = document.getElementById('reviewRatingValue');
+  const fileInput = document.getElementById('feedbackFiles');
+  const fileSummary = document.getElementById('feedbackFileSummary');
+  const toast = document.getElementById('platformFeedbackToast');
+  if (!wrap || !trigger || !menu || !issueModal || !reviewModal) return;
+
+  let toastTimer = null;
+  const showToast = message => {
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('is-show');
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => toast.classList.remove('is-show'), 2200);
+  };
+
+  const setMenuOpen = open => {
+    menu.hidden = !open;
+    trigger.setAttribute('aria-expanded', String(open));
+  };
+
+  const setRating = value => {
+    const score = Math.max(0, Math.min(5, Number(value) || 0));
+    if (ratingValue) ratingValue.value = String(score);
+    rating?.querySelectorAll('[data-rating]').forEach(button => {
+      const active = Number(button.dataset.rating) <= score;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-checked', String(Number(button.dataset.rating) === score));
+    });
+  };
+
+  const selectValue = (id, value) => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    const exists = Array.from(select.options).some(option => option.value === value || option.textContent === value);
+    select.value = exists ? value : '';
+  };
+
+  const syncFeedbackContext = () => {
+    const workbookSelect = document.getElementById('feedbackWorkbook');
+    const workbook = document.getElementById('crumbBook')?.textContent.trim() || '';
+    const moduleTitle = document.getElementById('module-title')?.textContent.trim() || '';
+    if (workbookSelect) {
+      workbookSelect.innerHTML = '<option value="">请选择</option>';
+      if (workbook && workbook !== '-') {
+        const option = document.createElement('option');
+        option.value = workbook;
+        option.textContent = workbook;
+        workbookSelect.appendChild(option);
+        workbookSelect.value = workbook;
+      }
+    }
+    if (moduleTitle !== '项目列表') {
+      selectValue('feedbackModule', moduleTitle);
+      selectValue('reviewModule', moduleTitle);
+    }
+  };
+
+  const closeModal = modal => {
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+  };
+
+  const openModal = type => {
+    setMenuOpen(false);
+    syncFeedbackContext();
+    const modal = type === 'review' ? reviewModal : issueModal;
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    window.setTimeout(() => modal.querySelector('select, input, textarea, button')?.focus({preventScroll:true}), 0);
+  };
+
+  trigger.addEventListener('click', event => {
+    event.stopPropagation();
+    setMenuOpen(menu.hidden);
+  });
+  menu.addEventListener('click', event => {
+    event.stopPropagation();
+    const item = event.target.closest('[data-feedback-open]');
+    if (item) openModal(item.dataset.feedbackOpen);
+  });
+  document.addEventListener('click', event => {
+    if (!wrap.contains(event.target)) setMenuOpen(false);
+  });
+
+  document.querySelectorAll('[data-feedback-close]').forEach(button => {
+    button.addEventListener('click', () => closeModal(button.closest('.platform-feedback-modal')));
+  });
+  [issueModal, reviewModal].forEach(modal => modal.addEventListener('click', event => {
+    if (event.target === modal) closeModal(modal);
+  }));
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    setMenuOpen(false);
+    closeModal(issueModal);
+    closeModal(reviewModal);
+  });
+
+  rating?.querySelectorAll('[data-rating]').forEach(button => {
+    button.setAttribute('role', 'radio');
+    button.setAttribute('aria-checked', 'false');
+    button.addEventListener('click', () => setRating(button.dataset.rating));
+  });
+
+  fileInput?.addEventListener('change', () => {
+    const files = Array.from(fileInput.files || []);
+    const oversized = files.find(file => file.size > 100 * 1024 * 1024);
+    if (files.length > 10 || oversized) {
+      fileInput.value = '';
+      if (fileSummary) fileSummary.textContent = '未选择文件';
+      showToast(files.length > 10 ? '最多只能上传 10 个文件' : '单个文件不能超过 100MB');
+      return;
+    }
+    if (fileSummary) {
+      fileSummary.textContent = files.length
+        ? `${files.length} 个文件：${files.map(file => file.name).join('、')}`
+        : '未选择文件';
+    }
+  });
+
+  issueForm?.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!issueForm.reportValidity()) return;
+    closeModal(issueModal);
+    showToast('问题反馈已提交');
+  });
+  issueForm?.addEventListener('reset', () => window.setTimeout(() => {
+    syncFeedbackContext();
+    if (fileSummary) fileSummary.textContent = '未选择文件';
+  }, 0));
+
+  reviewForm?.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!reviewForm.reportValidity()) return;
+    if (Number(ratingValue?.value || 0) < 1) {
+      showToast('请先选择评分');
+      rating?.querySelector('[data-rating="1"]')?.focus();
+      return;
+    }
+    closeModal(reviewModal);
+    showToast('用户评价已提交');
+  });
+  reviewForm?.addEventListener('reset', () => window.setTimeout(() => {
+    setRating(0);
+    syncFeedbackContext();
+  }, 0));
 }
 
 (function(){
@@ -428,4 +644,5 @@ function restoreFrameState(){
   initCollapsedSidebarFlyout();
   initAmountDisplayControls();
   restoreFrameState();
+  initHeaderFeedback();
 })();

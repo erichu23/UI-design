@@ -856,7 +856,7 @@ tbody tr:hover .cleared-cell{ background:#e2f4ee !important; }
   color:var(--audit-pro-purchase-strong) !important;
 }
 
-/* 全平台字体统一：高风险核查 iframe 使用银行流水分析同款系统字体栈。 */
+/* 全平台字体统一：高风险核查 iframe 使用资金流水分析同款系统字体栈。 */
 :root{
   --platform-font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";
   --font:var(--platform-font-family);
@@ -960,7 +960,7 @@ tbody tr.flagged:hover td{
 
 /* =========================================================
    高风险核查最终统一样式
-   与银行流水分析/数据综合分析保持一致的卡片、表格、按钮语言。
+   与资金流水分析/数据综合分析保持一致的卡片、表格、按钮语言。
    ========================================================= */
 :root{
   --risk-pro-bg:#f5f7fa;
@@ -3210,7 +3210,7 @@ html body .check-item.has-filter .filter-dot{
   box-shadow:0 0 0 2px rgba(47,111,237,.08) !important;
 }
 
-/* 特殊交易识别：去掉核查标准外框胶囊，右侧 card 风格与银行流水分析统一。 */
+/* 特殊交易识别：去掉核查标准外框胶囊，右侧 card 风格与资金流水分析统一。 */
 html body .check-group-outer-title{
   min-height:26px !important;
   margin:2px 0 4px !important;

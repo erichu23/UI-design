@@ -3,7 +3,10 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <link rel="stylesheet" href="../assets/css/pages/project-list.css?v=20260626-scrollbar1"/>
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/></noscript>
+  <link rel="stylesheet" href="../assets/css/base.css?v=20260813-project-list1"/>
+  <link rel="stylesheet" href="../assets/css/pages/project-list.css?v=20260813-project-list9"/>
 </head>
 <body>
   <div class="pl-page">
@@ -24,51 +27,82 @@
       <button class="pl-hint-btn" type="button">操作提示</button>
     </div>
 
-    <div class="pl-card">
+    <div class="pl-card" data-project-number="20220318" data-project-name="TEST" data-customer-name="TEST_客户">
       <div class="pl-card-head">
         <div class="pl-meta">
-          <span>项目编号/名称: <b>20220318/TEST</b></span>
-          <span>客户名称: <b>TEST_客户</b></span>
-          <span>工作簿数量: <b>36</b></span>
-          <span class="pl-status">开启中</span>
-          <a href="javascript:void(0)">详情</a>
-          <a href="javascript:void(0)">组员查看</a>
+          <div class="pl-project-identity">
+            <span class="pl-project-icon" aria-hidden="true"><i class="fa-regular fa-folder-open"></i></span>
+            <span class="pl-project-name">项目编号/名称：<strong>20220318 / TEST</strong></span>
+          </div>
+          <span class="pl-meta-divider" aria-hidden="true"></span>
+          <span class="pl-meta-item"><i class="fa-regular fa-building" aria-hidden="true"></i>客户名称：<b>TEST_客户</b></span>
+          <span class="pl-meta-divider" aria-hidden="true"></span>
+          <span class="pl-meta-item"><i class="fa-regular fa-copy" aria-hidden="true"></i>工作簿数量：<b id="projectWorkbookCount">1</b></span>
+          <span class="pl-meta-divider" aria-hidden="true"></span>
+          <span class="pl-status"><i class="fa-regular fa-circle-check" aria-hidden="true"></i>开启中</span>
+          <span class="pl-meta-divider" aria-hidden="true"></span>
+          <a class="pl-meta-link" href="javascript:void(0)"><i class="fa-regular fa-file-lines" aria-hidden="true"></i>项目详情</a>
+          <span class="pl-meta-divider" aria-hidden="true"></span>
+          <a class="pl-meta-link" href="javascript:void(0)"><i class="fa-solid fa-user-group" aria-hidden="true"></i>组员查看</a>
         </div>
         <div class="pl-actions">
-          <button type="button">新建工作簿</button>
+          <button class="pl-new-btn" type="button"><i class="fa-solid fa-plus" aria-hidden="true"></i>新建工作簿</button>
+          <button class="pl-fold-btn" id="projectCardFold" type="button" aria-label="收起工作簿列表" aria-expanded="true"></button>
         </div>
       </div>
 
-      <div class="pl-table-wrap">
-        <table class="pl-table">
-          <thead>
-            <tr>
-              <th>工作簿名称</th>
-              <th>接口文件总数</th>
-              <th>更新日期</th>
-              <th>分析期间</th>
-              <th>备注</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>20251022</td>
-              <td>2</td>
-              <td>2026-04-08</td>
-              <td>2026-04-01 - 2026-05-29</td>
-              <td></td>
-              <td>
-                <a href="javascript:void(0)" onclick="enterWorkbook('Test2','20251022')">进入</a>
-              </td>
-            </tr>
-
-          </tbody>
-        </table>
+      <div class="pl-card-body" id="projectCardBody">
+        <div class="pl-table-wrap">
+          <div class="pl-table-frame">
+            <table class="pl-table">
+              <thead>
+                <tr>
+                  <th data-column="name"><div class="pl-th-inner"><span>工作簿名称</span><span class="pl-th-tools"><span class="pl-sort-icons"><button type="button" data-sort="name" data-direction="asc" aria-label="工作簿名称升序">▲</button><button type="button" data-sort="name" data-direction="desc" aria-label="工作簿名称降序">▼</button></span><button class="pl-filter-btn" type="button" data-filter="name" aria-label="筛选工作簿名称"><i class="fa-solid fa-filter" aria-hidden="true"></i></button></span></div></th>
+                  <th data-column="files"><div class="pl-th-inner"><span>接口文件总数</span><span class="pl-th-tools"><span class="pl-sort-icons"><button type="button" data-sort="files" data-direction="asc" aria-label="接口文件总数升序">▲</button><button type="button" data-sort="files" data-direction="desc" aria-label="接口文件总数降序">▼</button></span><button class="pl-filter-btn" type="button" data-filter="files" aria-label="筛选接口文件总数"><i class="fa-solid fa-filter" aria-hidden="true"></i></button></span></div></th>
+                  <th data-column="updated"><div class="pl-th-inner"><span>更新日期</span><span class="pl-th-tools"><span class="pl-sort-icons"><button type="button" data-sort="updated" data-direction="asc" aria-label="更新日期升序">▲</button><button type="button" data-sort="updated" data-direction="desc" aria-label="更新日期降序">▼</button></span><button class="pl-filter-btn" type="button" data-filter="updated" aria-label="筛选更新日期"><i class="fa-solid fa-filter" aria-hidden="true"></i></button></span></div></th>
+                  <th data-column="period"><div class="pl-th-inner"><span>分析期间</span><span class="pl-th-tools"><span class="pl-sort-icons"><button type="button" data-sort="period" data-direction="asc" aria-label="分析期间升序">▲</button><button type="button" data-sort="period" data-direction="desc" aria-label="分析期间降序">▼</button></span><button class="pl-filter-btn" type="button" data-filter="period" aria-label="筛选分析期间"><i class="fa-solid fa-filter" aria-hidden="true"></i></button></span></div></th>
+                  <th>备注</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="projectWorkbookRows"></tbody>
+            </table>
+          </div>
+          <div class="pl-pagination audit-pager" id="projectWorkbookPager"></div>
+        </div>
       </div>
+    </div>
+    <div class="pl-project-empty" id="projectSearchEmpty" hidden>
+      <i class="fa-regular fa-folder-open" aria-hidden="true"></i>
+      <strong>未找到匹配项目</strong>
+      <span>请检查项目编号、项目名称、客户名称或工作簿名称</span>
+    </div>
+    <div class="pl-toast" id="projectListToast" role="status" aria-live="polite"></div>
+  </div>
+
+  <div class="pl-modal" id="createWorkbookModal" aria-hidden="true">
+    <div class="pl-modal-panel" role="dialog" aria-modal="true" aria-labelledby="createWorkbookTitle">
+      <div class="pl-modal-head">
+        <h2 id="createWorkbookTitle">新建工作簿</h2>
+        <button class="pl-modal-close" type="button" data-create-close aria-label="关闭">×</button>
+      </div>
+      <form class="pl-create-form" id="createWorkbookForm" autocomplete="off">
+        <div class="pl-form-grid">
+          <label class="pl-form-field is-required"><span>工作簿名称</span><input id="newWorkbookName" type="text" maxlength="40" required placeholder="请输入工作簿名称"></label>
+          <div class="pl-form-field is-required"><span>分析期间</span><div class="pl-date-range"><input id="newAnalysisStart" type="date" required aria-label="分析期间开始日期"><i aria-hidden="true">至</i><input id="newAnalysisEnd" type="date" required aria-label="分析期间结束日期"></div></div>
+          <div class="pl-form-field is-required"><span>报告期间</span><div class="pl-date-range"><input id="newReportStart" type="date" required aria-label="报告期间开始日期"><i aria-hidden="true">至</i><input id="newReportEnd" type="date" required aria-label="报告期间结束日期"></div></div>
+          <label class="pl-form-field pl-form-field-textarea"><span>项目描述</span><textarea id="newProjectDescription" maxlength="200" placeholder="请输入项目描述，提交后将显示在表格备注中"></textarea></label>
+          <div class="pl-form-field pl-radio-field"><span>是否IPO</span><div class="pl-radio-options"><label><input type="radio" name="newWorkbookIpo" value="yes" checked><span>是</span></label><label><input type="radio" name="newWorkbookIpo" value="no"><span>否</span></label></div></div>
+          <div class="pl-form-field pl-radio-field" id="newPieField" hidden><span>是否PIE</span><div class="pl-radio-options"><label><input type="radio" name="newWorkbookPie" value="yes"><span>是</span></label><label><input type="radio" name="newWorkbookPie" value="no" checked><span>否</span></label></div></div>
+          <label class="pl-form-field pl-form-field-compact is-required" id="newCapitalMarketField"><span>资本市场</span><select id="newCapitalMarket" required><option value="">请选择</option><option value="A股">A股</option><option value="港股">港股</option><option value="美股">美股</option><option value="N/A">N/A</option></select></label>
+          <label class="pl-form-field pl-form-field-compact is-required"><span>财年结束日期</span><select id="newFiscalYearEnd" required><option value="12-31" selected>12-31</option><option value="03-31">03-31</option><option value="06-30">06-30</option><option value="09-30">09-30</option></select></label>
+          <label class="pl-form-field pl-form-field-compact"><span>重要性水平</span><div class="pl-input-suffix"><input id="newMateriality" type="number" min="0" step="0.01" placeholder="请输入"><em>元</em></div><small>保存后自动带入资金流水核查底稿导出</small></label>
+        </div>
+        <div class="pl-modal-actions"><button class="pl-modal-secondary" type="button" data-create-close>取消</button><button class="pl-modal-primary" id="workbookFormSubmit" type="submit">创建工作簿</button></div>
+      </form>
     </div>
   </div>
 
-  <script src="../assets/js/pages/project-list.js"></script>
+  <script src="../assets/js/pages/project-list.js?v=20260813-project-list8"></script>
 </body>
 </html>

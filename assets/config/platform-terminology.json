@@ -1,0 +1,76 @@
+{
+  "version": "1.0",
+  "effectiveDate": "2026-08-13",
+  "platform": {
+    "platformName": "KPMG Audit Compass",
+    "projectList": "返回项目列表",
+    "workbookDetail": "工作簿详情",
+    "systemManagement": "系统管理"
+  },
+  "modules": {
+    "dataManagement": "数据上传及管理",
+    "fundFlowAnalysis": "资金流水分析",
+    "vatAnalysis": "增值税数据分析",
+    "integratedAnalysis": "数据综合分析",
+    "workingPaperExport": "资金流水核查底稿导出"
+  },
+  "fundFlowTabs": {
+    "accountOverview": "账户总览",
+    "businessAnalysis": "经营分析",
+    "specialTransactionDetection": "特殊交易识别",
+    "transactionQuery": "流水查询",
+    "relatedPartyTransactions": "已知关联交易",
+    "personalTransactions": "个人交易"
+  },
+  "vatTabs": {
+    "taxIdOverview": "税号总览",
+    "businessSubstance": "经营实质",
+    "relatedPartyTransactions": "已知关联交易",
+    "specificInvoiceQuery": "特定开收票查询",
+    "invoiceQuery": "发票查询",
+    "taxReturnReconciliation": "税表核对"
+  },
+  "dataManagementTabs": {
+    "dataUpload": "数据上传",
+    "dataValidation": "数据校验",
+    "analysisScopeControl": "分析范围管控"
+  },
+  "fields": {
+    "auditEntity": "被审计单位公司",
+    "counterparty": "对手方",
+    "bankAccount": "银行账户",
+    "ownAccount": "本方账号",
+    "inflowAmount": "流入金额",
+    "outflowAmount": "流出金额",
+    "salesVatTotal": "销项税价合计",
+    "purchaseVatTotal": "进项税价合计",
+    "inflowInvoiceDifference": "流入票差",
+    "outflowInvoiceDifference": "流出票差",
+    "counterpartyType": "对手方类型",
+    "analysisTime": "分析时间",
+    "materiality": "重要性水平"
+  },
+  "actions": {
+    "query": "查询",
+    "reset": "重置",
+    "customizeColumns": "自定义表头",
+    "exportList": "导出清单",
+    "viewDetails": "查看明细",
+    "operationGuide": "操作指引",
+    "expand": "展开",
+    "collapse": "收起",
+    "generateAnalysis": "生成分析结果",
+    "generateTransactions": "生成流水",
+    "clearFilters": "清除筛选"
+  },
+  "deprecated": {
+    "银行流水分析": "资金流水分析",
+    "账号总览": "账户总览",
+    "高风险核查": "特殊交易识别",
+    "公司账户": "银行账户",
+    "本方帐号": "本方账号",
+    "销项价税合计": "销项税价合计",
+    "进项价税合计": "进项税价合计",
+    "总帐核对": "总账核对"
+  }
+}

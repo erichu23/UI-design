@@ -114,7 +114,7 @@
   margin-top:0 !important;
 }
 
-/* 数据校验、分析范围管控与银行流水分析共用同一套卡片标题和按钮规格。 */
+/* 数据校验、分析范围管控与资金流水分析共用同一套卡片标题和按钮规格。 */
 .data-management-page .dm-tab-pane .card{
   margin:0 0 6px !important;
   border:1px solid #edf2f7 !important;

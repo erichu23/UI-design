@@ -614,7 +614,7 @@
           </div>
           <div class="issue-detail-body">
             <p class="issue-note">当前页面用于银行流水核查与底稿预览，建议先确认全局筛选条件，再按 Tab 查看账户、画像和高风险核查结果；完整性校验已迁移至“数据校验”。</p>
-            <div class="issue-inline"><b>查看路径</b><span>数据校验 → 账号完整性；银行流水分析 → 账户总览 / 流水画像 / 高风险核查 / 流水查询</span></div>
+            <div class="issue-inline"><b>查看路径</b><span>数据校验 → 账号完整性；资金流水分析 → 账户总览 / 流水画像 / 高风险核查 / 流水查询</span></div>
             <div class="issue-inline"><b>操作建议</b><span>表格支持排序、筛选、分页和导出；高风险核查可使用“放大”查看更完整的表格内容。</span></div>
           </div>
         </div>
@@ -1630,7 +1630,7 @@
   bindFold();
 })();
 
-// 银行流水分析通用表格表头增强：排序 + 列值筛选
+// 资金流水分析通用表格表头增强：排序 + 列值筛选
 (function(){
   const tableFilters = new WeakMap();
   const columnPrefs = new Map();

@@ -102,6 +102,301 @@ body{
   transform:translateY(1px);
 }
 
+.nav-icon-btn .icon{
+  width:14px;
+  height:14px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
+}
+
+.nav-icon-btn .icon i{
+  display:block;
+  font-size:13px;
+  line-height:1;
+  color:currentColor;
+}
+
+.nav-icon-btn[title="帮助与反馈"] .icon i{
+  font-size:12px;
+}
+
+/* ===== 顶部帮助与反馈 ===== */
+.header-help-wrap{
+  position:relative;
+  display:inline-flex;
+}
+
+.header-help-menu{
+  position:absolute;
+  top:calc(100% + 9px);
+  right:-34px;
+  z-index:10060;
+  width:246px;
+  padding:6px;
+  border:1px solid #dbe5f0;
+  border-radius:8px;
+  background:#fff;
+  box-shadow:0 12px 30px rgba(22,46,81,.18),0 2px 6px rgba(22,46,81,.06);
+  color:#25364d;
+}
+
+.header-help-menu[hidden]{display:none !important;}
+
+.header-help-menu::before{
+  content:"";
+  position:absolute;
+  top:-5px;
+  right:43px;
+  width:9px;
+  height:9px;
+  border-left:1px solid #dbe5f0;
+  border-top:1px solid #dbe5f0;
+  background:#fff;
+  transform:rotate(45deg);
+}
+
+.header-help-menu button{
+  position:relative;
+  width:100%;
+  min-height:44px;
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr);
+  align-items:center;
+  gap:8px;
+  padding:6px 9px;
+  border:0;
+  border-radius:6px;
+  background:transparent;
+  color:#334155;
+  text-align:left;
+  cursor:pointer;
+}
+
+.header-help-menu button + button{border-top:1px solid #eef2f7;}
+.header-help-menu button:hover{background:#f2f7ff;color:#164da8;}
+.header-help-menu button > i{
+  width:26px;
+  height:26px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:#edf4ff;
+  color:#2b67c9;
+  font-size:12px;
+}
+.header-help-menu button span{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.header-help-menu button strong{font-size:12px;line-height:16px;font-weight:700;white-space:nowrap;}
+.header-help-menu button small{font-size:10px;line-height:14px;color:#8492a6;white-space:nowrap;}
+
+.platform-feedback-modal{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(18,32,52,.38);
+  backdrop-filter:blur(1.5px);
+}
+
+.platform-feedback-modal.is-open{display:flex;}
+
+.platform-feedback-panel{
+  width:min(560px,calc(100vw - 40px));
+  max-height:calc(100vh - 72px);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border:1px solid #d9e4f0;
+  border-radius:8px;
+  background:#fff;
+  color:#26364c;
+  box-shadow:0 24px 60px rgba(15,35,64,.24),0 4px 14px rgba(15,35,64,.08);
+}
+
+.platform-feedback-panel-lg{width:min(720px,calc(100vw - 40px));}
+
+.platform-feedback-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:11px 16px;
+  border-bottom:1px solid #e7edf5;
+  background:#f8fafd;
+}
+
+.platform-feedback-head h2{margin:0;color:#183b6b;font-size:15px;line-height:21px;font-weight:700;letter-spacing:0;}
+.platform-feedback-head p{margin:2px 0 0;color:#7a899d;font-size:11px;line-height:16px;}
+.platform-feedback-close{
+  flex:0 0 28px;
+  width:28px;
+  height:28px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  border:1px solid transparent;
+  border-radius:50%;
+  background:transparent;
+  color:#73839a;
+  font:400 22px/1 Arial,sans-serif;
+  cursor:pointer;
+}
+.platform-feedback-close:hover{border-color:#d8e3ef;background:#fff;color:#24466f;}
+
+.platform-feedback-body{
+  min-height:0;
+  overflow:auto;
+  padding:14px 16px 12px;
+  scrollbar-width:thin;
+  scrollbar-color:#c7d2df transparent;
+}
+
+.platform-feedback-user{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:12px;
+  padding:7px 9px;
+  border-left:2px solid #2f6fca;
+  background:#f5f8fc;
+  color:#66768b;
+  font-size:11px;
+}
+.platform-feedback-user i{color:#2f6fca;}
+.platform-feedback-user strong{color:#35465d;font-weight:700;}
+
+.platform-feedback-grid{display:grid;grid-template-columns:1fr;gap:10px;}
+.platform-feedback-grid-2{grid-template-columns:repeat(2,minmax(0,1fr));}
+.platform-feedback-field{display:flex;flex-direction:column;gap:5px;min-width:0;color:#415169;font-size:11px;}
+.platform-feedback-field > span{position:relative;font-weight:600;line-height:16px;}
+.platform-feedback-field.is-required > span::before{content:"*";margin-right:3px;color:#d53b56;}
+.platform-feedback-field input,
+.platform-feedback-field select,
+.platform-feedback-field textarea{
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid #ccd8e6;
+  border-radius:5px;
+  background:#fff;
+  color:#2d3d53;
+  font:400 12px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  outline:none;
+  transition:border-color .15s ease,box-shadow .15s ease;
+}
+.platform-feedback-field input,
+.platform-feedback-field select{height:32px;padding:0 9px;}
+.platform-feedback-field textarea{min-height:76px;padding:8px 9px;resize:vertical;}
+.platform-feedback-field input:focus,
+.platform-feedback-field select:focus,
+.platform-feedback-field textarea:focus{border-color:#4d84d7;box-shadow:0 0 0 2px rgba(63,119,204,.11);}
+.platform-feedback-field-block{grid-column:1/-1;margin-top:10px;}
+.platform-feedback-count{align-self:flex-end;margin-top:-2px;color:#96a2b2;font-size:10px;}
+
+.platform-feedback-upload{
+  display:grid;
+  grid-template-columns:74px auto minmax(0,1fr);
+  align-items:center;
+  gap:8px;
+  margin-top:11px;
+  color:#415169;
+  font-size:11px;
+}
+.platform-feedback-upload-label{font-weight:600;}
+.platform-feedback-upload-btn{
+  position:relative;
+  height:30px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:0 10px;
+  border:1px solid #2f67c7;
+  border-radius:5px;
+  background:#fff;
+  color:#2059b5;
+  font-weight:700;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.platform-feedback-upload-btn:hover{background:#f1f6ff;}
+.platform-feedback-upload-btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
+.platform-feedback-upload-summary{min-width:0;overflow:hidden;color:#748399;text-overflow:ellipsis;white-space:nowrap;}
+.platform-feedback-upload p{grid-column:2/-1;margin:0;color:#929eae;font-size:10px;line-height:15px;}
+
+.platform-rating-field{display:grid;grid-template-columns:58px 1fr;align-items:center;gap:8px;}
+.platform-rating{display:flex;align-items:center;gap:4px;}
+.platform-rating button{
+  width:25px;
+  height:25px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:#dce3eb;
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+  transition:color .12s ease,transform .12s ease;
+}
+.platform-rating button:hover{transform:translateY(-1px);}
+.platform-rating button.is-active{color:#f3bd28;}
+
+.platform-feedback-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:7px;
+  margin:14px -16px -12px;
+  padding:10px 16px;
+  border-top:1px solid #e7edf5;
+  background:#fafbfd;
+}
+.platform-action-primary,
+.platform-action-secondary{
+  min-width:72px;
+  height:30px;
+  padding:0 12px;
+  border-radius:5px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+.platform-action-primary{border:1px solid #2058c9;background:#2458d3;color:#fff;}
+.platform-action-primary:hover{background:#184bbf;}
+.platform-action-secondary{border:1px solid #cdd8e5;background:#fff;color:#4c5c70;}
+.platform-action-secondary:hover{background:#f5f8fb;}
+
+.platform-feedback-toast{
+  position:fixed;
+  left:50%;
+  top:58px;
+  z-index:12100;
+  padding:8px 13px;
+  border:1px solid #bfe0cf;
+  border-radius:6px;
+  background:#f1fbf6;
+  color:#217149;
+  font-size:12px;
+  font-weight:600;
+  box-shadow:0 8px 22px rgba(26,71,49,.14);
+  opacity:0;
+  pointer-events:none;
+  transform:translate(-50%,-7px);
+  transition:.18s ease;
+}
+.platform-feedback-toast.is-show{opacity:1;transform:translate(-50%,0);}
+
+@media (max-width:760px){
+  .platform-feedback-grid-2{grid-template-columns:1fr;}
+  .platform-feedback-modal{padding:12px;}
+  .platform-feedback-panel,.platform-feedback-panel-lg{width:calc(100vw - 24px);max-height:calc(100vh - 40px);}
+}
+
 /* 图标（统一大小 & 颜色跟随 currentColor） */
 .icon svg {
   width: 13px;
@@ -121,6 +416,10 @@ body{
   display: inline-flex;
   align-items: center;
   height: 30px;
+}
+
+.header-dropdown[hidden]{
+  display:none !important;
 }
 
 /* 衔接按钮与浮层，避免鼠标经过间隙时菜单意外关闭。 */
@@ -593,6 +892,42 @@ body{
   display: block;
 }
 
+.sidebar-flyout.is-shortcut{
+  width:auto;
+  min-width:132px;
+  padding:5px;
+}
+
+.sidebar-flyout-shortcut{
+  width:100%;
+  height:30px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 9px;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:#34465e;
+  font:600 12px/1 var(--platform-font-family);
+  white-space:nowrap;
+  cursor:pointer;
+}
+
+.sidebar-flyout-shortcut:hover{
+  background:#eef4ff;
+  color:#2459ad;
+}
+
+.sidebar-flyout-shortcut > i{
+  width:16px;
+  color:#6e829d;
+  font-size:12px;
+  text-align:center;
+}
+
+.sidebar-flyout-shortcut:hover > i{color:#3768b3;}
+
 .sidebar-flyout::before{
   content:"";
   position:absolute;
@@ -654,6 +989,32 @@ body{
   cursor:pointer;
 }
 
+/* 工作簿悬浮导航保持单行展示，避免模块名称和状态提示互相挤压。 */
+.sidebar-flyout.is-workbook-menu{
+  width:272px;
+}
+
+.sidebar-flyout.is-workbook-menu .sidebar-flyout-item{
+  grid-template-columns:22px minmax(0, 1fr) auto;
+  white-space:nowrap;
+}
+
+.sidebar-flyout.is-workbook-menu .sidebar-flyout-item span,
+.sidebar-flyout.is-workbook-menu .sidebar-flyout-item small{
+  min-width:0;
+  white-space:nowrap;
+}
+
+/* 进入工作簿后，以绿色圆圈勾表示各分析模块当前可进入。 */
+.sidebar-flyout.is-workbook-menu:not(.is-context-disabled) .sidebar-flyout-item:not(.is-disabled) > i{
+  color:#249b68;
+}
+
+.sidebar-flyout.is-workbook-menu:not(.is-context-disabled) .sidebar-flyout-item:not(.is-disabled):hover > i,
+.sidebar-flyout.is-workbook-menu:not(.is-context-disabled) .sidebar-flyout-item.is-current > i{
+  color:#168457;
+}
+
 .sidebar-flyout-item:hover{
   background:#eef4ff;
   color:#1d4ed8;
@@ -672,6 +1033,43 @@ body{
 .sidebar-flyout-item.is-disabled:hover{
   background:transparent;
   color:#94a3b8;
+}
+
+/* 项目列表页仅展示工作簿功能预览，不允许绕过“进入工作簿”直接访问。 */
+.sidebar-flyout.is-context-disabled{
+  border-color:#e2e8f0;
+  background:rgba(248,250,252,.98);
+  box-shadow:0 12px 30px rgba(15,23,42,.08);
+}
+
+.sidebar-flyout.is-context-disabled::before{
+  border-color:#e2e8f0;
+  background:rgba(248,250,252,.98);
+}
+
+.sidebar-flyout.is-context-disabled .sidebar-flyout-head,
+.sidebar-flyout.is-context-disabled .sidebar-flyout-head i{
+  color:#94a3b8;
+}
+
+.sidebar-flyout.is-context-disabled .sidebar-flyout-head i{
+  background:#f1f5f9;
+}
+
+.sidebar-flyout.is-context-disabled .sidebar-flyout-item,
+.sidebar-flyout.is-context-disabled .sidebar-flyout-item:hover{
+  background:transparent;
+  color:#a0aec0;
+  cursor:not-allowed;
+}
+
+.sidebar-flyout.is-context-disabled .sidebar-flyout-item small{
+  color:#b0bac8;
+  font-size:9px;
+}
+
+.sidebar-flyout.is-workbook-menu.is-context-disabled .sidebar-flyout-item > i{
+  color:#a8b2c1;
 }
 
 .sidebar-flyout-item i{

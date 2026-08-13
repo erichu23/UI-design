@@ -1,4 +1,4 @@
-/* 银行流水分析：与数据综合分析一致的紧凑工作台规格。 */
+/* 资金流水分析：与数据综合分析一致的紧凑工作台规格。 */
 :root{
   --bank-ui-main-font:12px;
   --bank-ui-content-font:11px;
@@ -1985,7 +1985,7 @@ body .tab-pane .ba-note-input:focus{
   box-shadow:0 0 0 2px rgba(29,78,216,.1);
 }
 
-/* 银行流水分析统一表格皮肤：保留各表结构，只统一线条、底色、行高和 hover。 */
+/* 资金流水分析统一表格皮肤：保留各表结构，只统一线条、底色、行高和 hover。 */
 body{
   --bank-table-border-outer:var(--audit-table-border-outer,#e7eef6);
   --bank-table-border-head:var(--audit-table-border-head,#dbe5f0);
@@ -2129,7 +2129,7 @@ body #pane-verify .content > div[style*="overflow"]{
   border-color:var(--bank-table-border-outer) !important;
 }
 
-/* 统一把银行流水分析表格线宽收细，避免外框和单元格线显得厚重。 */
+/* 统一把资金流水分析表格线宽收细，避免外框和单元格线显得厚重。 */
 body .tab-pane .account-summary-table-wrap,
 body .tab-pane .portrait-table-wrap,
 body .tab-pane .wp-table-wrap,
@@ -2629,7 +2629,7 @@ body .portrait-pagination.audit-pager .audit-pager-jump{
 }
 
 /* =========================================================
-   专业版统一色板与控件：银行流水分析
+   专业版统一色板与控件：资金流水分析
    - 表格正文金额使用浅色，合计/分组行稍深
    - 按钮与数据综合分析保持一致
    ========================================================= */
@@ -2761,7 +2761,7 @@ body .tab-pane .ba-filter-btn:hover{
 }
 
 /* =========================================================
-   专业版最终统一：银行流水分析金额浅色与按钮/表格语言
+   专业版最终统一：资金流水分析金额浅色与按钮/表格语言
    与数据综合分析保持一致，合计/分组行稍深。
    ========================================================= */
 body{
@@ -2833,7 +2833,7 @@ body .tab-pane .table tbody tr.group-row td.is-outflow{
   font-weight:800 !important;
 }
 
-/* 全平台字体统一：银行流水分析作为基准，也显式覆盖控件字体。 */
+/* 全平台字体统一：资金流水分析作为基准，也显式覆盖控件字体。 */
 body,
 body .bank-page,
 body .tab-container,
@@ -3085,7 +3085,7 @@ body .tab-pane .account-help-btn:hover{
   background:#f8fbff !important;
   color:#1d4ed8 !important;
 }
-/* 银行流水分析分页条数选择器 */
+/* 资金流水分析分页条数选择器 */
 body .ba-page-size{
   display:inline-flex;
   align-items:center;
@@ -3213,7 +3213,7 @@ body #tblAccountSummary td.actions a[title*="文件"]::before{
   box-sizing:border-box !important;
 }
 
-/* 全平台表格体验：银行流水分析内所有可纵向滚动表格固定表头。 */
+/* 全平台表格体验：资金流水分析内所有可纵向滚动表格固定表头。 */
 body .tab-pane .account-summary-table-wrap table thead,
 body .tab-pane .portrait-table-wrap table thead,
 body .tab-pane .wp-table-wrap table thead,

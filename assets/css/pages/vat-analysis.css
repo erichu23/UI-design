@@ -1,4 +1,4 @@
-/* 增值税数据分析：先复用银行流水分析的工作台规格，后续按 tab 逐步填充内容。 */
+/* 增值税数据分析：先复用资金流水分析的工作台规格，后续按 tab 逐步填充内容。 */
 body{
   background:var(--body-background,#f5f7fa);
   color:#0f172a;
@@ -1369,7 +1369,7 @@ body .vat-page .vat-filter-card.is-compare .vat-compare-body > i{
   flex:0 0 22px !important;
 }
 
-/* 购销税额构成表：对手方类型列复用银行流水分析的浅底色。 */
+/* 购销税额构成表：对手方类型列复用资金流水分析的浅底色。 */
 body .vat-page table.vat-structure-table tbody td.vat-type-cell{
   color:#334155 !important;
   font-weight:500 !important;
