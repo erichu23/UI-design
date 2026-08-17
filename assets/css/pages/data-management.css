@@ -173,7 +173,7 @@
 
 .data-management-page .dm-master-scope-summary{
   display:grid;
-  grid-template-columns:repeat(4,minmax(112px,1fr));
+  grid-template-columns:repeat(4,minmax(0,1fr));
   gap:7px;
   align-items:stretch;
   margin-bottom:7px;
@@ -216,14 +216,15 @@
 }
 
 .data-management-page .dm-master-stat{
-  display:grid;
-  grid-template-columns:1fr auto auto;
+  display:flex;
   align-items:center;
-  column-gap:3px;
-  padding:7px 9px;
+  gap:3px;
+  min-width:0;
+  min-height:38px;
+  padding:6px 10px;
 }
-.data-management-page .dm-master-stat span{ grid-column:1 / -1; color:#64748b; font-size:10.5px; }
-.data-management-page .dm-master-stat b{ justify-self:end; color:#334155; font-size:16px; line-height:1; }
+.data-management-page .dm-master-stat span{ min-width:0; flex:1; overflow:hidden; color:#64748b; font-size:10.5px; text-overflow:ellipsis; white-space:nowrap; }
+.data-management-page .dm-master-stat b{ margin-left:auto; color:#334155; font-size:15px; line-height:1; }
 .data-management-page .dm-master-stat small{ color:#8795a8; font-size:10px; }
 .data-management-page .dm-master-stat.is-external b{ color:#356fb6; }
 .data-management-page .dm-master-stat.is-match b{ color:#18796f; }
@@ -349,7 +350,7 @@
 .data-management-page .dm-master-table-wrap::-webkit-scrollbar-thumb{ border-radius:999px; background:rgba(148,163,184,.28); }
 .data-management-page .dm-master-table{
   width:100%;
-  min-width:1160px;
+  min-width:1080px;
   table-layout:auto;
 }
 .data-management-page .dm-master-table th,
@@ -364,10 +365,7 @@
 .data-management-page .dm-master-table tr:last-child td{ border-bottom:0 !important; }
 .data-management-page .dm-master-table th:last-child,
 .data-management-page .dm-master-table td:last-child{ border-right:0 !important; }
-.data-management-page .dm-master-check-col{ width:30px; min-width:30px; text-align:center; }
-.data-management-page .dm-master-table td:nth-child(2){ min-width:178px; color:#26384f; font-weight:600; }
-.data-management-page .dm-master-table td:nth-child(2){ min-width:210px; }
-.data-management-page .dm-master-table input[type="checkbox"]{ accent-color:#2f6fed; }
+.data-management-page .dm-master-table td:first-child{ min-width:210px; color:#26384f; font-weight:600; }
 .data-management-page .dm-master-table tr.is-readonly td{
   color:#77869a;
   background:#fafbfd;
@@ -418,6 +416,26 @@
 }
 .data-management-page .dm-master-source-state.is-present::before{ content:"✓"; color:#2f8576; background:#f4faf8; box-shadow:0 0 0 2px rgba(47,133,118,.05); }
 .data-management-page .dm-master-source-state.is-absent::before{ content:"−"; color:#b45e6a; background:#fff7f8; box-shadow:0 0 0 2px rgba(180,94,106,.04); }
+.data-management-page .dm-master-action-cell{min-width:106px;text-align:center;}
+.data-management-page .dm-master-row-action{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 7px;border:1px solid #8fb2e3;border-radius:4px;background:#edf4ff;color:#174f9b;font:700 10.5px/22px inherit;cursor:pointer;vertical-align:middle;box-shadow:0 1px 2px rgba(37,99,235,.06);}
+.data-management-page .dm-master-row-action:hover{border-color:#4f83cc;background:#e4efff;color:#123f7e;}
+.data-management-page .dm-master-row-action i{display:inline-flex;width:14px;height:14px;align-items:center;justify-content:center;border:1px solid #5f8dcc;border-radius:50%;font:700 10px/1 Arial,sans-serif;}
+.data-management-page .dm-master-action-done{display:inline-flex;align-items:center;gap:5px;color:#39786b;font-size:10.5px;font-weight:600;}
+.data-management-page .dm-master-action-done i{display:inline-flex;width:14px;height:14px;align-items:center;justify-content:center;border:1px solid #78a698;border-radius:50%;background:#f3faf7;color:#2f8576;font:700 9px/1 Arial,sans-serif;}
+.data-management-page .dm-master-action-empty{color:#a7b1bf;font-size:11px;}
+.data-management-page .dm-account-scope-card{margin-top:10px;}
+.data-management-page .dm-account-scope-summary{margin-bottom:7px;}
+.data-management-page .dm-account-scope-table{min-width:760px;}
+.data-management-page .dm-account-scope-table .dm-account-source-head,
+.data-management-page .dm-account-scope-table .dm-master-source-cell{width:170px;text-align:center;}
+.data-management-page .dm-account-scope-table .dm-account-note-head{min-width:180px;}
+.data-management-page .dm-account-scope-table .dm-account-number{color:#40556f;font-weight:600;font-variant-numeric:tabular-nums;}
+.data-management-page .dm-account-scope-table .dm-account-company-cell{min-width:210px;background:#fbfcfe;color:#26384f;font-weight:650;vertical-align:middle;}
+.data-management-page .dm-account-scope-table tr.has-company-continuation .dm-account-company-cell{border-bottom-color:transparent!important;}
+.data-management-page .dm-account-scope-table tr.is-company-continuation .dm-account-company-cell span{visibility:hidden;}
+.data-management-page .dm-account-scope-table tr.is-company-continuation .dm-account-company-cell{border-top-color:transparent!important;}
+.data-management-page .dm-account-scope-table .dm-account-scope-note{width:100%;min-width:150px;box-sizing:border-box;}
+.data-management-page .dm-source-filter-value{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
 .data-management-page .dm-master-source-state{ color:#56677c; }
 .data-management-page .dm-master-diff-tag{ color:#475a70; font-weight:600; }
 .data-management-page .dm-master-diff-tag.is-match{ color:#718095; font-weight:500; }

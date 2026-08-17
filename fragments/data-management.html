@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260813-account-columns5"/>
   <link rel="stylesheet" href="../assets/css/pages/data-upload.css?v=20260811-data-management19"/>
   <link rel="stylesheet" href="../assets/css/pages/data-validation.css?v=20260811-data-management19"/>
-  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260814-master-compare13"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260817-account-scope22"/>
   <title>数据上传及管理</title>
 </head>
 <body>
@@ -653,36 +653,54 @@
         <div class="head">
           <div class="title">分析范围清单核对</div>
           <div class="dm-master-source"><span class="dm-master-source-icon" aria-hidden="true">工</span><span>外部工商数据：天眼查</span><b id="dmMasterSyncState">最近更新：2026-08-14 09:30</b></div>
-          <button class="btn primary" id="dmMasterExportBtn" type="button">导出核对结果</button>
-          <button class="btn primary" id="dmMasterFetchBtn" type="button"><span class="dm-button-symbol" aria-hidden="true">↻</span>更新天眼查清单</button>
+          <button class="btn primary" id="dmMasterExportBtn" type="button">导出结果</button>
+          <button class="btn primary" id="dmMasterFetchBtn" type="button"><span class="dm-button-symbol" aria-hidden="true">↻</span>更新被审计单位天眼查信息</button>
         </div>
         <div class="content">
           <div class="dm-master-scope-summary">
-            <div class="dm-master-stat is-external"><span>天眼查清单</span><b>18</b><small>家</small></div>
-            <div class="dm-master-stat is-total"><span>主档上传清单</span><b>16</b><small>家</small></div>
-            <div class="dm-master-stat is-match"><span>两边共同包含</span><b>13</b><small>家</small></div>
-            <div class="dm-master-stat is-diff"><span>待确认差异</span><b id="dmMasterPendingCount">8</b><small>家</small></div>
+            <div class="dm-master-stat is-external"><span>天眼查集团内公司个数</span><b>18</b><small>个</small></div>
+            <div class="dm-master-stat is-total"><span>主档被审计单位个数</span><b>16</b><small>个</small></div>
+            <div class="dm-master-stat is-match"><span>三方共同包含</span><b id="dmMasterMatchedCount">13</b><small>个</small></div>
+            <div class="dm-master-stat is-diff"><span>缺失个数（已解释/总共）</span><b id="dmMasterPendingCount">8</b><small>个</small></div>
           </div>
-
-
-
-          <div class="dm-master-toolbar">
-            <div class="dm-master-tabs" id="dmMasterCompareTabs" role="tablist" aria-label="清单核对状态"><button class="is-active" data-compare-filter="all" type="button">全部公司 <b>21</b></button><button data-compare-filter="external-only" type="button">待补充至主档 <b>5</b></button><button data-compare-filter="master-only" type="button">待核实保留 <b>3</b></button></div>
-            <span class="dm-master-selected-count" id="dmMasterSelectedCount">已选择 0 家</span>
-            <button class="btn" id="dmMasterBatchExclude" type="button">不纳入分析范围</button><button class="btn primary" id="dmMasterBatchInclude" type="button">纳入分析范围</button>
-          </div>
-
           <div class="dm-master-table-wrap">
             <table class="table dm-master-table" id="dmMasterCheckTable">
               <thead><tr>
-                <th class="no-sort dm-master-check-col"><input id="dmMasterCheckAll" type="checkbox" aria-label="全选当前公司"/></th>
-                <th>公司名称</th><th>统一社会信用代码</th><th>与被审计单位关系</th><th>持股比例</th><th>天眼查清单</th><th>被审计单位主档</th><th>核对结果</th><th>处理结果</th><th class="no-sort">备注</th>
+                <th>公司名称</th><th>统一社会信用代码</th><th>与被审计单位关系</th><th>持股比例</th><th>天眼查清单</th><th>ARMS来源</th><th>被审计单位主档</th><th class="no-sort">操作</th><th class="no-sort">备注</th>
               </tr></thead>
               <tbody id="dmMasterCheckBody"></tbody>
             </table>
           </div>
           <div class="pagination dm-master-pagination" id="dmMasterCheckPager"></div>
           <div class="dm-master-toast" id="dmMasterToast" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="card dm-scope-card dm-account-scope-card" id="dmAccountScopeCard">
+        <div class="head">
+          <div class="title">账号范围分析</div>
+          <button class="btn primary" id="dmAccountScopeExportBtn" type="button">导出结果</button>
+        </div>
+        <div class="content">
+          <div class="dm-master-scope-summary dm-account-scope-summary">
+            <div class="dm-master-stat is-external"><span>账号总数</span><b id="dmAccountScopeTotal">0</b><small>个</small></div>
+            <div class="dm-master-stat is-match"><span>银行账号主档已覆盖</span><b id="dmAccountScopeMaster">0</b><small>个</small></div>
+            <div class="dm-master-stat is-total"><span>科目余额表已覆盖</span><b id="dmAccountScopeLedger">0</b><small>个</small></div>
+            <div class="dm-master-stat is-diff"><span>缺失账号</span><b id="dmAccountScopeMissing">0</b><small>个</small></div>
+          </div>
+          <div class="dm-master-table-wrap">
+            <table class="table dm-master-table dm-account-scope-table" id="dmAccountScopeTable">
+              <thead><tr>
+                <th>被审计单位公司</th>
+                <th>银行账号</th>
+                <th class="dm-account-source-head">被审计单位银行账号主档</th>
+                <th class="dm-account-source-head">科目余额表</th>
+                <th class="dm-account-source-head">资金流水</th>
+                <th class="no-sort dm-account-note-head">备注</th>
+              </tr></thead>
+              <tbody id="dmAccountScopeBody"></tbody>
+            </table>
+          </div>
+          <div class="pagination dm-master-pagination" id="dmAccountScopePager"></div>
         </div>
       </div>
       </div>
@@ -1231,44 +1249,113 @@
         ['上海华东工业服务有限公司','91310113MA1GM7K52P','控股子公司','100%',false,true,'master-only'],
         ['天津华东设备有限公司','91120116MA06F4T73L','参股公司','30%',false,true,'master-only'],
         ['华东制造集团西安分公司','91610131MA6W2K9D5C','分支机构','—',false,true,'master-only']
-      ].map((row,index)=>({id:index+1,name:row[0],code:row[1],relation:row[2],holding:row[3],external:row[4],master:row[5],compare:row[6],range:row[6]==='matched'?'include':'pending',note:'',checked:false}));
-      const state={filter:'all',page:1,pageSize:10};
-      const compareLabels={matched:'核对一致','external-only':'待补充至主档','master-only':'待核实保留'};
-      const rangeLabels={include:'已纳入',exclude:'已排除',pending:'待确认'};
+      ].map((row,index)=>({id:index+1,name:row[0],code:row[1],relation:row[2],holding:row[3],external:row[4],arms:row[6]==='matched'?index%4!==0:row[6]==='external-only'?index%2===0:index%2!==0,master:row[5],compare:'',range:row[6]==='matched'?'include':'pending',note:'',supplemented:false}));
+      const state={page:1,pageSize:10};
+      const compareLabels={matched:'核对一致','external-only':'待补充至主档','source-gap':'来源待核实'};
       const escape=value=>String(value??'').replace(/[&<>"]/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[character]));
-      const comparePriority={'external-only':0,'master-only':1,matched:2};
-      const filtered=()=>rows
-        .filter(row=>state.filter==='all'||row.compare===state.filter)
-        .sort((a,b)=>state.filter==='all' ? comparePriority[a.compare]-comparePriority[b.compare] : a.id-b.id);
+      const syncCompare=row=>{row.compare=row.external&&row.arms&&row.master?'matched':!row.master&&(row.external||row.arms)?'external-only':'source-gap';};
+      rows.forEach(syncCompare);
+      const comparePriority={'external-only':0,'source-gap':1,matched:2};
+      rows.slice().sort((a,b)=>comparePriority[a.compare]-comparePriority[b.compare]||a.id-b.id).forEach((row,index)=>{row.displayOrder=index;});
+      const filtered=()=>rows.slice().sort((a,b)=>a.displayOrder-b.displayOrder);
       const showToast=message=>{const toast=document.getElementById('dmMasterToast');if(!toast)return;toast.textContent=message;toast.classList.add('is-visible');window.clearTimeout(showToast.timer);showToast.timer=window.setTimeout(()=>toast.classList.remove('is-visible'),2200);};
       const render=()=>{
         const result=filtered();
         const maxPage=Math.max(1,Math.ceil(result.length/state.pageSize));state.page=Math.min(state.page,maxPage);
         const visible=result.slice((state.page-1)*state.pageSize,state.page*state.pageSize);
-        body.innerHTML=visible.length?visible.map(row=>`<tr class="${row.compare==='matched'?'is-readonly':''}" data-master-id="${row.id}"><td class="dm-master-check-col">${row.compare==='matched'?'<span class="dm-master-readonly-mark" title="核对一致，无需处理">—</span>':`<input class="dm-master-row-check" type="checkbox" ${row.checked?'checked':''} aria-label="选择${escape(row.name)}"/>`}</td><td>${escape(row.name)}</td><td>${escape(row.code)}</td><td>${escape(row.relation)}</td><td>${escape(row.holding)}</td><td class="dm-master-source-cell"><span class="dm-master-source-state ${row.external?'is-present':'is-absent'}" title="${row.external?'已包含':'未包含'}" aria-label="${row.external?'已包含':'未包含'}"></span></td><td class="dm-master-source-cell"><span class="dm-master-source-state ${row.master?'is-present':'is-absent'}" title="${row.master?'已包含':'未包含'}" aria-label="${row.master?'已包含':'未包含'}"></span></td><td class="${row.compare==='external-only'?'dm-master-review-cell is-supplement':row.compare==='master-only'?'dm-master-review-cell is-verify':''}"><span class="dm-master-diff-tag ${row.compare==='matched'?'is-match':row.compare==='external-only'?'is-missing':'is-unverified'}">${compareLabels[row.compare]}</span></td><td class="${row.range==='pending'?'dm-master-review-cell is-pending':''}"><span class="dm-master-range-state is-${row.range}">${rangeLabels[row.range]}</span></td><td>${row.compare==='matched'?'<span class="dm-master-readonly-note">无需备注</span>':`<input class="ba-note-input dm-master-note" data-master-note="${row.id}" value="${escape(row.note)}" placeholder="填写备注"/>`}</td></tr>`).join(''):'<tr class="dm-master-empty"><td colspan="10">当前条件下没有公司记录</td></tr>';
+        body.innerHTML=visible.length?visible.map(row=>{
+          const sourceState=value=>`<span class="dm-master-source-state ${value?'is-present':'is-absent'}" title="${value?'已包含':'未包含'}" aria-label="${value?'已包含':'未包含'}"></span>`;
+          const action=row.supplemented
+            ? '<span class="dm-master-action-done"><i aria-hidden="true">✓</i>已补充至主档</span>'
+            : row.compare==='external-only'
+              ? '<button class="dm-master-row-action" type="button" data-master-action="supplement" title="补充至被审计单位主档"><i aria-hidden="true">＋</i><span>补充至主档</span></button>'
+              : '<span class="dm-master-action-empty">—</span>';
+          return `<tr class="${row.compare==='matched'?'is-readonly':''}" data-master-id="${row.id}"><td>${escape(row.name)}</td><td>${escape(row.code)}</td><td>${escape(row.relation)}</td><td>${escape(row.holding)}</td><td class="dm-master-source-cell">${sourceState(row.external)}</td><td class="dm-master-source-cell">${sourceState(row.arms)}</td><td class="dm-master-source-cell">${sourceState(row.master)}</td><td class="dm-master-action-cell">${action}</td><td>${row.compare==='matched'?'<span class="dm-master-readonly-note">—</span>':`<input class="ba-note-input dm-master-note" data-master-note="${row.id}" value="${escape(row.note)}" placeholder="填写备注"/>`}</td></tr>`;
+        }).join(''):'<tr class="dm-master-empty"><td colspan="9">暂无公司记录</td></tr>';
         window.renderAuditPager?.(pager,{total:result.length,page:state.page,pageSize:state.pageSize,onPage:page=>{state.page=page;render();},onPageSize:size=>{state.pageSize=size;state.page=1;render();}});
-        const actionableVisible=visible.filter(row=>row.compare!=='matched');
-        const all=document.getElementById('dmMasterCheckAll');if(all){all.disabled=!actionableVisible.length;all.checked=Boolean(actionableVisible.length&&actionableVisible.every(row=>row.checked));all.indeterminate=Boolean(actionableVisible.some(row=>row.checked)&&!all.checked);}
         const pending=document.getElementById('dmMasterPendingCount');if(pending)pending.textContent=rows.filter(row=>row.compare!=='matched'&&row.range==='pending').length;
-        const selectedCount=document.getElementById('dmMasterSelectedCount');if(selectedCount)selectedCount.textContent=`已选择 ${rows.filter(row=>row.checked).length} 家`;
+        const matched=document.getElementById('dmMasterMatchedCount');if(matched)matched.textContent=rows.filter(row=>row.compare==='matched').length;
       };
-      const setSelectedRange=range=>{const selected=rows.filter(row=>row.checked);if(!selected.length)return showToast('请先勾选需要确认的公司');selected.forEach(row=>{row.range=range;row.checked=false;});render();showToast(`已确认 ${selected.length} 家公司${range==='include'?'纳入':'排除'}分析范围`);};
-      document.getElementById('dmMasterCompareTabs')?.addEventListener('click',event=>{const button=event.target.closest('button[data-compare-filter]');if(!button)return;state.filter=button.dataset.compareFilter;state.page=1;document.querySelectorAll('#dmMasterCompareTabs button').forEach(item=>item.classList.toggle('is-active',item===button));render();});
-      document.getElementById('dmMasterCheckAll')?.addEventListener('change',event=>{filtered().slice((state.page-1)*state.pageSize,state.page*state.pageSize).filter(row=>row.compare!=='matched').forEach(row=>{row.checked=event.target.checked;});render();});
-      body.addEventListener('change',event=>{const check=event.target.closest('.dm-master-row-check');if(check){const row=rows.find(item=>item.id===Number(check.closest('tr')?.dataset.masterId));if(row)row.checked=check.checked;render();}});
       body.addEventListener('input',event=>{const note=event.target.closest('[data-master-note]');if(note){const row=rows.find(item=>item.id===Number(note.dataset.masterNote));if(row)row.note=note.value;}});
-      document.getElementById('dmMasterBatchInclude')?.addEventListener('click',()=>setSelectedRange('include'));
-      document.getElementById('dmMasterBatchExclude')?.addEventListener('click',()=>setSelectedRange('exclude'));
+      body.addEventListener('click',event=>{
+        const button=event.target.closest('[data-master-action]');if(!button)return;
+        const row=rows.find(item=>item.id===Number(button.closest('tr')?.dataset.masterId));if(!row)return;
+        if(button.dataset.masterAction==='supplement'){row.master=true;row.supplemented=true;syncCompare(row);row.range=row.compare==='matched'?'include':'pending';showToast(`已将“${row.name}”补充至被审计单位主档`);}
+        render();
+      });
       document.getElementById('dmMasterFetchBtn')?.addEventListener('click',async event=>{const button=event.currentTarget;button.disabled=true;button.innerHTML='<span class="dm-button-symbol is-spinning" aria-hidden="true">↻</span>正在更新';try{if(window.auditMasterScopeAdapter?.fetchEntities)await window.auditMasterScopeAdapter.fetchEntities({workbook:'20251022',scope:'invested-companies'});else await new Promise(resolve=>window.setTimeout(resolve,650));const now=new Date();const sync=document.getElementById('dmMasterSyncState');sync.textContent=`最近更新：${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;showToast('天眼查清单已更新，核对结果已刷新');}finally{button.disabled=false;button.innerHTML='<span class="dm-button-symbol" aria-hidden="true">↻</span>更新天眼查清单';}});
-      document.getElementById('dmMasterExportBtn')?.addEventListener('click',()=>{const header=['公司名称','统一社会信用代码','与被审计单位关系','持股比例','天眼查清单','被审计单位主档','核对结果','处理结果','备注'];const csv=[header,...filtered().map(row=>[row.name,row.code,row.relation,row.holding,row.external?'已包含':'未包含',row.master?'已包含':'未包含',compareLabels[row.compare],rangeLabels[row.range],row.note])].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));link.download='分析范围清单核对结果.csv';link.click();URL.revokeObjectURL(link.href);});
+      document.getElementById('dmMasterExportBtn')?.addEventListener('click',()=>{const header=['公司名称','统一社会信用代码','与被审计单位关系','持股比例','天眼查清单','ARMS来源','被审计单位主档','操作状态','备注'];const csv=[header,...filtered().map(row=>[row.name,row.code,row.relation,row.holding,row.external?'已包含':'未包含',row.arms?'已包含':'未包含',row.master?'已包含':'未包含',row.supplemented?'已补充至主档':compareLabels[row.compare],row.note])].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));link.download='分析范围清单核对结果.csv';link.click();URL.revokeObjectURL(link.href);});
+      render();
+    };
+
+    const initAccountScopeAnalysis=()=>{
+      const body=document.getElementById('dmAccountScopeBody');
+      const pager=document.getElementById('dmAccountScopePager');
+      if(!body||!pager)return;
+      const rows=[
+        ['华东制造集团有限公司','6228****9911',false,false,true],
+        ['华东制造集团有限公司','1001***0821',true,true,false],
+        ['华东制造集团有限公司','1001***2166',true,true,false],
+        ['上海星河科技有限公司','1002***4186',true,true,false],
+        ['上海星河科技有限公司','1002***6208',true,false,false],
+        ['深圳启明电子有限公司','2001***7739',true,true,false],
+        ['深圳启明电子有限公司','2001***9052',false,true,true],
+        ['苏州精密制造有限公司','6214****8890',true,true,false],
+        ['北京恒瑞医疗设备有限公司','3941****2193',true,true,false],
+        ['重庆云峰智能装备有限公司','2170****7797',true,false,false],
+        ['郑州华辰电气有限公司','5784****7907',false,true,true],
+        ['南京新创自动化有限公司','4308****6621',true,true,false],
+        ['杭州星云数据有限公司','8820****3519',true,true,false],
+        ['成都远景科技有限公司','6217****1128',true,true,false],
+        ['武汉华工供应链有限公司','4302****9065',false,true,true],
+        ['青岛海创材料有限公司','6222****5087',true,false,false],
+        ['华东制造集团广州分公司','6216****3304',true,true,false]
+      ].map((row,index)=>({id:index+1,company:row[0],account:row[1],master:row[2],ledger:row[3],missing:row[4],note:''}));
+      const state={page:1,pageSize:20};
+      const setMetric=(id,value)=>{const element=document.getElementById(id);if(element)element.textContent=value;};
+      setMetric('dmAccountScopeTotal',rows.length);
+      setMetric('dmAccountScopeMaster',rows.filter(row=>row.master).length);
+      setMetric('dmAccountScopeLedger',rows.filter(row=>row.ledger).length);
+      setMetric('dmAccountScopeMissing',rows.filter(row=>row.missing).length);
+      const sourceState=(value,label)=>`<span class="dm-master-source-state ${value?'is-present':'is-absent'}" title="${value?label:'无对应记录'}" aria-label="${value?label:'无对应记录'}"></span><span class="dm-source-filter-value">${value?'有':'无'}</span>`;
+      const refreshCompanyMerge=()=>{
+        const rendered=[...body.rows];
+        rendered.forEach(row=>row.classList.remove('has-company-continuation','is-company-continuation'));
+        const visible=rendered.filter(row=>row.style.display!=='none');
+        visible.forEach((row,index)=>{
+          const previous=visible[index-1];
+          const next=visible[index+1];
+          if(previous?.dataset.company===row.dataset.company)row.classList.add('is-company-continuation');
+          if(next?.dataset.company===row.dataset.company)row.classList.add('has-company-continuation');
+        });
+      };
+      const render=()=>{
+        const maxPage=Math.max(1,Math.ceil(rows.length/state.pageSize));
+        state.page=Math.min(state.page,maxPage);
+        const visible=rows.slice((state.page-1)*state.pageSize,state.page*state.pageSize);
+        body.innerHTML=visible.map(row=>{
+          return `<tr data-account-scope-id="${row.id}" data-company="${row.company}"><td class="dm-account-company-cell"><span>${row.company}</span></td><td class="dm-account-number">${row.account}</td><td class="dm-master-source-cell">${sourceState(row.master,'银行账号主档已包含')}</td><td class="dm-master-source-cell">${sourceState(row.ledger,'科目余额表已包含')}</td><td class="dm-master-source-cell">${sourceState(row.missing,'存在缺失账号记录')}</td><td><input class="ba-note-input dm-account-scope-note" data-account-scope-note="${row.id}" value="${row.note}" placeholder="填写备注"/></td></tr>`;
+        }).join('');
+        refreshCompanyMerge();
+        window.renderAuditPager?.(pager,{total:rows.length,page:state.page,pageSize:state.pageSize,onPage:page=>{state.page=page;render();},onPageSize:size=>{state.pageSize=size;state.page=1;render();}});
+      };
+      const mergeObserver=new MutationObserver(()=>window.requestAnimationFrame(refreshCompanyMerge));
+      mergeObserver.observe(body,{childList:true,attributes:true,attributeFilter:['style']});
+      body.addEventListener('input',event=>{const input=event.target.closest('[data-account-scope-note]');if(!input)return;const row=rows.find(item=>item.id===Number(input.dataset.accountScopeNote));if(row)row.note=input.value;});
+      document.getElementById('dmAccountScopeExportBtn')?.addEventListener('click',()=>{
+        const header=['被审计单位公司','银行账号','被审计单位银行账号主档','科目余额表','缺失账号','备注'];
+        const csv=[header,...rows.map(row=>[row.company,row.account,row.master?'有':'无',row.ledger?'有':'无',row.missing?'有':'无',row.note])].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');
+        const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));link.download='账号范围分析结果.csv';link.click();URL.revokeObjectURL(link.href);
+      });
       render();
     };
 
     if (document.readyState === 'loading') {
-      window.addEventListener('DOMContentLoaded', () => { queueAccountIssueDecoration(); initMasterScopeCheck(); }, { once:true });
+      window.addEventListener('DOMContentLoaded', () => { queueAccountIssueDecoration(); initMasterScopeCheck(); initAccountScopeAnalysis(); }, { once:true });
     } else {
       queueAccountIssueDecoration();
       initMasterScopeCheck();
+      initAccountScopeAnalysis();
     }
   })();
 </script>
