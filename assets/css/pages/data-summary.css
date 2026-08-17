@@ -5617,7 +5617,31 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 .ds3-vat-page #ds3SelectedTable .ds3-info-dot{
   width:14px;
   height:14px;
+  border-color:#5b86c7;
+  background:#f4f8ff;
+  color:#2f67b9;
   font-size:9px;
+}
+
+.ds3-vat-page #ds3FilterTable .ds3-info-dot:hover,
+.ds3-vat-page #ds3FilterTable .ds3-info-dot:focus,
+.ds3-vat-page #ds3SelectedTable .ds3-info-dot:hover,
+.ds3-vat-page #ds3SelectedTable .ds3-info-dot:focus{
+  border-color:#2563b9;
+  background:#eaf2ff;
+  color:#174e9f;
+}
+
+.ds3-floating-tip{
+  background:#4b5563;
+}
+
+.ds3-vat-page th.audit-period-metric,
+.ds3-vat-page td.audit-period-metric{
+  box-sizing:border-box !important;
+  width:116px !important;
+  min-width:116px !important;
+  max-width:116px !important;
 }
 
 .ds3-vat-page #ds3DetailChartToolbar{
@@ -9173,4 +9197,15 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 .ds3-vat-page #ds3InvoiceTable thead .ds3-sticky-remark{
   background:var(--ds3-table-head-bg) !important;
   box-shadow:none !important;
+}
+
+/* Final metric-width rule: prevents the first total column from absorbing spare width. */
+.ds3-vat-page #ds3FilterTable th.audit-period-metric,
+.ds3-vat-page #ds3FilterTable td.audit-period-metric,
+.ds3-vat-page #ds3SelectedTable th.audit-period-metric,
+.ds3-vat-page #ds3SelectedTable td.audit-period-metric{
+  box-sizing:border-box !important;
+  width:116px !important;
+  min-width:116px !important;
+  max-width:116px !important;
 }

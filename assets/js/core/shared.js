@@ -1,5 +1,52 @@
 /* =============== 工具 =============== */
 
+  function auditFiscalYearLabel(year){
+    const value=String(year??'').trim();
+    const period=`财年期间：${value}-01-01～${value}-12-31`;
+    return `<span class="audit-fiscal-year-label"><span>${value}</span><span class="audit-fiscal-info" data-audit-fiscal-period="${period}" tabindex="0" aria-label="${period}">i</span></span>`;
+  }
+  window.auditFiscalYearLabel=auditFiscalYearLabel;
+
+  (function initAuditFiscalTooltip(){
+    let tooltip=null;
+    const ensureTooltip=()=>{
+      if(tooltip)return tooltip;
+      tooltip=document.createElement('div');
+      tooltip.className='audit-fiscal-tooltip';
+      tooltip.setAttribute('role','tooltip');
+      document.body.appendChild(tooltip);
+      return tooltip;
+    };
+    const place=target=>{
+      const box=ensureTooltip();
+      const rect=target.getBoundingClientRect();
+      const pad=8;
+      box.style.left=`${rect.left+rect.width/2}px`;
+      box.style.top=`${rect.top-7}px`;
+      box.style.transform='translate(-50%,-100%)';
+      const tipRect=box.getBoundingClientRect();
+      if(tipRect.left<pad)box.style.left=`${pad+tipRect.width/2}px`;
+      if(tipRect.right>window.innerWidth-pad)box.style.left=`${window.innerWidth-pad-tipRect.width/2}px`;
+      if(tipRect.top<pad){box.style.top=`${rect.bottom+7}px`;box.style.transform='translate(-50%,0)';}
+    };
+    const show=target=>{
+      const text=target?.dataset?.auditFiscalPeriod;
+      if(!text)return;
+      const box=ensureTooltip();
+      box.textContent=text;
+      box.classList.add('is-show');
+      place(target);
+    };
+    const hide=()=>tooltip?.classList.remove('is-show');
+    document.addEventListener('mouseover',event=>{const target=event.target.closest?.('.audit-fiscal-info');if(target)show(target);});
+    document.addEventListener('mousemove',event=>{const target=event.target.closest?.('.audit-fiscal-info');if(target)place(target);});
+    document.addEventListener('mouseout',event=>{if(event.target.closest?.('.audit-fiscal-info'))hide();});
+    document.addEventListener('focusin',event=>{const target=event.target.closest?.('.audit-fiscal-info');if(target)show(target);});
+    document.addEventListener('focusout',event=>{if(event.target.closest?.('.audit-fiscal-info'))hide();});
+    window.addEventListener('scroll',hide,true);
+    window.addEventListener('resize',hide);
+  })();
+
   function auditPagerRange(page, pages){
     const current = Math.max(1, Math.min(Number(page) || 1, Math.max(1, pages)));
     const total = Math.max(1, Number(pages) || 1);
@@ -137,7 +184,8 @@
     // 顶部 tab 切换
     const TAB_INTROS = {
       account:"本页展示资金余额变动趋势和原资金总览，帮助用户了解银行账户规模、月度流入流出及流水校验情况。",
-      verify:"本页集中展示缺失同名账户、总账核对和分账号核对，帮助用户完成银行流水完整性测试。",
+      verify:"本页集中展示数据问题、余额连续性和缺失账号校验，帮助用户完成银行流水完整性检查。",
+      "scope-control":"本页统一维护分析范围，并提供总账核对和分账号核对，确认纳入分析的数据与账面记录一致。",
       biz:"本页从余额、流入流出趋势、交易结构及对手方结构等维度展示流水画像，页面金额统一折算为人民币。",
       relation:"本页展示和分析：(1)关联方主档中的对手方，和(2)于“经营实质>流入流出构成”中手工标记为关联方的对手方的交易，旨在帮助用户全面了解被审计单位与关联方的资金往来，协助用户进行关联方披露。如用户暂未上传关联方主档或未手工打标，则本页展示内容为空。",
       "personal—transaction":"本页展示员工及其他个人对手方交易，支持查看个人交易规模、频次和明细。",
@@ -880,6 +928,7 @@
       const scope=document.getElementById('checkScope');
       const btn=document.getElementById('btnToggleCheck');
       if(!scope||!btn)return;
+      if(btn.dataset.localBound==='1')return;
       const setExpand=(expand)=>{
         scope.classList.toggle('expanded',expand);
         btn.classList.toggle('expanded',expand);
@@ -1004,16 +1053,20 @@
         ['天津远泽汽车零部件有限公司',54689,50781,105470,2271,28,3]
       ].map((item,index)=>({
         company:item[0], inflow:item[1], outflow:item[2], total:item[3],
-        txCount:item[4], cpCount:item[5], fileCount:item[6], index
+        txCount:item[4], cpCount:item[5], fileCount:item[6], index,
+        scopeIncluded:item[3],
+        scopeExcluded:Math.round(item[3] * (.82 + (index % 4) * .025))
       }));
       const totals = rows.reduce((sum,row)=>({
         inflow:sum.inflow+row.inflow,
         outflow:sum.outflow+row.outflow,
         total:sum.total+row.total,
+        scopeIncluded:sum.scopeIncluded+row.scopeIncluded,
+        scopeExcluded:sum.scopeExcluded+row.scopeExcluded,
         txCount:sum.txCount+row.txCount,
         cpCount:sum.cpCount+row.cpCount,
         fileCount:sum.fileCount+row.fileCount
-      }),{inflow:0,outflow:0,total:0,txCount:0,cpCount:0,fileCount:0});
+      }),{inflow:0,outflow:0,total:0,scopeIncluded:0,scopeExcluded:0,txCount:0,cpCount:0,fileCount:0});
       totals.cpCount = 100;
       totals.fileCount = 8;
       const state = { page: 1, pageSize: 20, yearExpanded: false };
@@ -1034,11 +1087,23 @@
         const outflow = [54,68,61,79,63,72,86,67,81,70,92,76];
         return `<div class="monthly-flow-bars" aria-label="月度流入流出分布">${inflow.map((value,month)=>`<span class="monthly-flow-pair" title="${month+1}月"><i class="flow-in-bar" style="height:${Math.min(98,value+index*2)}%"></i><i class="flow-out-bar" style="height:${Math.min(98,outflow[month]+index)}%"></i></span>`).join('')}</div>`;
       };
+      const syncAccountColumns = () => {
+        let colgroup = table.querySelector('colgroup');
+        if (!colgroup) {
+          colgroup = document.createElement('colgroup');
+          table.insertBefore(colgroup, table.firstChild);
+        }
+        const totals = '<col class="account-amount-col"><col class="account-amount-col"><col class="account-total-col"><col class="account-ratio-col"><col class="account-count-col"><col class="account-counterparty-col"><col class="account-file-col">';
+        const annual = '<col class="account-amount-col"><col class="account-amount-col"><col class="account-total-col">';
+        colgroup.innerHTML = '<col class="account-company-col"><col class="account-monthly-col"><col class="account-scope-col"><col class="account-scope-col">' +
+          totals + (state.yearExpanded ? annual.repeat(years.length) : '') +
+          '<col class="account-flex-col">';
+      };
       const renderHead = () => {
         const icon = state.yearExpanded ? '«' : '»';
-        const yearHeads = state.yearExpanded ? years.map(year=>`<th colspan="3" class="account-year-head no-sort">${year}年</th>`).join('') : '';
+        const yearHeads = state.yearExpanded ? years.map(year=>`<th colspan="3" class="account-year-head no-sort">${auditFiscalYearLabel(year)}</th>`).join('') : '';
         const yearSubs = state.yearExpanded ? years.map(()=>'<th>流入金额</th><th>流出金额</th><th>交易总额</th>').join('') : '';
-        head.innerHTML = `<tr class="account-year-group-head"><th rowspan="2">被审计单位公司</th><th rowspan="2" class="monthly-flow-head no-sort">月度流入/流出</th><th colspan="7" class="account-group-toggle-cell no-sort"><button class="account-group-toggle" id="accountYearToggle" type="button" title="展开或收起年度金额"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2" class="no-sort">操作</th></tr><tr class="account-year-sub-head"><th>流入金额</th><th>流出金额</th><th>交易总额</th><th>交易总额占比</th><th>交易笔数</th><th>对手方数量</th><th>流水文件</th>${yearSubs}</tr>`;
+        head.innerHTML = `<tr class="account-year-group-head"><th rowspan="2">被审计单位公司</th><th rowspan="2" class="monthly-flow-head no-sort">月度流入/流出</th><th colspan="2" class="account-scope-group no-sort">交易范围金额</th><th colspan="7" class="account-group-toggle-cell no-sort"><button class="account-group-toggle" id="accountYearToggle" type="button" title="展开或收起年度金额"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2" class="no-sort">操作</th></tr><tr class="account-year-sub-head"><th class="account-scope-head" title="包含集团内部往来在内的交易总额">含集团内往来</th><th class="account-scope-head" title="剔除集团内部往来后的交易总额">剔除集团内往来</th><th>流入金额</th><th>流出金额</th><th>交易总额</th><th>交易总额占比</th><th>交易笔数</th><th>对手方数量</th><th>流水文件</th>${yearSubs}</tr>`;
         document.getElementById('accountYearToggle')?.addEventListener('click',()=>{
           state.yearExpanded = !state.yearExpanded;
           render();
@@ -1050,11 +1115,12 @@
         state.page = Math.max(1, Math.min(state.page, pages));
         const start = (state.page - 1) * state.pageSize;
         const end = start + state.pageSize;
+        syncAccountColumns();
         renderHead();
         wrap.classList.toggle('is-year-expanded',state.yearExpanded);
         const sumYearCells = yearCells(totals);
-        const sumRow = `<tr class="sum-row"><td><strong>合计</strong></td><td></td><td class="flow-in is-num"><strong>${format(totals.inflow)}</strong></td><td class="flow-out is-num"><strong>${format(totals.outflow)}</strong></td><td class="is-num"><strong>${format(totals.total)}</strong></td><td class="is-num"><strong>100.00%</strong></td><td class="is-num"><strong>${format(totals.txCount)}</strong></td><td class="is-num"><strong>${totals.cpCount}</strong></td><td class="is-num"><strong>${totals.fileCount}</strong></td>${sumYearCells}<td></td></tr>`;
-        const dataRows = rows.slice(start,end).map(row=>`<tr><td>${row.company}</td><td class="monthly-flow-cell">${miniBars(row.index)}</td><td class="flow-in is-num">${format(row.inflow)}</td><td class="flow-out is-num">${format(row.outflow)}</td><td class="is-num"><b>${format(row.total)}</b></td><td class="is-num">${((row.total/totals.total)*100).toFixed(2)}%</td><td class="is-num">${format(row.txCount)}</td><td class="is-num">${row.cpCount}</td><td class="is-num">${row.fileCount}</td>${yearCells(row)}<td class="actions"><a href="javascript:void(0)" title="查看明细"><i class="fa-regular fa-eye"></i></a><a href="javascript:void(0)" title="文件详情"><i class="fa-regular fa-file-lines"></i></a></td></tr>`).join('');
+        const sumRow = `<tr class="sum-row"><td><strong>合计</strong></td><td></td><td class="account-scope-value is-num"><strong>${format(totals.scopeIncluded)}</strong></td><td class="account-scope-value is-num"><strong>${format(totals.scopeExcluded)}</strong></td><td class="flow-in is-num"><strong>${format(totals.inflow)}</strong></td><td class="flow-out is-num"><strong>${format(totals.outflow)}</strong></td><td class="is-num"><strong>${format(totals.total)}</strong></td><td class="is-num"><strong>100.00%</strong></td><td class="is-num"><strong>${format(totals.txCount)}</strong></td><td class="is-num"><strong>${totals.cpCount}</strong></td><td class="is-num"><strong>${totals.fileCount}</strong></td>${sumYearCells}<td></td></tr>`;
+        const dataRows = rows.slice(start,end).map(row=>`<tr><td>${row.company}</td><td class="monthly-flow-cell">${miniBars(row.index)}</td><td class="account-scope-value is-num">${format(row.scopeIncluded)}</td><td class="account-scope-value is-num">${format(row.scopeExcluded)}</td><td class="flow-in is-num">${format(row.inflow)}</td><td class="flow-out is-num">${format(row.outflow)}</td><td class="is-num"><b>${format(row.total)}</b></td><td class="is-num">${((row.total/totals.total)*100).toFixed(2)}%</td><td class="is-num">${format(row.txCount)}</td><td class="is-num">${row.cpCount}</td><td class="is-num">${row.fileCount}</td>${yearCells(row)}<td class="actions"><a href="javascript:void(0)" title="查看明细"><i class="fa-regular fa-eye"></i></a><a href="javascript:void(0)" title="文件详情"><i class="fa-regular fa-file-lines"></i></a></td></tr>`).join('');
         body.innerHTML = sumRow + dataRows;
         renderAuditPager(pager, {
           total,
@@ -1311,12 +1377,20 @@
       cnt: 222,
       action: true,
       reason: ""
-    }
+    },
+    { procedure: "关联方分红、薪酬及其他资金流向异常", code: "i-2.1.3", criteria: "结合关联方及员工主档信息识别异常资金流向", status: "未执行", cp: 0, amt: 0, cnt: 0, action: false, reason: "" },
+    { procedure: "其他特定关联方发生的资金往来", code: "i-2.2.4", criteria: "结合关联方主档中的其他特定关系识别", status: "未执行", cp: 0, amt: 0, cnt: 0, action: false, reason: "" },
+    { procedure: "银行流水摘要存在明显异常信息", code: "i-3.3", criteria: "流水摘要包含特定异常关键字", status: "已完成", cp: 1, amt: 486.2, cnt: 2, action: false, reason: "" },
+    { procedure: "银行流水中无交易对手方名称", code: "i-3.4", criteria: "交易对手方名称为空", status: "已完成", cp: 1, amt: 128.6, cnt: 1, action: false, reason: "" },
+    { procedure: "银行流水中无交易摘要", code: "i-3.5", criteria: "交易摘要为空", status: "已完成", cp: 0, amt: 0, cnt: 0, action: false, reason: "" },
+    { procedure: "与客户或供应商的交易方向异常", code: "i-3.9", criteria: "客户流出或供应商流入达到设定条件", status: "已完成", cp: 2, amt: 976.4, cnt: 3, action: false, reason: "" },
+    { procedure: "存在银行流水但未匹配到增值税发票", code: "i-5.1", criteria: "按当前资金与票流匹配口径识别", status: "计算中", cp: 0, amt: 0, cnt: 0, action: false, reason: "" },
+    { procedure: "存在增值税发票但未匹配到银行流水", code: "i-5.2", criteria: "按当前资金与票流匹配口径识别", status: "计算中", cp: 0, amt: 0, cnt: 0, action: false, reason: "" }
   ];
 
   const THIRD_PARTY_ROWS = [
     {
-      procedure: "经常司法恢复",
+      procedure: "经营时间较短",
       code: "i-4.1",
       criteria: "经营天数 <= [365] 天",
       status: "已完成",
@@ -1468,27 +1542,56 @@
   function renderCheckStandardTable() {
     const tbody = $("#rngTbody");
     if (!tbody) return;
-
-    tbody.innerHTML = CHECK_STANDARD_ROWS.map(row => `
+    const hideAction = tbody.closest("table")?.classList.contains("wp-no-action-column");
+    const groupLabels = {
+      "1": "定量考虑因素（一般事项核查标准）：",
+      "2": "定性考虑因素（特殊事项核查标准）：",
+      "3": "重点关注异常情况,例如：",
+      "5": "资金流和发票流不匹配情况："
+    };
+    const rowCode = row => String(row.code || "").replace(/^i-/, "");
+    const compareCode = (left, right) => {
+      const a = rowCode(left).split(".").map(Number);
+      const b = rowCode(right).split(".").map(Number);
+      for (let index = 0; index < Math.max(a.length, b.length); index += 1) {
+        const delta = (a[index] || 0) - (b[index] || 0);
+        if (delta) return delta;
+      }
+      return 0;
+    };
+    const rows = [...CHECK_STANDARD_ROWS].sort(compareCode);
+    let previousGroup = "";
+    tbody.innerHTML = rows.map(row => {
+      const group = rowCode(row).split(".")[0];
+      const columnCount = hideAction ? 8 : 9;
+      const groupCells = `<td><strong>${groupLabels[group] || "其他核查标准"}</strong></td>${Array.from({ length: columnCount - 1 }, () => '<td aria-hidden="true"></td>').join("")}`;
+      const groupRow = group !== previousGroup
+        ? `<tr class="wp-routine-group-row" data-routine-group="${group}">${groupCells}</tr>`
+        : "";
+      previousGroup = group;
+      const procedure = group === "1" && rowCode(row) === "1.1"
+        ? String(row.procedure).replace(/^定量考虑因素（一般事项核查标准）：\s*/, "")
+        : row.procedure;
+      return `${groupRow}
       <tr>
-        <td>${row.procedure}</td>
+        <td>${procedure}</td>
         <td>${row.code}</td>
         <td style="color:#4f83cc;">${row.criteria}</td>
         <td>${row.status ? `<span class="st-done">${row.status}</span>` : `<span class="st-empty">-</span>`}</td>
         <td class="num">${row.cp !== "" ? fmt(row.cp) : ""}</td>
         <td class="num">${row.amt !== "" ? fmt(row.amt) : ""}</td>
         <td class="num">${row.cnt !== "" ? fmt(row.cnt) : ""}</td>
-        <td>
+        ${hideAction ? "" : `<td>
           ${row.action ? `
             <div class="wp-action-links">
               <a href="javascript:void(0)" class="act-link">进入</a>
               <a href="javascript:void(0)" class="act-link">重置</a>
             </div>
           ` : ""}
-        </td>
+        </td>`}
         <td><input class="inp-reason" type="text" value="${row.reason || ""}"></td>
       </tr>
-    `).join("");
+    `;}).join("");
   }
 
   function renderThirdPartyTable() {
@@ -1654,6 +1757,7 @@
     const filters = tableFilters.get(table);
     const rows = Array.from(table.tBodies[0]?.rows || []);
     rows.forEach(row => {
+      if (row.classList.contains('wp-routine-group-row')) return;
       let visible = true;
       if (filters) {
         filters.forEach((selected, index) => {
@@ -1662,14 +1766,37 @@
       }
       row.style.display = visible ? '' : 'none';
     });
+    if (table.classList.contains('wp-grouped-routine-table')) {
+      rows.forEach((row, index) => {
+        if (!row.classList.contains('wp-routine-group-row')) return;
+        let hasVisibleRow = false;
+        for (let cursor = index + 1; cursor < rows.length && !rows[cursor].classList.contains('wp-routine-group-row'); cursor += 1) {
+          if (rows[cursor].style.display !== 'none') { hasVisibleRow = true; break; }
+        }
+        row.style.display = hasVisibleRow ? '' : 'none';
+      });
+    }
   }
 
   function sortTableByColumn(table, index, dir, th) {
     const tbody = table.tBodies[0];
     if (!tbody) return;
     const rows = Array.from(tbody.rows);
-    rows.sort((a, b) => compareCell(getCellText(a, index), getCellText(b, index), dir));
-    rows.forEach(row => tbody.appendChild(row));
+    if (table.classList.contains('wp-grouped-routine-table')) {
+      const groups = [];
+      rows.forEach(row => {
+        if (row.classList.contains('wp-routine-group-row')) groups.push({ head: row, rows: [] });
+        else if (groups.length) groups[groups.length - 1].rows.push(row);
+      });
+      groups.forEach(group => {
+        group.rows.sort((a, b) => compareCell(getCellText(a, index), getCellText(b, index), dir));
+        tbody.appendChild(group.head);
+        group.rows.forEach(row => tbody.appendChild(row));
+      });
+    } else {
+      rows.sort((a, b) => compareCell(getCellText(a, index), getCellText(b, index), dir));
+      rows.forEach(row => tbody.appendChild(row));
+    }
     table.querySelectorAll('th').forEach(item => item.classList.remove('ba-sort-asc', 'ba-sort-desc'));
     th.classList.add(dir === 'asc' ? 'ba-sort-asc' : 'ba-sort-desc');
     applyTableFilters(table);
@@ -1895,6 +2022,7 @@
     event.stopPropagation();
     closeFilterPopovers();
     const values = Array.from(new Set(Array.from(table.tBodies[0]?.rows || [])
+      .filter(row => !row.classList.contains('wp-routine-group-row'))
       .map(row => getCellText(row, index))
       .filter(Boolean))).slice(0, 80);
     const filters = tableFilters.get(table) || new Map();
@@ -1951,7 +2079,7 @@
   function enhanceTable(table) {
     if (table.dataset.baEnhanced === '1') return;
     table.dataset.baEnhanced = '1';
-    const skipHeaderLabels = new Set(['操作', '备注', '备注说明', '缺失原因', '支持性文件索引', '差异说明', '校验情况']);
+    const skipHeaderLabels = new Set(['操作', '备注', '备注说明', '解释理由', '缺失原因', '支持性文件索引', '差异说明', '校验情况']);
     const headerRows = Array.from(table.tHead?.rows || []);
     const headerGrid = [];
     const leafHeaders = [];

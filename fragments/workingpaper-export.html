@@ -7,10 +7,108 @@
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260811-daily-trend1"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260811-workingpaper1"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260811-account-years1"/>
-  <link rel="stylesheet" href="../assets/css/pages/workingpaper-export.css?v=20260811-workingpaper1"/>
+  <link rel="stylesheet" href="../assets/css/pages/workingpaper-export.css?v=20260817-report-year-table10"/>
 </head>
 <body class="workingpaper-export-page">
   <section class="tab-pane" id="pane-workingpaper">
+    <div class="tab-container wp-export-tab-container">
+      <div class="tabbar" id="workingpaperExportTabs" role="tablist" aria-label="报告及底稿导出类型">
+        <div class="tab active" data-export-tab="risk-report" role="tab" tabindex="0" aria-selected="true">风险评估报告导出</div>
+        <div class="tab" data-export-tab="workingpaper" role="tab" tabindex="0" aria-selected="false">资金流水核查底稿导出</div>
+        <i class="inkbar" id="workingpaperExportInkbar" aria-hidden="true"></i>
+      </div>
+    </div>
+
+    <section class="wp-export-pane is-active" data-export-pane="risk-report" role="tabpanel">
+      <div class="wp-report-page">
+        <section class="wp-card-section risk-report-control-card" id="riskReportControlBlock">
+          <div class="wp-card-head">
+            <div class="wp-card-title-wrap"><div class="wp-card-title-group"><div class="wp-card-title">报告分析口径</div></div></div>
+          </div>
+          <div class="wp-card-body">
+            <div class="risk-report-control-row">
+              <div class="risk-report-scope-switch" id="riskReportScopeSwitch" role="tablist" aria-label="报告分析口径">
+                <button class="is-active" type="button" data-report-scope="all">全量交易口径</button>
+                <button type="button" data-report-scope="external">外部交易口径</button>
+              </div>
+              <div class="risk-report-period"><span>分析数据期间</span><strong>2023-01-01 至 2025-12-31</strong></div>
+            </div>
+            <div class="risk-report-version-grid">
+              <button class="risk-report-version is-active" type="button" data-report-version="all"><span>全量交易版</span><strong><b data-report-metric="allAmount" data-audit-amount-k="3198400">3,198.4</b> <i data-audit-unit-label>百万元</i></strong><em>包含集团内及外部交易</em></button>
+              <button class="risk-report-version" type="button" data-report-version="external"><span>外部交易版</span><strong><b data-report-metric="externalAmount" data-audit-amount-k="2640800">2,640.8</b> <i data-audit-unit-label>百万元</i></strong><em>剔除被审计单位之间往来</em></button>
+            </div>
+          </div>
+        </section>
+
+        <section class="wp-card-section risk-report-document-card" id="riskReportFocusBlock">
+          <div class="wp-card-head">
+            <div class="wp-card-title-wrap"><span class="wp-stage-mark" aria-hidden="true">01</span><div class="wp-card-title-group"><div class="wp-card-title">重点审计关注事项</div></div></div>
+            <div class="risk-report-head-meta" id="riskReportScopeLabel">全量交易口径</div>
+            <button class="wp-fold-btn" type="button" data-fold-target="riskReportFocusBlock" title="收起/展开"></button>
+          </div>
+          <div class="wp-card-body risk-report-document">
+            <section class="risk-report-subsection">
+              <h3><b>1.1</b> 被审计单位及集团范围概况</h3>
+              <div class="risk-report-metric-row cols-4 is-master-snapshot"><div><span>合并范围内公司个数/集团内主体</span><strong>28个/6个</strong><em>合计注册资本***万元/合计实缴资本***万元</em></div><div><span>被审计单位法律诉讼个数</span><strong>24个</strong><em>其中<strong class="is-alert">6个</strong>金额重大，涉及金额<strong class="is-alert">***万元</strong></em></div><div><span>被审计单位涉及失信被执行人</span><strong>6个</strong><em>其中<strong class="is-alert">2个</strong>金额重大，涉及被执行金额<strong class="is-alert">***万元</strong></em></div><div><span>重要主体及人员变更</span><strong>3个 / 5位</strong><em>1年内新增子公司/关键人员1年内比变更</em></div></div>
+            </section>
+            <section class="risk-report-subsection">
+              <h3><b>1.2</b> 数据上传与校验情况</h3>
+              <div class="risk-report-metric-row cols-4"><div class="is-current-snapshot"><span>已上传被审计单位公司</span><strong>25个</strong></div><div><span>账户及税号数据覆盖</span><strong>630个 / 50个</strong><small>2023 196个/15个 · 2024 210个/17个 · 2025 224个/18个</small></div><div class="is-current-snapshot"><span>当前主档上传情况</span><strong class="is-alert">3项缺失</strong><em>客户、供应商或关联方主档</em></div><div><span>账户完整性问题</span><strong class="is-alert">92项</strong><small>2023 35项 · 2024 30项 · 2025 27项</small></div></div>
+            </section>
+
+            <section class="risk-report-subsection">
+              <h3><b>1.3</b> 资金流水与账户总览</h3>
+              <div class="risk-report-metric-row cols-4"><div><span>余额不连续账户/缺失余额</span><strong>5个</strong><em data-audit-amount-k="500">涉及金额500</em><small class="risk-metric-years risk-metric-years-with-amount"><span><i>2023</i><b>8个 / <u class="risk-report-metric-amount-value" data-report-amount-k="800" data-audit-unit-ignore>0.8</u><em class="risk-report-metric-amount-unit">M</em></b></span><span><i>2024</i><b>6个 / <u class="risk-report-metric-amount-value" data-report-amount-k="600" data-audit-unit-ignore>0.6</u><em class="risk-report-metric-amount-unit">M</em></b></span><span class="is-current"><i>2025</i><b>5个 / <u class="risk-report-metric-amount-value" data-report-amount-k="500" data-audit-unit-ignore>0.5</u><em class="risk-report-metric-amount-unit">M</em></b></span></small></div><div><span>对手方为空交易</span><strong>189条</strong><em data-audit-amount-k="170000">三年累计金额170,000</em><small>2023 71条/48,600 · 2024 63条/56,400 · 2025 55条/65,000</small></div><div><span>摘要为空交易</span><strong>620条</strong><em data-audit-amount-k="436000">三年累计金额436,000</em><small>2023 231条/128,000 · 2024 204条/146,000 · 2025 185条/162,000</small></div><div><span>资金与票流差异</span><strong class="is-alert">95项</strong><em data-audit-amount-k="199400">三年未匹配资金199,400</em><small>2023 36项/72,400 · 2024 31项/66,800 · 2025 28项/60,200</small></div></div>
+            </section>
+
+            <section class="risk-report-subsection">
+              <h3><b>1.4</b> 资金流水跨期、季节性及集中度分析</h3>
+              <div class="risk-report-three-year-grid">
+                <table><thead><tr><th>分析指标</th><th>2023</th><th>2024</th><th>2025</th><th>跨期判断</th></tr></thead><tbody><tr><td>资金流入</td><td data-audit-amount-k="1248800">1,248,800</td><td data-audit-amount-k="1421200">1,421,200</td><td data-audit-amount-k="1597420">1,597,420</td><td>连续增长</td></tr><tr><td>资金流出</td><td data-audit-amount-k="1263100">1,263,100</td><td data-audit-amount-k="1431900">1,431,900</td><td data-audit-amount-k="1600980">1,600,980</td><td>连续增长</td></tr><tr><td>第四季度流入占比</td><td>27.2%</td><td>30.8%</td><td>34.0%</td><td class="is-alert">持续上升</td></tr><tr><td>客户前20大集中度</td><td>78.4%</td><td>81.2%</td><td>86.0%</td><td class="is-alert">持续上升</td></tr><tr><td>供应商前20大集中度</td><td>74.1%</td><td>76.5%</td><td>79.0%</td><td>相对平稳</td></tr></tbody></table>
+                <div class="risk-report-concentration"><div class="risk-report-subtitle">前5大 / 前10大 / 前20大集中度</div><div class="risk-report-concentration-legend"><span class="is-customer">客户</span><span class="is-supplier">供应商</span></div><div id="riskReportConcentrationChart"></div></div>
+              </div>
+              <table class="risk-report-seasonality-table"><thead><tr><th>方向</th><th>季节性异常波动月份</th><th>关联方</th><th>客户</th><th>供应商</th></tr></thead><tbody><tr><th>流入</th><td><b>2025.12 低于历史同期20%</b><span>2025.06 高于历史同期16%</span></td><td><b>流入金额占比65%</b><span>前10个关联方占关联方流入88%</span></td><td><b>流入金额占比35%</b><span>前10大客户占客户流入55%</span></td><td><b>流入金额占比45%</b><span>前10大供应商占供应商流入55%</span></td></tr><tr><th>流出</th><td><b>2025.07 低于历史同期20%</b><span>2025.08 高于历史同期16%</span></td><td><b>流出金额占比45%</b><span>前10个关联方占关联方流出68%</span></td><td><b>流出金额占比35%</b><span>前10大客户占客户流出55%</span></td><td><b>流出金额占比55%</b><span>前10大供应商占供应商流出55%</span></td></tr></tbody></table>
+            </section>
+
+            <section class="risk-report-subsection" id="riskReportMatrixBlock">
+              <h3><b>1.5</b> 被审计单位间交易往来</h3>
+              <div class="risk-report-year-matrices" id="riskReportYearMatrices"></div>
+            </section>
+
+            <section class="risk-report-subsection">
+              <h3><b>1.6</b> 资金流水与关联方</h3>
+              <div class="risk-report-metric-row cols-4"><div><span>已上传关联方数量</span><strong>335个</strong><em>三年累计</em><small>2023 98个 · 2024 112个 · 2025 125个</small></div><div><span>通过交易识别潜在关联方</span><strong class="is-alert">496个</strong><em>三年累计 · 其中8个本期新增且金额重大</em><small>2023 142个 · 2024 168个 · 2025 186个</small></div><div><span>疑似关联方相同股东或董监高</span><strong class="is-alert">13个</strong><em>三年累计 · 其中2个本期金额重大</em><small>2023 3个 · 2024 4个 · 2025 6个</small></div><div><span>关联个人交易</span><strong>12个</strong><em data-audit-amount-k="64000">三年累计金额64,000</em><small>2023 3个/18,000 · 2024 4个/21,000 · 2025 5个/25,000</small></div></div>
+              <div class="risk-report-overlap-strip"><div class="risk-report-ring" style="--ring-value:18.6"><span>18.6%</span></div><div><strong>收支重合金额占当前口径交易金额18.6%</strong><span>收支重合对手方24家：客户兼供应商12家 · 关联方收支重合7家 · 个人收支重合5家；其中连续三年发生8家</span></div></div>
+            </section>
+
+            <section class="risk-report-subsection">
+              <h3><b>1.7</b> 法律诉讼</h3>
+              <div class="risk-report-metric-row cols-4"><div><span>有法律诉讼对手方 / 案件数</span><strong>59个 / 247件</strong><small>2023 16个/67件 · 2024 20个/82件 · 2025 23个/98件</small></div><div><span>失信被执行人 / 交易金额</span><strong class="is-alert">45个</strong><em data-audit-amount-k="438800">三年累计金额438,800</em><small>2023 12个/124,600 · 2024 15个/146,300 · 2025 18个/167,900</small></div><div><span>黑名单主体 / 交易金额</span><strong class="is-alert">12个</strong><em data-audit-amount-k="52500">三年累计金额52,500</em><small>2023 3个/14,200 · 2024 4个/17,500 · 2025 5个/20,800</small></div><div><span>行政处罚主体 / 交易金额</span><strong>21个</strong><em data-audit-amount-k="27200">三年累计金额27,200</em><small>2023 6个/7,600 · 2024 7个/9,100 · 2025 8个/10,500</small></div></div>
+            </section>
+
+            <section class="risk-report-subsection">
+              <h3><b>1.8</b> 个人交易</h3>
+              <div class="risk-report-metric-row cols-4"><div><span>个人对手方 / 交易总额</span><strong>322个</strong><em data-audit-amount-k="401500">三年累计金额401,500</em><small>2023 94个/116,800 · 2024 108个/134,500 · 2025 120个/150,200</small></div><div><span>员工 / 交易金额</span><strong>274个</strong><em data-audit-amount-k="134100">三年累计金额134,100</em><small>2023 80个/39,100 · 2024 92个/44,800 · 2025 102个/50,200</small></div><div><span>董监高 / 交易金额</span><strong class="is-alert">21个</strong><em data-audit-amount-k="205000">三年累计金额205,000</em><small>2023 6个/56,600 · 2024 7个/68,400 · 2025 8个/80,000</small></div><div><span>其他个人 / 交易金额</span><strong class="is-alert">27个</strong><em data-audit-amount-k="64700">三年累计金额64,700</em><small>2023 8个/21,100 · 2024 9个/23,600 · 2025 10个/20,000</small></div></div>
+            </section>
+
+            <section class="risk-report-subsection" id="riskReportCounterpartyBlock">
+              <h3><b>1.9</b> 异常对手方概览</h3>
+              <table class="risk-report-abnormal-years"><thead><tr><th>指标</th><th>2023</th><th>2024</th><th>2025</th><th>跨期判断</th></tr></thead><tbody><tr><td>异常对手方数量</td><td>18个</td><td>21个</td><td>24个</td><td class="is-alert">持续增加</td></tr><tr><td>异常对手方占比</td><td>19.1%</td><td>21.6%</td><td>24.0%</td><td class="is-alert">持续上升</td></tr><tr><td>多类异常同时命中</td><td>9个</td><td>12个</td><td>15个</td><td>连续增加</td></tr><tr><td>连续两个期间以上</td><td>6个</td><td>8个</td><td>11个</td><td>需持续关注</td></tr></tbody></table>
+              <div class="risk-report-counterparty-top"><div class="risk-report-abnormal-share"><div class="risk-report-ring is-alert" style="--ring-value:21"><span>21.0%</span></div><div><strong>63个异常对手方</strong><span>占三年累计分析范围300个</span></div></div><div class="risk-report-reason-bars" id="riskReportReasonBars"></div><div class="risk-report-category-panel"><div class="risk-report-subtitle">对手方构成</div><div class="risk-report-category-grid" id="riskReportCategoryGrid"></div></div></div>
+            </section>
+
+            <section class="risk-report-subsection">
+              <h3><b>1.10</b> 异常对手方列表</h3>
+              <div class="wp-table-wrap risk-report-table-wrap"><table class="table risk-report-table" id="riskReportCounterpartyTable"><thead id="riskReportCounterpartyHead"></thead><tbody id="riskReportCounterpartyRows"></tbody></table></div>
+            </section>
+
+            <div class="risk-report-document-footer"><div><span>当前导出版本</span><strong id="riskReportExportVersion">全量交易版</strong></div><div><span>报告格式</span><strong>Word 文档（.docx）</strong></div><div class="risk-report-output-actions"><button class="btn" id="btnPreviewRiskReportBottom" type="button">预览报告</button><button class="btn primary" id="btnExportRiskReportBottom" type="button">导出风险评估报告</button></div></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="wp-export-pane" data-export-pane="workingpaper" role="tabpanel" hidden>
     <div class="tab-scroll wp-page">
       <section class="wp-card-section wp-parameter-card" aria-labelledby="wpParameterTitle">
         <div class="wp-parameter-content">
@@ -28,7 +126,7 @@
 
       <section class="wp-card-section" id="wpBlock1">
         <div class="wp-card-head">
-          <div class="wp-card-title-wrap"><div class="wp-card-title-group"><div class="wp-card-title">信息测试 - 完整性测试</div></div></div>
+          <div class="wp-card-title-wrap"><span class="wp-stage-mark" aria-hidden="true">01</span><div class="wp-card-title-group"><div class="wp-card-title">信息测试 - 完整性测试</div></div></div>
           <button class="wp-fold-btn" type="button" data-fold-target="wpBlock1" title="收起/展开"></button>
         </div>
         <div class="wp-card-body">
@@ -49,7 +147,7 @@
 
       <section class="wp-card-section" id="wpBlock2">
         <div class="wp-card-head">
-          <div class="wp-card-title-wrap"><div class="wp-card-title-group"><div class="wp-card-title">信息测试 - 准确性测试</div></div></div>
+          <div class="wp-card-title-wrap"><span class="wp-stage-mark" aria-hidden="true">02</span><div class="wp-card-title-group"><div class="wp-card-title">信息测试 - 准确性测试</div></div></div>
           <button class="wp-fold-btn" type="button" data-fold-target="wpBlock2" title="收起/展开"></button>
         </div>
         <div class="wp-card-body">
@@ -67,14 +165,95 @@
         </div>
       </section>
 
+      <section class="wp-card-section" id="wpBlock3">
+        <div class="wp-card-head">
+          <div class="wp-card-title-wrap">
+            <span class="wp-stage-mark" aria-hidden="true">03</span>
+            <div class="wp-card-title-group"><div class="wp-card-title">核查标准</div></div>
+          </div>
+          <button class="wp-fold-btn" type="button" data-fold-target="wpBlock3" title="收起/展开"></button>
+        </div>
+        <div class="wp-card-body">
+          <div class="wp-card-desc">
+            对于符合下述标准的、通过KPMG Audit Compass系统平台中项目组浏览凭证的筛选条件识别的资金流水记录，
+            已自动填充至工作底稿 &lt;3.大额、异常资金流水&gt;
+          </div>
+          <div class="wp-tags">
+            <span class="tag ok">✓ 关联方</span>
+            <span class="tag err">× 客户（缺失）</span>
+            <span class="tag err">× 供应商（缺失）</span>
+            <span class="tag err">× 员工（缺失）</span>
+          </div>
+          <div class="wp-table-wrap wp-standard-table-wrap">
+            <table class="table wp-table wp-standard-table wp-no-action-column wp-grouped-routine-table" id="rngTable">
+              <colgroup>
+                <col class="wp-col-procedure"><col class="wp-col-code"><col class="wp-col-criteria"><col class="wp-col-status">
+                <col class="wp-col-counterparty"><col class="wp-col-amount"><col class="wp-col-count"><col class="wp-col-reason">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th style="width:34%;">核查程序</th>
+                  <th style="width:82px;">标识号</th>
+                  <th>Audit Compass系统设定筛选条件</th>
+                  <th style="width:82px;">执行状态</th>
+                  <th class="num" style="width:100px;">识别对手方数</th>
+                  <th class="num" style="width:120px;">识别交易总额</th>
+                  <th class="num" style="width:100px;">识别交易笔数</th>
+                  <th class="no-sort" style="width:140px;">解释理由</th>
+                </tr>
+              </thead>
+              <tbody id="rngTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="wp-card-section" id="wpBlock4">
+        <div class="wp-card-head">
+          <div class="wp-card-title-wrap">
+            <span class="wp-stage-mark" aria-hidden="true">04</span>
+            <div class="wp-card-title-group"><div class="wp-card-title">可能配合实施财务舞弊的第三方特征</div></div>
+          </div>
+          <button class="wp-fold-btn" type="button" data-fold-target="wpBlock4" title="收起/展开"></button>
+        </div>
+        <div class="wp-card-body">
+          <div class="wp-card-desc">
+            除A股IPO收入审计程序示例 &lt;A股IPO采购与存货审计程序示例&gt; 底稿中列示的背景调查程序外，
+            项目组可从资金流水出发，借助KPMG Audit Compass识别符合特定特征的异常交易对手方，
+            对于识别出的异常资金流的交易对手方，项目组应考虑在资金流水核查、走访、函证、烤凭等核查程序中重点关注。
+          </div>
+          <div class="wp-table-wrap wp-standard-table-wrap">
+            <table class="table wp-table wp-standard-table" id="fraudTable">
+              <colgroup>
+                <col class="wp-col-procedure"><col class="wp-col-code"><col class="wp-col-criteria"><col class="wp-col-status">
+                <col class="wp-col-counterparty"><col class="wp-col-amount"><col class="wp-col-count"><col class="wp-col-reason">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th style="width:34%;">核查程序</th>
+                  <th style="width:82px;">标识号</th>
+                  <th>Audit Compass系统设定筛选条件</th>
+                  <th style="width:82px;">执行状态</th>
+                  <th class="num" style="width:100px;">识别对手方数</th>
+                  <th class="num" style="width:120px;">识别交易总额</th>
+                  <th class="num" style="width:100px;">识别交易笔数</th>
+                  <th class="no-sort" style="width:140px;">解释理由</th>
+                </tr>
+              </thead>
+              <tbody id="fraudTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       <div class="wp-bottom-actions">
-        <button class="btn primary" id="btnGenRisk" type="button">导出底稿</button>
-        <button class="btn" id="btnExportRiskReport" type="button">导出风险评估报告</button>
+        <button class="btn primary" id="btnGenRisk" type="button">生成资金流水核查底稿</button>
       </div>
-      <div class="wp-export-toast" id="wpExportToast" role="status" aria-live="polite"></div>
     </div>
+    </section>
+    <div class="wp-export-toast" id="wpExportToast" role="status" aria-live="polite"></div>
   </section>
-  <script defer src="../assets/js/core/shared.js?v=20260811-account-years1"></script>
-  <script defer src="../assets/js/pages/workingpaper-export.js?v=20260811-materiality1"></script>
+  <script defer src="../assets/js/core/shared.js?v=20260814-export-routines11"></script>
+  <script defer src="../assets/js/pages/workingpaper-export.js?v=20260817-report-year-table10"></script>
 </body>
 </html>

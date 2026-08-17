@@ -1168,6 +1168,211 @@ body #pane-personal\—transaction #personalCounterpartyTable tbody tr:hover td{
   background:var(--audit-table-hover-bg,#f8fbff) !important;
 }
 
+/* 经营分析汇总表：指标列紧凑，剩余空间平均交给后续业务信息列。 */
+body .tab-pane #portraitCounterpartyTable{
+  width:100% !important;
+  min-width:100% !important;
+  table-layout:fixed !important;
+}
+
+body #portraitCounterpartyTable col.portrait-name-col{ width:210px !important; }
+body #portraitCounterpartyTable col.portrait-small-col{ width:82px !important; }
+body #portraitCounterpartyTable col.portrait-monthly-col{ width:136px !important; }
+body #portraitCounterpartyTable col.portrait-type-col{ width:100px !important; }
+body #portraitCounterpartyTable col.portrait-industry-col{ width:120px !important; }
+body #portraitCounterpartyTable col.portrait-metric-col{ width:96px !important; }
+body #portraitCounterpartyTable col.portrait-flex-col{ width:140px !important; }
+
+/* 对手方汇总清单：主档字段及行级穿透操作。 */
+body #portraitCounterpartyTable .portrait-remark-cell{
+  min-width:150px !important;
+  max-width:220px;
+  color:#5f6f82;
+}
+body #portraitCounterpartyTable .portrait-remark-cell > span{ color:#a0abba; }
+body #portraitCounterpartyTable .portrait-operation-head,
+body #portraitCounterpartyTable .portrait-operation-cell{
+  min-width:112px !important;
+  width:112px !important;
+  text-align:center !important;
+}
+.portrait-row-actions{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  white-space:nowrap;
+}
+.portrait-row-action{
+  position:relative;
+  display:inline-flex;
+  width:20px;
+  height:24px;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  border:0;
+  border-radius:0;
+  color:#4f82bb;
+  background:transparent;
+  font-size:12px;
+  cursor:pointer;
+  line-height:1;
+  opacity:.88;
+  transition:color .15s ease,transform .15s ease,opacity .15s ease;
+}
+.portrait-row-action + .portrait-row-action::before{
+  content:"";
+  position:absolute;
+  left:-6px;
+  top:6px;
+  width:1px;
+  height:12px;
+  background:#e3eaf2;
+  pointer-events:none;
+}
+.portrait-row-action:hover,
+.portrait-row-action:focus-visible{
+  color:#175fae;
+  background:transparent;
+  outline:0;
+  opacity:1;
+  transform:translateY(-1px);
+}
+.portrait-row-action:active{ transform:translateY(0); }
+.portrait-action-icon{
+  display:block;
+  width:15px;
+  height:15px;
+  overflow:visible;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.65;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  vector-effect:non-scaling-stroke;
+}
+
+/* 表格操作列使用纯图标，不继承页面统一按钮的轮廓和尺寸。 */
+body .tab-pane #portraitCounterpartyTable .portrait-row-action{
+  width:18px !important;
+  min-width:18px !important;
+  height:22px !important;
+  min-height:22px !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#356fae !important;
+  box-shadow:none !important;
+  font-size:0 !important;
+  line-height:1 !important;
+  appearance:none;
+  -webkit-appearance:none;
+}
+body .tab-pane #portraitCounterpartyTable .portrait-row-action:hover,
+body .tab-pane #portraitCounterpartyTable .portrait-row-action:focus-visible{
+  border:0 !important;
+  background:transparent !important;
+  color:#1559a6 !important;
+  box-shadow:none !important;
+  outline:0 !important;
+}
+body .tab-pane #portraitCounterpartyTable .portrait-row-action .portrait-action-icon{
+  width:14px !important;
+  height:14px !important;
+}
+.portrait-tianyancha-tooltip{
+  position:fixed;
+  z-index:10030;
+  visibility:hidden;
+  width:310px;
+  padding:8px 10px;
+  border:1px solid #dbe5f0;
+  border-radius:6px;
+  color:#52657b;
+  background:#fff;
+  box-shadow:0 8px 24px rgba(15,23,42,.12);
+  opacity:0;
+  transform:translateY(-3px);
+  transition:opacity .14s ease,transform .14s ease;
+  font-size:11px;
+  line-height:1.55;
+}
+.portrait-tianyancha-tooltip.is-visible{ visibility:visible; opacity:1; transform:translateY(0); }
+.portrait-tianyancha-tooltip a{ color:#2867b2; text-decoration:underline; text-underline-offset:2px; }
+.portrait-action-dialog{
+  position:fixed;
+  z-index:10020;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:48px;
+  background:rgba(15,23,42,.28);
+}
+.portrait-action-dialog.is-open{ display:flex; }
+.portrait-action-dialog-panel{
+  display:flex;
+  width:min(760px,76vw);
+  max-height:78vh;
+  flex-direction:column;
+  overflow:hidden;
+  border:1px solid #dce6f0;
+  border-radius:8px;
+  background:#fff;
+  box-shadow:0 18px 52px rgba(15,23,42,.18);
+}
+.portrait-action-dialog-head{
+  display:flex;
+  min-height:44px;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 14px;
+  border-bottom:1px solid #e7edf4;
+}
+.portrait-action-dialog-head > div{ display:grid; gap:2px; }
+.portrait-action-dialog-head b{ color:#26384f; font-size:13px; }
+.portrait-action-dialog-head span{ color:#7b899b; font-size:10.5px; }
+.portrait-action-dialog-head > button{
+  width:26px;
+  height:26px;
+  border:1px solid #dce5ef;
+  border-radius:50%;
+  color:#64748b;
+  background:#fff;
+  cursor:pointer;
+}
+.portrait-action-dialog-body{ overflow:auto; padding:14px; }
+.portrait-action-dialog-foot{ display:flex; justify-content:flex-end; gap:7px; padding:9px 14px; border-top:1px solid #e7edf4; }
+.portrait-detail-grid{
+  display:grid;
+  grid-template-columns:130px minmax(180px,1fr) 130px minmax(180px,1fr);
+  overflow:hidden;
+  border:1px solid #e2e9f1;
+  border-radius:6px;
+}
+.portrait-detail-grid > *{ min-height:34px; padding:8px 10px; border-right:1px solid #e8eef5; border-bottom:1px solid #e8eef5; box-sizing:border-box; }
+.portrait-detail-grid > :nth-child(4n){ border-right:0; }
+.portrait-detail-grid > :nth-last-child(-n+4){ border-bottom:0; }
+.portrait-detail-grid span{ color:#718096; background:#f8fafc; font-size:11px; }
+.portrait-detail-grid b{ color:#334155; font-size:11px; font-weight:550; }
+.portrait-remark-editor{ width:100%; min-height:130px; resize:vertical; padding:9px 10px; border:1px solid #d6e1ec; border-radius:6px; color:#334155; outline:0; font:12px/1.6 inherit; box-sizing:border-box; }
+.portrait-remark-editor:focus{ border-color:#7aa7df; box-shadow:0 0 0 2px rgba(47,111,184,.08); }
+.portrait-flow-table-wrap{ overflow:auto; border:1px solid #e2e9f1; border-radius:6px; }
+.portrait-flow-table{ width:100%; min-width:650px; }
+.portrait-flow-table th,.portrait-flow-table td{ padding:7px 9px !important; font-size:11px !important; white-space:nowrap; }
+.portrait-flow-table .is-flow-in{ color:var(--flow-in,#3b82f6); font-weight:650; text-align:right; }
+.portrait-flow-table .is-flow-out{ color:var(--flow-out,#d9466f); font-weight:650; text-align:right; }
+
+body #portraitCounterpartyTable th,
+body #portraitCounterpartyTable td,
+body #portraitCounterpartyTable .portrait-year-sub-head th{
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+}
+
 body #pane-personal\—transaction #personalCounterpartyTable .is-num{
   text-align:right !important;
   font-variant-numeric:tabular-nums !important;

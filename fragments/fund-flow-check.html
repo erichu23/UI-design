@@ -3481,6 +3481,51 @@ const checkMeta = {
     autoCalc: true },
 };
 
+const RISK_ROUTINE_STATE_KEY = 'auditCompass.specialTransactionRoutineState';
+function restoreRiskRoutineState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(RISK_ROUTINE_STATE_KEY) || 'null');
+    (saved?.routines || []).forEach(savedRoutine => {
+      const meta = checkMeta[savedRoutine.id];
+      if (!meta) return;
+      (savedRoutine.filters || []).forEach(savedFilter => {
+        const filter = (meta.filters || []).find(item => item.key === savedFilter.key);
+        if (filter) filter.defaultVal = savedFilter.value;
+      });
+    });
+  } catch (error) {}
+}
+function persistRiskRoutineState() {
+  try {
+    const routines = Object.entries(checkMeta).map(([id, meta]) => ({
+      id,
+      title: meta.title,
+      badge: meta.badge,
+      count: meta.count,
+      filters: (meta.filters || []).map(filter => ({
+        key: filter.key,
+        label: filter.label,
+        type: filter.type,
+        value: filter.defaultVal ?? null,
+        unit: filter.unit || '',
+        placeholder: filter.placeholder || ''
+      }))
+    }));
+    localStorage.setItem(RISK_ROUTINE_STATE_KEY, JSON.stringify({updatedAt:Date.now(), routines}));
+  } catch (error) {}
+}
+function updateActiveRoutineFilterState() {
+  const meta = checkMeta[activeCheck];
+  if (!meta) return;
+  (meta.filters || []).forEach(filter => {
+    const input = document.getElementById(`${filter.key}Val`);
+    if (!input) return;
+    filter.defaultVal = input.value === '' ? null : (filter.type === 'number' ? Number(input.value) : input.value);
+  });
+  persistRiskRoutineState();
+}
+restoreRiskRoutineState();
+
 // ─── CHECK GROUP MAP（用于面包屑） ────────────────────────────────────────────
 const CHECK_GROUP_LABEL = {
   '1':  '定量考虑因素',
@@ -5396,10 +5441,12 @@ function resetFilters() {
   resetVisibleCheckGroups(activeCheck);
   applyCheckGroupVisibility();
   openEditor = null;
+  updateActiveRoutineFilterState();
   showToast('info', '已重置所有筛选条件');
 }
 
 function runCheck() {
+  updateActiveRoutineFilterState();
   const btn = document.getElementById('btnRun');
   btn.innerHTML = '⟳ 执行中…';
   btn.disabled = true;
@@ -6432,6 +6479,9 @@ function toggleSidebar() {
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
+document.getElementById('filterConditions')?.addEventListener('input', updateActiveRoutineFilterState);
+document.getElementById('filterConditions')?.addEventListener('change', updateActiveRoutineFilterState);
+persistRiskRoutineState();
 initMsFields();
 
 // 侧边栏默认展开
@@ -6448,6 +6498,7 @@ initMsFields();
 
 buildCpSubHeaders();
 calcInvoiceMismatch();
+persistRiskRoutineState();
 updateCheckGroupHitCounts();
 renderCheckGroupDisplayControls();
 // 初始折叠：隐藏子表头，渲染数据行已根据折叠状态生成

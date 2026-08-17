@@ -153,7 +153,7 @@
     const outflow=year?yearVal(row,'outflow',year):row.outflow;
     const purchaseVat=year?yearVal(row,'purchaseVat',year):row.purchaseVat;
     const count=year?Math.max(1,Math.round(row.count*(yearRatios[year]||.33))):row.count;
-    return `<td class="is-num is-inflow" data-audit-amount-k="${inflow}">${fmtAmount(inflow)}</td><td class="is-num is-sales-vat" data-audit-amount-k="${salesVat}">${fmtAmount(salesVat)}</td><td class="is-num is-outflow" data-audit-amount-k="${outflow}">${fmtAmount(outflow)}</td><td class="is-num is-purchase-vat" data-audit-amount-k="${purchaseVat}">${fmtAmount(purchaseVat)}</td><td class="is-num is-transaction-total" data-audit-amount-k="${inflow+outflow}">${fmtAmount(inflow+outflow)}</td><td class="is-num">${count}</td>`;
+    return `<td class="is-num audit-period-metric is-inflow" data-audit-amount-k="${inflow}">${fmtAmount(inflow)}</td><td class="is-num audit-period-metric is-sales-vat" data-audit-amount-k="${salesVat}">${fmtAmount(salesVat)}</td><td class="is-num audit-period-metric is-outflow" data-audit-amount-k="${outflow}">${fmtAmount(outflow)}</td><td class="is-num audit-period-metric is-purchase-vat" data-audit-amount-k="${purchaseVat}">${fmtAmount(purchaseVat)}</td><td class="is-num audit-period-metric is-transaction-total" data-audit-amount-k="${inflow+outflow}">${fmtAmount(inflow+outflow)}</td><td class="is-num audit-period-metric">${count}</td>`;
   };
   const metricLabel=key=>key==='inflow'?'流入金额':key==='outflow'?'流出金额':'交易总额';
   const relationTypeName=key=>(relationDefs.find(x=>x.key===key)||relationDefs[0]).label;
@@ -180,17 +180,125 @@
       people:row.people
     };
   };
+  const portraitRemarks={};
+  const counterpartyMasterInfo=row=>{
+    const idx=Math.max(0,rowIndex(row));
+    const customer=row.type==='客户';
+    const supplier=row.type==='供应商';
+    const employee=isEmployee(row);
+    const approval=`${2021+idx%4}-${String(idx%12+1).padStart(2,'0')}-${String(idx%24+1).padStart(2,'0')}`;
+    return {
+      salesCategory:customer?(idx%3===0?'战略客户':'一般客户'):'—',
+      purchaseCategory:supplier?(idx%3===0?'核心供应商':'一般供应商'):'—',
+      position:employee?['财务经理','采购主管','销售经理'][idx%3]:'—',
+      customerApprovalDate:customer?approval:'—',
+      customerInvalidDate:customer&&idx%11===0?'2025-12-31':'—',
+      supplierApprovalDate:supplier?approval:'—',
+      supplierInvalidDate:supplier&&idx%13===0?'2025-12-31':'—',
+      employeeHireDate:employee?approval:'—',
+      employeeLeaveDate:employee&&idx%9===0?'2025-09-30':'—',
+      group:isRelated(row)?'华东制造集团':'—',
+      remark:portraitRemarks[row.name]||''
+    };
+  };
+  const portraitActionIcon=type=>{
+    const paths={
+      search:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h7"/><path d="M14 2v6h6"/><circle cx="15" cy="15" r="3"/><path d="m17.2 17.2 3.3 3.3"/>',
+      remark:'<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+      detail:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12"/><circle cx="12" cy="12" r="3"/>',
+      flows:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'
+    };
+    return `<svg class="portrait-action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${paths[type]}</svg>`;
+  };
+  const portraitActionButtons=row=>`<div class="portrait-row-actions" data-row-name="${esc(row.name)}">
+    <button class="portrait-row-action is-tianyancha" data-portrait-action="tianyancha" type="button" aria-label="天眼查工商信息">${portraitActionIcon('search')}</button>
+    <button class="portrait-row-action" data-portrait-action="remark" type="button" title="备注说明" aria-label="备注说明">${portraitActionIcon('remark')}</button>
+    <button class="portrait-row-action" data-portrait-action="detail" type="button" title="对手方详情" aria-label="对手方详情">${portraitActionIcon('detail')}</button>
+    <button class="portrait-row-action" data-portrait-action="flows" type="button" title="流水明细" aria-label="流水明细">${portraitActionIcon('flows')}</button>
+  </div>`;
+  const ensurePortraitDialog=()=>{
+    let mask=document.getElementById('portraitActionDialog');
+    if(mask)return mask;
+    mask=document.createElement('div');
+    mask.id='portraitActionDialog';
+    mask.className='portrait-action-dialog';
+    mask.innerHTML='<div class="portrait-action-dialog-panel" role="dialog" aria-modal="true"><div class="portrait-action-dialog-head"><div><b id="portraitActionDialogTitle"></b><span id="portraitActionDialogSubtitle"></span></div><button type="button" data-dialog-close aria-label="关闭">×</button></div><div class="portrait-action-dialog-body" id="portraitActionDialogBody"></div><div class="portrait-action-dialog-foot" id="portraitActionDialogFoot"><button class="btn" type="button" data-dialog-close>关闭</button></div></div>';
+    document.body.appendChild(mask);
+    mask.addEventListener('click',event=>{if(event.target===mask||event.target.closest('[data-dialog-close]'))mask.classList.remove('is-open');});
+    return mask;
+  };
+  const openPortraitDialog=(title,subtitle,content,footer='')=>{
+    const mask=ensurePortraitDialog();
+    mask.querySelector('#portraitActionDialogTitle').textContent=title;
+    mask.querySelector('#portraitActionDialogSubtitle').textContent=subtitle||'';
+    mask.querySelector('#portraitActionDialogBody').innerHTML=content;
+    mask.querySelector('#portraitActionDialogFoot').innerHTML=footer||'<button class="btn" type="button" data-dialog-close>关闭</button>';
+    mask.classList.add('is-open');
+    return mask;
+  };
+  const detailGrid=(row,source='主档信息')=>{
+    const master=counterpartyMasterInfo(row),biz=businessInfo(row);
+    return `<div class="portrait-detail-grid"><span>信息来源</span><b>${source}</b><span>对手方类型</span><b>${esc(displayType(row))}</b><span>统一社会信用代码</span><b>91${String(310000000000000+rowIndex(row)*1379).slice(0,16)}</b><span>经营状态</span><b>${biz.status}</b><span>成立日期</span><b>${biz.founded}</b><span>所属集团</span><b>${esc(master.group)}</b><span>注册地址</span><b>${esc(biz.address)}</b><span>经营范围</span><b>${esc(biz.scope)}</b></div>`;
+  };
+  const flowTable=row=>{
+    const base=Math.max(row.inflow,row.outflow,100);
+    return `<div class="portrait-flow-table-wrap"><table class="table portrait-flow-table"><thead><tr><th>交易日期</th><th>方向</th><th>金额</th><th>交易摘要</th><th>流水识别号</th></tr></thead><tbody>${Array.from({length:8},(_,i)=>{const incoming=i%3!==0;const amount=base*(.035+(i%5)*.012);return `<tr><td>2025-${String((i%12)+1).padStart(2,'0')}-${String(8+i*2).padStart(2,'0')}</td><td>${incoming?'流入':'流出'}</td><td class="${incoming?'is-flow-in':'is-flow-out'}">${fmtAmount(amount)}</td><td>${incoming?'货款及服务费回款':'采购及服务付款'}</td><td>TX2025${String(rowIndex(row)+1).padStart(3,'0')}${String(i+1).padStart(2,'0')}</td></tr>`;}).join('')}</tbody></table></div>`;
+  };
+  let portraitTooltipTimer;
+  const tianyanchaTooltip=()=>{
+    let tooltip=document.getElementById('portraitTianyanchaTooltip');
+    if(tooltip)return tooltip;
+    tooltip=document.createElement('div');
+    tooltip.id='portraitTianyanchaTooltip';
+    tooltip.className='portrait-tianyancha-tooltip';
+    tooltip.innerHTML='点击该图标查询工商信息。如果查询不生效，请点击 <a href="https://www.tianyancha.com/login" target="_blank" rel="noopener">这里</a> 登陆天眼查';
+    document.body.appendChild(tooltip);
+    tooltip.addEventListener('mouseenter',()=>window.clearTimeout(portraitTooltipTimer));
+    tooltip.addEventListener('mouseleave',()=>{portraitTooltipTimer=window.setTimeout(()=>tooltip.classList.remove('is-visible'),120);});
+    return tooltip;
+  };
+  const showTianyanchaTooltip=button=>{
+    const tooltip=tianyanchaTooltip(),rect=button.getBoundingClientRect();
+    window.clearTimeout(portraitTooltipTimer);
+    tooltip.style.left=`${Math.min(window.innerWidth-340,Math.max(10,rect.right-18))}px`;
+    tooltip.style.top=`${Math.min(window.innerHeight-74,rect.bottom+7)}px`;
+    tooltip.classList.add('is-visible');
+  };
+  const hideTianyanchaTooltip=()=>{portraitTooltipTimer=window.setTimeout(()=>tianyanchaTooltip().classList.remove('is-visible'),180);};
+  const bindPortraitRowActions=body=>{
+    body.querySelectorAll('.portrait-row-action.is-tianyancha').forEach(button=>{
+      button.addEventListener('mouseenter',()=>showTianyanchaTooltip(button));
+      button.addEventListener('mouseleave',hideTianyanchaTooltip);
+      button.addEventListener('focus',()=>showTianyanchaTooltip(button));
+      button.addEventListener('blur',hideTianyanchaTooltip);
+    });
+    body.onclick=event=>{
+      const button=event.target.closest('[data-portrait-action]');
+      if(!button)return;
+      const name=button.closest('[data-row-name]')?.dataset.rowName;
+      const row=rows.find(item=>item.name===name);
+      if(!row)return;
+      const action=button.dataset.portraitAction;
+      if(action==='tianyancha')openPortraitDialog('天眼查工商信息',row.name,detailGrid(row,'天眼查'));
+      if(action==='detail')openPortraitDialog('对手方详情',row.name,detailGrid(row));
+      if(action==='flows')openPortraitDialog('流水明细',row.name,flowTable(row));
+      if(action==='remark'){
+        const mask=openPortraitDialog('备注说明',row.name,`<textarea class="portrait-remark-editor" id="portraitRemarkEditor" placeholder="填写对手方备注说明">${esc(portraitRemarks[row.name]||'')}</textarea>`,'<button class="btn" type="button" data-dialog-close>取消</button><button class="btn primary" id="portraitRemarkSave" type="button">保存备注</button>');
+        mask.querySelector('#portraitRemarkSave').onclick=()=>{portraitRemarks[row.name]=mask.querySelector('#portraitRemarkEditor').value.trim();mask.classList.remove('is-open');renderTable();};
+      }
+    };
+  };
   function mini(row,index){const max=Math.max(row.inflow,row.outflow,1);return `<div class="portrait-mini">${Array.from({length:12},(_,m)=>{const a=Math.max(2,(row.inflow/max)*(45+(m*13+index*9)%50)),b=Math.max(2,(row.outflow/max)*(42+(m*17+index*7)%54));return `<span title="${m+1}月"><i class="is-in" style="height:${a}%"></i><i class="is-out" style="height:${b}%"></i></span>`}).join('')}</div>`}
   function renderTableHead(){
     const head=document.getElementById('portraitCounterpartyHead');
     if(!head)return;
     const icon=yearExpanded?'«':'»';
-    const yearHeads=yearExpanded?years.map(y=>`<th colspan="6" class="portrait-year-head">${y}年</th>`).join(''):'';
-    const yearSubs=yearExpanded?years.map(()=>`<th>流入金额</th><th>销项税价合计</th><th>流出金额</th><th>进项税价合计</th><th>交易总额</th><th>交易笔数</th>`).join(''):'';
+    const yearHeads=yearExpanded?years.map(y=>`<th colspan="6" class="portrait-year-head">${window.auditFiscalYearLabel?.(y)||y}</th>`).join(''):'';
+    const yearSubs=yearExpanded?years.map(()=>`<th class="audit-period-metric">流入金额</th><th class="audit-period-metric">销项税价合计</th><th class="audit-period-metric">流出金额</th><th class="audit-period-metric">进项税价合计</th><th class="audit-period-metric">交易总额</th><th class="audit-period-metric">交易笔数</th>`).join(''):'';
     if(tableView==='business'){
       head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2">对手方名称</th><th rowspan="2" data-sort="blacklist">黑名单</th><th rowspan="2">对手方类型</th><th rowspan="2">行业</th><th colspan="6" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="portraitYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2">经营状态</th><th rowspan="2">成立日期</th><th rowspan="2">经营开始时间</th><th rowspan="2">经营结束时间</th><th rowspan="2">营业期限</th><th rowspan="2">注册资本</th><th rowspan="2">币种</th><th rowspan="2">经营范围</th><th rowspan="2">注册地址</th><th rowspan="2">企业联系方式</th><th rowspan="2">董监高</th></tr><tr class="portrait-year-sub-head"><th>流入金额</th><th>销项税价合计</th><th>流出金额</th><th>进项税价合计</th><th>交易总额</th><th>交易笔数</th>${yearSubs}</tr>`;
     }else{
-      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" data-sort="name">对手方名称</th><th rowspan="2" data-sort="blacklist">黑名单</th><th rowspan="2">月度分布</th><th rowspan="2" data-sort="type">对手方类型</th><th colspan="6" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="portraitYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2" data-sort="sameRatio">同进同出比例（%）</th><th rowspan="2" data-sort="industry">行业</th><th rowspan="2" data-sort="duration">经营时长</th><th rowspan="2">董监高</th></tr><tr class="portrait-year-sub-head"><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="total">交易总额</th><th data-sort="count">交易笔数</th>${yearSubs}</tr>`;
+      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" data-sort="name">对手方名称</th><th rowspan="2" data-sort="blacklist">黑名单</th><th rowspan="2">月度分布</th><th rowspan="2" data-sort="type">对手方类型</th><th colspan="6" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="portraitYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2" data-sort="salesCategory">销售类别</th><th rowspan="2" data-sort="purchaseCategory">采购类别</th><th rowspan="2" data-sort="position">职位</th><th rowspan="2" data-sort="customerApprovalDate">客户批准日期</th><th rowspan="2" data-sort="customerInvalidDate">客户无效日期</th><th rowspan="2" data-sort="supplierApprovalDate">供应商批准日期</th><th rowspan="2" data-sort="supplierInvalidDate">供应商无效日期</th><th rowspan="2" data-sort="employeeHireDate">员工入职日期</th><th rowspan="2" data-sort="employeeLeaveDate">员工离职日期</th><th rowspan="2" data-sort="group">所属集团</th><th rowspan="2">备注说明</th><th rowspan="2" class="no-sort portrait-operation-head">操作</th></tr><tr class="portrait-year-sub-head"><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="total">交易总额</th><th data-sort="count">交易笔数</th>${yearSubs}</tr>`;
     }
     document.getElementById('portraitYearToggle')?.addEventListener('click',()=>{yearExpanded=!yearExpanded;renderTable();});
   }
@@ -198,6 +306,7 @@
     if(key==='total')return row.inflow+row.outflow;
     if(key==='type')return displayType(row);
     if(key==='blacklist')return blacklistHit(row)?1:0;
+    if(['salesCategory','purchaseCategory','position','customerApprovalDate','customerInvalidDate','supplierApprovalDate','supplierInvalidDate','employeeHireDate','employeeLeaveDate','group'].includes(key))return counterpartyMasterInfo(row)[key];
     return row[key]??'';
   }
   function refreshTableTools(){
@@ -241,7 +350,47 @@
     counterpartyFilter=prev;
     return list;
   }
-  function renderTable(){renderFilterCards();let list=filterRows([...rows]);if(sortKey)list.sort((a,b)=>{const av=rowSortValue(a,sortKey),bv=rowSortValue(b,sortKey);return (typeof av==='number'?av-bv:String(av).localeCompare(String(bv),'zh-CN'))*sortDir});const total=list.length,pages=Math.max(1,Math.ceil(total/pageSize));if(page>pages)page=pages;const start=(page-1)*pageSize,view=list.slice(start,start+pageSize);const body=document.getElementById('portraitCounterpartyBody');if(!body)return;document.querySelector('.portrait-table-wrap')?.classList.toggle('is-year-expanded',yearExpanded);renderTableHead();body.innerHTML=view.map((r,i)=>{const yearsCells=yearExpanded?years.map(y=>groupCells(r,y)).join(''):'';const shownType=displayType(r);const shownTypeClass=typeClass(shownType);if(tableView==='business'){const bi=businessInfo(r);return `<tr><td>${esc(r.name)}</td>${blacklistCell(r)}<td class="portrait-type-cell ${shownTypeClass}">${esc(shownType)}</td><td>${esc(r.industry)}</td>${groupCells(r)}${yearsCells}<td>${bi.status}</td><td>${bi.founded}</td><td>${bi.start}</td><td>${bi.end}</td><td>${bi.term}</td><td class="is-num">${bi.capital}</td><td>${bi.currency}</td><td>${esc(bi.scope)}</td><td>${esc(bi.address)}</td><td>${bi.contact}</td><td>${esc(bi.people)}</td></tr>`;}return `<tr><td>${esc(r.name)}</td>${blacklistCell(r)}<td>${mini(r,start+i)}</td><td class="portrait-type-cell ${shownTypeClass}">${esc(shownType)}</td>${groupCells(r)}${yearsCells}<td>${r.sameRatio.toFixed(1)}</td><td>${esc(r.industry)}</td><td>${esc(r.duration)}</td><td>${esc(r.people)}</td></tr>`;}).join('');document.getElementById('portraitTableCount').textContent=`共 ${total} 家对手方，当前展示 ${total?start+1:0}-${Math.min(start+pageSize,total)} / ${total}`;document.querySelectorAll('#portraitCounterpartyTable th[data-sort]').forEach(th=>{th.classList.toggle('is-asc',sortKey===th.dataset.sort&&sortDir===1);th.classList.toggle('is-desc',sortKey===th.dataset.sort&&sortDir===-1);th.onclick=()=>{if(sortKey===th.dataset.sort)sortDir*=-1;else{sortKey=th.dataset.sort;sortDir=1;}renderTable();};});refreshTableTools();const pager=document.getElementById('portraitPager');if(pager){window.renderAuditPager?.(pager,{total,page,pageSize,onPage:next=>{page=next;renderTable();},onPageSize:size=>{pageSize=size;page=1;renderTable();}});}}
+  function syncPortraitColumns(){
+    const table=document.getElementById('portraitCounterpartyTable');
+    if(!table)return;
+    let colgroup=table.querySelector('colgroup');
+    if(!colgroup){colgroup=document.createElement('colgroup');table.insertBefore(colgroup,table.firstChild);}
+    const leading=tableView==='business'
+      ? '<col class="portrait-name-col"><col class="portrait-small-col"><col class="portrait-type-col"><col class="portrait-industry-col">'
+      : '<col class="portrait-name-col"><col class="portrait-small-col"><col class="portrait-monthly-col"><col class="portrait-type-col">';
+    const metric='<col class="portrait-metric-col">'.repeat(6+(yearExpanded?years.length*6:0));
+    const trailing='<col class="portrait-flex-col">'.repeat(tableView==='business'?11:12);
+    colgroup.innerHTML=leading+metric+trailing;
+  }
+  function renderTable(){
+    renderFilterCards();
+    let list=filterRows([...rows]);
+    if(sortKey)list.sort((a,b)=>{const av=rowSortValue(a,sortKey),bv=rowSortValue(b,sortKey);return (typeof av==='number'?av-bv:String(av).localeCompare(String(bv),'zh-CN'))*sortDir});
+    const total=list.length,pages=Math.max(1,Math.ceil(total/pageSize));
+    if(page>pages)page=pages;
+    const start=(page-1)*pageSize,view=list.slice(start,start+pageSize);
+    const body=document.getElementById('portraitCounterpartyBody');
+    if(!body)return;
+    document.querySelector('.portrait-table-wrap')?.classList.toggle('is-year-expanded',yearExpanded);
+    syncPortraitColumns();
+    renderTableHead();
+    body.innerHTML=view.map((r,i)=>{
+      const yearsCells=yearExpanded?years.map(y=>groupCells(r,y)).join(''):'';
+      const shownType=displayType(r),shownTypeClass=typeClass(shownType);
+      if(tableView==='business'){
+        const bi=businessInfo(r);
+        return `<tr><td>${esc(r.name)}</td>${blacklistCell(r)}<td class="portrait-type-cell ${shownTypeClass}">${esc(shownType)}</td><td>${esc(r.industry)}</td>${groupCells(r)}${yearsCells}<td>${bi.status}</td><td>${bi.founded}</td><td>${bi.start}</td><td>${bi.end}</td><td>${bi.term}</td><td class="is-num">${bi.capital}</td><td>${bi.currency}</td><td>${esc(bi.scope)}</td><td>${esc(bi.address)}</td><td>${bi.contact}</td><td>${esc(bi.people)}</td></tr>`;
+      }
+      const master=counterpartyMasterInfo(r);
+      return `<tr><td>${esc(r.name)}</td>${blacklistCell(r)}<td>${mini(r,start+i)}</td><td class="portrait-type-cell ${shownTypeClass}">${esc(shownType)}</td>${groupCells(r)}${yearsCells}<td>${esc(master.salesCategory)}</td><td>${esc(master.purchaseCategory)}</td><td>${esc(master.position)}</td><td>${master.customerApprovalDate}</td><td>${master.customerInvalidDate}</td><td>${master.supplierApprovalDate}</td><td>${master.supplierInvalidDate}</td><td>${master.employeeHireDate}</td><td>${master.employeeLeaveDate}</td><td>${esc(master.group)}</td><td class="portrait-remark-cell">${master.remark?esc(master.remark):'<span>—</span>'}</td><td class="portrait-operation-cell">${portraitActionButtons(r)}</td></tr>`;
+    }).join('');
+    bindPortraitRowActions(body);
+    document.getElementById('portraitTableCount').textContent=`共 ${total} 家对手方，当前展示 ${total?start+1:0}-${Math.min(start+pageSize,total)} / ${total}`;
+    document.querySelectorAll('#portraitCounterpartyTable th[data-sort]').forEach(th=>{th.classList.toggle('is-asc',sortKey===th.dataset.sort&&sortDir===1);th.classList.toggle('is-desc',sortKey===th.dataset.sort&&sortDir===-1);th.onclick=()=>{if(sortKey===th.dataset.sort)sortDir*=-1;else{sortKey=th.dataset.sort;sortDir=1;}renderTable();};});
+    refreshTableTools();
+    const pager=document.getElementById('portraitPager');
+    if(pager)window.renderAuditPager?.(pager,{total,page,pageSize,onPage:next=>{page=next;renderTable();},onPageSize:size=>{pageSize=size;page=1;renderTable();}});
+  }
   function relationRowsForCurrent(){
     const list=relationFilterRows(relationBaseRows());
     const key=relationSortKey||relationMode;
@@ -317,8 +466,8 @@
     const head=document.getElementById('relationCounterpartyHead');
     if(!head)return;
     const icon=relationYearExpanded?'«':'»';
-    const yearHeads=relationYearExpanded?years.map(y=>`<th colspan="6" class="portrait-year-head">${y}年</th>`).join(''):'';
-    const yearSubs=relationYearExpanded?years.map(()=>`<th>流入金额</th><th>销项税价合计</th><th>流出金额</th><th>进项税价合计</th><th>交易总额</th><th>交易笔数</th>`).join(''):'';
+    const yearHeads=relationYearExpanded?years.map(y=>`<th colspan="6" class="portrait-year-head">${window.auditFiscalYearLabel?.(y)||y}</th>`).join(''):'';
+    const yearSubs=relationYearExpanded?years.map(()=>`<th class="audit-period-metric">流入金额</th><th class="audit-period-metric">销项税价合计</th><th class="audit-period-metric">流出金额</th><th class="audit-period-metric">进项税价合计</th><th class="audit-period-metric">交易总额</th><th class="audit-period-metric">交易笔数</th>`).join(''):'';
     if(relationTableView==='business'){
       head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" data-sort="name">对手方名称</th><th rowspan="2" data-sort="blacklist">黑名单</th><th rowspan="2" data-sort="type">对手方类型</th><th rowspan="2" data-sort="industry">行业</th><th colspan="6" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="relationYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2">经营状态</th><th rowspan="2">成立日期</th><th rowspan="2">经营开始时间</th><th rowspan="2">经营结束时间</th><th rowspan="2">营业期限</th><th rowspan="2">注册资本</th><th rowspan="2">币种</th><th rowspan="2">经营范围</th><th rowspan="2">注册地址</th><th rowspan="2">企业联系方式</th><th rowspan="2">董监高</th></tr><tr class="portrait-year-sub-head"><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="total">交易总额</th><th data-sort="count">交易笔数</th>${yearSubs}</tr>`;
     }else{
@@ -432,8 +581,8 @@
     const head=document.getElementById('personalCounterpartyHead');
     if(!head)return;
     const icon=personalYearExpanded?'«':'»';
-    const yearHeads=personalYearExpanded?years.map(y=>`<th colspan="6" class="portrait-year-head">${y}年</th>`).join(''):'';
-    const yearSubs=personalYearExpanded?years.map(()=>`<th>流入金额</th><th>销项税价合计</th><th>流出金额</th><th>进项税价合计</th><th>交易总额</th><th>交易笔数</th>`).join(''):'';
+    const yearHeads=personalYearExpanded?years.map(y=>`<th colspan="6" class="portrait-year-head">${window.auditFiscalYearLabel?.(y)||y}</th>`).join(''):'';
+    const yearSubs=personalYearExpanded?years.map(()=>`<th class="audit-period-metric">流入金额</th><th class="audit-period-metric">销项税价合计</th><th class="audit-period-metric">流出金额</th><th class="audit-period-metric">进项税价合计</th><th class="audit-period-metric">交易总额</th><th class="audit-period-metric">交易笔数</th>`).join(''):'';
     if(personalTableView==='business'){
       head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" data-sort="name">个人名称</th><th rowspan="2" data-sort="type">人员类型</th><th rowspan="2" data-sort="industry">关系说明</th><th colspan="6" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="personalYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2">状态</th><th rowspan="2">首次交易日期</th><th rowspan="2">最近交易日期</th><th rowspan="2">交易期间</th><th rowspan="2">备注说明</th></tr><tr class="portrait-year-sub-head"><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="total">交易总额</th><th data-sort="count">交易笔数</th>${yearSubs}</tr>`;
     }else{
@@ -529,9 +678,27 @@
     ratioEl.textContent=`${ratio}%`;
     barEl.style.width=`${ratio}%`;
   }
+  function exportPortraitCurrent(event){
+    event?.stopImmediatePropagation();
+    const isBiz=tableView==='business',exportRows=filterRows(rows);
+    const head=isBiz
+      ? ['对手方名称','对手方类型','行业','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','经营状态','成立日期','注册资本','经营范围','注册地址','企业联系方式','董监高']
+      : ['对手方名称','黑名单','对手方类型','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','销售类别','采购类别','职位','客户批准日期','客户无效日期','供应商批准日期','供应商无效日期','员工入职日期','员工离职日期','所属集团','备注说明'];
+    const data=exportRows.map(row=>{
+      if(isBiz){const bi=businessInfo(row);return [row.name,row.type,row.industry,row.inflow,row.salesVat,row.outflow,row.purchaseVat,row.inflow+row.outflow,row.count,bi.status,bi.founded,bi.capital,bi.scope,bi.address,bi.contact,bi.people];}
+      const master=counterpartyMasterInfo(row);
+      return [row.name,blacklistLabel(row),displayType(row),row.inflow,row.salesVat,row.outflow,row.purchaseVat,row.inflow+row.outflow,row.count,master.salesCategory,master.purchaseCategory,master.position,master.customerApprovalDate,master.customerInvalidDate,master.supplierApprovalDate,master.supplierInvalidDate,master.employeeHireDate,master.employeeLeaveDate,master.group,master.remark];
+    });
+    const csv=[head,...data].map(record=>record.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const link=document.createElement('a');
+    link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));
+    link.download=`经营分析_对手方汇总清单_${isBiz?'工商信息':'合计数据'}.csv`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
   function exportRelation(){const isBiz=relationTableView==='business';const exportRows=relationRowsForCurrent();const head=isBiz?['对手方名称','对手方类型','行业','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','经营状态','成立日期','注册资本','经营范围','注册地址','企业联系方式','董监高']:['对手方名称','对手方类型','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','同进同出比例','行业','经营时长','董监高'];const csv=[head,...exportRows.map(r=>{const bi=businessInfo(r);return isBiz?[r.name,relationDisplayType(r),r.industry,r.inflow,r.salesVat,r.outflow,r.purchaseVat,r.inflow+r.outflow,r.count,bi.status,bi.founded,bi.capital,bi.scope,bi.address,bi.contact,bi.people]:[r.name,relationDisplayType(r),r.inflow,r.salesVat,r.outflow,r.purchaseVat,r.inflow+r.outflow,r.count,r.sameRatio,r.industry,r.duration,r.people];})].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download=`已知关联方交易_${isBiz?'工商信息':'合计数据'}.csv`;a.click();URL.revokeObjectURL(a.href);}
   function exportPersonal(){const isBiz=personalTableView==='business';const exportRows=personalRowsForCurrent();const head=isBiz?['个人名称','人员类型','关系说明','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','状态','首次交易日期','最近交易日期','交易期间','备注说明']:['个人名称','人员类型','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','同进同出比例','关系说明','交易期间','备注说明'];const csv=[head,...exportRows.map((r,i)=>{const bi=businessInfo(r),t=personalType(r),note=t==='员工'?'备用金、报销及薪酬相关往来':'个人往来需补充说明';return isBiz?[r.name,t,t==='员工'?'员工往来':'其他个人往来',r.inflow,r.salesVat,r.outflow,r.purchaseVat,r.inflow+r.outflow,r.count,t==='员工'?'在职':'待确认',bi.founded,`2025-12-${String(10+(i%18)).padStart(2,'0')}`,r.duration,note]:[r.name,t,r.inflow,r.salesVat,r.outflow,r.purchaseVat,r.inflow+r.outflow,r.count,r.sameRatio,t==='员工'?'员工往来':'其他个人往来',r.duration,note];})].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download=`个人交易_${isBiz?'工商信息':'合计数据'}.csv`;a.click();URL.revokeObjectURL(a.href);}
   function bind(){document.querySelectorAll('#portraitBubbleTabs button').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.mode;document.querySelectorAll('#portraitBubbleTabs button').forEach(x=>x.classList.toggle('is-active',x===btn));renderFeatureTable();}));document.getElementById('portraitFeatureScroll')?.addEventListener('scroll',updateFeatureScrollbar,{passive:true});document.getElementById('portraitKpiToggle')?.addEventListener('click',()=>{portraitKpisHidden=!portraitKpisHidden;syncKpiToggle('portrait');});document.getElementById('relationKpiToggle')?.addEventListener('click',()=>{relationKpisHidden=!relationKpisHidden;syncKpiToggle('relation');});document.getElementById('personalKpiToggle')?.addEventListener('click',()=>{personalKpisHidden=!personalKpisHidden;syncKpiToggle('personal');});document.getElementById('portraitCounterpartyFilters')?.addEventListener('click',ev=>{const btn=ev.target.closest('.portrait-filter-card');if(!btn)return;counterpartyFilter=btn.dataset.filter||'all';page=1;renderTable();});document.querySelectorAll('#portraitTableTabs button').forEach(btn=>btn.addEventListener('click',()=>{tableView=btn.dataset.view||'summary';page=1;sortKey='';sortDir=1;document.querySelectorAll('#portraitTableTabs button').forEach(x=>x.classList.toggle('is-active',x===btn));renderTable();}));document.getElementById('portraitFeatureTopN')?.addEventListener('input',renderFeatureTable);document.getElementById('portraitColumnsBtn')?.addEventListener('click',ev=>{ev.preventDefault();window.openBankColumnChooser?.(ev.currentTarget,document.getElementById('portraitCounterpartyTable'));});document.getElementById('portraitExportBtn')?.addEventListener('click',()=>{const isBiz=tableView==='business';const exportRows=filterRows(rows);const head=isBiz?['对手方名称','对手方类型','行业','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','经营状态','成立日期','注册资本','经营范围','注册地址','企业联系方式','董监高']:['对手方名称','对手方类型','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','同进同出比例','行业','经营时长','董监高'];const csv=[head,...exportRows.map(r=>{const bi=businessInfo(r);return isBiz?[r.name,r.type,r.industry,r.inflow,r.salesVat,r.outflow,r.purchaseVat,r.inflow+r.outflow,r.count,bi.status,bi.founded,bi.capital,bi.scope,bi.address,bi.contact,bi.people]:[r.name,r.type,r.inflow,r.salesVat,r.outflow,r.purchaseVat,r.inflow+r.outflow,r.count,r.sameRatio,r.industry,r.duration,r.people];})].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download=`流水画像_对手方汇总清单_${isBiz?'工商信息':'合计数据'}.csv`;a.click();URL.revokeObjectURL(a.href);});document.getElementById('relationModeTabs')?.addEventListener('click',ev=>{const btn=ev.target.closest('button[data-mode]');if(!btn)return;relationMode=btn.dataset.mode;relationSortKey='';relationPage=1;document.querySelectorAll('#relationModeTabs button').forEach(x=>x.classList.toggle('is-active',x===btn));renderRelationAll();});document.getElementById('relationTypeFilters')?.addEventListener('click',ev=>{const btn=ev.target.closest('.portrait-filter-card');if(!btn)return;relationFilter=btn.dataset.relationFilter||'related';relationPage=1;renderRelationAll();});document.querySelectorAll('#relationTableTabs button').forEach(btn=>btn.addEventListener('click',()=>{relationTableView=btn.dataset.view||'summary';relationPage=1;relationSortKey='';relationSortDir=1;document.querySelectorAll('#relationTableTabs button').forEach(x=>x.classList.toggle('is-active',x===btn));renderRelationTable();}));document.getElementById('relationColumnsBtn')?.addEventListener('click',ev=>{ev.preventDefault();window.openBankColumnChooser?.(ev.currentTarget,document.getElementById('relationCounterpartyTable'));});document.getElementById('relationExportBtn')?.addEventListener('click',exportRelation);document.getElementById('personalModeTabs')?.addEventListener('click',ev=>{const btn=ev.target.closest('button[data-mode]');if(!btn)return;personalMode=btn.dataset.mode;personalSortKey='';personalPage=1;document.querySelectorAll('#personalModeTabs button').forEach(x=>x.classList.toggle('is-active',x===btn));renderPersonalAll();});document.getElementById('personalTypeFilters')?.addEventListener('click',ev=>{const btn=ev.target.closest('.portrait-filter-card');if(!btn)return;personalFilter=btn.dataset.personalFilter||'all';personalPage=1;renderPersonalAll();});document.querySelectorAll('#personalTableTabs button').forEach(btn=>btn.addEventListener('click',()=>{personalTableView=btn.dataset.view||'summary';personalPage=1;personalSortKey='';personalSortDir=1;document.querySelectorAll('#personalTableTabs button').forEach(x=>x.classList.toggle('is-active',x===btn));renderPersonalTable();}));document.getElementById('personalColumnsBtn')?.addEventListener('click',ev=>{ev.preventDefault();window.openBankColumnChooser?.(ev.currentTarget,document.getElementById('personalCounterpartyTable'));});document.getElementById('personalExportBtn')?.addEventListener('click',exportPersonal);['Customer','Supplier'].forEach(kind=>{document.getElementById(`portrait${kind}TopN`)?.addEventListener('change',()=>updateConcentration(kind));updateConcentration(kind);});window.addEventListener('resize',()=>{Object.values(charts).forEach(c=>c?.resize());updateFeatureScrollbar();});document.getElementById('btnQueryBiz')?.addEventListener('click',()=>{renderTable();renderCharts();renderFeatureTable();renderRelationAll();renderPersonalAll();});}
   window.addEventListener('audit-unit-ready',()=>{renderTable();renderFeatureTable();renderRelationAll();renderPersonalAll();});
-  document.addEventListener('DOMContentLoaded',()=>{renderTable();bind();renderFeatureTable();renderRelationAll();renderPersonalAll();setTimeout(renderCharts,80);});
+  document.addEventListener('DOMContentLoaded',()=>{renderTable();bind();document.getElementById('portraitExportBtn')?.addEventListener('click',exportPortraitCurrent,true);renderFeatureTable();renderRelationAll();renderPersonalAll();setTimeout(renderCharts,80);});
 })();

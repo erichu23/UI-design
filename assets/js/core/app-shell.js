@@ -168,15 +168,16 @@ function initCollapsedSidebarFlyout(){
 const APP_FRAME_STATE_KEY = 'auditCompass.currentFrameState';
 const DEFAULT_PROJECT = 'Test2';
 const DEFAULT_BOOK = '20251022';
-const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260813-fund-flow-name1';
-const DATA_MANAGEMENT_SRC = './fragments/data-management.html?v=20260811-balance-restore1';
-const DATA_SUMMARY_SRC = './fragments/data-summary.html?v=20260811-unit5';
-const WORKINGPAPER_EXPORT_SRC = './fragments/workingpaper-export.html?v=20260811-materiality1';
+const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260814-routine-sync1';
+const DATA_MANAGEMENT_SRC = './fragments/data-management.html?v=20260814-master-compare13';
+const DATA_SUMMARY_SRC = './fragments/data-summary.html?v=20260813-metric-width1';
+const WORKINGPAPER_EXPORT_SRC = './fragments/workingpaper-export.html?v=20260817-report-year-table10';
 const PROJECT_LIST_SRC = './fragments/project-list.html?v=20260813-project-list11';
 const AMOUNT_UNIT_KEY = 'auditCompass.amountUnit';
 const AMOUNT_DECIMAL_KEY = 'auditCompass.amountDecimals';
 const AMOUNT_UNIT_LABELS = { yuan:'元', k:'千元/K', w:'万元/W', m:'百万元/M', b:'亿元/B' };
 const LEGACY_BANK_TITLE = '\u94f6\u884c\u6d41\u6c34\u5206\u6790';
+const LEGACY_WORKINGPAPER_TITLE = '\u8d44\u91d1\u6d41\u6c34\u6838\u67e5\u5e95\u7a3f\u5bfc\u51fa';
 
 function getAmountDisplayState(){
   const storedUnit = localStorage.getItem(AMOUNT_UNIT_KEY);
@@ -467,7 +468,9 @@ function restoreFrameState(){
   const restoredSrc = normalizeFrameSrc(saved.src);
   if (frame) frame.src = restoredSrc;
   if (breadcrumb) breadcrumb.style.display = 'flex';
-  const restoredTitle = saved.title === LEGACY_BANK_TITLE ? '资金流水分析' : saved.title;
+  const restoredTitle = saved.title === LEGACY_BANK_TITLE
+    ? '资金流水分析'
+    : (saved.title === LEGACY_WORKINGPAPER_TITLE || restoredSrc.includes('workingpaper-export.html') ? '报告及底稿导出' : saved.title);
   setWorkspaceState(saved.project, saved.book, restoredTitle);
   setCurrentModuleBySrc(restoredSrc);
   saveFrameState(restoredSrc, restoredTitle, saved.project, saved.book);

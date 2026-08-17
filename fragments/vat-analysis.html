@@ -6,7 +6,7 @@
   <script defer src="../assets/vendor/echarts/echarts.min.js?v=5.6.0-local"></script>
   <link rel="stylesheet" href="../assets/css/base.css?v=20260807-vat-note-modal1"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260622-tab-rebuild7"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260723-button-size1"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260813-metric-width1"/>
   <link rel="stylesheet" href="../assets/css/pages/vat-analysis.css?v=20260807-vat-note-modal1"/>
 </head>
 <body>
@@ -611,7 +611,7 @@
     </div>
   </div>
 
-  <script defer src="../assets/js/core/shared.js?v=20260806-table-k1"></script>
+  <script defer src="../assets/js/core/shared.js?v=20260813-fiscal-tooltip1"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function(){
       document.querySelectorAll('#vatMissingBuyerSellerTable .group-row .expand-btn').forEach(function(btn){
@@ -1009,7 +1009,7 @@
           const metricColumnCount = colSpan * (expanded ? 4 : 1);
           const table = document.getElementById(prefix + 'StructureTable');
           syncVatStructureColgroup(table, metricColumnCount);
-          const yearHeads = expanded ? vatYears.map(function(year){ return '<th colspan="' + colSpan + '" class="vat-year-head">' + year + '年</th>'; }).join('') : '';
+          const yearHeads = expanded ? vatYears.map(function(year){ return '<th colspan="' + colSpan + '" class="vat-year-head">' + (window.auditFiscalYearLabel ? window.auditFiscalYearLabel(year) : year) + '</th>'; }).join('') : '';
           const yearSubs = expanded ? vatYears.flatMap(function(){ return cols; }) : [];
           head.innerHTML = '<tr class="portrait-year-group-head"><th rowspan="2" class="vat-structure-sticky-1" data-fixed-column="true" data-sort="name">对手方名称</th><th rowspan="2" class="vat-structure-sticky-2" data-fixed-column="true" data-sort="blacklist">黑名单</th><th rowspan="2" class="vat-structure-sticky-3" data-fixed-column="true" data-sort="type">对手方类型</th><th colspan="' + colSpan + '" class="vat-year-head"><button class="vat-year-toggle" id="' + prefix + 'YearToggle" type="button"><span>合计</span><i>' + icon + '</i></button></th>' + yearHeads + '</tr><tr class="portrait-year-sub-head">' + cols.concat(yearSubs).map(function(label){ return '<th>' + label + '</th>'; }).join('') + '</tr>';
           document.getElementById(prefix + 'YearToggle')?.addEventListener('click', function(){

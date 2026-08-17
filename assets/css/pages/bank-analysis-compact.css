@@ -1572,14 +1572,14 @@ body #pane-verify .verify-metric-strip .num{
   white-space:nowrap;
 }
 
-body #pane-verify .bank-reconcile-table{
+body #pane-scope-control .bank-reconcile-table{
   min-width:1480px;
   border-collapse:separate;
   border-spacing:0;
   font-size:10.5px;
 }
 
-body #pane-verify .bank-reconcile-table thead th{
+body #pane-scope-control .bank-reconcile-table thead th{
   height:29px;
   padding:4px 42px 4px 6px !important;
   background:#eef5ff;
@@ -1592,18 +1592,18 @@ body #pane-verify .bank-reconcile-table thead th{
   line-height:1.2;
 }
 
-body #pane-verify .bank-reconcile-table thead tr:first-child th{
+body #pane-scope-control .bank-reconcile-table thead tr:first-child th{
   background:#eef5ff;
   color:#334155;
   font-weight:800;
 }
 
-body #pane-verify .bank-reconcile-table thead th span,
-body #pane-verify .bank-reconcile-table thead th em{
+body #pane-scope-control .bank-reconcile-table thead th span,
+body #pane-scope-control .bank-reconcile-table thead th em{
   display:block;
 }
 
-body #pane-verify .bank-reconcile-table thead th .ba-th-title{
+body #pane-scope-control .bank-reconcile-table thead th .ba-th-title{
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -1612,7 +1612,7 @@ body #pane-verify .bank-reconcile-table thead th .ba-th-title{
   vertical-align:middle;
 }
 
-body #pane-verify .bank-reconcile-table thead th em{
+body #pane-scope-control .bank-reconcile-table thead th em{
   margin-top:1px;
   color:#94a3b8;
   font-size:9px;
@@ -1620,11 +1620,11 @@ body #pane-verify .bank-reconcile-table thead th em{
   font-weight:700;
 }
 
-body #pane-verify .bank-reconcile-table thead th.no-sort{
+body #pane-scope-control .bank-reconcile-table thead th.no-sort{
   padding-right:6px !important;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-th-tools{
+body #pane-scope-control .bank-reconcile-table thead .ba-th-tools{
   position:static;
   display:inline-flex;
   align-items:center;
@@ -1637,30 +1637,30 @@ body #pane-verify .bank-reconcile-table thead .ba-th-tools{
   vertical-align:middle;
 }
 
-body #pane-verify .bank-reconcile-table thead tr:nth-child(2) .ba-th-tools{
+body #pane-scope-control .bank-reconcile-table thead tr:nth-child(2) .ba-th-tools{
   position:absolute;
   right:5px;
   top:8px;
   width:38px;
 }
 
-body #pane-verify .bank-reconcile-table thead th .ba-filter-btn{
+body #pane-scope-control .bank-reconcile-table thead th .ba-filter-btn{
   margin-left:0 !important;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-sort-icons{
+body #pane-scope-control .bank-reconcile-table thead .ba-sort-icons{
   width:12px;
   min-width:12px;
   flex:0 0 12px;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-filter-btn{
+body #pane-scope-control .bank-reconcile-table thead .ba-filter-btn{
   width:13px !important;
   min-width:13px !important;
   flex:0 0 13px;
 }
 
-body #pane-verify .bank-reconcile-table td{
+body #pane-scope-control .bank-reconcile-table td{
   height:29px;
   padding:4px 6px;
   border-right:1px solid #e4ecf5;
@@ -1670,12 +1670,12 @@ body #pane-verify .bank-reconcile-table td{
   line-height:1.2;
 }
 
-body #pane-verify .bank-reconcile-table tbody tr:hover td{
+body #pane-scope-control .bank-reconcile-table tbody tr:hover td{
   background:#f7faff;
 }
 
-body #pane-verify .bank-reconcile-table th:last-child,
-body #pane-verify .bank-reconcile-table td:last-child{
+body #pane-scope-control .bank-reconcile-table th:last-child,
+body #pane-scope-control .bank-reconcile-table td:last-child{
   border-right:0;
 }
 
@@ -1823,7 +1823,7 @@ body .tab-pane th.ba-filtered .ba-filter-btn::before{
   background:#2f6fed;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-th-tools{
+body #pane-scope-control .bank-reconcile-table thead .ba-th-tools{
   display:grid !important;
   grid-template-columns:10px 13px;
   align-items:center;
@@ -1833,12 +1833,12 @@ body #pane-verify .bank-reconcile-table thead .ba-th-tools{
   height:14px !important;
 }
 
-body #pane-verify .bank-reconcile-table thead tr:nth-child(2) .ba-th-tools{
+body #pane-scope-control .bank-reconcile-table thead tr:nth-child(2) .ba-th-tools{
   right:5px;
   top:8px;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-sort-icons{
+body #pane-scope-control .bank-reconcile-table thead .ba-sort-icons{
   display:grid !important;
   grid-template-rows:6px 6px;
   row-gap:1px;
@@ -1851,7 +1851,7 @@ body #pane-verify .bank-reconcile-table thead .ba-sort-icons{
   flex:none !important;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-sort-icons button{
+body #pane-scope-control .bank-reconcile-table thead .ba-sort-icons button{
   display:block !important;
   width:10px !important;
   height:6px !important;
@@ -1861,23 +1861,23 @@ body #pane-verify .bank-reconcile-table thead .ba-sort-icons button{
   flex:none !important;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-sort-icons button::before{
+body #pane-scope-control .bank-reconcile-table thead .ba-sort-icons button::before{
   left:2px !important;
   border-left-width:3px;
   border-right-width:3px;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-sort-up::before{
+body #pane-scope-control .bank-reconcile-table thead .ba-sort-up::before{
   top:0 !important;
   border-bottom-width:4px;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-sort-down::before{
+body #pane-scope-control .bank-reconcile-table thead .ba-sort-down::before{
   bottom:0 !important;
   border-top-width:4px;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-filter-btn{
+body #pane-scope-control .bank-reconcile-table thead .ba-filter-btn{
   width:13px !important;
   min-width:13px !important;
   height:13px !important;
@@ -1885,22 +1885,22 @@ body #pane-verify .bank-reconcile-table thead .ba-filter-btn{
 }
 
 /* 核对表表头工具按“缺失同名账户”样式固定在标题右侧，避免多级表头换行错位。 */
-body #pane-verify .bank-reconcile-table thead th{
+body #pane-scope-control .bank-reconcile-table thead th{
   padding-right:34px !important;
 }
 
-body #pane-verify .bank-reconcile-table thead th.no-sort{
+body #pane-scope-control .bank-reconcile-table thead th.no-sort{
   padding-right:6px !important;
 }
 
-body #pane-verify .bank-reconcile-table thead th .ba-th-title{
+body #pane-scope-control .bank-reconcile-table thead th .ba-th-title{
   display:inline !important;
   max-width:none !important;
   margin-right:0 !important;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-th-tools,
-body #pane-verify .bank-reconcile-table thead tr:nth-child(2) .ba-th-tools{
+body #pane-scope-control .bank-reconcile-table thead .ba-th-tools,
+body #pane-scope-control .bank-reconcile-table thead tr:nth-child(2) .ba-th-tools{
   position:absolute !important;
   right:6px !important;
   top:50% !important;
@@ -1914,7 +1914,7 @@ body #pane-verify .bank-reconcile-table thead tr:nth-child(2) .ba-th-tools{
   margin:0 !important;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-sort-icons{
+body #pane-scope-control .bank-reconcile-table thead .ba-sort-icons{
   display:inline-flex !important;
   flex-direction:column !important;
   align-items:center !important;
@@ -1927,7 +1927,7 @@ body #pane-verify .bank-reconcile-table thead .ba-sort-icons{
   flex:0 0 12px !important;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-sort-icons button{
+body #pane-scope-control .bank-reconcile-table thead .ba-sort-icons button{
   width:12px !important;
   height:7px !important;
   min-height:7px !important;
@@ -1936,23 +1936,23 @@ body #pane-verify .bank-reconcile-table thead .ba-sort-icons button{
   flex:0 0 7px !important;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-sort-icons button::before{
+body #pane-scope-control .bank-reconcile-table thead .ba-sort-icons button::before{
   left:3px !important;
   border-left-width:3.5px !important;
   border-right-width:3.5px !important;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-sort-up::before{
+body #pane-scope-control .bank-reconcile-table thead .ba-sort-up::before{
   top:1px !important;
   border-bottom-width:5px !important;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-sort-down::before{
+body #pane-scope-control .bank-reconcile-table thead .ba-sort-down::before{
   bottom:1px !important;
   border-top-width:5px !important;
 }
 
-body #pane-verify .bank-reconcile-table thead .ba-filter-btn{
+body #pane-scope-control .bank-reconcile-table thead .ba-filter-btn{
   width:13px !important;
   min-width:13px !important;
   height:13px !important;
@@ -2112,14 +2112,14 @@ body .tab-pane td .ba-note-input{
 
 body #tblAccountSummary th,
 body #tblAccountSummary td,
-body #pane-verify .bank-reconcile-table thead th,
-body #pane-verify .bank-reconcile-table td{
+body #pane-scope-control .bank-reconcile-table thead th,
+body #pane-scope-control .bank-reconcile-table td{
   border-right-color:var(--bank-table-border-cell) !important;
   border-bottom-color:var(--bank-table-border-row) !important;
 }
 
 body #tblAccountSummary thead th,
-body #pane-verify .bank-reconcile-table thead th{
+body #pane-scope-control .bank-reconcile-table thead th{
   border-right-color:var(--bank-table-border-head) !important;
   border-bottom-color:var(--bank-table-border-head) !important;
 }
@@ -3782,4 +3782,133 @@ body .account-trend-year-select:hover{border-color:#afc0d3;}
 body .account-trend-year-select:focus{
   border-color:#6f9ce8;
   box-shadow:0 0 0 2px rgba(47,111,237,.10);
+}
+/* Unified fiscal-year group heading. The tooltip is mounted on body to avoid table clipping. */
+body .audit-fiscal-year-label{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  line-height:1;
+  white-space:nowrap;
+}
+
+body .audit-fiscal-info{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:14px;
+  height:14px;
+  box-sizing:border-box;
+  border:1px solid #5b86c7;
+  border-radius:50%;
+  background:#f4f8ff;
+  color:#2f67b9;
+  font:700 9px/1 Arial,sans-serif;
+  cursor:help;
+}
+
+body .audit-fiscal-info:hover,
+body .audit-fiscal-info:focus{
+  border-color:#2563b9;
+  background:#eaf2ff;
+  color:#174e9f;
+  outline:none;
+}
+
+body .audit-fiscal-tooltip{
+  position:fixed;
+  z-index:100000;
+  left:0;
+  top:0;
+  max-width:min(280px,calc(100vw - 16px));
+  box-sizing:border-box;
+  padding:6px 9px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:5px;
+  background:#4b5563;
+  color:#fff;
+  box-shadow:0 6px 18px rgba(15,23,42,.18);
+  font:500 11px/1.4 var(--platform-font-family,"Microsoft YaHei",Arial,sans-serif);
+  letter-spacing:0;
+  white-space:nowrap;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .12s ease,visibility .12s ease;
+}
+
+body .audit-fiscal-tooltip.is-show{
+  opacity:1;
+  visibility:visible;
+}
+
+/* Keep every metric inside a total/year group at the same compact width. */
+body th.audit-period-metric,
+body td.audit-period-metric,
+body .portrait-year-sub-head th,
+body .account-year-sub-head th{
+  box-sizing:border-box !important;
+  width:116px !important;
+  min-width:116px !important;
+  max-width:116px !important;
+}
+
+/* Account overview uses an explicit column model so the first total metric cannot absorb spare width. */
+body .tab-pane #tblAccountSummary{
+  table-layout:fixed !important;
+}
+
+body #tblAccountSummary col.account-company-col{ width:180px !important; }
+body #tblAccountSummary col.account-number-col{ width:130px !important; }
+body #tblAccountSummary col.account-bank-col{ width:110px !important; }
+body #tblAccountSummary col.account-monthly-col{ width:150px !important; }
+body #tblAccountSummary col.account-scope-col{ width:112px !important; }
+body #tblAccountSummary col.account-amount-col{ width:96px !important; }
+body #tblAccountSummary col.account-total-col{ width:104px !important; }
+body #tblAccountSummary col.account-ratio-col{ width:108px !important; }
+body #tblAccountSummary col.account-count-col{ width:88px !important; }
+body #tblAccountSummary col.account-counterparty-col{ width:96px !important; }
+body #tblAccountSummary col.account-file-col{ width:78px !important; }
+body #tblAccountSummary col.account-action-col{ width:66px !important; }
+body #tblAccountSummary col.account-flex-col{ width:auto !important; }
+
+body #tblAccountSummary .account-scope-group{
+  background:#f2f6fb !important;
+  color:#475569 !important;
+  font-weight:800 !important;
+  text-align:center !important;
+}
+
+body #tblAccountSummary .account-scope-head{
+  color:#52657e !important;
+  font-weight:700 !important;
+}
+
+body #tblAccountSummary td.account-scope-value{
+  color:#41556f !important;
+  font-weight:700 !important;
+  font-variant-numeric:tabular-nums;
+}
+
+body #tblAccountSummary th,
+body #tblAccountSummary td,
+body #tblAccountSummary .account-year-sub-head th{
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+}
+
+body .tab-pane #tblAccountSummary{
+  width:100% !important;
+  min-width:100% !important;
+}
+
+body #tblAccountSummary th.check-col,
+body #tblAccountSummary td.check-col,
+body .check-scope.expanded #tblAccountSummary th.check-col,
+body .check-scope.expanded #tblAccountSummary td.check-col{
+  width:auto !important;
+  min-width:180px !important;
+  max-width:none !important;
 }
