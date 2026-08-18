@@ -169,7 +169,7 @@ const APP_FRAME_STATE_KEY = 'auditCompass.currentFrameState';
 const DEFAULT_PROJECT = 'Test2';
 const DEFAULT_BOOK = '20251022';
 const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260814-routine-sync1';
-const DATA_MANAGEMENT_SRC = './fragments/data-management.html?v=20260817-account-scope22';
+const DATA_MANAGEMENT_SRC = './fragments/data-management.html?v=20260818-related-master23';
 const DATA_SUMMARY_SRC = './fragments/data-summary.html?v=20260813-metric-width1';
 const WORKINGPAPER_EXPORT_SRC = './fragments/workingpaper-export.html?v=20260817-report-year-table10';
 const PROJECT_LIST_SRC = './fragments/project-list.html?v=20260813-project-list11';

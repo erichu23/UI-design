@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260813-account-columns5"/>
   <link rel="stylesheet" href="../assets/css/pages/data-upload.css?v=20260811-data-management19"/>
   <link rel="stylesheet" href="../assets/css/pages/data-validation.css?v=20260811-data-management19"/>
-  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260817-account-scope22"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260818-related-master23"/>
   <title>数据上传及管理</title>
 </head>
 <body>
@@ -657,21 +657,44 @@
           <button class="btn primary" id="dmMasterFetchBtn" type="button"><span class="dm-button-symbol" aria-hidden="true">↻</span>更新被审计单位天眼查信息</button>
         </div>
         <div class="content">
-          <div class="dm-master-scope-summary">
-            <div class="dm-master-stat is-external"><span>天眼查集团内公司个数</span><b>18</b><small>个</small></div>
-            <div class="dm-master-stat is-total"><span>主档被审计单位个数</span><b>16</b><small>个</small></div>
-            <div class="dm-master-stat is-match"><span>三方共同包含</span><b id="dmMasterMatchedCount">13</b><small>个</small></div>
-            <div class="dm-master-stat is-diff"><span>缺失个数（已解释/总共）</span><b id="dmMasterPendingCount">8</b><small>个</small></div>
+          <div class="dm-master-view-tabs" id="dmMasterViewTabs" role="tablist" aria-label="主档核对类型">
+            <button class="is-active" type="button" role="tab" aria-selected="true" data-master-view="audited">被审计单位主档信息</button>
+            <button type="button" role="tab" aria-selected="false" data-master-view="related">关联方主档信息</button>
           </div>
-          <div class="dm-master-table-wrap">
-            <table class="table dm-master-table" id="dmMasterCheckTable">
-              <thead><tr>
-                <th>公司名称</th><th>统一社会信用代码</th><th>与被审计单位关系</th><th>持股比例</th><th>天眼查清单</th><th>ARMS来源</th><th>被审计单位主档</th><th class="no-sort">操作</th><th class="no-sort">备注</th>
-              </tr></thead>
-              <tbody id="dmMasterCheckBody"></tbody>
-            </table>
+          <div class="dm-master-view-pane is-active" data-master-view-pane="audited">
+            <div class="dm-master-scope-summary">
+              <div class="dm-master-stat is-external"><span>天眼查集团内公司个数</span><b>18</b><small>个</small></div>
+              <div class="dm-master-stat is-total"><span>主档被审计单位个数</span><b>16</b><small>个</small></div>
+              <div class="dm-master-stat is-match"><span>三方共同包含</span><b id="dmMasterMatchedCount">13</b><small>个</small></div>
+              <div class="dm-master-stat is-diff"><span>缺失个数（已解释/总共）</span><b id="dmMasterPendingCount">8</b><small>个</small></div>
+            </div>
+            <div class="dm-master-table-wrap">
+              <table class="table dm-master-table" id="dmMasterCheckTable">
+                <thead><tr>
+                  <th>公司名称</th><th>统一社会信用代码</th><th>与被审计单位关系</th><th>持股比例</th><th>天眼查清单</th><th>ARMS来源</th><th>被审计单位主档</th><th class="no-sort">操作</th><th class="no-sort">备注</th>
+                </tr></thead>
+                <tbody id="dmMasterCheckBody"></tbody>
+              </table>
+            </div>
+            <div class="pagination dm-master-pagination" id="dmMasterCheckPager"></div>
           </div>
-          <div class="pagination dm-master-pagination" id="dmMasterCheckPager"></div>
+          <div class="dm-master-view-pane" data-master-view-pane="related" hidden>
+            <div class="dm-master-scope-summary">
+              <div class="dm-master-stat is-external"><span>天眼查识别关联方</span><b id="dmRelatedExternalCount">0</b><small>个</small></div>
+              <div class="dm-master-stat is-total"><span>关联方主档已维护</span><b id="dmRelatedMasterCount">0</b><small>个</small></div>
+              <div class="dm-master-stat is-match"><span>两方共同包含</span><b id="dmRelatedMatchedCount">0</b><small>个</small></div>
+              <div class="dm-master-stat is-diff"><span>待补充至主档</span><b id="dmRelatedPendingCount">0</b><small>个</small></div>
+            </div>
+            <div class="dm-master-table-wrap">
+              <table class="table dm-master-table dm-related-master-table" id="dmRelatedMasterTable">
+                <thead><tr>
+                  <th>关联方名称</th><th>统一社会信用代码</th><th>关联关系</th><th>持股比例</th><th>天眼查清单</th><th>关联方主档</th><th class="no-sort">操作</th><th class="no-sort">备注</th>
+                </tr></thead>
+                <tbody id="dmRelatedMasterBody"></tbody>
+              </table>
+            </div>
+            <div class="pagination dm-master-pagination" id="dmRelatedMasterPager"></div>
+          </div>
           <div class="dm-master-toast" id="dmMasterToast" role="status" aria-live="polite"></div>
         </div>
       </div>
@@ -1223,6 +1246,28 @@
       render();
     };
 
+    const activeMasterView = () => document.querySelector('[data-master-view].is-active')?.dataset.masterView || 'audited';
+    const masterFetchLabel = () => activeMasterView()==='related'?'更新关联方天眼查信息':'更新被审计单位天眼查信息';
+    const refreshMasterFetchLabel = () => {
+      const button=document.getElementById('dmMasterFetchBtn');
+      if(button&&!button.disabled)button.innerHTML=`<span class="dm-button-symbol" aria-hidden="true">↻</span>${masterFetchLabel()}`;
+    };
+    const initMasterViewTabs = () => {
+      const container=document.getElementById('dmMasterViewTabs');
+      if(!container)return;
+      const tabs=[...container.querySelectorAll('[data-master-view]')];
+      const panes=[...document.querySelectorAll('[data-master-view-pane]')];
+      container.addEventListener('click',event=>{
+        const tab=event.target.closest('[data-master-view]');
+        if(!tab)return;
+        const view=tab.dataset.masterView;
+        tabs.forEach(item=>{const active=item===tab;item.classList.toggle('is-active',active);item.setAttribute('aria-selected',String(active));});
+        panes.forEach(pane=>{const active=pane.dataset.masterViewPane===view;pane.classList.toggle('is-active',active);pane.hidden=!active;});
+        refreshMasterFetchLabel();
+      });
+      refreshMasterFetchLabel();
+    };
+
     const initMasterScopeCheck = () => {
       const body=document.getElementById('dmMasterCheckBody');
       const pager=document.getElementById('dmMasterCheckPager');
@@ -1283,8 +1328,60 @@
         if(button.dataset.masterAction==='supplement'){row.master=true;row.supplemented=true;syncCompare(row);row.range=row.compare==='matched'?'include':'pending';showToast(`已将“${row.name}”补充至被审计单位主档`);}
         render();
       });
-      document.getElementById('dmMasterFetchBtn')?.addEventListener('click',async event=>{const button=event.currentTarget;button.disabled=true;button.innerHTML='<span class="dm-button-symbol is-spinning" aria-hidden="true">↻</span>正在更新';try{if(window.auditMasterScopeAdapter?.fetchEntities)await window.auditMasterScopeAdapter.fetchEntities({workbook:'20251022',scope:'invested-companies'});else await new Promise(resolve=>window.setTimeout(resolve,650));const now=new Date();const sync=document.getElementById('dmMasterSyncState');sync.textContent=`最近更新：${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;showToast('天眼查清单已更新，核对结果已刷新');}finally{button.disabled=false;button.innerHTML='<span class="dm-button-symbol" aria-hidden="true">↻</span>更新天眼查清单';}});
-      document.getElementById('dmMasterExportBtn')?.addEventListener('click',()=>{const header=['公司名称','统一社会信用代码','与被审计单位关系','持股比例','天眼查清单','ARMS来源','被审计单位主档','操作状态','备注'];const csv=[header,...filtered().map(row=>[row.name,row.code,row.relation,row.holding,row.external?'已包含':'未包含',row.arms?'已包含':'未包含',row.master?'已包含':'未包含',row.supplemented?'已补充至主档':compareLabels[row.compare],row.note])].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));link.download='分析范围清单核对结果.csv';link.click();URL.revokeObjectURL(link.href);});
+      document.getElementById('dmMasterFetchBtn')?.addEventListener('click',async event=>{const button=event.currentTarget;button.disabled=true;button.innerHTML='<span class="dm-button-symbol is-spinning" aria-hidden="true">↻</span>正在更新';try{const related=activeMasterView()==='related';if(window.auditMasterScopeAdapter?.fetchEntities)await window.auditMasterScopeAdapter.fetchEntities({workbook:'20251022',scope:related?'related-parties':'invested-companies'});else await new Promise(resolve=>window.setTimeout(resolve,650));const now=new Date();const sync=document.getElementById('dmMasterSyncState');sync.textContent=`最近更新：${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;showToast(`${related?'关联方':'被审计单位'}天眼查清单已更新，核对结果已刷新`);}finally{button.disabled=false;refreshMasterFetchLabel();}});
+      document.getElementById('dmMasterExportBtn')?.addEventListener('click',()=>{if(activeMasterView()==='related')return;const header=['公司名称','统一社会信用代码','与被审计单位关系','持股比例','天眼查清单','ARMS来源','被审计单位主档','操作状态','备注'];const csv=[header,...filtered().map(row=>[row.name,row.code,row.relation,row.holding,row.external?'已包含':'未包含',row.arms?'已包含':'未包含',row.master?'已包含':'未包含',row.supplemented?'已补充至主档':compareLabels[row.compare],row.note])].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));link.download='分析范围清单核对结果.csv';link.click();URL.revokeObjectURL(link.href);});
+      render();
+    };
+
+    const initRelatedMasterScopeCheck = () => {
+      const body=document.getElementById('dmRelatedMasterBody');
+      const pager=document.getElementById('dmRelatedMasterPager');
+      if(!body||!pager)return;
+      const rows=[
+        ['上海辰越贸易有限公司','91310115MA1K4N8R2Q','受同一最终控制方控制','100%',true,false],
+        ['宁波弘泰企业管理合伙企业','91330206MA2J5W9C4A','关键管理人员控制','35%',true,false],
+        ['苏州华东智能制造有限公司','91320594MA20H8D71B','联营企业','35%',true,false],
+        ['上海睿辰企业咨询有限公司','91310110MA1G8T6D3R','关键管理人员近亲属控制','—',true,false],
+        ['华东制造集团供应链有限公司','91310115MA1K4A8X2Q','同一控制下企业','100%',true,true],
+        ['华东制造集团科技发展有限公司','91310110MA1G91T65L','同一控制下企业','80%',true,true],
+        ['北京恒瑞医疗设备有限公司','91110108MA01B7K42D','联营企业','40%',true,true],
+        ['重庆云峰智能装备有限公司','91500107MA5U8H3R6P','联营企业','35%',true,true],
+        ['郑州华辰电气有限公司','91410100MA44K6F91C','联营企业','30%',true,true],
+        ['上海华东工业服务有限公司','91310113MA1GM7K52P','同一控制下企业','100%',false,true],
+        ['天津华东设备有限公司','91120116MA06F4T73L','联营企业','30%',false,true],
+        ['华东制造集团西安分公司','91610131MA6W2K9D5C','同一控制下分支机构','—',false,true]
+      ].map((row,index)=>({id:index+1,name:row[0],code:row[1],relation:row[2],holding:row[3],external:row[4],master:row[5],supplemented:false,note:'',displayOrder:index}));
+      const state={page:1,pageSize:10};
+      const escape=value=>String(value??'').replace(/[&<>"]/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[character]));
+      const compare=row=>row.external&&row.master?'matched':row.external&&!row.master?'external-only':'source-gap';
+      const comparePriority={'external-only':0,'source-gap':1,matched:2};
+      rows.sort((a,b)=>comparePriority[compare(a)]-comparePriority[compare(b)]||a.id-b.id).forEach((row,index)=>{row.displayOrder=index;});
+      const filtered=()=>rows.slice().sort((a,b)=>a.displayOrder-b.displayOrder);
+      const setMetric=(id,value)=>{const element=document.getElementById(id);if(element)element.textContent=value;};
+      const showToast=message=>{const toast=document.getElementById('dmMasterToast');if(!toast)return;toast.textContent=message;toast.classList.add('is-visible');window.clearTimeout(showToast.timer);showToast.timer=window.setTimeout(()=>toast.classList.remove('is-visible'),2200);};
+      const sourceState=value=>`<span class="dm-master-source-state ${value?'is-present':'is-absent'}" title="${value?'已包含':'未包含'}" aria-label="${value?'已包含':'未包含'}"></span>`;
+      const render=()=>{
+        const result=filtered();
+        const maxPage=Math.max(1,Math.ceil(result.length/state.pageSize));state.page=Math.min(state.page,maxPage);
+        const visible=result.slice((state.page-1)*state.pageSize,state.page*state.pageSize);
+        body.innerHTML=visible.map(row=>{
+          const status=compare(row);
+          const action=row.supplemented
+            ? '<span class="dm-master-action-done"><i aria-hidden="true">✓</i>已补充至主档</span>'
+            : status==='external-only'
+              ? '<button class="dm-master-row-action" type="button" data-related-action="supplement" title="补充至关联方主档"><i aria-hidden="true">＋</i><span>补充至主档</span></button>'
+              : '<span class="dm-master-action-empty">—</span>';
+          return `<tr class="${status==='matched'?'is-readonly':''}" data-related-id="${row.id}"><td>${escape(row.name)}</td><td>${escape(row.code)}</td><td>${escape(row.relation)}</td><td>${escape(row.holding)}</td><td class="dm-master-source-cell">${sourceState(row.external)}</td><td class="dm-master-source-cell">${sourceState(row.master)}</td><td class="dm-master-action-cell">${action}</td><td>${status==='matched'&&!row.supplemented?'<span class="dm-master-readonly-note">—</span>':`<input class="ba-note-input dm-master-note" data-related-note="${row.id}" value="${escape(row.note)}" placeholder="填写备注"/>`}</td></tr>`;
+        }).join('');
+        window.renderAuditPager?.(pager,{total:result.length,page:state.page,pageSize:state.pageSize,onPage:page=>{state.page=page;render();},onPageSize:size=>{state.pageSize=size;state.page=1;render();}});
+        setMetric('dmRelatedExternalCount',rows.filter(row=>row.external).length);
+        setMetric('dmRelatedMasterCount',rows.filter(row=>row.master).length);
+        setMetric('dmRelatedMatchedCount',rows.filter(row=>row.external&&row.master).length);
+        setMetric('dmRelatedPendingCount',rows.filter(row=>row.external&&!row.master).length);
+      };
+      body.addEventListener('input',event=>{const note=event.target.closest('[data-related-note]');if(!note)return;const row=rows.find(item=>item.id===Number(note.dataset.relatedNote));if(row)row.note=note.value;});
+      body.addEventListener('click',event=>{const button=event.target.closest('[data-related-action]');if(!button)return;const row=rows.find(item=>item.id===Number(button.closest('tr')?.dataset.relatedId));if(!row)return;row.master=true;row.supplemented=true;showToast(`已将“${row.name}”补充至关联方主档`);render();});
+      document.getElementById('dmMasterExportBtn')?.addEventListener('click',()=>{if(activeMasterView()!=='related')return;const header=['关联方名称','统一社会信用代码','关联关系','持股比例','天眼查清单','关联方主档','操作状态','备注'];const csv=[header,...filtered().map(row=>[row.name,row.code,row.relation,row.holding,row.external?'已包含':'未包含',row.master?'已包含':'未包含',row.supplemented?'已补充至主档':compare(row)==='external-only'?'待补充至主档':'核对一致',row.note])].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));link.download='关联方主档核对结果.csv';link.click();URL.revokeObjectURL(link.href);});
       render();
     };
 
@@ -1351,10 +1448,12 @@
     };
 
     if (document.readyState === 'loading') {
-      window.addEventListener('DOMContentLoaded', () => { queueAccountIssueDecoration(); initMasterScopeCheck(); initAccountScopeAnalysis(); }, { once:true });
+      window.addEventListener('DOMContentLoaded', () => { queueAccountIssueDecoration(); initMasterViewTabs(); initMasterScopeCheck(); initRelatedMasterScopeCheck(); initAccountScopeAnalysis(); }, { once:true });
     } else {
       queueAccountIssueDecoration();
+      initMasterViewTabs();
       initMasterScopeCheck();
+      initRelatedMasterScopeCheck();
       initAccountScopeAnalysis();
     }
   })();

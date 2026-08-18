@@ -179,6 +179,40 @@
   margin-bottom:7px;
 }
 
+.data-management-page .dm-master-view-tabs{
+  display:flex;
+  align-items:center;
+  gap:2px;
+  height:30px;
+  margin:-2px 0 7px;
+  border-bottom:1px solid #dfe7f1;
+}
+.data-management-page .dm-master-view-tabs button{
+  position:relative;
+  height:30px;
+  padding:0 13px;
+  border:0;
+  color:#68788d;
+  background:transparent;
+  font:600 11px/30px "Microsoft YaHei","PingFang SC",sans-serif;
+  cursor:pointer;
+}
+.data-management-page .dm-master-view-tabs button::after{
+  position:absolute;
+  right:11px;
+  bottom:-1px;
+  left:11px;
+  height:2px;
+  border-radius:2px 2px 0 0;
+  background:transparent;
+  content:"";
+}
+.data-management-page .dm-master-view-tabs button:hover{ color:#2d5f9f; }
+.data-management-page .dm-master-view-tabs button.is-active{ color:#174f91; font-weight:700; }
+.data-management-page .dm-master-view-tabs button.is-active::after{ background:#2f6fed; }
+.data-management-page .dm-master-view-pane[hidden]{ display:none !important; }
+.data-management-page .dm-related-master-table{ min-width:1000px; }
+
 .data-management-page .dm-master-scope-intro,
 .data-management-page .dm-master-stat{
   min-height:48px;
