@@ -2816,7 +2816,7 @@
               <tr class="group-header" id="cpGroupHeaderRow">
                 <th id="thGroupCheck" colspan="29" style="background:var(--gray-100);font-weight:700;font-size:11px;letter-spacing:.3px;color:var(--gray-700)">核查标准</th>
                 <th id="thGroupCpInfo" colspan="8" style="background:var(--gray-100);font-weight:700;font-size:11px;letter-spacing:.3px;color:var(--gray-700)">对手方信息</th>
-                <th id="thGroupAux" colspan="5" style="background:var(--gray-100);font-weight:700;font-size:11px;letter-spacing:.3px;color:var(--gray-700)">辅助信息</th>
+                <th id="thGroupAux" colspan="5" style="background:var(--gray-100);font-weight:700;font-size:11px;letter-spacing:.3px;color:var(--gray-700)">工商信息</th>
               </tr>
               <!-- 第1行：大类组头（可折叠） -->
               <tr class="group-header">
@@ -2833,9 +2833,9 @@
                 <th data-col="outflow">流出金额 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','outflow','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','outflow','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th data-col="inputTax">进项税价合计 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','inputTax','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','inputTax','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th style="border-right:2px solid var(--gray-300)" data-col="txCount">交易笔数 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','txCount','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','txCount','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
-                <th data-col="industry">行业 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','industry','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','industry','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
-                <th data-col="bizAge">经营时长 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','bizAge','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','bizAge','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
-                <th data-col="executives">董监高 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','executives','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','executives','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
+                <th data-col="industry">经营天数 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','industry','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','industry','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
+                <th data-col="bizAge">参保人数 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','bizAge','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','bizAge','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
+                <th data-col="executives">公司类型 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','executives','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','executives','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th data-col="markStatus">标记状态 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','markStatus','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','markStatus','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th>备注</th>
               </tr>
@@ -3273,7 +3273,10 @@ generatedRiskNames.forEach((cpName, index) => {
     profile[7] = isSupplier ? 0 : +(profile[5] * (0.94 + (index % 3) * .012)).toFixed(1);
     profile[8] = isSupplier ? +(profile[6] * (0.93 + (index % 4) * .014)).toFixed(1) : 0;
   }
-  const [name, cpType, industry, bizAge, txCount, inflow, outflow, salesTax, inputTax] = profile;
+  const [name, cpType, , , txCount, inflow, outflow, salesTax, inputTax] = profile;
+  const companyTypes = ['有限责任公司', '个人', '个体工商户', '有限责任公司', '个人', '个体工商户', '股份有限公司', '个人'];
+  const operatingDays = 420 + (index * 137) % 5480;
+  const insuredCount = cpType === '其他' ? (index % 4) : 6 + (index * 11) % 286;
   cpData.push({
     id: `cp${index + 1}`,
     name,
@@ -3282,9 +3285,9 @@ generatedRiskNames.forEach((cpName, index) => {
     typeTag: index % 9 === 0 ? '关联方' : '普通',
     relType: index % 9 === 0 ? ['子公司','联营企业','共同控制投资方'][index % 3] : undefined,
     cpType,
-    industry,
-    bizAge,
-    executives: ['王某（法人）、陈某（监事）','赵某（法人）、李某（董事）','孙某（法人）、周某（总经理）','吴某（法人）、高某（财务负责人）'][index % 4],
+    industry: `${operatingDays}天`,
+    bizAge: `${insuredCount}人`,
+    executives: companyTypes[index % companyTypes.length],
     txCount,
     inflow,
     outflow,
@@ -4243,9 +4246,7 @@ function getSortValue(obj, col) {
   if (col === 'bizAge') {
     const m = obj.bizAge;
     if (m === '—') return -1;
-    const ym = m.match(/(\d+)年(\d+)个月/);
-    if (ym) return parseInt(ym[1]) * 12 + parseInt(ym[2]);
-    return 0;
+    return Number.parseInt(m, 10) || 0;
   }
   // 流水明细表：流入/流出金额列排序
   if (col === 'inflowAmt') return obj.dir === '流入' ? obj.amount : 0;
@@ -4626,7 +4627,7 @@ function renderCpTable() {
 
     const cpTypeClass = row.cpType === '客户' ? ' is-customer' : row.cpType === '供应商' ? ' is-supplier' : row.cpType === '个人' ? ' is-personal' : '';
 
-    const execText = row.executives || '—';
+    const companyTypeText = row.executives || '—';
 
     // 标记状态渲染
     const ms = row.markStatus || (row.hits.length > 0 ? 'flagged' : 'none');
@@ -4663,9 +4664,9 @@ function renderCpTable() {
       <td class="amount outflow text-right" style="font-size:11px;font-variant-numeric:tabular-nums">${fmtAmt(row.outflow)}</td>
       <td class="amount tax-purchase text-right" style="font-size:11px;font-variant-numeric:tabular-nums">${row.inputTax > 0 ? fmtAmt(row.inputTax) : '<span style=\'color:var(--gray-300)\'>—</span>'}</td>
       <td class="text-right" style="font-size:11px">${row.txCount}</td>
-      <td style="font-size:11px;color:var(--gray-500)">${row.industry}</td>
-      <td style="font-size:11px;color:var(--gray-500)">${row.bizAge}</td>
-      <td style="font-size:11px;color:var(--gray-400);min-width:180px;white-space:normal;line-height:1.35" title="${row.executives}">${execText}</td>
+      <td class="text-right" style="font-size:11px;color:var(--gray-500);font-variant-numeric:tabular-nums">${row.industry}</td>
+      <td class="text-right" style="font-size:11px;color:var(--gray-500);font-variant-numeric:tabular-nums">${row.bizAge}</td>
+      <td style="font-size:11px;color:var(--gray-600);min-width:108px;white-space:nowrap" title="${row.executives}">${companyTypeText}</td>
       <td style="position:relative">${markHTML}</td>
       <td style="min-width:180px;white-space:normal;line-height:1.35;font-size:11px">${remarkHTML}</td>
     `;
@@ -4920,7 +4921,7 @@ function renderCpTableWithHighlight(matchIds) {
 
     const cpTypeClass = row.cpType === '客户' ? ' is-customer' : row.cpType === '供应商' ? ' is-supplier' : row.cpType === '个人' ? ' is-personal' : '';
 
-    const execText = row.executives || '—';
+    const companyTypeText = row.executives || '—';
 
     const ms = row.markStatus || (row.hits.length > 0 ? 'flagged' : 'none');
     const markMap = {
@@ -4957,9 +4958,9 @@ function renderCpTableWithHighlight(matchIds) {
       <td class="amount outflow text-right" style="font-size:11px;font-variant-numeric:tabular-nums">${fmtAmt(row.outflow)}</td>
       <td class="amount tax-purchase text-right" style="font-size:11px;font-variant-numeric:tabular-nums">${row.inputTax > 0 ? fmtAmt(row.inputTax) : '<span style=\'color:var(--gray-300)\'>—</span>'}</td>
       <td class="text-right" style="font-size:11px">${row.txCount}</td>
-      <td style="font-size:11px;color:var(--gray-500)">${row.industry}</td>
-      <td style="font-size:11px;color:var(--gray-500)">${row.bizAge}</td>
-      <td style="font-size:11px;color:var(--gray-400);min-width:180px;white-space:normal;line-height:1.35" title="${row.executives}">${execText}</td>
+      <td class="text-right" style="font-size:11px;color:var(--gray-500);font-variant-numeric:tabular-nums">${row.industry}</td>
+      <td class="text-right" style="font-size:11px;color:var(--gray-500);font-variant-numeric:tabular-nums">${row.bizAge}</td>
+      <td style="font-size:11px;color:var(--gray-600);min-width:108px;white-space:nowrap" title="${row.executives}">${companyTypeText}</td>
       <td style="position:relative">${markHTML}</td>
       <td style="min-width:180px;white-space:normal;line-height:1.35;font-size:11px">${remarkHTML}</td>
     `;
@@ -5637,9 +5638,9 @@ function getRiskExportCpSheet(checks) {
       '流出金额',
       '进项税价合计',
       '交易笔数',
-      '行业',
-      '经营时长',
-      '董监高',
+      '经营天数',
+      '参保人数',
+      '公司类型',
       '标记状态',
       '备注'
     ],
@@ -6011,9 +6012,9 @@ window.getRiskZoomFilterConfig = function(request = {}) {
       outflow: '流出金额',
       inputTax: '进项税价合计',
       txCount: '交易笔数',
-      industry: '行业',
-      bizAge: '经营时长',
-      executives: '董监高',
+      industry: '经营天数',
+      bizAge: '参保人数',
+      executives: '公司类型',
       markStatus: '标记状态'
     };
     const values = Array.from(new Set(cpData.map(row => getCpColumnValue(row, col)).filter(Boolean))).slice(0, 100);

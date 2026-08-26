@@ -32,11 +32,33 @@
   };
   const yearSeparator='<span class="col-sep"></span>';
   const monthNumbers=years.map(year=>months.map(month=>`<span class="month-num col-year-${year}">${month}</span>`).join('')).join(yearSeparator);
-  const statusDots=rowIndex=>years.map(year=>months.map(month=>`<i class="chk-dot ${statusClass(rowIndex,year,month)} col-year-${year}" title="${year}-${String(month).padStart(2,'0')}"></i>`).join('')).join(yearSeparator);
-  const miniBars=rowIndex=>{
-    const inflow=[72,58,84,65,91,77,69,88,74,96,82,90];
-    const outflow=[54,68,61,79,63,72,86,67,81,70,92,76];
-    return `<div class="monthly-flow-bars" aria-label="月度流入流出分布">${inflow.map((value,month)=>`<span class="monthly-flow-pair" title="${month+1}月"><i class="flow-in-bar" style="height:${Math.min(98,value+rowIndex*2)}%"></i><i class="flow-out-bar" style="height:${Math.min(98,outflow[month]+rowIndex)}%"></i></span>`).join('')}</div>`;
+  const checkDecisions=new Map();
+  const escapeText=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+  const statusDots=(rowIndex,source)=>years.map(year=>months.map(month=>{
+    const status=statusClass(rowIndex,year,month);
+    const actionable=status==='chk-warn'||status==='chk-err';
+    const kind=status==='chk-warn'?'warning':'error';
+    const key=`${source[1]}-${year}-${month}-${kind}`;
+    const decision=checkDecisions.get(key);
+    const label=status==='chk-warn'?'当日余额不连续':status==='chk-err'?'余额错误':status==='chk-none'?'无流水数据':'检验无误';
+    if(!actionable)return `<i class="chk-dot ${status} col-year-${year}" title="${year}-${String(month).padStart(2,'0')} · ${label}"></i>`;
+    return `<button type="button" class="chk-dot ${status} dm-check-status-trigger col-year-${year}${decision?' is-processed':''}" data-check-kind="${kind}" data-check-key="${key}" data-company="${escapeText(source[0])}" data-account="${escapeText(source[1])}" data-bank="${escapeText(source[2])}" data-year="${year}" data-month="${month}" title="${year}-${String(month).padStart(2,'0')} · ${label}${decision?' · 已处理':''}" aria-label="查看${label}详情"></button>`;
+  }).join('')).join(yearSeparator);
+  let selectedFlowYear=2025;
+  const miniBars=row=>{
+    const yearIndex=Math.max(0,years.indexOf(selectedFlowYear));
+    const yearWeight=[.28,.33,.39][yearIndex];
+    const inPattern=[.073,.061,.079,.068,.087,.075,.071,.083,.077,.091,.082,.096];
+    const outPattern=[.066,.074,.063,.081,.067,.076,.085,.069,.083,.072,.087,.077];
+    const profileShift=(row.index%5-2)*.0015;
+    const inWeights=inPattern.map((weight,month)=>Math.max(.025,weight+(month%3-1)*profileShift));
+    const outWeights=outPattern.map((weight,month)=>Math.max(.025,weight-(month%3-1)*profileShift));
+    const inWeightTotal=inWeights.reduce((sum,value)=>sum+value,0);
+    const outWeightTotal=outWeights.reduce((sum,value)=>sum+value,0);
+    const inflow=inWeights.map(weight=>Math.round(row.inflow*yearWeight*weight/inWeightTotal));
+    const outflow=outWeights.map(weight=>Math.round(row.outflow*yearWeight*weight/outWeightTotal));
+    const maxValue=Math.max(1,...inflow,...outflow);
+    return `<div class="monthly-flow-bars" aria-label="${selectedFlowYear}年月度流入流出分布">${inflow.map((value,month)=>`<span class="monthly-flow-pair" data-flow-year="${selectedFlowYear}" data-flow-month="${month+1}" data-flow-in="${value}" data-flow-out="${outflow[month]}" data-flow-account="${escapeText(row.source[1])}" aria-label="${selectedFlowYear}年${month+1}月，流入${format(value)}，流出${format(outflow[month])}"><i class="flow-in-bar" style="height:${Math.max(3,value/maxValue*100)}%"></i><i class="flow-out-bar" style="height:${Math.max(3,outflow[month]/maxValue*100)}%"></i></span>`).join('')}</div>`;
   };
   const state={page:1,pageSize:20,yearExpanded:false,scopeView:'included'};
   const scopedRows=()=>rows.map((row,index)=>{
@@ -132,6 +154,220 @@
     document.getElementById('checkScrollPrev')?.addEventListener('click',()=>move(-240));
     document.getElementById('checkScrollNext')?.addEventListener('click',()=>move(240));
   };
+  const ensureCheckDrawer=()=>{
+    let mask=document.getElementById('dmBalanceCheckDrawerMask');
+    if(mask)return mask;
+    mask=document.createElement('div');
+    mask.id='dmBalanceCheckDrawerMask';
+    mask.className='dm-balance-check-mask';
+    mask.hidden=true;
+    mask.innerHTML=`<aside class="dm-balance-check-drawer" role="dialog" aria-modal="true" aria-labelledby="dmBalanceCheckTitle">
+      <header class="dm-balance-check-head"><div><b id="dmBalanceCheckTitle">校验详情</b><span id="dmBalanceCheckSubtitle"></span></div><button type="button" data-check-close aria-label="关闭">×</button></header>
+      <div class="dm-balance-check-body" id="dmBalanceCheckBody"></div>
+      <footer class="dm-balance-check-actions" id="dmBalanceCheckActions"></footer>
+    </aside>`;
+    document.body.appendChild(mask);
+    const close=()=>{mask.hidden=true;document.body.classList.remove('dm-check-drawer-open');};
+    mask.addEventListener('click',event=>{if(event.target===mask||event.target.closest('[data-check-close]'))close();});
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!mask.hidden)close();});
+    return mask;
+  };
+  const drawerPager=total=>`<div class="dm-check-mini-pager"><span>共 ${total} 条</span><button type="button" disabled>‹</button><button type="button" class="is-current">1</button><button type="button" disabled>›</button><span>20 条/页</span></div>`;
+  const openCheckDrawer=trigger=>{
+    const mask=ensureCheckDrawer();
+    const kind=trigger.dataset.checkKind;
+    const company=trigger.dataset.company;
+    const account=trigger.dataset.account;
+    const bank=trigger.dataset.bank;
+    const year=Number(trigger.dataset.year);
+    const month=Number(trigger.dataset.month);
+    const key=trigger.dataset.checkKey;
+    const body=mask.querySelector('#dmBalanceCheckBody');
+    const actions=mask.querySelector('#dmBalanceCheckActions');
+    const title=mask.querySelector('#dmBalanceCheckTitle');
+    const subtitle=mask.querySelector('#dmBalanceCheckSubtitle');
+    const date=`${year}-${String(month).padStart(2,'0')}-${String(6+(month*3)%22).padStart(2,'0')}`;
+    const existing=checkDecisions.get(key)||{};
+    if(kind==='warning'){
+      title.textContent='资金流水打标';
+      subtitle.textContent='按交易日期设置当日首笔与末笔，作为余额连续性复核依据';
+      const baseDay=6+(month*3)%16;
+      const dateGroups=[baseDay,baseDay+5,baseDay+10].map(day=>`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`);
+      const savedGroups=Array.isArray(existing.groups)?existing.groups:[];
+      const groupHtml=dateGroups.map((groupDate,groupIndex)=>{
+        const saved=savedGroups[groupIndex]||{};
+        const amounts=[25000+groupIndex*4200,10000+groupIndex*2800,10000+groupIndex*1600];
+        const openingBalance=18000+groupIndex*12500;
+        return `<section class="dm-check-date-group${groupIndex===0?' is-expanded':''}" data-date-group="${groupIndex}">
+          <button type="button" class="dm-check-date-toggle" data-date-toggle aria-expanded="${groupIndex===0?'true':'false'}"><i aria-hidden="true">${groupIndex===0?'−':'+'}</i><span>交易日期：<b>${groupDate}</b></span><span>共 ${amounts.length} 笔</span><small>${account} · ${company}</small></button>
+          <div class="dm-check-date-panel" ${groupIndex===0?'':'hidden'}>
+            <div class="dm-check-table-wrap"><table class="table dm-check-detail-table"><thead><tr><th>交易时间</th><th>对方账号</th><th>对方名称</th><th>流出金额</th><th>流入金额</th><th>交易后余额</th><th>当日首笔</th><th>当日末笔</th></tr></thead><tbody>${amounts.map((amount,index)=>`<tr><td>${String(7+index*3).padStart(2,'0')}:${String(5+groupIndex*7).padStart(2,'0')}:${String(12+index*9).padStart(2,'0')}</td><td>3301********${5136+groupIndex*117}</td><td>${index===2?'华南物流服务有限公司':index===1?'上海星河科技有限公司':'锦汇贸易有限公司'}</td><td class="flow-out is-num">${index===1?format(3600+groupIndex*900):'0'}</td><td class="flow-in is-num">${index===1?'0':format(amount)}</td><td class="is-num">${format(openingBalance+amounts.slice(0,index+1).reduce((sum,value)=>sum+value,0)-(index>0?3600+groupIndex*900:0))}</td><td><input type="radio" name="dm-day-first-${groupIndex}" value="${index}" ${String(saved.first??0)===String(index)?'checked':''}></td><td><input type="radio" name="dm-day-last-${groupIndex}" value="${index}" ${String(saved.last??2)===String(index)?'checked':''}></td></tr>`).join('')}</tbody></table></div>
+            ${drawerPager(amounts.length)}
+          </div>
+        </section>`;
+      }).join('');
+      body.innerHTML=`<div class="dm-check-context"><span>银行账号 <b>${account}</b></span><span>本方名称 <b>${company}</b></span><span>开户行 <b>${bank}</b></span><span>待打标日期 <b>${dateGroups.length} 个</b></span></div><div class="dm-check-date-list">${groupHtml}</div>`;
+      actions.innerHTML='<button type="button" class="btn" data-check-reset>重置</button><button type="button" class="btn primary" data-check-save>保存打标</button>';
+      body.querySelectorAll('[data-date-toggle]').forEach(button=>button.addEventListener('click',()=>{
+        const group=button.closest('[data-date-group]');
+        const panel=group.querySelector('.dm-check-date-panel');
+        const expanded=group.classList.toggle('is-expanded');
+        panel.hidden=!expanded;
+        button.setAttribute('aria-expanded',String(expanded));
+        button.querySelector('i').textContent=expanded?'−':'+';
+      }));
+      actions.querySelector('[data-check-reset]').onclick=()=>{
+        body.querySelectorAll('[data-date-group]').forEach(group=>{
+          const groupIndex=group.dataset.dateGroup;
+          const first=group.querySelector(`input[name="dm-day-first-${groupIndex}"][value="0"]`);
+          const last=group.querySelector(`input[name="dm-day-last-${groupIndex}"][value="2"]`);
+          if(first)first.checked=true;
+          if(last)last.checked=true;
+        });
+      };
+      actions.querySelector('[data-check-save]').onclick=()=>{
+        const groups=Array.from(body.querySelectorAll('[data-date-group]')).map(group=>{
+          const groupIndex=group.dataset.dateGroup;
+          return {
+            date:dateGroups[Number(groupIndex)],
+            first:group.querySelector(`input[name="dm-day-first-${groupIndex}"]:checked`)?.value,
+            last:group.querySelector(`input[name="dm-day-last-${groupIndex}"]:checked`)?.value
+          };
+        });
+        checkDecisions.set(key,{type:'marked',groups});
+        trigger.classList.add('is-processed');trigger.title=trigger.title.replace(/ · 已处理$/,'')+' · 已处理';
+        mask.hidden=true;document.body.classList.remove('dm-check-drawer-open');
+      };
+    }else{
+      title.textContent='余额不连续详情';
+      subtitle.textContent=`${company} · ${account}`;
+      const baseErrorDay=6+(month*3)%13;
+      const errorRows=Array.from({length:5},(_,index)=>{
+        const currentDay=baseErrorDay+index*3;
+        const nextDay=currentDay+1;
+        const previous=index===0?0:12500+index*6800;
+        const following=previous+18000+index*3500;
+        return {id:`error-${index+1}`,start:`${year}-${String(month).padStart(2,'0')}-${String(currentDay).padStart(2,'0')}`,end:`${year}-${String(month).padStart(2,'0')}-${String(nextDay).padStart(2,'0')}`,previous,following,diff:Math.abs(following-previous)};
+      });
+      const ignoredRows=new Set(Array.isArray(existing.ignoredRows)?existing.ignoredRows:[]);
+      body.innerHTML=`<div class="dm-check-context"><span>错误期间 <b>${errorRows[0].start} 至 ${errorRows[errorRows.length-1].end}</b></span><span>校验类型 <b class="dm-check-error-text">余额错误</b></span><span>错误记录 <b>${errorRows.length} 条</b></span></div>
+        <div class="dm-check-batch-bar"><span>已选择 <b data-error-selected-count>0</b> 条</span><input class="dm-check-reason" data-error-reason value="${escapeText(existing.reason||'')}" placeholder="填写批量忽略原因"><button type="button" class="btn primary" data-check-ignore disabled>忽略错误</button></div>
+        <div class="dm-check-table-wrap"><table class="table dm-check-detail-table"><thead><tr><th class="dm-check-select-col"><input type="checkbox" data-error-select-all aria-label="全选错误记录"></th><th>错误日期</th><th>前一笔交易后余额</th><th>后一笔交易前余额</th><th>差额（绝对值）</th><th>原始文件</th><th>处理状态</th></tr></thead><tbody>${errorRows.map(row=>{const ignored=ignoredRows.has(row.id);return `<tr class="${ignored?'is-ignored':''}"><td class="dm-check-select-col"><input type="checkbox" data-error-select value="${row.id}" ${ignored?'disabled':''} aria-label="选择 ${row.start} 的错误记录"></td><td>${row.start}<br>${row.end}</td><td class="is-num">${format(row.previous)}<br><span class="small">${row.start} 日末</span></td><td class="is-num flow-in">${format(row.following)}<br><span class="small">${row.end} 首笔前</span></td><td class="is-num flow-out">${format(row.diff)}</td><td><a href="javascript:void(0)" class="dm-check-file-link">查看文件</a></td><td>${ignored?'<span class="dm-check-ignored-state"><i>✓</i>已忽略</span>':'<span class="dm-check-pending-state">待处理</span>'}</td></tr>`;}).join('')}</tbody></table></div>${drawerPager(errorRows.length)}`;
+      actions.innerHTML='<button type="button" class="btn" data-check-close>关闭</button>';
+      actions.querySelector('[data-check-close]').onclick=()=>{mask.hidden=true;document.body.classList.remove('dm-check-drawer-open');};
+      const selectAll=body.querySelector('[data-error-select-all]');
+      const rowChecks=Array.from(body.querySelectorAll('[data-error-select]'));
+      const ignoreButton=body.querySelector('[data-check-ignore]');
+      const selectedCount=body.querySelector('[data-error-selected-count]');
+      const syncBatchSelection=()=>{
+        const available=rowChecks.filter(input=>!input.disabled);
+        const selected=available.filter(input=>input.checked);
+        selectedCount.textContent=String(selected.length);
+        ignoreButton.disabled=selected.length===0;
+        selectAll.checked=available.length>0&&selected.length===available.length;
+        selectAll.indeterminate=selected.length>0&&selected.length<available.length;
+        selectAll.disabled=available.length===0;
+      };
+      selectAll.addEventListener('change',()=>{rowChecks.forEach(input=>{if(!input.disabled)input.checked=selectAll.checked;});syncBatchSelection();});
+      rowChecks.forEach(input=>input.addEventListener('change',syncBatchSelection));
+      ignoreButton.onclick=()=>{
+        const selected=rowChecks.filter(input=>input.checked&&!input.disabled).map(input=>input.value);
+        const reason=body.querySelector('[data-error-reason]')?.value.trim();
+        if(!selected.length)return;
+        if(!reason){body.querySelector('[data-error-reason]')?.focus();return;}
+        checkDecisions.set(key,{type:'ignored',reason,ignoredRows:Array.from(new Set([...ignoredRows,...selected]))});
+        trigger.classList.add('is-processed');trigger.title=trigger.title.replace(/ · 已处理$/,'')+' · 已处理';
+        openCheckDrawer(trigger);
+      };
+      syncBatchSelection();
+    }
+    mask.hidden=false;
+    document.body.classList.add('dm-check-drawer-open');
+  };
+  wrap.addEventListener('click',event=>{
+    const trigger=event.target.closest('.dm-check-status-trigger');
+    if(!trigger)return;
+    event.preventDefault();event.stopPropagation();openCheckDrawer(trigger);
+  });
+  let flowTooltip=null;
+  let flowYearMenu=null;
+  const ensureFlowTooltip=()=>{
+    if(flowTooltip)return flowTooltip;
+    flowTooltip=document.createElement('div');
+    flowTooltip.className='dm-monthly-flow-tooltip';
+    flowTooltip.hidden=true;
+    document.body.appendChild(flowTooltip);
+    return flowTooltip;
+  };
+  const positionFlowTooltip=event=>{
+    if(!flowTooltip||flowTooltip.hidden)return;
+    const gap=12;
+    const width=flowTooltip.offsetWidth||176;
+    const height=flowTooltip.offsetHeight||82;
+    const left=Math.min(window.innerWidth-width-gap,Math.max(gap,event.clientX+12));
+    const top=event.clientY+14+height>window.innerHeight?Math.max(gap,event.clientY-height-12):event.clientY+14;
+    flowTooltip.style.left=`${left}px`;
+    flowTooltip.style.top=`${top}px`;
+  };
+  wrap.addEventListener('pointerover',event=>{
+    const pair=event.target.closest('.monthly-flow-pair');
+    if(!pair)return;
+    const pairs=[...(pair.parentElement?.querySelectorAll('.monthly-flow-pair')||[])];
+    const year=Number(pair.dataset.flowYear)||selectedFlowYear;
+    const month=Number(pair.dataset.flowMonth)||Math.max(1,pairs.indexOf(pair)+1);
+    const inflow=Number(pair.dataset.flowIn);
+    const outflow=Number(pair.dataset.flowOut);
+    const account=pair.dataset.flowAccount||pair.closest('tr')?.querySelector('td:nth-child(2)')?.textContent?.trim()||'当前账户';
+    const tooltip=ensureFlowTooltip();
+    tooltip.innerHTML=`<b>${year}年${String(month).padStart(2,'0')}月</b><small>${account}</small><div><span><i class="is-in"></i>流入金额</span><strong class="is-in">${format(Number.isFinite(inflow)?inflow:0)}</strong></div><div><span><i class="is-out"></i>流出金额</span><strong class="is-out">${format(Number.isFinite(outflow)?outflow:0)}</strong></div>`;
+    tooltip.hidden=false;
+    positionFlowTooltip(event);
+  });
+  wrap.addEventListener('pointermove',event=>{if(event.target.closest('.monthly-flow-pair'))positionFlowTooltip(event);});
+  wrap.addEventListener('pointerout',event=>{
+    const pair=event.target.closest('.monthly-flow-pair');
+    if(!pair||pair.contains(event.relatedTarget))return;
+    if(flowTooltip)flowTooltip.hidden=true;
+  });
+  const closeFlowYearMenu=()=>{
+    if(!flowYearMenu)return;
+    flowYearMenu.hidden=true;
+    table.querySelector('[data-flow-year-trigger]')?.setAttribute('aria-expanded','false');
+  };
+  const openFlowYearMenu=button=>{
+    if(!flowYearMenu){
+      flowYearMenu=document.createElement('div');
+      flowYearMenu.className='dm-flow-year-menu';
+      flowYearMenu.hidden=true;
+      document.body.appendChild(flowYearMenu);
+      flowYearMenu.addEventListener('click',event=>{
+        const option=event.target.closest('[data-flow-year-option]');
+        if(!option)return;
+        selectedFlowYear=Number(option.dataset.flowYearOption)||2025;
+        if(flowTooltip)flowTooltip.hidden=true;
+        closeFlowYearMenu();
+        render();
+      });
+    }
+    const willOpen=flowYearMenu.hidden;
+    closeFlowYearMenu();
+    if(!willOpen)return;
+    flowYearMenu.innerHTML=years.map(year=>`<button type="button" data-flow-year-option="${year}" class="${year===selectedFlowYear?'is-active':''}"><span>${year}年</span>${year===selectedFlowYear?'<i>✓</i>':''}</button>`).join('');
+    flowYearMenu.hidden=false;
+    button.setAttribute('aria-expanded','true');
+    const rect=button.getBoundingClientRect();
+    const menuWidth=104;
+    flowYearMenu.style.left=`${Math.min(window.innerWidth-menuWidth-8,Math.max(8,rect.left+(rect.width-menuWidth)/2))}px`;
+    flowYearMenu.style.top=`${Math.min(window.innerHeight-flowYearMenu.offsetHeight-8,rect.bottom+5)}px`;
+  };
+  table.addEventListener('click',event=>{
+    const button=event.target.closest('[data-flow-year-trigger]');
+    if(!button)return;
+    event.preventDefault();event.stopPropagation();openFlowYearMenu(button);
+  });
+  document.addEventListener('click',event=>{
+    if(flowYearMenu&&!flowYearMenu.hidden&&!event.target.closest('.dm-flow-year-menu')&&!event.target.closest('[data-flow-year-trigger]'))closeFlowYearMenu();
+  });
   const render=()=>{
     const viewRows=scopedRows();
     const totals=summarize(viewRows);
@@ -143,7 +379,7 @@
     renderHead();
     wrap.classList.toggle('is-year-expanded',state.yearExpanded);
     const totalYearCells=yearCells(totals);
-    body.innerHTML=`<tr class="sum-row"><td><strong>合计</strong></td><td></td><td></td><td></td><td class="flow-in is-num"><strong>${format(totals.inflow)}</strong></td><td class="flow-out is-num"><strong>${format(totals.outflow)}</strong></td><td class="is-num"><strong>${format(totals.total)}</strong></td><td class="is-num"><strong>100.00%</strong></td><td class="is-num"><strong>${format(totals.txCount)}</strong></td><td class="is-num"><strong>${totals.cpCount}</strong></td><td class="is-num"><strong>${totals.fileCount}</strong></td>${totalYearCells}<td class="account-action-sticky"></td><td class="check-col"><div class="check-window"><div class="months-grid">${monthNumbers}</div></div></td></tr>${visible.map(row=>{const source=row.source;return `<tr><td>${source[0]}</td><td>${source[1]}</td><td>${source[2]}</td><td class="monthly-flow-cell">${miniBars(row.index)}</td><td class="flow-in is-num">${format(row.inflow)}</td><td class="flow-out is-num">${format(row.outflow)}</td><td class="is-num"><b>${format(row.total)}</b></td><td class="is-num">${ratio(row.total,totals.total)}</td><td class="is-num">${format(row.txCount)}</td><td class="is-num">${row.cpCount}</td><td class="is-num">${row.fileCount}</td>${yearCells(row)}<td class="actions account-action-sticky"><button class="dm-account-action-btn" type="button" title="查看账号详情" aria-label="查看账号详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.6"></circle></svg></button><button class="dm-account-action-btn" type="button" title="查看文件详情" aria-label="查看文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button></td><td class="check-col"><div class="check-window"><div class="months-grid check-row">${statusDots(row.index)}</div></div></td></tr>`;}).join('')}`;
+    body.innerHTML=`<tr class="sum-row"><td><strong>合计</strong></td><td></td><td></td><td class="monthly-flow-cell monthly-flow-year-cell"><button type="button" class="monthly-flow-year-trigger" data-flow-year-trigger aria-haspopup="listbox" aria-expanded="false" title="切换月度流入/流出年份"><span>${selectedFlowYear}年</span><i aria-hidden="true"></i></button></td><td class="flow-in is-num"><strong>${format(totals.inflow)}</strong></td><td class="flow-out is-num"><strong>${format(totals.outflow)}</strong></td><td class="is-num"><strong>${format(totals.total)}</strong></td><td class="is-num"><strong>100.00%</strong></td><td class="is-num"><strong>${format(totals.txCount)}</strong></td><td class="is-num"><strong>${totals.cpCount}</strong></td><td class="is-num"><strong>${totals.fileCount}</strong></td>${totalYearCells}<td class="account-action-sticky"></td><td class="check-col"><div class="check-window"><div class="months-grid">${monthNumbers}</div></div></td></tr>${visible.map(row=>{const source=row.source;return `<tr><td>${source[0]}</td><td>${source[1]}</td><td>${source[2]}</td><td class="monthly-flow-cell">${miniBars(row)}</td><td class="flow-in is-num">${format(row.inflow)}</td><td class="flow-out is-num">${format(row.outflow)}</td><td class="is-num"><b>${format(row.total)}</b></td><td class="is-num">${ratio(row.total,totals.total)}</td><td class="is-num">${format(row.txCount)}</td><td class="is-num">${row.cpCount}</td><td class="is-num">${row.fileCount}</td>${yearCells(row)}<td class="actions account-action-sticky"><button class="dm-account-action-btn" type="button" title="查看账号详情" aria-label="查看账号详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.6"></circle></svg></button><button class="dm-account-action-btn" type="button" title="查看文件详情" aria-label="查看文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button></td><td class="check-col"><div class="check-window"><div class="months-grid check-row">${statusDots(row.index,source)}</div></div></td></tr>`;}).join('')}`;
     window.renderAuditPager?.(pager,{total:viewRows.length,page:state.page,pageSize:state.pageSize,onPage:page=>{state.page=page;render();},onPageSize:size=>{state.pageSize=size;state.page=1;render();}});
     delete table.dataset.baEnhanced;
     table.querySelectorAll('.ba-th-tools').forEach(tool=>tool.remove());

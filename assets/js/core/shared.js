@@ -281,6 +281,8 @@
       if (missingCard && verifyScroll) verifyScroll.prepend(missingCard);
 
       document.querySelectorAll('.monthly-flow-bars').forEach((wrap, rowIndex)=>{
+        // 账号总览/资金总览的月度柱条由各自表格状态管理，不能在这里覆盖其年份与金额属性。
+        if (wrap.closest('#tblAccountSummary')) return;
         const inflow = [72,58,84,65,91,77,69,88,74,96,82,90];
         const outflow = [54,68,61,79,63,72,86,67,81,70,92,76];
         wrap.innerHTML = inflow.map((value, month)=>`
@@ -1165,6 +1167,7 @@
         pageSize:20,
         yearExpanded:true,
         scopeView:'included',
+        flowYear:2025,
         visibleMetrics:new Set(metricOptions.filter(item=>!item.defaultHidden).map(item=>item.key))
       };
       const format = value => Number(value).toLocaleString('zh-CN');
@@ -1209,12 +1212,98 @@
           state.visibleMetrics.has('total') ? `<td class="account-year-metric is-num"><b>${format(inflow[index]+outflow[index])}</b></td>` : ''
         ].join('')).join('');
       };
-      const miniBars = index => {
-        const inflow = [72,58,84,65,91,77,69,88,74,96,82,90];
-        const outflow = [54,68,61,79,63,72,86,67,81,70,92,76];
-        const scopeFactor = state.scopeView === 'included' ? 1 : .84;
-        return `<div class="monthly-flow-bars" aria-label="月度流入流出分布">${inflow.map((value,month)=>`<span class="monthly-flow-pair" title="${month+1}月"><i class="flow-in-bar" style="height:${Math.min(98,(value+index*2)*scopeFactor)}%"></i><i class="flow-out-bar" style="height:${Math.min(98,(outflow[month]+index)*scopeFactor)}%"></i></span>`).join('')}</div>`;
+      const miniBars = row => {
+        const yearIndex = Math.max(0,years.indexOf(state.flowYear));
+        const yearWeight = yearWeights[yearIndex];
+        const inPattern = [.073,.061,.079,.068,.087,.075,.071,.083,.077,.091,.082,.096];
+        const outPattern = [.066,.074,.063,.081,.067,.076,.085,.069,.083,.072,.087,.077];
+        const profileShift = (row.index%5-2)*.0015;
+        const inWeights = inPattern.map((weight,month)=>Math.max(.025,weight+(month%3-1)*profileShift));
+        const outWeights = outPattern.map((weight,month)=>Math.max(.025,weight-(month%3-1)*profileShift));
+        const inWeightTotal = inWeights.reduce((sum,value)=>sum+value,0);
+        const outWeightTotal = outWeights.reduce((sum,value)=>sum+value,0);
+        const inflow = inWeights.map(weight=>Math.round(row.inflow*yearWeight*weight/inWeightTotal));
+        const outflow = outWeights.map(weight=>Math.round(row.outflow*yearWeight*weight/outWeightTotal));
+        const maxValue = Math.max(1,...inflow,...outflow);
+        return `<div class="monthly-flow-bars" aria-label="${state.flowYear}年月度流入流出分布">${inflow.map((value,month)=>`<span class="monthly-flow-pair" data-flow-year="${state.flowYear}" data-flow-month="${month+1}" data-flow-in="${value}" data-flow-out="${outflow[month]}" data-flow-account="${row.company}" aria-label="${state.flowYear}年${month+1}月，流入${format(value)}，流出${format(outflow[month])}"><i class="flow-in-bar" style="height:${Math.max(3,value/maxValue*100)}%"></i><i class="flow-out-bar" style="height:${Math.max(3,outflow[month]/maxValue*100)}%"></i></span>`).join('')}</div>`;
       };
+      let flowYearMenu = null;
+      let flowTooltip = null;
+      const closeFlowYearMenu = () => {
+        if (!flowYearMenu) return;
+        flowYearMenu.hidden = true;
+        table.querySelector('[data-account-flow-year-trigger]')?.setAttribute('aria-expanded','false');
+      };
+      const openFlowYearMenu = button => {
+        if (!flowYearMenu) {
+          flowYearMenu = document.createElement('div');
+          flowYearMenu.className = 'account-flow-year-menu';
+          flowYearMenu.hidden = true;
+          document.body.appendChild(flowYearMenu);
+          flowYearMenu.addEventListener('click',event=>{
+            const option = event.target.closest('[data-account-flow-year-option]');
+            if (!option) return;
+            state.flowYear = Number(option.dataset.accountFlowYearOption) || 2025;
+            if (flowTooltip) flowTooltip.hidden = true;
+            closeFlowYearMenu();
+            render();
+          });
+        }
+        const willOpen = flowYearMenu.hidden;
+        closeFlowYearMenu();
+        if (!willOpen) return;
+        flowYearMenu.innerHTML = years.map(year=>`<button type="button" data-account-flow-year-option="${year}" class="${year===state.flowYear?'is-active':''}"><span>${year}年</span>${year===state.flowYear?'<i>✓</i>':''}</button>`).join('');
+        flowYearMenu.hidden = false;
+        button.setAttribute('aria-expanded','true');
+        const rect = button.getBoundingClientRect();
+        const menuWidth = 104;
+        flowYearMenu.style.left = `${Math.min(window.innerWidth-menuWidth-8,Math.max(8,rect.left+(rect.width-menuWidth)/2))}px`;
+        flowYearMenu.style.top = `${Math.min(window.innerHeight-flowYearMenu.offsetHeight-8,rect.bottom+5)}px`;
+      };
+      const ensureFlowTooltip = () => {
+        if (flowTooltip) return flowTooltip;
+        flowTooltip = document.createElement('div');
+        flowTooltip.className = 'account-monthly-flow-tooltip';
+        flowTooltip.hidden = true;
+        document.body.appendChild(flowTooltip);
+        return flowTooltip;
+      };
+      const placeFlowTooltip = event => {
+        if (!flowTooltip || flowTooltip.hidden) return;
+        const gap=12,width=flowTooltip.offsetWidth||184,height=flowTooltip.offsetHeight||82;
+        flowTooltip.style.left = `${Math.min(window.innerWidth-width-gap,Math.max(gap,event.clientX+12))}px`;
+        flowTooltip.style.top = `${event.clientY+14+height>window.innerHeight?Math.max(gap,event.clientY-height-12):event.clientY+14}px`;
+      };
+      table.addEventListener('click',event=>{
+        const trigger = event.target.closest('[data-account-flow-year-trigger]');
+        if (!trigger) return;
+        event.preventDefault();
+        event.stopPropagation();
+        openFlowYearMenu(trigger);
+      });
+      wrap.addEventListener('pointerover',event=>{
+        const pair = event.target.closest('.monthly-flow-pair');
+        if (!pair) return;
+        const pairs = [...(pair.parentElement?.querySelectorAll('.monthly-flow-pair') || [])];
+        const year = Number(pair.dataset.flowYear) || state.flowYear;
+        const month = Number(pair.dataset.flowMonth) || Math.max(1,pairs.indexOf(pair)+1);
+        const inflow = Number(pair.dataset.flowIn);
+        const outflow = Number(pair.dataset.flowOut);
+        const account = pair.dataset.flowAccount || pair.closest('tr')?.querySelector('td:nth-child(2)')?.textContent?.trim() || '当前账户';
+        const tooltip = ensureFlowTooltip();
+        tooltip.innerHTML = `<b>${year}年${String(month).padStart(2,'0')}月</b><small>${account}</small><div><span><i class="is-in"></i>流入金额</span><strong class="is-in">${format(Number.isFinite(inflow)?inflow:0)}</strong></div><div><span><i class="is-out"></i>流出金额</span><strong class="is-out">${format(Number.isFinite(outflow)?outflow:0)}</strong></div>`;
+        tooltip.hidden = false;
+        placeFlowTooltip(event);
+      });
+      wrap.addEventListener('pointermove',event=>{ if (event.target.closest('.monthly-flow-pair')) placeFlowTooltip(event); });
+      wrap.addEventListener('pointerout',event=>{
+        const pair = event.target.closest('.monthly-flow-pair');
+        if (!pair || pair.contains(event.relatedTarget)) return;
+        if (flowTooltip) flowTooltip.hidden = true;
+      });
+      document.addEventListener('click',event=>{
+        if (flowYearMenu && !flowYearMenu.hidden && !event.target.closest('.account-flow-year-menu') && !event.target.closest('[data-account-flow-year-trigger]')) closeFlowYearMenu();
+      });
       const syncAccountColumns = () => {
         let colgroup = table.querySelector('colgroup');
         if (!colgroup) {
@@ -1266,8 +1355,8 @@
           if (item.key === 'cpCount') return `<td class="is-num">${isTotal?'<strong>':''}${row.cpCount}${isTotal?'</strong>':''}</td>`;
           return `<td class="is-num">${isTotal?'<strong>':''}${row.fileCount}${isTotal?'</strong>':''}</td>`;
         }).join('');
-        const sumRow = `<tr class="sum-row"><td><strong>合计</strong></td><td></td>${metricCells(totals,true)}${sumYearCells}<td class="account-action-sticky"></td></tr>`;
-        const dataRows = viewRows.slice(start,end).map(row=>`<tr><td>${row.company}</td><td class="monthly-flow-cell">${miniBars(row.index)}</td>${metricCells(row)}${yearCells(row)}<td class="actions account-action-sticky"><button class="dm-account-action-btn" type="button" title="查看账号详情" aria-label="查看账号详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.6"></circle></svg></button><button class="dm-account-action-btn" type="button" title="查看文件详情" aria-label="查看文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button></td></tr>`).join('');
+        const sumRow = `<tr class="sum-row"><td><strong>合计</strong></td><td class="monthly-flow-cell account-flow-year-cell"><button type="button" class="account-flow-year-trigger" data-account-flow-year-trigger aria-haspopup="listbox" aria-expanded="false" title="切换月度流入/流出年份"><span>${state.flowYear}年</span><i aria-hidden="true"></i></button></td>${metricCells(totals,true)}${sumYearCells}<td class="account-action-sticky"></td></tr>`;
+        const dataRows = viewRows.slice(start,end).map(row=>`<tr><td>${row.company}</td><td class="monthly-flow-cell">${miniBars(row)}</td>${metricCells(row)}${yearCells(row)}<td class="actions account-action-sticky"><button class="dm-account-action-btn" type="button" title="查看账号详情" aria-label="查看账号详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.6"></circle></svg></button><button class="dm-account-action-btn" type="button" title="查看文件详情" aria-label="查看文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button></td></tr>`).join('');
         body.innerHTML = sumRow + dataRows;
         renderAuditPager(pager, {
           total,

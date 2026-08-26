@@ -367,8 +367,85 @@ body .tab-pane .portrait-monthly-year-select + .portrait-legend{
   margin:0 0 8px;
 }
 
+.portrait-table-nav{
+  display:inline-flex;
+  align-items:center;
+  min-width:0;
+  gap:9px;
+}
+
 .portrait-table-viewbar .portrait-table-tabs{
   margin:0 !important;
+}
+
+.portrait-business-sync{
+  display:inline-flex;
+  align-items:center;
+  min-width:0;
+  gap:5px;
+  color:#718096;
+  font-size:11px;
+  font-weight:600;
+  line-height:24px;
+  white-space:nowrap;
+}
+
+body .tab-pane button.portrait-business-refresh{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:0 0 26px !important;
+  width:26px !important;
+  height:26px !important;
+  min-width:26px !important;
+  min-height:26px !important;
+  padding:0 !important;
+  border:1px solid #b7cff0 !important;
+  border-radius:50% !important;
+  background:#edf5ff !important;
+  color:#2467bd !important;
+  box-shadow:0 1px 3px rgba(37,99,168,.12) !important;
+  cursor:pointer;
+}
+
+body .tab-pane button.portrait-business-refresh:hover{
+  border-color:#79a7df !important;
+  background:#e2efff !important;
+  color:#164f9b !important;
+  box-shadow:0 2px 5px rgba(37,99,168,.16) !important;
+}
+
+.portrait-business-refresh svg{
+  width:16px;
+  height:16px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.portrait-business-refresh.is-refreshing svg{
+  animation:portrait-business-refresh-spin .7s linear infinite;
+}
+
+@keyframes portrait-business-refresh-spin{
+  to{ transform:rotate(360deg); }
+}
+
+.portrait-business-sync.is-success{
+  color:#3f6f5b;
+}
+
+body .portrait-blacklist-row{
+  width:100%;
+  margin:0 0 7px !important;
+  padding-left:12px !important;
+  box-sizing:border-box !important;
+  line-height:20px !important;
+  white-space:normal !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
 }
 
 .portrait-table-actions{
@@ -1309,6 +1386,7 @@ body #portraitCounterpartyTable col.portrait-monthly-col{ width:136px !important
 body #portraitCounterpartyTable col.portrait-type-col{ width:100px !important; }
 body #portraitCounterpartyTable col.portrait-industry-col{ width:120px !important; }
 body #portraitCounterpartyTable col.portrait-metric-col{ width:96px !important; }
+body #portraitCounterpartyTable col.portrait-vat-total-col{ width:132px !important; }
 body #portraitCounterpartyTable col.portrait-year-metric-col{ width:78px !important; }
 body #portraitCounterpartyTable col.portrait-flex-col{ width:140px !important; }
 body #portraitCounterpartyTable col.portrait-operation-col{ width:112px !important; }
@@ -1570,6 +1648,24 @@ body #portraitCounterpartyTable .portrait-year-sub-head th{
   width:auto !important;
   min-width:0 !important;
   max-width:none !important;
+}
+
+/* 合计组价税列标题较长，单独为标题及右侧排序/筛选工具预留空间。 */
+body #portraitCounterpartyTable .portrait-year-sub-head th.portrait-vat-total-head{
+  width:132px !important;
+  min-width:132px !important;
+  max-width:132px !important;
+  padding-left:8px !important;
+  padding-right:40px !important;
+  box-sizing:border-box !important;
+  white-space:nowrap !important;
+}
+
+body #portraitCounterpartyTable tbody td:nth-child(6),
+body #portraitCounterpartyTable tbody td:nth-child(8){
+  width:132px !important;
+  min-width:132px !important;
+  max-width:132px !important;
 }
 
 body #pane-personal\—transaction #personalCounterpartyTable .is-num{

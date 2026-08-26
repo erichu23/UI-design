@@ -3337,6 +3337,114 @@ body #tblAccountSummary td.actions a[title*="文件"]::before{
   box-sizing:border-box !important;
 }
 
+/* 资金总览：合计行内轻量年份入口，与数据校验账号总览保持一致。 */
+body #pane-account #tblAccountSummary .account-flow-year-cell{
+  padding:3px 5px !important;
+  text-align:center !important;
+  vertical-align:middle !important;
+}
+body #pane-account #tblAccountSummary .account-flow-year-trigger{
+  display:inline-flex !important;
+  height:22px !important;
+  min-width:54px !important;
+  min-height:22px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  padding:0 2px 1px !important;
+  border:0 !important;
+  border-bottom:1px solid #9ab4d5 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#315f99 !important;
+  box-shadow:none !important;
+  font:650 10.5px/20px inherit !important;
+  cursor:pointer !important;
+  outline:0 !important;
+}
+body #pane-account #tblAccountSummary .account-flow-year-trigger i{
+  width:5px !important;
+  height:5px !important;
+  margin-top:-2px !important;
+  border-right:1.5px solid currentColor !important;
+  border-bottom:1.5px solid currentColor !important;
+  transform:rotate(45deg);
+  transition:transform .15s ease;
+}
+body #pane-account #tblAccountSummary .account-flow-year-trigger[aria-expanded="true"] i{
+  margin-top:3px !important;
+  transform:rotate(225deg);
+}
+body #pane-account #tblAccountSummary .account-flow-year-trigger:hover,
+body #pane-account #tblAccountSummary .account-flow-year-trigger:focus-visible{
+  border-bottom-color:#2f6fed !important;
+  color:#1e56a3 !important;
+}
+body #pane-account #tblAccountSummary .monthly-flow-pair{
+  position:relative;
+  border-radius:3px 3px 0 0;
+  cursor:default;
+  transition:background-color .14s ease,box-shadow .14s ease;
+}
+body #pane-account #tblAccountSummary .monthly-flow-pair:hover{
+  background:#eaf2fd;
+  box-shadow:inset 0 -1px #9bb8dd;
+}
+.account-flow-year-menu{
+  position:fixed;
+  z-index:13030;
+  width:104px;
+  padding:4px;
+  border:1px solid #d8e3ef;
+  border-radius:7px;
+  background:#fff;
+  box-shadow:0 8px 22px rgba(24,48,78,.15);
+  box-sizing:border-box;
+}
+.account-flow-year-menu[hidden]{display:none;}
+.account-flow-year-menu button{
+  display:flex;
+  width:100%;
+  height:28px;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 8px;
+  border:0;
+  border-radius:5px;
+  background:#fff;
+  color:#52657b;
+  font:500 11px/26px inherit;
+  cursor:pointer;
+}
+.account-flow-year-menu button:hover{background:#f2f6fb;color:#244f86;}
+.account-flow-year-menu button.is-active{background:#edf4ff;color:#1f5ca8;font-weight:650;}
+.account-flow-year-menu button i{color:#2f6fed;font:700 11px/1 Arial,sans-serif;}
+.account-monthly-flow-tooltip{
+  position:fixed;
+  z-index:13020;
+  width:184px;
+  padding:9px 10px;
+  border:1px solid #d8e3ef;
+  border-radius:7px;
+  background:rgba(255,255,255,.98);
+  box-shadow:0 8px 22px rgba(24,48,78,.15);
+  color:#52647a;
+  font-size:11px;
+  pointer-events:none;
+  box-sizing:border-box;
+}
+.account-monthly-flow-tooltip[hidden]{display:none;}
+.account-monthly-flow-tooltip > b{display:block;margin-bottom:2px;color:#233b58;font-size:12px;font-weight:700;}
+.account-monthly-flow-tooltip > small{display:block;margin-bottom:7px;color:#8a97a7;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.account-monthly-flow-tooltip > div{display:flex;align-items:center;justify-content:space-between;gap:10px;line-height:20px;}
+.account-monthly-flow-tooltip > div span{display:inline-flex;align-items:center;gap:5px;}
+.account-monthly-flow-tooltip i{display:inline-block;width:5px;height:10px;border-radius:999px;}
+.account-monthly-flow-tooltip i.is-in{background:#3d78d4;}
+.account-monthly-flow-tooltip i.is-out{background:#cf466a;}
+.account-monthly-flow-tooltip strong{font-variant-numeric:tabular-nums;font-weight:700;}
+.account-monthly-flow-tooltip strong.is-in{color:#356fce;}
+.account-monthly-flow-tooltip strong.is-out{color:#c74468;}
+
 /* 全平台表格体验：资金流水分析内所有可纵向滚动表格固定表头。 */
 body .tab-pane .account-summary-table-wrap table thead,
 body .tab-pane .portrait-table-wrap table thead,
@@ -3880,7 +3988,7 @@ body .portrait-table-card #portraitColumnsBtn{
 }
 
 body .portrait-table-card #portraitExportBtn{
-  margin-left:var(--audit-action-btn-gap, 6px) !important;
+  margin-left:0 !important;
 }
 
 body .account-trend-year-select{

@@ -17,8 +17,8 @@
   <link rel="stylesheet" href="../assets/css/pages/biz.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/routine.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260507-routine"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260825-statement-sticky4"/>
-  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260825-portrait-year-filter2"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260826-portrait-actions1"/>
+  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260826-business-sync3"/>
   <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260624-riskflow1"/>
 </head>
 <body>
@@ -198,10 +198,18 @@
         <button class="portrait-kpi-toggle" id="portraitKpiToggle" type="button" aria-label="隐藏KPI卡片" title="隐藏KPI卡片"><span></span></button>
       </div>
       <div class="portrait-table-viewbar">
-        <div class="portrait-table-tabs" id="portraitTableTabs"><button class="is-active" data-view="summary" type="button">合计数据</button><button data-view="business" type="button">工商信息</button></div>
-        <div class="counterparty-blacklist-note">当前工作簿下总计有0个对手方存在配合造假行为，请关注！（AQPP-Audit提供的全量配合造假清单见<a href="javascript:void(0)">第三方配合造假名单.xlsx</a>）</div>
-        <div class="portrait-table-actions"><button class="btn" id="portraitColumnsBtn" type="button">自定义表头</button><button class="btn primary" id="portraitExportBtn" type="button">导出清单</button></div>
+        <div class="portrait-table-nav">
+          <div class="portrait-table-tabs" id="portraitTableTabs"><button class="is-active" data-view="summary" type="button">交易数据</button><button data-view="business" type="button">工商信息</button></div>
+          <div class="portrait-business-sync">
+            <button class="portrait-business-refresh" id="portraitBusinessRefresh" type="button" aria-label="重新获取工商信息" title="重新获取工商信息">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.34 5.66M20 5v6h-6"/></svg>
+            </button>
+            <span id="portraitBusinessRefreshState">工商信息最新更新时间：<time id="portraitBusinessUpdatedAt">2026-08-26 09:30</time></span>
+          </div>
+        </div>
+        <div class="portrait-table-actions"><button class="btn" id="portraitResetFilters" type="button">重置筛选</button><button class="btn" id="portraitColumnsBtn" type="button">自定义表头</button><button class="btn primary" id="portraitGenerateResult" type="button">生成分析结果</button><button class="btn primary" id="portraitExportBtn" type="button">生成流水</button></div>
       </div>
+      <div class="counterparty-blacklist-note portrait-blacklist-row">当前工作簿下总计有0个对手方存在配合造假行为，请关注！（AQPP-Audit提供的全量配合造假清单见<a href="javascript:void(0)">第三方配合造假名单.xlsx</a>）</div>
       <div class="portrait-table-wrap"><table class="table" id="portraitCounterpartyTable"><thead id="portraitCounterpartyHead"></thead><tbody id="portraitCounterpartyBody"></tbody></table></div>
       <div class="pagination portrait-pagination" id="portraitPager"></div>
     </div>
@@ -869,9 +877,9 @@
 
 
 <script src="../assets/js/config/fund-flow-tab-layout.js?v=20260825-missing-actions1"></script>
-<script defer src="../assets/js/core/shared.js?v=20260825-statement-sticky4"></script>
+<script defer src="../assets/js/core/shared.js?v=20260826-account-flow-year2"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260508-fast2"></script>
-<script defer src="../assets/js/pages/portrait.js?v=20260825-portrait-year-filter2"></script>
+<script defer src="../assets/js/pages/portrait.js?v=20260826-business-sync3"></script>
 <script defer src="../assets/js/pages/routine.js?v=20260508-fast2"></script>
 </body>
 </html>
