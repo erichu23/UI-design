@@ -765,6 +765,12 @@ body{
   cursor: pointer;
 }
 
+/* 暂停展示的模块入口必须覆盖侧边栏 flex 规则，且不占布局空间。 */
+.sb-submenu .sb-row.is-temporarily-hidden,
+.sidebar.is-collapsed .sb-submenu .sb-row.is-temporarily-hidden{
+  display:none !important;
+}
+
 .sb-submenu .sb-row:hover{
   background: var(--hover-bg);
   color: #2f5ea8;

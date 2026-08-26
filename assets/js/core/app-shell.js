@@ -62,7 +62,7 @@ function initCollapsedSidebarFlyout(){
     const iconClass = getGroupIconClass(group);
     const isWorkbookMenu = group.id === 'workbookMenuGroup';
     const contextDisabled = sidebar.classList.contains('is-project-list') && isWorkbookMenu;
-    const rows = Array.from(group.querySelectorAll(':scope > .sb-submenu > .sb-row'));
+    const rows = Array.from(group.querySelectorAll(':scope > .sb-submenu > .sb-row')).filter(row => !row.hidden && !row.classList.contains('is-temporarily-hidden'));
     const itemsHtml = rows.length ? rows.map((row, index) => {
       const text = row.querySelector('.sb-txt')?.textContent.trim() || '未命名页面';
       // 悬浮菜单沿用展开侧边栏的模块图标，只通过颜色表达可用状态。
@@ -168,8 +168,8 @@ function initCollapsedSidebarFlyout(){
 const APP_FRAME_STATE_KEY = 'auditCompass.currentFrameState';
 const DEFAULT_PROJECT = 'Test2';
 const DEFAULT_BOOK = '20251022';
-const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260814-routine-sync1';
-const DATA_MANAGEMENT_SRC = './fragments/data-management.html?v=20260818-related-master23';
+const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260825-statement-sticky4';
+const DATA_MANAGEMENT_SRC = './fragments/data-management.html?v=20260825-missing-actions1';
 const DATA_SUMMARY_SRC = './fragments/data-summary.html?v=20260813-metric-width1';
 const WORKINGPAPER_EXPORT_SRC = './fragments/workingpaper-export.html?v=20260817-report-year-table10';
 const PROJECT_LIST_SRC = './fragments/project-list.html?v=20260813-project-list11';
@@ -291,7 +291,10 @@ function normalizeFrameSrc(src){
   if (src.includes('data-upload.html')) return DATA_MANAGEMENT_SRC;
   if (src.includes('data-validation.html')) return DATA_MANAGEMENT_SRC;
   if (src.includes('data-summary.html')) return DATA_SUMMARY_SRC;
-  if (src.includes('workingpaper-export.html')) return WORKINGPAPER_EXPORT_SRC;
+  if (src.includes('workingpaper-export.html')) {
+    try { localStorage.setItem('topTabs.active', 'risk-report-export'); } catch (e) {}
+    return BANK_ANALYSIS_SRC;
+  }
   return src;
 }
 
@@ -465,10 +468,11 @@ function restoreFrameState(){
     return;
   }
 
+  const wasWorkingpaperPage = saved.src.includes('workingpaper-export.html');
   const restoredSrc = normalizeFrameSrc(saved.src);
   if (frame) frame.src = restoredSrc;
   if (breadcrumb) breadcrumb.style.display = 'flex';
-  const restoredTitle = saved.title === LEGACY_BANK_TITLE
+  const restoredTitle = saved.title === LEGACY_BANK_TITLE || wasWorkingpaperPage
     ? '资金流水分析'
     : (saved.title === LEGACY_WORKINGPAPER_TITLE || restoredSrc.includes('workingpaper-export.html') ? '报告及底稿导出' : saved.title);
   setWorkspaceState(saved.project, saved.book, restoredTitle);

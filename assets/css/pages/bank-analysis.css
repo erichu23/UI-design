@@ -435,6 +435,31 @@ body{
   flex-direction:column;
 }
 
+/* 可编排业务 Tab：内容继续由原页面承载，只移动页面归属，不复制样式。 */
+.workspace-embedded-pane{
+  width:100%;
+  min-width:0;
+  min-height:0;
+  overflow:hidden;
+}
+
+.workspace-embedded-frame{
+  display:block;
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+  flex:1 1 auto;
+  border:0;
+  background:transparent;
+}
+
+.tab-container:has(.tab[data-top="scope-control"].active) .biz-filter-bar,
+.tab-container:has(.tab[data-top="risk-report-export"].active) .biz-filter-bar,
+.tab-container:has(.tab[data-top="workingpaper-export"].active) .biz-filter-bar{
+  display:none !important;
+}
+
 .tab-pane .card{
   width:auto;
   min-width:0;

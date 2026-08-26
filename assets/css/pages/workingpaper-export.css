@@ -1,4 +1,6 @@
 html,body{height:100%;margin:0;background:#f5f8fc;overflow:hidden;}
+html.wp-embedded-module body{background:transparent;}
+html.wp-embedded-module .wp-export-tab-container{display:none!important;}
 .workingpaper-export-page #pane-workingpaper{display:flex;height:100%;min-height:0;flex-direction:column;}
 .workingpaper-export-page .wp-export-tab-container{flex:0 0 auto;}
 .workingpaper-export-page .wp-export-tab-container .tabbar{border-bottom:0 !important;}

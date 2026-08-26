@@ -7,6 +7,7 @@
   const panes=Array.from(document.querySelectorAll('[data-export-pane]'));
   const tabbar=document.getElementById('workingpaperExportTabs');
   const inkbar=document.getElementById('workingpaperExportInkbar');
+  const embeddedExportTab=new URLSearchParams(location.search).get('embed');
   const positionInkbar=tab=>{
     if(!inkbar||!tabbar||!tab)return;
     const wrapRect=tabbar.getBoundingClientRect();
@@ -39,7 +40,7 @@
   });
   tabbar?.addEventListener('scroll',()=>positionInkbar(tabs.find(tab=>tab.classList.contains('active'))),{passive:true});
   window.addEventListener('resize',()=>positionInkbar(tabs.find(tab=>tab.classList.contains('active'))));
-  activateTab('risk-report');
+  activateTab(panes.some(pane=>pane.dataset.exportPane===embeddedExportTab)?embeddedExportTab:'risk-report');
 
   const routineStateKey='auditCompass.specialTransactionRoutineState';
   const formatRoutineCriteria=filters=>{

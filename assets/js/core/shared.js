@@ -444,7 +444,8 @@
           balance:indexes.map(index => dailyCashModel.balance[index]),
           inflow:indexes.map(index => dailyCashModel.inflow[index]),
           outflow:indexes.map(index => dailyCashModel.outflow[index]),
-          zoomStart:0
+          zoomStart:0,
+          zoomEnd:endYear > startYear ? Math.min(100, 100 / (endYear - startYear + 1)) : 100
         };
       };
       let activeTrendView = getTrendRangeView('2023-2025');
@@ -467,6 +468,31 @@
         snap:true,
         lineStyle:{color:'#94a3b8',width:1,type:'dashed'}
       };
+      const isTrendMonthTick = (index, value) => String(value || '').slice(8, 10) === '01';
+      const formatTrendMonthTick = value => {
+        const text = String(value || '');
+        const year = text.slice(0, 4);
+        const month = text.slice(5, 7);
+        const firstYear = activeTrendView.dates[0]?.slice(0, 4);
+        const lastYear = activeTrendView.dates[activeTrendView.dates.length - 1]?.slice(0, 4);
+        return firstYear !== lastYear ? `${year.slice(2)}/${month}` : `${month}月`;
+      };
+      const trendMonthAxis = {
+        name:'日期',
+        nameLocation:'end',
+        nameGap:5,
+        nameTextStyle:{color:'#94a3b8',fontSize:9,padding:[18,0,0,0]},
+        axisLine:{lineStyle:{color:'#cbd5e1'}},
+        axisTick:{show:true,alignWithLabel:true,interval:isTrendMonthTick,lineStyle:{color:'#cbd5e1'}},
+        axisLabel:{
+          color:'#64748b',
+          fontSize:9,
+          hideOverlap:true,
+          margin:8,
+          interval:isTrendMonthTick,
+          formatter:formatTrendMonthTick
+        }
+      };
 
       const balanceEl = document.getElementById('chart-account-balance');
       if (balanceEl && window.echarts) {
@@ -488,10 +514,10 @@
               { type:'text', left:15, top:0, style:{text:'账户余额', fill:'#64748b', fontSize:11, fontWeight:600} }
             ]
           }],
-          grid: { left:62, right:18, top:30, bottom:46, containLabel:false },
-          xAxis: { type:'category', boundaryGap:false, data:activeTrendView.dates, axisLine:{lineStyle:{color:'#cbd5e1'}}, axisLabel:{color:'#64748b',fontSize:9,hideOverlap:true,margin:8,formatter:value=>value.slice(5)} },
+          grid: { left:62, right:38, top:30, bottom:46, containLabel:false },
+          xAxis: { type:'category', boundaryGap:false, data:activeTrendView.dates, ...trendMonthAxis },
           yAxis: { type:'value', min:0, splitLine:{lineStyle:{color:'#eef2f7'}}, axisLabel:{color:'#64748b',fontSize:10,formatter:formatTrendNumber} },
-          dataZoom: [{ type:'inside', start:activeTrendView.zoomStart, end:100 }, { type:'slider', start:activeTrendView.zoomStart, end:100, height:10, bottom:4, borderColor:'transparent', backgroundColor:'#eef2f7', fillerColor:'rgba(79,134,174,.18)', handleSize:0, showDetail:false }],
+          dataZoom: [{ type:'inside', start:activeTrendView.zoomStart, end:activeTrendView.zoomEnd }, { type:'slider', start:activeTrendView.zoomStart, end:activeTrendView.zoomEnd, height:10, bottom:4, borderColor:'transparent', backgroundColor:'#eef2f7', fillerColor:'rgba(79,134,174,.18)', handleSize:0, showDetail:false }],
           series: [{
             name:'账户余额', type:'line', smooth:false, connectNulls:false,
             showSymbol:false, showAllSymbol:false, symbol:'circle', symbolSize:6,
@@ -521,13 +547,12 @@
             itemHeight: 6,
             textStyle: { color: '#475569', fontSize: 10 }
           },
-          grid: { left: 62, right: 18, top: 30, bottom: 46, containLabel: false },
+          grid: { left: 62, right: 38, top: 30, bottom: 46, containLabel: false },
           xAxis: {
             type: 'category',
             boundaryGap: false,
             data: activeTrendView.dates,
-            axisLine: { lineStyle: { color: '#cbd5e1' } },
-            axisLabel: { color:'#64748b', fontSize:9, hideOverlap:true, margin:8, formatter:value=>value.slice(5) }
+            ...trendMonthAxis
           },
           yAxis: {
             type: 'value',
@@ -536,8 +561,8 @@
             axisLabel: { color: '#64748b', fontSize: 10, formatter: formatTrendNumber }
           },
           dataZoom: [
-            { type:'inside', start:activeTrendView.zoomStart, end:100 },
-            { type:'slider', start:activeTrendView.zoomStart, end:100, height:10, bottom:4, borderColor:'transparent', backgroundColor:'#eef2f7', fillerColor:'rgba(47,111,237,.16)', handleSize:0, showDetail:false }
+            { type:'inside', start:activeTrendView.zoomStart, end:activeTrendView.zoomEnd },
+            { type:'slider', start:activeTrendView.zoomStart, end:activeTrendView.zoomEnd, height:10, bottom:4, borderColor:'transparent', backgroundColor:'#eef2f7', fillerColor:'rgba(47,111,237,.16)', handleSize:0, showDetail:false }
           ],
           series: [
             {
@@ -570,12 +595,12 @@
         activeTrendView = getTrendRangeView(event.target.value);
         window.bankAccountBalanceChart?.setOption({
           xAxis:{data:activeTrendView.dates},
-          dataZoom:[{start:0,end:100},{start:0,end:100}],
+          dataZoom:[{start:activeTrendView.zoomStart,end:activeTrendView.zoomEnd},{start:activeTrendView.zoomStart,end:activeTrendView.zoomEnd}],
           series:[{data:activeTrendView.balance}]
         });
         window.bankAccountIoChart?.setOption({
           xAxis:{data:activeTrendView.dates},
-          dataZoom:[{start:0,end:100},{start:0,end:100}],
+          dataZoom:[{start:activeTrendView.zoomStart,end:activeTrendView.zoomEnd},{start:activeTrendView.zoomStart,end:activeTrendView.zoomEnd}],
           series:[{data:activeTrendView.inflow},{data:activeTrendView.outflow}]
         });
       });
@@ -946,16 +971,33 @@
         // 默认展开：detail-row 已显示
         btn.addEventListener('click',()=>{
           const expanded = btn.classList.toggle('expanded');
+          btn.setAttribute('aria-expanded', String(expanded));
           document.querySelectorAll(`.group-${groupId}`).forEach(d=>{
             d.style.display = expanded ? 'table-row' : 'none';
           });
-          btn.textContent = expanded ? '▼' : '▶';
         });
       });
     });
 
     function initReconcilePagination(){
-      const fmt = value => `${Number(value).toLocaleString('zh-CN')}K`;
+      const showReconcileSaveToast = message => {
+        const toast = document.getElementById('dmMasterToast');
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add('is-visible', 'is-success');
+        window.clearTimeout(showReconcileSaveToast.timer);
+        showReconcileSaveToast.timer = window.setTimeout(() => {
+          toast.classList.remove('is-visible', 'is-success');
+        }, 2200);
+      };
+      const compactHeaders = new Set(['账面期初金额','账面流出金额','账面流入金额','账面期末金额','期初差异','借方差异','贷方差异','期末差异']);
+      document.querySelectorAll('.bank-reconcile-table thead th').forEach(th=>{
+        const label=(th.querySelector('span')?.textContent||th.textContent||'').trim();
+        if(!compactHeaders.has(label))return;
+        th.classList.add('no-sort','reconcile-compact-head');
+        th.querySelector('.ba-th-tools')?.remove();
+      });
+      const fmt = value => Number(value).toLocaleString('zh-CN');
       const companies = [
         ['华东制造集团有限公司','发行人'],
         ['上海星河科技有限公司','发行人'],
@@ -985,33 +1027,37 @@
         const inDiff = inflow - bookOut;
         const outDiff = outflow - bookIn;
         const finalDiff = final - bookFinal;
-        const cells = [
-          company[0],
-          ...(withAccount ? ['发行人', accounts[i % accounts.length], banks[i % banks.length], '银行流水'] : [company[1]]),
-          year,
-          currency,
-          fmt(end),
-          `<span class="amount-in">${fmt(inflow)}</span>`,
-          `<span class="amount-out">${fmt(outflow)}</span>`,
-          fmt(final),
-          fmt(bookOpen),
-          fmt(bookOut),
-          fmt(bookIn),
-          fmt(bookFinal),
-          openDiff === 0 ? '0' : fmt(openDiff),
-          inDiff === 0 ? '0' : fmt(inDiff),
-          outDiff === 0 ? '0' : fmt(outDiff),
-          finalDiff === 0 ? '0' : fmt(finalDiff),
-          `<input class="ba-note-input" value="${Math.abs(finalDiff) > 1000 ? '差异待复核' : '核对一致'}"/>`,
-          ''
-        ];
-        return `<tr>${cells.map(v=>`<td>${v}</td>`).join('')}</tr>`;
+        return {
+          company:company[0], relation:'发行人', account:withAccount?accounts[i%accounts.length]:'',
+          bank:withAccount?banks[i%banks.length]:'', source:withAccount?'银行流水':'', year, currency,
+          bankValues:[end,inflow,outflow,final], bookValues:[bookOpen,bookOut,bookIn,bookFinal],
+          note:Math.abs(finalDiff)>1000?'差异待复核':'核对一致', updater:'项目组成员', updateTime:'2026-08-25 14:30'
+        };
       };
       const generalRows = Array.from({length:24}, (_,i)=>makeRow(1086000, i, false));
       const accountRows = Array.from({length:36}, (_,i)=>makeRow(836000, i, true));
       const pagers = {
-        general: { body: document.getElementById('generalLedgerReconcileBody'), pager: document.getElementById('generalLedgerReconcilePager'), rows: generalRows, page: 1, pageSize: 20 },
-        account: { body: document.getElementById('accountReconcileBody'), pager: document.getElementById('accountReconcilePager'), rows: accountRows, page: 1, pageSize: 20 }
+        general: { body: document.getElementById('generalLedgerReconcileBody'), pager: document.getElementById('generalLedgerReconcilePager'), rows: generalRows, page: 1, pageSize: 20, editing:false },
+        account: { body: document.getElementById('accountReconcileBody'), pager: document.getElementById('accountReconcilePager'), rows: accountRows, page: 1, pageSize: 20, editing:false }
+      };
+      const differences = row => [
+        Math.abs(row.bankValues[0]-row.bookValues[0]),
+        Math.abs(row.bankValues[1]-row.bookValues[1]),
+        Math.abs(row.bankValues[2]-row.bookValues[2]),
+        Math.abs(row.bankValues[3]-row.bookValues[3])
+      ];
+      const rowValues = (row,key) => [
+        row.company,...(key==='account'?[row.account,row.bank]:[]),
+        row.year,row.currency,...row.bankValues,...row.bookValues,...differences(row),row.note,row.updater,row.updateTime
+      ];
+      const renderRow = (row,key,editing) => {
+        const prefix = key==='account'
+          ? [row.company,row.account,row.bank,row.year,row.currency]
+          : [row.company,row.year,row.currency];
+        const bankCells = row.bankValues.map((value,index)=>`<td class="${index===1?'amount-in':index===2?'amount-out':''}">${fmt(value)}</td>`).join('');
+        const bookCells = row.bookValues.map((value,index)=>`<td class="reconcile-book-cell">${editing?`<input class="reconcile-book-input" data-book-index="${index}" inputmode="decimal" value="${value}"/>`:fmt(value)}</td>`).join('');
+        const diffCells = differences(row).map(value=>`<td class="reconcile-diff-cell ${value?'has-difference':''}">${value?fmt(value):'0'}</td>`).join('');
+        return `<tr>${prefix.map(value=>`<td>${value}</td>`).join('')}${bankCells}${bookCells}${diffCells}<td><input class="ba-note-input reconcile-note-input" value="${row.note}"/></td><td>${row.updater}</td><td>${row.updateTime}</td></tr>`;
       };
       const render = key => {
         const state = pagers[key];
@@ -1019,7 +1065,7 @@
         const pages = Math.max(1, Math.ceil(state.rows.length / state.pageSize));
         state.page = Math.min(Math.max(1, state.page), pages);
         const start = (state.page - 1) * state.pageSize;
-        state.body.innerHTML = state.rows.slice(start, start + state.pageSize).join('');
+        state.body.innerHTML = state.rows.slice(start, start + state.pageSize).map(row=>renderRow(row,key,state.editing)).join('');
         renderAuditPager(state.pager, {
           total: state.rows.length,
           page: state.page,
@@ -1028,6 +1074,52 @@
           onPageSize(size){ state.pageSize = size; state.page = 1; render(key); }
         });
       };
+      Object.entries(pagers).forEach(([key,state])=>{
+        state.body?.addEventListener('input',event=>{
+          const rowElement=event.target.closest('tr');
+          if(!rowElement)return;
+          const index=(state.page-1)*state.pageSize+Array.from(state.body.rows).indexOf(rowElement);
+          const row=state.rows[index];
+          if(!row)return;
+          const bookInput=event.target.closest('[data-book-index]');
+          if(bookInput){
+            row.bookValues[Number(bookInput.dataset.bookIndex)]=Number(String(bookInput.value).replace(/,/g,''))||0;
+            const diffStart=key==='account'?13:11;
+            differences(row).forEach((value,offset)=>{
+              const cell=rowElement.cells[diffStart+offset];
+              if(!cell)return;
+              cell.textContent=value?fmt(value):'0';
+              cell.classList.toggle('has-difference',Boolean(value));
+            });
+          }
+          if(event.target.classList.contains('reconcile-note-input'))row.note=event.target.value;
+        });
+        document.querySelector(`[data-reconcile-edit="${key}"]`)?.addEventListener('click',event=>{
+          const isSaving = state.editing;
+          if(state.editing){
+            const start=(state.page-1)*state.pageSize;
+            const now=new Date();
+            const stamp=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+            state.rows.slice(start,start+state.pageSize).forEach(row=>{row.updater='当前用户';row.updateTime=stamp;});
+          }
+          state.editing=!state.editing;
+          event.currentTarget.textContent=state.editing?'保存':'编辑';
+          event.currentTarget.classList.toggle('primary',state.editing);
+          render(key);
+          if(isSaving)showReconcileSaveToast(`${key==='account'?'分账号核对':'总账核对'}数据保存成功`);
+        });
+        document.querySelector(`[data-reconcile-export="${key}"]`)?.addEventListener('click',()=>{
+          const header=key==='account'
+            ? ['公司名称','银行账号','开户银行','期间','币种','期初金额','流入金额','流出金额','期末金额','账面期初金额','账面流出金额','账面流入金额','账面期末金额','期初差异','借方差异','贷方差异','期末差异','差异说明','更新人','更新时间']
+            : ['公司名称','期间','币种','期初金额','流入金额','流出金额','期末金额','账面期初金额','账面流出金额','账面流入金额','账面期末金额','期初差异','借方差异','贷方差异','期末差异','差异说明','更新人','更新时间'];
+          const csv=[header,...state.rows.map(row=>rowValues(row,key))].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');
+          const link=document.createElement('a');
+          link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));
+          link.download=`${key==='account'?'分账号核对':'总账核对'}结果.csv`;
+          link.click();
+          URL.revokeObjectURL(link.href);
+        });
+      });
       render('general');
       render('account');
     }
@@ -1054,23 +1146,54 @@
       ].map((item,index)=>({
         company:item[0], inflow:item[1], outflow:item[2], total:item[3],
         txCount:item[4], cpCount:item[5], fileCount:item[6], index,
-        scopeIncluded:item[3],
-        scopeExcluded:Math.round(item[3] * (.82 + (index % 4) * .025))
+        excludedInflow:Math.round(item[1] * (.84 + (index % 4) * .018)),
+        excludedOutflow:Math.round(item[2] * (.80 + (index % 4) * .022)),
+        excludedTxCount:Math.round(item[4] * (.82 + (index % 3) * .025)),
+        excludedCpCount:Math.max(1, Math.round(item[5] * (.84 + (index % 3) * .02)))
       }));
-      const totals = rows.reduce((sum,row)=>({
-        inflow:sum.inflow+row.inflow,
-        outflow:sum.outflow+row.outflow,
-        total:sum.total+row.total,
-        scopeIncluded:sum.scopeIncluded+row.scopeIncluded,
-        scopeExcluded:sum.scopeExcluded+row.scopeExcluded,
-        txCount:sum.txCount+row.txCount,
-        cpCount:sum.cpCount+row.cpCount,
-        fileCount:sum.fileCount+row.fileCount
-      }),{inflow:0,outflow:0,total:0,scopeIncluded:0,scopeExcluded:0,txCount:0,cpCount:0,fileCount:0});
-      totals.cpCount = 100;
-      totals.fileCount = 8;
-      const state = { page: 1, pageSize: 20, yearExpanded: false };
+      const metricOptions = [
+        { key:'inflow', label:'流入金额', annual:true },
+        { key:'outflow', label:'流出金额', annual:true },
+        { key:'total', label:'交易总额', annual:true },
+        { key:'ratio', label:'交易总额占比' },
+        { key:'txCount', label:'交易笔数' },
+        { key:'cpCount', label:'对手方数量', defaultHidden:true },
+        { key:'fileCount', label:'流水文件', defaultHidden:true }
+      ];
+      const state = {
+        page:1,
+        pageSize:20,
+        yearExpanded:true,
+        scopeView:'included',
+        visibleMetrics:new Set(metricOptions.filter(item=>!item.defaultHidden).map(item=>item.key))
+      };
       const format = value => Number(value).toLocaleString('zh-CN');
+      const scopedRow = row => {
+        if (state.scopeView === 'included') return row;
+        const inflow = row.excludedInflow;
+        const outflow = row.excludedOutflow;
+        return {
+          ...row,
+          inflow,
+          outflow,
+          total:inflow + outflow,
+          txCount:row.excludedTxCount,
+          cpCount:row.excludedCpCount
+        };
+      };
+      const scopedRows = () => rows.map(scopedRow);
+      const scopedTotals = viewRows => {
+        const result = viewRows.reduce((sum,row)=>({
+          inflow:sum.inflow+row.inflow,
+          outflow:sum.outflow+row.outflow,
+          total:sum.total+row.total,
+          txCount:sum.txCount+row.txCount,
+          fileCount:sum.fileCount+row.fileCount
+        }),{inflow:0,outflow:0,total:0,txCount:0,fileCount:0});
+        result.cpCount = state.scopeView === 'included' ? 100 : 88;
+        result.fileCount = 8;
+        return result;
+      };
       const splitYears = value => {
         const first = Math.round(value * yearWeights[0]);
         const second = Math.round(value * yearWeights[1]);
@@ -1080,12 +1203,17 @@
         if (!state.yearExpanded) return '';
         const inflow = splitYears(row.inflow);
         const outflow = splitYears(row.outflow);
-        return years.map((year,index)=>`<td class="flow-in is-num">${format(inflow[index])}</td><td class="flow-out is-num">${format(outflow[index])}</td><td class="is-num"><b>${format(inflow[index]+outflow[index])}</b></td>`).join('');
+        return years.map((year,index)=>[
+          state.visibleMetrics.has('inflow') ? `<td class="account-year-metric flow-in is-num">${format(inflow[index])}</td>` : '',
+          state.visibleMetrics.has('outflow') ? `<td class="account-year-metric flow-out is-num">${format(outflow[index])}</td>` : '',
+          state.visibleMetrics.has('total') ? `<td class="account-year-metric is-num"><b>${format(inflow[index]+outflow[index])}</b></td>` : ''
+        ].join('')).join('');
       };
       const miniBars = index => {
         const inflow = [72,58,84,65,91,77,69,88,74,96,82,90];
         const outflow = [54,68,61,79,63,72,86,67,81,70,92,76];
-        return `<div class="monthly-flow-bars" aria-label="月度流入流出分布">${inflow.map((value,month)=>`<span class="monthly-flow-pair" title="${month+1}月"><i class="flow-in-bar" style="height:${Math.min(98,value+index*2)}%"></i><i class="flow-out-bar" style="height:${Math.min(98,outflow[month]+index)}%"></i></span>`).join('')}</div>`;
+        const scopeFactor = state.scopeView === 'included' ? 1 : .84;
+        return `<div class="monthly-flow-bars" aria-label="月度流入流出分布">${inflow.map((value,month)=>`<span class="monthly-flow-pair" title="${month+1}月"><i class="flow-in-bar" style="height:${Math.min(98,(value+index*2)*scopeFactor)}%"></i><i class="flow-out-bar" style="height:${Math.min(98,(outflow[month]+index)*scopeFactor)}%"></i></span>`).join('')}</div>`;
       };
       const syncAccountColumns = () => {
         let colgroup = table.querySelector('colgroup');
@@ -1093,24 +1221,34 @@
           colgroup = document.createElement('colgroup');
           table.insertBefore(colgroup, table.firstChild);
         }
-        const totals = '<col class="account-amount-col"><col class="account-amount-col"><col class="account-total-col"><col class="account-ratio-col"><col class="account-count-col"><col class="account-counterparty-col"><col class="account-file-col">';
-        const annual = '<col class="account-amount-col"><col class="account-amount-col"><col class="account-total-col">';
-        colgroup.innerHTML = '<col class="account-company-col"><col class="account-monthly-col"><col class="account-scope-col"><col class="account-scope-col">' +
-          totals + (state.yearExpanded ? annual.repeat(years.length) : '') +
-          '<col class="account-flex-col">';
+        const totalCount = metricOptions.filter(item=>state.visibleMetrics.has(item.key)).length;
+        const annualCount = metricOptions.filter(item=>item.annual && state.visibleMetrics.has(item.key)).length;
+        const columnCount = 2 + totalCount + (state.yearExpanded ? years.length * annualCount : 0) + 1;
+        colgroup.innerHTML = '<col>'.repeat(columnCount);
       };
       const renderHead = () => {
         const icon = state.yearExpanded ? '«' : '»';
-        const yearHeads = state.yearExpanded ? years.map(year=>`<th colspan="3" class="account-year-head no-sort">${auditFiscalYearLabel(year)}</th>`).join('') : '';
-        const yearSubs = state.yearExpanded ? years.map(()=>'<th>流入金额</th><th>流出金额</th><th>交易总额</th>').join('') : '';
-        head.innerHTML = `<tr class="account-year-group-head"><th rowspan="2">被审计单位公司</th><th rowspan="2" class="monthly-flow-head no-sort">月度流入/流出</th><th colspan="2" class="account-scope-group no-sort">交易范围金额</th><th colspan="7" class="account-group-toggle-cell no-sort"><button class="account-group-toggle" id="accountYearToggle" type="button" title="展开或收起年度金额"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2" class="no-sort">操作</th></tr><tr class="account-year-sub-head"><th class="account-scope-head" title="包含集团内部往来在内的交易总额">含集团内往来</th><th class="account-scope-head" title="剔除集团内部往来后的交易总额">剔除集团内往来</th><th>流入金额</th><th>流出金额</th><th>交易总额</th><th>交易总额占比</th><th>交易笔数</th><th>对手方数量</th><th>流水文件</th>${yearSubs}</tr>`;
+        const visibleOptions = metricOptions.filter(item=>state.visibleMetrics.has(item.key));
+        const annualOptions = visibleOptions.filter(item=>item.annual);
+        const yearHeads = state.yearExpanded && annualOptions.length ? years.map(year=>`<th colspan="${annualOptions.length}" class="account-year-head no-sort">${auditFiscalYearLabel(year)}</th>`).join('') : '';
+        const yearSubs = state.yearExpanded ? years.map(()=>annualOptions.map(item=>`<th class="account-year-metric no-sort">${item.label}</th>`).join('')).join('') : '';
+        const totalSubs = visibleOptions.map(item=>`<th class="no-filter">${item.label}</th>`).join('');
+        const scopeActive = state.scopeView === 'excluded';
+        head.innerHTML = `<tr class="account-year-group-head"><th rowspan="2" class="no-filter">被审计单位公司</th><th rowspan="2" class="monthly-flow-head no-sort">月度流入/流出</th><th colspan="${visibleOptions.length}" class="account-group-toggle-cell no-sort"><div class="account-group-head-controls"><button class="account-scope-inline-toggle ${scopeActive?'is-active':''}" id="accountScopeInlineToggle" type="button" title="${scopeActive?'恢复包含被审计单位之间往来':'剔除被审计单位之间往来'}" aria-pressed="${scopeActive}"><i aria-hidden="true"></i><span>剔除被审计单位间往来</span></button><span class="account-group-head-divider" aria-hidden="true"></span><button class="account-group-toggle" id="accountYearToggle" type="button" title="展开或收起年度金额"><span>合计</span><i>${icon}</i></button></div></th>${yearHeads}<th rowspan="2" class="no-sort account-action-sticky">操作</th></tr><tr class="account-year-sub-head">${totalSubs}${yearSubs}</tr>`;
+        document.getElementById('accountScopeInlineToggle')?.addEventListener('click',()=>{
+          state.scopeView = state.scopeView === 'excluded' ? 'included' : 'excluded';
+          state.page = 1;
+          render();
+        });
         document.getElementById('accountYearToggle')?.addEventListener('click',()=>{
           state.yearExpanded = !state.yearExpanded;
           render();
         });
       };
       const render = () => {
-        const total = rows.length;
+        const viewRows = scopedRows();
+        const totals = scopedTotals(viewRows);
+        const total = viewRows.length;
         const pages = Math.max(1, Math.ceil(total / state.pageSize));
         state.page = Math.max(1, Math.min(state.page, pages));
         const start = (state.page - 1) * state.pageSize;
@@ -1119,8 +1257,17 @@
         renderHead();
         wrap.classList.toggle('is-year-expanded',state.yearExpanded);
         const sumYearCells = yearCells(totals);
-        const sumRow = `<tr class="sum-row"><td><strong>合计</strong></td><td></td><td class="account-scope-value is-num"><strong>${format(totals.scopeIncluded)}</strong></td><td class="account-scope-value is-num"><strong>${format(totals.scopeExcluded)}</strong></td><td class="flow-in is-num"><strong>${format(totals.inflow)}</strong></td><td class="flow-out is-num"><strong>${format(totals.outflow)}</strong></td><td class="is-num"><strong>${format(totals.total)}</strong></td><td class="is-num"><strong>100.00%</strong></td><td class="is-num"><strong>${format(totals.txCount)}</strong></td><td class="is-num"><strong>${totals.cpCount}</strong></td><td class="is-num"><strong>${totals.fileCount}</strong></td>${sumYearCells}<td></td></tr>`;
-        const dataRows = rows.slice(start,end).map(row=>`<tr><td>${row.company}</td><td class="monthly-flow-cell">${miniBars(row.index)}</td><td class="account-scope-value is-num">${format(row.scopeIncluded)}</td><td class="account-scope-value is-num">${format(row.scopeExcluded)}</td><td class="flow-in is-num">${format(row.inflow)}</td><td class="flow-out is-num">${format(row.outflow)}</td><td class="is-num"><b>${format(row.total)}</b></td><td class="is-num">${((row.total/totals.total)*100).toFixed(2)}%</td><td class="is-num">${format(row.txCount)}</td><td class="is-num">${row.cpCount}</td><td class="is-num">${row.fileCount}</td>${yearCells(row)}<td class="actions"><a href="javascript:void(0)" title="查看明细"><i class="fa-regular fa-eye"></i></a><a href="javascript:void(0)" title="文件详情"><i class="fa-regular fa-file-lines"></i></a></td></tr>`).join('');
+        const metricCells = (row,isTotal=false) => metricOptions.filter(item=>state.visibleMetrics.has(item.key)).map(item=>{
+          if (item.key === 'inflow') return `<td class="flow-in is-num">${isTotal?'<strong>':''}${format(row.inflow)}${isTotal?'</strong>':''}</td>`;
+          if (item.key === 'outflow') return `<td class="flow-out is-num">${isTotal?'<strong>':''}${format(row.outflow)}${isTotal?'</strong>':''}</td>`;
+          if (item.key === 'total') return `<td class="is-num"><strong>${format(row.total)}</strong></td>`;
+          if (item.key === 'ratio') return `<td class="is-num">${isTotal?'<strong>100.00%</strong>':`${((row.total/totals.total)*100).toFixed(2)}%`}</td>`;
+          if (item.key === 'txCount') return `<td class="is-num">${isTotal?'<strong>':''}${format(row.txCount)}${isTotal?'</strong>':''}</td>`;
+          if (item.key === 'cpCount') return `<td class="is-num">${isTotal?'<strong>':''}${row.cpCount}${isTotal?'</strong>':''}</td>`;
+          return `<td class="is-num">${isTotal?'<strong>':''}${row.fileCount}${isTotal?'</strong>':''}</td>`;
+        }).join('');
+        const sumRow = `<tr class="sum-row"><td><strong>合计</strong></td><td></td>${metricCells(totals,true)}${sumYearCells}<td class="account-action-sticky"></td></tr>`;
+        const dataRows = viewRows.slice(start,end).map(row=>`<tr><td>${row.company}</td><td class="monthly-flow-cell">${miniBars(row.index)}</td>${metricCells(row)}${yearCells(row)}<td class="actions account-action-sticky"><button class="dm-account-action-btn" type="button" title="查看账号详情" aria-label="查看账号详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.6"></circle></svg></button><button class="dm-account-action-btn" type="button" title="查看文件详情" aria-label="查看文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button></td></tr>`).join('');
         body.innerHTML = sumRow + dataRows;
         renderAuditPager(pager, {
           total,
@@ -1132,6 +1279,50 @@
         delete table.dataset.baEnhanced;
         table.querySelectorAll('.ba-th-tools').forEach(el=>el.remove());
         window.dispatchEvent(new CustomEvent('bank-analysis:tab-change'));
+      };
+      table._baOpenColumnChooser = anchor => {
+        document.querySelectorAll('.ba-table-filter-popover,.ba-column-popover').forEach(current=>{
+          if (typeof current._baCleanup === 'function') current._baCleanup();
+          current.remove();
+        });
+        const pop = document.createElement('div');
+        pop.className = 'ba-column-popover account-column-popover';
+        pop.innerHTML = `<div class="ba-column-popover-title"><b>自定义表头</b><span>合计与年度同步</span></div><div class="ba-column-options">${metricOptions.map(item=>`<label><input type="checkbox" value="${item.key}" ${state.visibleMetrics.has(item.key)?'checked':''}><span>${item.label}</span></label>`).join('')}</div><div class="ba-column-popover-foot"><button type="button" data-action="show-default">恢复默认字段</button><button type="button" data-action="show-all">显示全部字段</button></div>`;
+        document.body.appendChild(pop);
+        const placePopover = () => {
+          if (!pop.isConnected) return;
+          const rect = anchor.getBoundingClientRect();
+          const width = Math.min(520, Math.max(360, window.innerWidth - 24));
+          pop.style.width = `${width}px`;
+          pop.style.left = `${Math.max(12, Math.min(rect.right-width,window.innerWidth-width-12))+window.scrollX}px`;
+          pop.style.top = `${rect.bottom+6+window.scrollY}px`;
+        };
+        const syncFromInputs = changed => {
+          const checked = [...pop.querySelectorAll('input:checked')].map(input=>input.value);
+          if (!checked.length) { changed.checked = true; return; }
+          state.visibleMetrics = new Set(checked);
+          render();
+        };
+        placePopover();
+        pop.querySelectorAll('input').forEach(input=>input.addEventListener('change',()=>syncFromInputs(input)));
+        pop.querySelector('[data-action="show-default"]')?.addEventListener('click',()=>{
+          state.visibleMetrics = new Set(metricOptions.filter(item=>!item.defaultHidden).map(item=>item.key));
+          pop.querySelectorAll('input').forEach(input=>input.checked=state.visibleMetrics.has(input.value));
+          render();
+        });
+        pop.querySelector('[data-action="show-all"]')?.addEventListener('click',()=>{
+          state.visibleMetrics = new Set(metricOptions.map(item=>item.key));
+          pop.querySelectorAll('input').forEach(input=>input.checked=true);
+          render();
+        });
+        setTimeout(()=>{
+          window.addEventListener('scroll',placePopover,true);
+          window.addEventListener('resize',placePopover);
+          pop._baCleanup=()=>{ window.removeEventListener('scroll',placePopover,true); window.removeEventListener('resize',placePopover); };
+          document.addEventListener('click',function handler(ev){
+            if(!pop.contains(ev.target)&&ev.target!==anchor){ pop._baCleanup?.(); pop.remove(); document.removeEventListener('click',handler); }
+          });
+        },0);
       };
       render();
     }
@@ -1877,7 +2068,7 @@
       if (!meta.isLeaf) return;
       if (meta.th.dataset.fixedColumn === 'true') return;
       const label = getHeaderLabel(meta.th);
-      if (label) columns.push({ index: meta.start + 1, label });
+      if (label) columns.push({ index: meta.start + 1, label, th:meta.th });
     });
     return columns;
   }
@@ -1900,7 +2091,11 @@
   function applyCustomizedColumns(table) {
     if (!table) return;
     const key = getTableKey(table);
-    const hidden = columnPrefs.get(key) || new Set();
+    let hidden = columnPrefs.get(key);
+    if (!hidden) {
+      hidden = new Set(getLeafHeaderColumns(table).filter(column=>column.th?.dataset.defaultHidden==='true').map(column=>column.index));
+      columnPrefs.set(key, hidden);
+    }
     getHeaderLayout(table).forEach(meta => {
       if (meta.isLeaf && meta.th.dataset.fixedColumn === 'true') hidden.delete(meta.start + 1);
     });
@@ -1920,11 +2115,15 @@
 
   function openColumnChooser(anchor, table) {
     if (!anchor || !table) return;
+    if (typeof table._baOpenColumnChooser === 'function') {
+      table._baOpenColumnChooser(anchor);
+      return;
+    }
     closeFilterPopovers();
     closeColumnPopovers();
     const key = getTableKey(table);
     const columns = getLeafHeaderColumns(table);
-    const hidden = new Set(columnPrefs.get(key) || []);
+    const hidden = new Set(columnPrefs.get(key) || getLeafHeaderColumns(table).filter(column=>column.th?.dataset.defaultHidden==='true').map(column=>column.index));
     const pop = document.createElement('div');
     pop.className = 'ba-column-popover';
     pop.innerHTML = `
@@ -2107,6 +2306,7 @@
         const label = (labelSource.textContent || '').trim();
         if (skipHeaderLabels.has(label)) th.classList.add('no-sort');
         if (th.classList.contains('no-sort') || th.querySelector('.ba-th-tools') || th.colSpan > 1) return;
+        const filterDisabled = th.classList.contains('no-filter');
         const tools = document.createElement('span');
         tools.className = 'ba-th-tools';
         tools.innerHTML = `
@@ -2114,7 +2314,7 @@
             <button type="button" class="ba-sort-up" title="升序"></button>
             <button type="button" class="ba-sort-down" title="降序"></button>
           </span>
-          <button type="button" class="ba-filter-btn" title="筛选"></button>
+          ${filterDisabled?'':'<button type="button" class="ba-filter-btn" title="筛选"></button>'}
         `;
         if (table.classList.contains('bank-reconcile-table') && !th.querySelector('.ba-th-title')) {
           const titleNodes = Array.from(th.childNodes).filter(node => {
@@ -2138,7 +2338,7 @@
           ev.stopPropagation();
           sortTableByColumn(table, index, 'desc', th);
         });
-        tools.querySelector('.ba-filter-btn').addEventListener('click', ev => {
+        tools.querySelector('.ba-filter-btn')?.addEventListener('click', ev => {
           openFilterPopover(ev, table, index, th);
         });
     });
@@ -2293,10 +2493,134 @@
     });
   }
 
+  function initStatementStickyHeader() {
+    const table = document.getElementById('statementFlowTable');
+    const wrap = table?.closest('.statement-table-wrap');
+    const scrollPane = table?.closest('.tab-scroll');
+    const card = table?.closest('.statement-query-card');
+    const toolbar = card?.querySelector('.head');
+    const thead = table?.tHead;
+    if (!table || !wrap || !scrollPane || !card || !toolbar || !thead || table.dataset.statementStickyReady === '1') return;
+    table.dataset.statementStickyReady = '1';
+    const toolbarPlaceholder = document.createElement('div');
+    toolbarPlaceholder.className = 'statement-sticky-toolbar-placeholder';
+    toolbar.insertAdjacentElement('afterend', toolbarPlaceholder);
+    let frame = 0;
+    let stickyColgroup = null;
+    let lockedWidths = [];
+    const unlockColumnWidths = () => {
+      stickyColgroup?.remove();
+      stickyColgroup = null;
+      lockedWidths = [];
+      table.style.removeProperty('width');
+      table.style.removeProperty('min-width');
+    };
+    const clearFixedHeader = () => {
+      thead.classList.remove('is-viewport-sticky');
+      thead.style.removeProperty('height');
+      [...thead.rows].forEach(row => row.style.removeProperty('height'));
+      [...thead.querySelectorAll('th')].forEach(th => {
+        ['position','top','left','width','min-width','max-width','height','z-index'].forEach(prop => th.style.removeProperty(prop));
+      });
+      unlockColumnWidths();
+    };
+    const clearFixedToolbar = () => {
+      toolbar.classList.remove('is-viewport-sticky');
+      toolbarPlaceholder.style.removeProperty('height');
+      toolbarPlaceholder.classList.remove('is-active');
+      ['position','top','left','width','z-index'].forEach(prop => toolbar.style.removeProperty(prop));
+    };
+    const update = () => {
+      frame = 0;
+      if (table.closest('.tab-pane')?.classList.contains('hide')) {
+        clearFixedHeader();
+        clearFixedToolbar();
+        return;
+      }
+      const paneRect = scrollPane.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      const wrapRect = wrap.getBoundingClientRect();
+      const toolbarHeight = Math.max(36, toolbar.getBoundingClientRect().height || 36);
+      const headerHeight = Math.max(32, thead.getBoundingClientRect().height || 32);
+      const stickyTop = Math.max(0, paneRect.top);
+      const shouldFixToolbar = cardRect.top < stickyTop && cardRect.bottom > stickyTop + toolbarHeight;
+      if (shouldFixToolbar) {
+        toolbar.classList.add('is-viewport-sticky');
+        toolbarPlaceholder.classList.add('is-active');
+        Object.assign(toolbar.style, {
+          position: 'fixed',
+          top: `${stickyTop}px`,
+          left: `${cardRect.left}px`,
+          width: `${cardRect.width}px`,
+          zIndex: '130'
+        });
+        const fixedToolbarHeight = Math.max(toolbarHeight, toolbar.getBoundingClientRect().height || toolbarHeight);
+        toolbarPlaceholder.style.height = `${fixedToolbarHeight}px`;
+      } else {
+        clearFixedToolbar();
+      }
+      const fixedToolbarHeight = shouldFixToolbar ? Math.max(toolbarHeight, toolbar.getBoundingClientRect().height || toolbarHeight) : 0;
+      const headerTop = stickyTop + fixedToolbarHeight;
+      const shouldFixHeader = wrapRect.top < headerTop && wrapRect.bottom > headerTop + headerHeight;
+      if (!shouldFixHeader) {
+        clearFixedHeader();
+        return;
+      }
+      const bodyCells = [...(table.tBodies[0]?.rows[0]?.cells || [])];
+      const headers = [...thead.rows[0].cells];
+      if (!stickyColgroup) {
+        lockedWidths = headers.map(th => getComputedStyle(th).display === 'none' ? 0 : th.getBoundingClientRect().width);
+        stickyColgroup = document.createElement('colgroup');
+        stickyColgroup.className = 'statement-sticky-colgroup';
+        lockedWidths.forEach(width => {
+          const col = document.createElement('col');
+          col.style.width = `${width}px`;
+          col.style.minWidth = `${width}px`;
+          col.style.maxWidth = `${width}px`;
+          if (!width) col.style.display = 'none';
+          stickyColgroup.appendChild(col);
+        });
+        table.insertBefore(stickyColgroup, thead);
+        const tableWidth = lockedWidths.reduce((sum, width) => sum + width, 0);
+        table.style.width = `${tableWidth}px`;
+        table.style.minWidth = `${tableWidth}px`;
+      }
+      thead.classList.add('is-viewport-sticky');
+      thead.style.height = `${headerHeight}px`;
+      thead.rows[0].style.height = `${headerHeight}px`;
+      headers.forEach((th, index) => {
+        const cell = bodyCells[index];
+        if (!cell || getComputedStyle(th).display === 'none' || getComputedStyle(cell).display === 'none') return;
+        const rect = cell.getBoundingClientRect();
+        const width = lockedWidths[index] || rect.width;
+        Object.assign(th.style, {
+          position: 'fixed',
+          top: `${headerTop}px`,
+          left: `${rect.left}px`,
+          width: `${width}px`,
+          minWidth: `${width}px`,
+          maxWidth: `${width}px`,
+          height: `${headerHeight}px`,
+          zIndex: '120'
+        });
+      });
+    };
+    const schedule = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(update);
+    };
+    scrollPane.addEventListener('scroll', schedule, { passive: true });
+    wrap.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    new MutationObserver(schedule).observe(thead, { childList: true, subtree: true });
+    schedule();
+  }
+
   function initStatementFlowQuery() {
     const table = document.getElementById('statementFlowTable');
     if (!table) return;
     renderStatementFlowTable();
+    initStatementStickyHeader();
     if (statementFlowState.initialized) return;
     statementFlowState.initialized = true;
     document.getElementById('statementResetFilters')?.addEventListener('click', () => {

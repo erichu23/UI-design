@@ -2666,7 +2666,7 @@
     </div>
 
     <!-- CFO ANALYTICS DASHBOARD (交易对手方数据看板) -->
-    <div class="cfo-dashboard" id="cfoDashboard" data-audit-unit-ignore>
+    <div class="cfo-dashboard is-temporarily-hidden" id="cfoDashboard" data-audit-unit-ignore hidden aria-hidden="true">
       <div class="cfo-dash-header">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
         <span class="cfo-dash-title">交易对手方数据看板</span>
@@ -2753,6 +2753,8 @@
       </div>
     </div>
 
+    <!-- 滚动时固定的核查条件、操作按钮与结果视图切换 -->
+    <div class="risk-results-sticky-controls" id="riskResultsStickyControls">
     <!-- CHECK CONTEXT BAR (核查上下文 + 统计卡片) -->
     <div class="check-context-bar">
       <div class="check-context-header">
@@ -2800,6 +2802,7 @@
       <div class="tabs-spacer"></div>
       <div class="check-group-display" id="checkGroupDisplay"></div>
     </div>
+    </div><!-- /risk-results-sticky-controls -->
 
     <!-- TABLE AREA -->
     <div class="table-area">
@@ -7364,6 +7367,107 @@ function renderCfoDashboard() {
   });
 }
 
+// ── 整页滚动固定表头 ────────────────────────────────────────────────────────
+function stripStickyHeaderIdentity(root) {
+  root.querySelectorAll('[id]').forEach(node => node.removeAttribute('id'));
+  root.querySelectorAll('[onclick]').forEach(node => node.removeAttribute('onclick'));
+}
+
+function syncRiskStickyHeader(panel) {
+  if (!panel) return;
+  const wrap = panel.querySelector('.scroll-wrap');
+  const sourceTable = wrap?.querySelector('table');
+  const sourceHead = sourceTable?.querySelector('thead');
+  const sticky = panel.querySelector('.risk-sticky-table-head');
+  if (!wrap || !sourceTable || !sourceHead || !sticky) return;
+
+  const viewport = sticky.querySelector('.risk-sticky-table-head-viewport');
+  const track = sticky.querySelector('.risk-sticky-table-head-track');
+  const cloneTable = document.createElement('table');
+  cloneTable.className = sourceTable.className + ' risk-sticky-head-table';
+  cloneTable.style.width = `${sourceTable.scrollWidth}px`;
+  cloneTable.style.minWidth = `${sourceTable.scrollWidth}px`;
+
+  const sampleCells = sourceTable.querySelector('tbody tr')?.children || [];
+  if (sampleCells.length) {
+    const colgroup = document.createElement('colgroup');
+    Array.from(sampleCells).forEach(cell => {
+      const col = document.createElement('col');
+      col.style.width = `${cell.getBoundingClientRect().width}px`;
+      colgroup.appendChild(col);
+    });
+    cloneTable.appendChild(colgroup);
+  }
+
+  const clonedHead = sourceHead.cloneNode(true);
+  stripStickyHeaderIdentity(clonedHead);
+  cloneTable.appendChild(clonedHead);
+  track.replaceChildren(cloneTable);
+  const wrapRect = wrap.getBoundingClientRect();
+  sticky.style.left = `${wrapRect.left}px`;
+  sticky.style.width = `${wrapRect.width}px`;
+  viewport.style.width = `${wrap.clientWidth}px`;
+  track.style.width = `${sourceTable.scrollWidth}px`;
+  track.style.transform = `translateX(${-wrap.scrollLeft}px)`;
+}
+
+function updateRiskStickyHeaderVisibility() {
+  const content = document.querySelector('.content-area');
+  if (!content) return;
+  const contentTop = content.getBoundingClientRect().top;
+  const controls = document.getElementById('riskResultsStickyControls');
+  const controlsHeight = controls?.getBoundingClientRect().height || 0;
+  content.style.setProperty('--risk-sticky-controls-height', `${contentTop + controlsHeight}px`);
+
+  document.querySelectorAll('.table-panel').forEach(panel => {
+    const sticky = panel.querySelector('.risk-sticky-table-head');
+    const wrap = panel.querySelector('.scroll-wrap');
+    if (!sticky || !wrap || !panel.offsetParent) {
+      sticky?.classList.remove('is-visible');
+      return;
+    }
+    const rect = wrap.getBoundingClientRect();
+    const headHeight = wrap.querySelector('thead')?.getBoundingClientRect().height || 0;
+    sticky.style.left = `${rect.left}px`;
+    sticky.style.width = `${rect.width}px`;
+    const fixedTop = contentTop + controlsHeight;
+    sticky.classList.toggle('is-visible', rect.top < fixedTop && rect.bottom > fixedTop + headHeight);
+  });
+}
+
+let riskStickySyncFrame = 0;
+function scheduleRiskStickyHeaderSync() {
+  cancelAnimationFrame(riskStickySyncFrame);
+  riskStickySyncFrame = requestAnimationFrame(() => {
+    document.querySelectorAll('.table-panel').forEach(syncRiskStickyHeader);
+    updateRiskStickyHeaderVisibility();
+  });
+}
+
+function installRiskStickyHeaders() {
+  const content = document.querySelector('.content-area');
+  document.querySelectorAll('.table-panel').forEach(panel => {
+    if (panel.querySelector('.risk-sticky-table-head')) return;
+    const sticky = document.createElement('div');
+    sticky.className = 'risk-sticky-table-head';
+    sticky.setAttribute('aria-hidden', 'true');
+    sticky.innerHTML = '<div class="risk-sticky-table-head-viewport"><div class="risk-sticky-table-head-track"></div></div>';
+    panel.prepend(sticky);
+
+    const wrap = panel.querySelector('.scroll-wrap');
+    wrap?.addEventListener('scroll', () => {
+      const track = sticky.querySelector('.risk-sticky-table-head-track');
+      if (track) track.style.transform = `translateX(${-wrap.scrollLeft}px)`;
+    }, { passive:true });
+
+    const head = wrap?.querySelector('thead');
+    if (head) new MutationObserver(scheduleRiskStickyHeaderSync).observe(head, { childList:true, subtree:true, attributes:true });
+  });
+  content?.addEventListener('scroll', updateRiskStickyHeaderVisibility, { passive:true });
+  window.addEventListener('resize', scheduleRiskStickyHeaderSync);
+  scheduleRiskStickyHeaderSync();
+}
+
 // 窗口 resize 时重绘
 window.addEventListener('resize', () => {
   if (!document.getElementById('cfoDashBody')?.classList.contains('collapsed')) {
@@ -7378,6 +7482,7 @@ window.addEventListener('resize', () => {
 
 // 渲染 CFO 看板
 renderCfoDashboard();
+installRiskStickyHeaders();
 window.addEventListener('audit-unit-ready', renderCfoDashboard);
 (function syncCfoUnit(attempt = 0) {
   if (getCfoAuditUnit()) {

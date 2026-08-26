@@ -4,6 +4,19 @@
   gap:0 !important;
 }
 
+html.dm-embedded-module body{
+  background:transparent;
+}
+
+html.dm-embedded-module .data-management-tab-card{
+  display:none !important;
+}
+
+html.dm-embedded-module .data-management-page{
+  height:100%;
+  min-height:0;
+}
+
 .data-management-tab-card .tabbar{
   gap:7px;
   padding-right:10px;
@@ -112,6 +125,76 @@
   min-width:0;
 }
 
+.data-management-page .dm-reconcile-actions{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-left:auto;
+}
+
+.data-management-page .dm-reconcile-actions .btn{
+  min-width:72px;
+}
+
+.data-management-page .dm-reconcile-actions .btn.primary{
+  border-color:#1d4ed8;
+  background:#1d4ed8;
+  color:#fff;
+}
+
+.data-management-page .bank-reconcile-table .reconcile-book-cell{
+  width:82px;
+  min-width:82px;
+}
+
+.data-management-page .reconcile-book-input{
+  width:100%;
+  min-width:70px;
+  height:25px;
+  box-sizing:border-box;
+  padding:0 6px;
+  border:1px solid #9eb8df;
+  border-radius:4px;
+  background:#f8fbff;
+  color:#1e3a5f;
+  font:600 11px/1 var(--platform-font-family,"Microsoft YaHei",Arial,sans-serif);
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+  outline:none;
+}
+
+.data-management-page .reconcile-book-input:focus{
+  border-color:#2f6fed;
+  background:#fff;
+  box-shadow:0 0 0 2px rgba(47,111,237,.12);
+}
+
+.data-management-page .bank-reconcile-table .reconcile-diff-cell{
+  width:76px;
+  min-width:76px;
+  color:#64748b;
+  font-variant-numeric:tabular-nums;
+}
+
+.data-management-page #pane-scope-control .bank-reconcile-table{
+  min-width:1320px;
+  table-layout:auto;
+}
+
+.data-management-page #pane-scope-control .bank-reconcile-table thead th.reconcile-compact-head{
+  width:76px;
+  min-width:76px;
+  padding-right:6px !important;
+  padding-left:6px !important;
+  white-space:nowrap;
+}
+
+.data-management-page .bank-reconcile-table .reconcile-diff-cell.has-difference{
+  color:#675b8f;
+  font-weight:700;
+  background:#f8f6fb;
+}
+
 .data-management-page #pane-verify > .tab-scroll,
 .data-management-page #pane-scope-control > .tab-scroll{
   overflow:auto !important;
@@ -174,9 +257,9 @@
 .data-management-page .dm-master-scope-summary{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:7px;
+  gap:6px;
   align-items:stretch;
-  margin-bottom:7px;
+  margin-bottom:5px;
 }
 
 .data-management-page .dm-master-view-tabs{
@@ -254,11 +337,11 @@
   align-items:center;
   gap:3px;
   min-width:0;
-  min-height:38px;
-  padding:6px 10px;
+  min-height:32px;
+  padding:4px 9px;
 }
 .data-management-page .dm-master-stat span{ min-width:0; flex:1; overflow:hidden; color:#64748b; font-size:10.5px; text-overflow:ellipsis; white-space:nowrap; }
-.data-management-page .dm-master-stat b{ margin-left:auto; color:#334155; font-size:15px; line-height:1; }
+.data-management-page .dm-master-stat b{ margin-left:auto; color:#334155; font-size:14px; line-height:1; }
 .data-management-page .dm-master-stat small{ color:#8795a8; font-size:10px; }
 .data-management-page .dm-master-stat.is-external b{ color:#356fb6; }
 .data-management-page .dm-master-stat.is-match b{ color:#18796f; }
@@ -458,7 +541,7 @@
 .data-management-page .dm-master-action-done i{display:inline-flex;width:14px;height:14px;align-items:center;justify-content:center;border:1px solid #78a698;border-radius:50%;background:#f3faf7;color:#2f8576;font:700 9px/1 Arial,sans-serif;}
 .data-management-page .dm-master-action-empty{color:#a7b1bf;font-size:11px;}
 .data-management-page .dm-account-scope-card{margin-top:10px;}
-.data-management-page .dm-account-scope-summary{margin-bottom:7px;}
+.data-management-page .dm-account-scope-summary{margin-bottom:5px;}
 .data-management-page .dm-account-scope-table{min-width:760px;}
 .data-management-page .dm-account-scope-table .dm-account-source-head,
 .data-management-page .dm-account-scope-table .dm-master-source-cell{width:170px;text-align:center;}
@@ -469,6 +552,173 @@
 .data-management-page .dm-account-scope-table tr.is-company-continuation .dm-account-company-cell span{visibility:hidden;}
 .data-management-page .dm-account-scope-table tr.is-company-continuation .dm-account-company-cell{border-top-color:transparent!important;}
 .data-management-page .dm-account-scope-table .dm-account-scope-note{width:100%;min-width:150px;box-sizing:border-box;}
+
+/* 数据校验账号总览：操作与校验情况始终固定在表格右侧。 */
+.data-management-page #checkScope{
+  --dm-validation-check-width:180px;
+  --dm-validation-action-width:64px;
+}
+.data-management-page #checkScope.expanded{
+  --dm-validation-check-width:230px;
+}
+.data-management-page #checkScope #tblAccountSummary th.check-col,
+.data-management-page #checkScope #tblAccountSummary td.check-col{
+  position:sticky !important;
+  right:0 !important;
+  z-index:24 !important;
+  width:var(--dm-validation-check-width) !important;
+  min-width:var(--dm-validation-check-width) !important;
+  max-width:var(--dm-validation-check-width) !important;
+  box-sizing:border-box !important;
+  background:#fff !important;
+  background-clip:padding-box !important;
+}
+.data-management-page #checkScope #tblAccountSummary th.check-col{
+  z-index:64 !important;
+  background:#eef5ff !important;
+}
+.data-management-page #checkScope #tblAccountSummary .account-action-sticky{
+  position:sticky !important;
+  right:var(--dm-validation-check-width) !important;
+  z-index:23 !important;
+  width:var(--dm-validation-action-width) !important;
+  min-width:var(--dm-validation-action-width) !important;
+  max-width:var(--dm-validation-action-width) !important;
+  background:#fff !important;
+  background-clip:padding-box !important;
+  box-shadow:-6px 0 9px -9px rgba(39,63,91,.55);
+}
+.data-management-page #checkScope #tblAccountSummary th.account-action-sticky{
+  z-index:63 !important;
+  background:#eef5ff !important;
+}
+.data-management-page #checkScope #tblAccountSummary .check-head,
+.data-management-page #checkScope #tblAccountSummary .check-window{
+  width:calc(var(--dm-validation-check-width) - 12px) !important;
+  min-width:0 !important;
+  max-width:calc(var(--dm-validation-check-width) - 12px) !important;
+  box-sizing:border-box !important;
+}
+.data-management-page #checkScope #tblAccountSummary .check-window{
+  display:block !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  overscroll-behavior-x:contain;
+  touch-action:pan-x pan-y !important;
+  scrollbar-width:none !important;
+  -ms-overflow-style:none !important;
+}
+.data-management-page #checkScope #tblAccountSummary .check-window::-webkit-scrollbar{
+  display:none !important;
+  width:0 !important;
+  height:0 !important;
+}
+.data-management-page #checkScope #tblAccountSummary .sum-row td.check-col,
+.data-management-page #checkScope #tblAccountSummary .sum-row td.account-action-sticky{
+  background:#f8fbff !important;
+}
+.data-management-page #checkScope #tblAccountSummary tbody tr:hover td.check-col,
+.data-management-page #checkScope #tblAccountSummary tbody tr:hover td.account-action-sticky{
+  background:#f7faff !important;
+}
+.data-management-page #checkScope #tblAccountSummary .account-year-metric{
+  width:72px !important;
+  min-width:72px !important;
+  max-width:72px !important;
+  padding-right:4px !important;
+  padding-left:4px !important;
+}
+.data-management-page #checkScope #tblAccountSummary td.actions{
+  display:table-cell !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+}
+.data-management-page .dm-account-action-btn{
+  display:inline-flex;
+  width:18px !important;
+  height:18px !important;
+  min-width:18px !important;
+  min-height:18px !important;
+  align-items:center;
+  justify-content:center;
+  margin:0 2px !important;
+  padding:0 !important;
+  box-sizing:border-box;
+  border:0 !important;
+  border-radius:0 !important;
+  appearance:none;
+  color:#2f6fed !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  cursor:pointer;
+  vertical-align:middle;
+  transition:color .15s ease,opacity .15s ease,transform .15s ease;
+}
+.data-management-page .dm-account-action-btn:hover{
+  border:0 !important;
+  color:#174f9b !important;
+  background:transparent !important;
+  opacity:.88;
+  transform:translateY(-1px);
+}
+.data-management-page .dm-account-action-btn:focus-visible{
+  outline:1px dotted #2f6fed;
+  outline-offset:2px;
+}
+.data-management-page .dm-account-action-btn svg{
+  display:block !important;
+  width:14px !important;
+  height:14px !important;
+  fill:none;
+  stroke:#2f6fed !important;
+  stroke-width:1.65;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.data-management-page .dm-account-action-btn:hover svg{
+  stroke:#174f9b !important;
+}
+.data-management-page #tblMissingSameName .expand-btn{
+  position:relative;
+  display:inline-flex;
+  width:20px !important;
+  height:20px !important;
+  min-width:20px !important;
+  min-height:20px !important;
+  align-items:center;
+  justify-content:center;
+  margin:0 7px 0 0 !important;
+  padding:0 !important;
+  box-sizing:border-box;
+  border:1px solid #d4e0ed !important;
+  border-radius:50% !important;
+  color:#637a96 !important;
+  background:#fff !important;
+  box-shadow:0 1px 2px rgba(31,65,106,.06) !important;
+  cursor:pointer;
+  vertical-align:middle;
+  transition:border-color .15s ease,color .15s ease,background .15s ease;
+}
+.data-management-page #tblMissingSameName .expand-btn::before{
+  width:5px;
+  height:5px;
+  border-right:1.5px solid currentColor;
+  border-bottom:1.5px solid currentColor;
+  content:"";
+  transform:rotate(-45deg);
+  transition:transform .16s ease;
+}
+.data-management-page #tblMissingSameName .expand-btn.expanded::before{
+  transform:rotate(45deg) translate(-1px,-1px);
+}
+.data-management-page #tblMissingSameName .expand-btn:hover{
+  border-color:#a9c1df !important;
+  color:#2f6fed !important;
+  background:#f6f9fe !important;
+}
+.data-management-page #tblMissingSameName td.actions .dm-missing-file-action{
+  margin:0 !important;
+}
 .data-management-page .dm-source-filter-value{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
 .data-management-page .dm-master-source-state{ color:#56677c; }
 .data-management-page .dm-master-diff-tag{ color:#475a70; font-weight:600; }
@@ -515,6 +765,12 @@
   font-size:11px;
 }
 .data-management-page .dm-master-toast.is-visible{ visibility:visible; opacity:1; transform:translate(-50%,0); }
+.data-management-page .dm-master-toast.is-success{
+  border-color:#bfe4d2;
+  color:#236849;
+  background:#f2fbf6;
+  box-shadow:0 6px 18px rgba(35,104,73,.12);
+}
 
 .data-management-page .dm-master-detail-mask{
   position:fixed;

@@ -3608,3 +3608,103 @@ html body .cfo-rank-table-wrap:hover::-webkit-scrollbar-thumb{
     overflow-x:auto !important;
   }
 }
+
+/* 特殊交易识别：暂时隐藏数据看板，让结果表格与左侧核查程序等高。 */
+html body #cfoDashboard.is-temporarily-hidden,
+html body #cfoDashboard[hidden]{
+  display:none !important;
+}
+
+html body .content-area{
+  display:flex !important;
+  flex-direction:column !important;
+  height:100% !important;
+  min-height:0 !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+}
+
+html body .check-context-bar,
+html body .tabs-bar{
+  flex:0 0 auto !important;
+}
+
+html body .risk-results-sticky-controls{
+  position:sticky !important;
+  top:0 !important;
+  z-index:100 !important;
+  flex:0 0 auto !important;
+  background:#fff !important;
+  box-shadow:0 5px 12px rgba(15,23,42,.055) !important;
+}
+
+html body .table-area{
+  display:block !important;
+  flex:0 0 auto !important;
+  min-height:0 !important;
+  overflow:visible !important;
+}
+
+html body .table-panel{
+  display:block !important;
+  flex:0 0 auto !important;
+  min-height:0 !important;
+  overflow:visible !important;
+}
+
+html body .scroll-wrap{
+  display:block !important;
+  flex:0 0 auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+}
+
+html body .risk-table-pager{
+  display:flex !important;
+  flex:0 0 auto !important;
+  width:100% !important;
+}
+
+/* 整页纵向滚动时使用同步表头，横向滚动仍由原表格承载。 */
+html body .risk-sticky-table-head{
+  position:fixed !important;
+  top:var(--risk-sticky-controls-height, 73px) !important;
+  left:0;
+  z-index:90 !important;
+  display:none;
+  width:auto;
+  height:auto;
+  overflow:visible;
+  pointer-events:none;
+}
+
+html body .risk-sticky-table-head.is-visible{
+  display:block;
+}
+
+html body .risk-sticky-table-head-viewport{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  overflow:hidden;
+  border:1px solid var(--audit-table-border-outer);
+  border-radius:7px 7px 0 0;
+  background:#fff;
+  box-shadow:0 5px 12px rgba(15,23,42,.08);
+}
+
+html body .risk-sticky-table-head-track{
+  will-change:transform;
+}
+
+html body .risk-sticky-table-head table{
+  margin:0 !important;
+}
+
+html body .risk-sticky-table-head th{
+  position:static !important;
+}

@@ -14,8 +14,13 @@
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260813-account-columns5"/>
   <link rel="stylesheet" href="../assets/css/pages/data-upload.css?v=20260811-data-management19"/>
   <link rel="stylesheet" href="../assets/css/pages/data-validation.css?v=20260811-data-management19"/>
-  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260818-related-master23"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260825-missing-actions1"/>
   <title>数据上传及管理</title>
+  <script>
+    if (new URLSearchParams(location.search).get('embed')) {
+      document.documentElement.classList.add('dm-embedded-module');
+    }
+  </script>
 </head>
 <body>
 <div class="data-validation-page data-management-page">
@@ -23,7 +28,6 @@
     <div class="tabbar" id="dataManagementTabs">
       <button class="tab active" type="button" data-management-tab="upload">数据上传</button>
       <button class="tab" type="button" data-management-tab="verify">数据校验</button>
-      <button class="tab" type="button" data-management-tab="scope-control">分析范围管控</button>
       <button class="du-template-btn dm-template-btn" type="button">下载导入模板</button>
       <i class="inkbar" id="dataManagementInkbar"></i>
     </div>
@@ -176,7 +180,7 @@
                   <tbody>
                     <tr data-issue-focus="bank-upload">
                       <td>1</td>
-                      <td>银行流水（账龄电子明细及支付宝/微信数据）</td>
+                      <td>资金流水（账龄电子明细及支付宝/微信数据）</td>
                       <td><span class="du-status pending"><i></i> 未采集</span></td>
                       <td></td>
                       <td></td>
@@ -190,7 +194,7 @@
                     </tr>
                     <tr>
                       <td>2</td>
-                      <td>银行流水（手工账明细流水数据）</td>
+                      <td>资金流水（手工账明细流水数据）</td>
                       <td><span class="du-status pending"><i></i> 未采集</span></td>
                       <td></td>
                       <td></td>
@@ -337,8 +341,8 @@
           <div class="dm-issue-row">
             <span class="dm-issue-dot" aria-hidden="true"></span>
             <div class="dm-issue-main">
-              <b>银行账号主档不完整</b>
-              <span>银行流水中存在未在银行账号主档维护的账号，请补充银行账号主档。</span>
+              <b>被审计单位银行账号主档不完整</b>
+              <span>资金流水中存在未在被审计单位银行账号主档维护的账号，请补充银行账号主档。</span>
             </div>
             <button class="dm-issue-link" type="button" data-issue-target="bank-account-master">点击跳转 »</button>
           </div>
@@ -360,7 +364,7 @@
           </div>
         </div>
       </div>
-      <!-- ========== 余额连续性校验 ========== -->
+      <!-- ========== 账号总览 ========== -->
 <div class="card dm-balance-continuity-card">
 <div class="head">
 <div class="title">账号总览</div>
@@ -531,24 +535,24 @@
       <table class="table" id="tblMissingSameName">
       <thead>
       <tr>
-      <th>对手方名称（被审计单位）</th>
-      <th>缺失银行账号</th>
-      <th>流入本方总额</th>
-      <th>占比</th>
-      <th>本方流出总额</th>
-      <th>占比</th>
-      <th>交易次数</th>
-      <th>占比</th>
-      <th class="no-sort">缺失原因</th>
-      <th class="no-sort">支持性文件索引</th>
-      <th class="no-sort">操作</th>
+      <th class="no-sort no-filter">对手方名称（被审计单位）</th>
+      <th class="no-filter">缺失银行账号</th>
+      <th class="no-filter">流入本方总额</th>
+      <th class="no-filter">占比</th>
+      <th class="no-filter">本方流出总额</th>
+      <th class="no-filter">占比</th>
+      <th class="no-filter">交易次数</th>
+      <th class="no-filter">占比</th>
+      <th class="no-sort no-filter">缺失原因</th>
+      <th class="no-sort no-filter">支持性文件索引</th>
+      <th class="no-sort no-filter">操作</th>
       </tr>
       </thead>
       <tbody>
       <!-- ====== 汇总行（可展开/收起） ====== -->
       <tr class="group-row" data-group="abc">
       <td>
-      <button class="expand-btn expanded" title="展开/收起明细">▼</button>
+      <button class="expand-btn expanded" type="button" title="展开/收起明细" aria-label="展开或收起缺失账号明细" aria-expanded="true"></button>
       <strong>华东制造集团有限公司</strong>　<span class="text-muted">已解释/总数：2/8</span>
       </td>
       <td></td>
@@ -575,7 +579,7 @@
       <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
       <td></td>
       <td class="actions">
-      <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
+      <button class="dm-account-action-btn dm-missing-file-action" type="button" title="查看文件详情" aria-label="查看文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button>
       </td>
       </tr>
       <tr class="detail-row group-abc">
@@ -590,7 +594,7 @@
       <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
       <td></td>
       <td class="actions">
-      <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
+      <button class="dm-account-action-btn dm-missing-file-action" type="button" title="查看文件详情" aria-label="查看文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button>
       </td>
       </tr>
       <tr class="detail-row group-abc">
@@ -605,7 +609,7 @@
       <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
       <td></td>
       <td class="actions">
-      <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
+      <button class="dm-account-action-btn dm-missing-file-action" type="button" title="查看文件详情" aria-label="查看文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button>
       </td>
       </tr>
       <tr class="detail-row group-abc">
@@ -620,7 +624,7 @@
       <td><input class="ba-note-input" placeholder="填写缺失原因"/></td>
       <td></td>
       <td class="actions">
-      <a href="#" title="流水明细"><i class="fa-regular fa-file-lines"></i></a>
+      <button class="dm-account-action-btn dm-missing-file-action" type="button" title="查看文件详情" aria-label="查看文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button>
       </td>
       </tr>
       </tbody>
@@ -630,15 +634,15 @@
       </div>
       <div class="dm-reconcile-cards" id="dmReconcileCards">
       <div class="card">
-      <div class="head"><div class="title">总账核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><button class="btn bank-head-push">导出清单</button></div>
+      <div class="head"><div class="title">总账核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="dm-reconcile-actions"><button class="btn" type="button" data-reconcile-edit="general">编辑</button><button class="btn" type="button" onclick="window.openBankColumnChooser?.(this,this.closest('.card').querySelector('table'))">自定义表头</button><button class="btn primary" type="button" data-reconcile-export="general">导出结果</button></div></div>
       <div class="content"><div style="overflow:auto"><table class="table bank-reconcile-table">
-      <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">与发行人的关系</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">银行流水数据</th><th colspan="4">科目余额表-总账数据</th><th colspan="4">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" class="no-sort">文档索引</th></tr><tr><th><span>期初金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>期初差异</span><em>a1-a2</em></th><th><span>借方差异</span><em>b1-b2</em></th><th><span>贷方差异</span><em>c1-c2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
+      <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">资金流水数据</th><th colspan="4">科目余额表-总账数据</th><th colspan="4">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" data-default-hidden="true">更新人</th><th rowspan="2" data-default-hidden="true">更新时间</th></tr><tr><th><span>期初金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>期初差异</span><em>a1-a2</em></th><th><span>借方差异</span><em>b1-b2</em></th><th><span>贷方差异</span><em>c1-c2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
       <tbody id="generalLedgerReconcileBody"><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2025</td><td>RMB</td><td>1,218,000</td><td class="amount-in">243,344K</td><td class="amount-out">221,614K</td><td>1,239,730</td><td>1,218,000</td><td>221,614</td><td>243,344</td><td>1,239,730</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2025</td><td>RMB</td><td>1,896,000</td><td class="amount-in">282,511K</td><td class="amount-out">261,319K</td><td>1,917,192</td><td>1,896,000</td><td>261,319</td><td>282,511</td><td>1,917,192</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
       </table></div><div class="pagination reconcile-pagination" id="generalLedgerReconcilePager"></div></div></div>
       <div class="card">
-      <div class="head"><div class="title">分账号核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><button class="btn bank-head-push">导出清单</button></div>
+      <div class="head"><div class="title">分账号核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="dm-reconcile-actions"><button class="btn" type="button" data-reconcile-edit="account">编辑</button><button class="btn" type="button" onclick="window.openBankColumnChooser?.(this,this.closest('.card').querySelector('table'))">自定义表头</button><button class="btn primary" type="button" data-reconcile-export="account">导出结果</button></div></div>
       <div class="content"><div style="overflow:auto"><table class="table bank-reconcile-table">
-      <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">与发行人的关系</th><th rowspan="2">银行账号</th><th rowspan="2">开户银行</th><th rowspan="2">数据来源</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">银行流水数据</th><th colspan="4">科目余额表-分账号数据</th><th colspan="4">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" class="no-sort">文档索引</th></tr><tr><th><span>期初金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>期初差异</span><em>a1-a2</em></th><th><span>借方差异</span><em>b1-b2</em></th><th><span>贷方差异</span><em>c1-c2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
+      <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">银行账号</th><th rowspan="2">开户银行</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">资金流水数据</th><th colspan="4">科目余额表-分账号数据</th><th colspan="4">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" data-default-hidden="true">更新人</th><th rowspan="2" data-default-hidden="true">更新时间</th></tr><tr><th><span>期初金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>期初差异</span><em>a1-a2</em></th><th><span>借方差异</span><em>b1-b2</em></th><th><span>贷方差异</span><em>c1-c2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
       <tbody id="accountReconcileBody"><tr><td>华东制造集团有限公司</td><td>发行人</td><td>1001***0821</td><td>工行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>1,128,000</td><td class="amount-in">140,680K</td><td class="amount-out">128,640K</td><td>1,140,040</td><td>1,128,000</td><td>128,640</td><td>140,680</td><td>1,140,040</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>上海星河科技有限公司</td><td>发行人</td><td>1002***4186</td><td>建行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>915,000</td><td class="amount-in">112,430K</td><td class="amount-out">103,260K</td><td>924,170</td><td>915,000</td><td>103,260</td><td>112,430</td><td>924,170</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
       </table></div><div class="pagination reconcile-pagination" id="accountReconcilePager"></div></div></div>
       </div>
@@ -730,8 +734,8 @@
     </div>
   </section>
 </div>
-<script defer src="../assets/js/core/shared.js?v=20260813-account-columns5"></script>
-<script defer src="../assets/js/pages/data-management-balance.js?v=20260813-account-columns5"></script>
+<script defer src="../assets/js/core/shared.js?v=20260825-missing-actions1"></script>
+<script defer src="../assets/js/pages/data-management-balance.js?v=20260825-missing-actions1"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260811-data-management19"></script>
 <script>
   (function(){
@@ -745,6 +749,7 @@
     const managementPanes = Array.from(document.querySelectorAll('[data-management-pane]'));
     const managementInkbar = document.getElementById('dataManagementInkbar');
     const MANAGEMENT_TAB_KEY = 'dataManagement.activeTab';
+    const embeddedManagementKey = new URLSearchParams(location.search).get('embed');
 
     function placeManagementInkbar(tab){
       if (!managementTabbar || !managementInkbar || !tab) return;
@@ -755,7 +760,7 @@
     }
 
     function activateManagementPane(key){
-      if (!managementRoot || !managementTabs.some(tab => tab.dataset.managementTab === key)) return;
+      if (!managementRoot || !managementPanes.some(pane => pane.dataset.managementPane === key)) return;
       managementTabs.forEach(tab => {
         const active = tab.dataset.managementTab === key;
         tab.classList.toggle('active', active);
@@ -768,7 +773,9 @@
       });
       const activeTab = managementTabs.find(tab => tab.dataset.managementTab === key);
       requestAnimationFrame(() => placeManagementInkbar(activeTab));
-      try { localStorage.setItem(MANAGEMENT_TAB_KEY, key); } catch (error) {}
+      if (!embeddedManagementKey) {
+        try { localStorage.setItem(MANAGEMENT_TAB_KEY, key); } catch (error) {}
+      }
       requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
     }
 
@@ -789,7 +796,10 @@
     const initialTab = managementTabs.find(tab => tab.dataset.managementTab === savedManagementKey)
       || managementTabs.find(tab => tab.classList.contains('active'))
       || managementTabs[0];
-    activateManagementPane(initialTab?.dataset.managementTab || 'upload');
+    const initialManagementKey = managementPanes.some(pane => pane.dataset.managementPane === embeddedManagementKey)
+      ? embeddedManagementKey
+      : (initialTab?.dataset.managementTab || 'upload');
+    activateManagementPane(initialManagementKey);
 
     const uploadTabs = document.querySelectorAll('[data-upload-tab]');
     const uploadPanels = document.querySelectorAll('[data-upload-panel]');

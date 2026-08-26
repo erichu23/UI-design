@@ -17,8 +17,8 @@
   <link rel="stylesheet" href="../assets/css/pages/biz.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/routine.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260507-routine"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260813-account-columns5"/>
-  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260814-counterparty-actions6"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260825-statement-sticky4"/>
+  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260825-portrait-year-filter2"/>
   <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260624-riskflow1"/>
 </head>
 <body>
@@ -120,7 +120,7 @@
 <button class="btn account-help-btn" id="btnAccountTips"><i class="fa-regular fa-circle-question"></i>操作提示</button>
 </div>
 <!-- 右侧：自定义表头 / 生成分析结果 -->
-<div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+<div class="account-summary-head-actions">
 <button class="btn" id="btnCustomizeCols">自定义表头</button>
 <button class="btn primary" id="btnAnalyze">生成分析结果</button>
 </div>
@@ -182,8 +182,8 @@
   </div>
 
   <div class="portrait-chart-grid">
-    <div class="card portrait-chart-card"><div class="head"><div class="title">月度收支构成分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-legend"><span class="is-in">流入</span><span class="is-out">流出</span></div></div><div class="content"><div class="portrait-chart" id="portraitMonthlyChart"></div></div></div>
-    <div class="card portrait-chart-card portrait-feature-card"><div class="head"><div class="title">对手方交易特征分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-feature-tools"><div class="portrait-segment" id="portraitBubbleTabs"><button class="is-active" data-mode="inflow" type="button">流入</button><button data-mode="outflow" type="button">流出</button><button data-mode="total" type="button">交易总额</button></div><label class="portrait-topn-control">前<input id="portraitFeatureTopN" type="number" min="5" max="100" step="1" value="20"/>大</label></div></div><div class="content"><div class="portrait-feature-scroll-shell"><div class="portrait-feature-table-wrap" id="portraitFeatureScroll"><table class="portrait-feature-table"><thead><tr><th>对手方名称</th><th id="portraitFeatureAmountHead">流入金额</th></tr></thead><tbody id="portraitFeatureBody"></tbody></table></div><div class="portrait-feature-scroll-rail" aria-hidden="true"><i id="portraitFeatureScrollThumb"></i></div></div></div></div>
+    <div class="card portrait-chart-card portrait-monthly-card"><div class="head"><div class="title">月度收支构成分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><select class="portrait-monthly-year-select" id="portraitMonthlyYearSelect" aria-label="月度收支构成年份"><option value="2023">2023</option><option value="2024">2024</option><option value="2025" selected>2025</option></select><div class="portrait-legend"></div></div><div class="content"><div class="portrait-chart" id="portraitMonthlyChart"></div></div></div>
+    <div class="card portrait-chart-card portrait-feature-card"><div class="head"><div class="title">对手方交易特征分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-feature-tools"><div class="portrait-segment" id="portraitBubbleTabs"><button class="is-active" data-view="customer" type="button">客户</button><button data-view="supplier" type="button">供应商</button><button data-view="nonbusiness" type="button">非客商</button><button data-view="related" type="button">关联方</button></div></div></div><div class="content"><div class="portrait-feature-ranking-grid" id="portraitFeatureBody"></div></div></div>
   </div>
 
   <div class="card portrait-table-card">
@@ -868,9 +868,10 @@
 </section></div>
 
 
-<script defer src="../assets/js/core/shared.js?v=20260814-account-scope1"></script>
+<script src="../assets/js/config/fund-flow-tab-layout.js?v=20260825-missing-actions1"></script>
+<script defer src="../assets/js/core/shared.js?v=20260825-statement-sticky4"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260508-fast2"></script>
-<script defer src="../assets/js/pages/portrait.js?v=20260814-counterparty-actions6"></script>
+<script defer src="../assets/js/pages/portrait.js?v=20260825-portrait-year-filter2"></script>
 <script defer src="../assets/js/pages/routine.js?v=20260508-fast2"></script>
 </body>
 </html>

@@ -149,13 +149,13 @@
 
         <ul class="sb-submenu">
           <li class="sb-row active module-item data-management"
-              onclick="switchFrame('./fragments/data-management.html?v=20260814-master-compare13','数据上传及管理',this)">
+              onclick="switchFrame('./fragments/data-management.html?v=20260825-missing-actions1','数据上传及管理',this)">
             <i class="fa-regular fa-circle-check ico"></i>
             <span class="sb-txt">数据上传及管理</span>
           </li>
 
           <li class="sb-row active module-item bank-analysis"
-              onclick="switchFrame('./fragments/bank-analysis.html?v=20260814-routine-sync1','资金流水分析',this)">
+              onclick="switchFrame('./fragments/bank-analysis.html?v=20260825-statement-sticky4','资金流水分析',this)">
             <i class="fa-regular fa-circle-check ico"></i>
             <span class="sb-txt">资金流水分析</span>
           </li>
@@ -172,7 +172,7 @@
             <span class="sb-txt">数据综合分析</span>
           </li>
 
-          <li class="sb-row active module-item workingpaper-export"
+          <li class="sb-row active module-item workingpaper-export is-temporarily-hidden" hidden aria-hidden="true"
               onclick="switchFrame('./fragments/workingpaper-export.html?v=20260814-export-routines11','报告及底稿导出',this)">
             <i class="fa-regular fa-file-lines ico"></i>
             <span class="sb-txt">报告及底稿导出</span>
@@ -280,7 +280,7 @@
         <label class="platform-feedback-field is-required"><span>项目ID</span><select id="feedbackProjectId" required><option value="20220318">20220318</option></select></label>
         <label class="platform-feedback-field is-required"><span>项目名称</span><select id="feedbackProjectName" required><option value="Test2">Test2</option></select></label>
         <label class="platform-feedback-field is-required"><span>工作簿名称</span><select id="feedbackWorkbook" required><option value="">请选择</option></select></label>
-        <label class="platform-feedback-field is-required"><span>模块</span><select id="feedbackModule" required><option value="">请选择</option><option>数据上传及管理</option><option>资金流水分析</option><option>增值税数据分析</option><option>数据综合分析</option><option>报告及底稿导出</option></select></label>
+        <label class="platform-feedback-field is-required"><span>模块</span><select id="feedbackModule" required><option value="">请选择</option><option>数据上传及管理</option><option>资金流水分析</option><option>增值税数据分析</option><option>数据综合分析</option></select></label>
         <label class="platform-feedback-field"><span>功能</span><select id="feedbackFunction"><option value="">请选择</option><option>数据上传与校验</option><option>筛选与查询</option><option>图表分析</option><option>表格查看</option><option>导出与报告</option><option>其他</option></select></label>
         <label class="platform-feedback-field"><span>主题</span><input id="feedbackSubject" type="text" maxlength="80" placeholder="请输入问题主题"/></label>
       </div>
@@ -307,7 +307,7 @@
     </div>
     <form class="platform-feedback-body" id="userReviewForm" autocomplete="off">
       <div class="platform-feedback-grid">
-        <label class="platform-feedback-field is-required"><span>模块</span><select id="reviewModule" required><option value="">请选择</option><option>数据上传及管理</option><option>资金流水分析</option><option>增值税数据分析</option><option>数据综合分析</option><option>报告及底稿导出</option></select></label>
+        <label class="platform-feedback-field is-required"><span>模块</span><select id="reviewModule" required><option value="">请选择</option><option>数据上传及管理</option><option>资金流水分析</option><option>增值税数据分析</option><option>数据综合分析</option></select></label>
         <label class="platform-feedback-field"><span>功能</span><select id="reviewFunction"><option value="">请选择</option><option>数据上传与校验</option><option>筛选与查询</option><option>图表分析</option><option>表格查看</option><option>导出与报告</option><option>其他</option></select></label>
         <div class="platform-feedback-field is-required platform-rating-field"><span>评分</span><div class="platform-rating" id="userRating" role="radiogroup" aria-label="评分"><button type="button" data-rating="1" aria-label="1星">★</button><button type="button" data-rating="2" aria-label="2星">★</button><button type="button" data-rating="3" aria-label="3星">★</button><button type="button" data-rating="4" aria-label="4星">★</button><button type="button" data-rating="5" aria-label="5星">★</button><input id="reviewRatingValue" type="hidden" value="0"/></div></div>
         <label class="platform-feedback-field platform-feedback-field-block is-required"><span>意见</span><textarea id="reviewComment" required maxlength="500" placeholder="请填写您对当前模块的意见或建议"></textarea></label>

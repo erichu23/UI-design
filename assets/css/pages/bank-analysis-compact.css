@@ -2508,6 +2508,23 @@ body .statement-query-card .head .bank-head-push{
   margin-left:auto;
 }
 
+body .statement-query-card > .head.is-viewport-sticky{
+  box-sizing:border-box !important;
+  border:1px solid var(--bank-table-border-outer,#e7eef6) !important;
+  border-bottom-color:var(--bank-table-border-head,#dbe5f0) !important;
+  border-radius:7px 7px 0 0 !important;
+  background:#fff !important;
+  box-shadow:0 5px 14px rgba(39,63,91,.08) !important;
+}
+
+body .statement-sticky-toolbar-placeholder{
+  display:none;
+}
+
+body .statement-sticky-toolbar-placeholder.is-active{
+  display:block;
+}
+
 body .statement-table-wrap{
   width:100%;
   overflow:auto;
@@ -2527,6 +2544,113 @@ body .statement-flow-table{
 body .statement-flow-table th,
 body .statement-flow-table td{
   white-space:nowrap;
+}
+
+body .statement-flow-table thead.is-viewport-sticky th{
+  height:38px !important;
+  min-height:38px !important;
+  box-sizing:border-box !important;
+  background:var(--bank-table-head-bg,#f6f9fd) !important;
+  background-clip:padding-box !important;
+  box-shadow:0 1px 0 var(--bank-table-border-head,#dbe5f0) !important;
+}
+
+/* 流水查询表头脱离表格固定后，仍保持标题与排序/筛选工具的原始排布。 */
+body #statementFlowTable thead th:not(.no-sort){
+  padding-right:40px !important;
+}
+
+body #statementFlowTable thead .ba-th-tools{
+  position:absolute !important;
+  right:7px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:3px !important;
+  width:29px !important;
+  height:18px !important;
+  margin:0 !important;
+  z-index:2 !important;
+}
+
+body #statementFlowTable thead .ba-sort-icons{
+  display:inline-flex !important;
+  flex:0 0 12px !important;
+  width:12px !important;
+  height:16px !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+body #statementFlowTable thead .ba-sort-icons button{
+  position:relative !important;
+  display:block !important;
+  flex:0 0 7px !important;
+  width:12px !important;
+  height:7px !important;
+  min-width:12px !important;
+  min-height:7px !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+}
+
+body #statementFlowTable thead .ba-sort-icons button::before{
+  content:"" !important;
+  position:absolute !important;
+  left:3px !important;
+  width:0 !important;
+  height:0 !important;
+  border-left:3.5px solid transparent !important;
+  border-right:3.5px solid transparent !important;
+}
+
+body #statementFlowTable thead .ba-sort-up::before{
+  top:1px !important;
+  border-bottom:5px solid #9aa9bb !important;
+}
+
+body #statementFlowTable thead .ba-sort-down::before{
+  bottom:1px !important;
+  border-top:5px solid #9aa9bb !important;
+}
+
+body #statementFlowTable thead th.ba-sort-asc .ba-sort-up::before{
+  border-bottom-color:#2f6fed !important;
+}
+
+body #statementFlowTable thead th.ba-sort-desc .ba-sort-down::before{
+  border-top-color:#2f6fed !important;
+}
+
+body #statementFlowTable thead .ba-filter-btn{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:0 0 13px !important;
+  width:13px !important;
+  height:13px !important;
+  min-width:13px !important;
+  min-height:13px !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+}
+
+body #statementFlowTable thead .ba-filter-btn::before{
+  content:"" !important;
+  display:block !important;
+  width:10px !important;
+  height:10px !important;
+  background:#9aa9bb !important;
+  clip-path:polygon(8% 14%,92% 14%,60% 52%,60% 88%,40% 88%,40% 52%) !important;
+}
+
+body #statementFlowTable thead th.ba-filtered .ba-filter-btn::before{
+  background:#2f6fed !important;
 }
 
 body .statement-flow-table td:nth-child(7),
@@ -3891,6 +4015,93 @@ body #tblAccountSummary td.account-scope-value{
   font-variant-numeric:tabular-nums;
 }
 
+/* 资金总览交易范围：在合计组头内轻量切换整表口径。 */
+body .account-summary-head-actions{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  min-width:0 !important;
+  margin-left:auto !important;
+}
+
+body #tblAccountSummary .account-group-head-controls{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  width:100% !important;
+}
+
+body #tblAccountSummary .account-scope-inline-toggle{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  min-width:0 !important;
+  width:auto !important;
+  height:22px !important;
+  min-height:22px !important;
+  padding:0 7px !important;
+  border:1px solid #d8e3ef !important;
+  border-radius:5px !important;
+  background:rgba(255,255,255,.72) !important;
+  color:#64748b !important;
+  box-shadow:none !important;
+  font-size:10px !important;
+  font-weight:600 !important;
+  line-height:20px !important;
+  white-space:nowrap !important;
+  cursor:pointer !important;
+}
+
+body #tblAccountSummary .account-scope-inline-toggle i{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:11px !important;
+  height:11px !important;
+  border:1px solid #aebed2 !important;
+  border-radius:3px !important;
+  background:#fff !important;
+  color:#fff !important;
+  font-size:8px !important;
+  font-style:normal !important;
+  line-height:1 !important;
+}
+
+body #tblAccountSummary .account-scope-inline-toggle i::before{
+  content:"✓" !important;
+  opacity:0 !important;
+}
+
+body #tblAccountSummary .account-scope-inline-toggle:hover{
+  border-color:#a9bfdb !important;
+  background:#f8fbff !important;
+  color:#315d98 !important;
+}
+
+body #tblAccountSummary .account-scope-inline-toggle.is-active{
+  border-color:#b8cdf0 !important;
+  background:#edf4ff !important;
+  color:#1d4ed8 !important;
+  font-weight:700 !important;
+}
+
+body #tblAccountSummary .account-scope-inline-toggle.is-active i{
+  border-color:#2f6fed !important;
+  background:#2f6fed !important;
+}
+
+body #tblAccountSummary .account-scope-inline-toggle.is-active i::before{
+  opacity:1 !important;
+}
+
+body #tblAccountSummary .account-group-head-divider{
+  width:1px !important;
+  height:13px !important;
+  background:#dbe5f0 !important;
+}
+
 body #tblAccountSummary th,
 body #tblAccountSummary td,
 body #tblAccountSummary .account-year-sub-head th{
@@ -3911,4 +4122,126 @@ body .check-scope.expanded #tblAccountSummary td.check-col{
   width:auto !important;
   min-width:180px !important;
   max-width:none !important;
+}
+
+/* 资金总览：按内容自适应列宽，年度展开时仅在必要情况下横向滚动。 */
+body .tab-pane #tblAccountSummary,
+body .account-summary-table-wrap.is-year-expanded #tblAccountSummary{
+  table-layout:auto !important;
+  width:100% !important;
+  min-width:100% !important;
+}
+
+body #tblAccountSummary col{
+  width:auto !important;
+}
+
+body #tblAccountSummary th,
+body #tblAccountSummary td,
+body #tblAccountSummary .account-year-sub-head th,
+body #tblAccountSummary th:first-child,
+body #tblAccountSummary td:first-child,
+body #tblAccountSummary .account-year-head{
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+  white-space:nowrap !important;
+}
+
+body #tblAccountSummary .monthly-flow-head,
+body #tblAccountSummary .monthly-flow-cell{
+  min-width:116px !important;
+}
+
+body #tblAccountSummary th.account-year-metric,
+body #tblAccountSummary td.account-year-metric{
+  box-sizing:border-box !important;
+  width:84px !important;
+  min-width:78px !important;
+  max-width:88px !important;
+  padding-left:6px !important;
+  padding-right:6px !important;
+}
+
+/* 资金总览：操作列固定在最右侧，并与数据校验账号总览共用轻量操作图标。 */
+body #tblAccountSummary .account-action-sticky{
+  position:sticky !important;
+  right:0 !important;
+  z-index:24 !important;
+  box-sizing:border-box !important;
+  width:64px !important;
+  min-width:64px !important;
+  max-width:64px !important;
+  background:#fff !important;
+  background-clip:padding-box !important;
+  box-shadow:-6px 0 9px -9px rgba(39,63,91,.55) !important;
+}
+
+body #tblAccountSummary th.account-action-sticky{
+  z-index:64 !important;
+  background:#eef5ff !important;
+}
+
+body #tblAccountSummary .sum-row td.account-action-sticky{
+  background:#f8fbff !important;
+}
+
+body #tblAccountSummary tbody tr:hover td.account-action-sticky{
+  background:#f7faff !important;
+}
+
+body #tblAccountSummary td.actions.account-action-sticky{
+  display:table-cell !important;
+  padding:0 6px !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+}
+
+body #tblAccountSummary .dm-account-action-btn{
+  display:inline-flex !important;
+  width:18px !important;
+  height:18px !important;
+  min-width:18px !important;
+  min-height:18px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  margin:0 2px !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+  border:0 !important;
+  border-radius:0 !important;
+  appearance:none !important;
+  color:#2f6fed !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  cursor:pointer !important;
+  vertical-align:middle !important;
+  transition:color .15s ease,opacity .15s ease,transform .15s ease !important;
+}
+
+body #tblAccountSummary .dm-account-action-btn:hover{
+  color:#174f9b !important;
+  background:transparent !important;
+  opacity:.88 !important;
+  transform:translateY(-1px) !important;
+}
+
+body #tblAccountSummary .dm-account-action-btn:focus-visible{
+  outline:1px dotted #2f6fed !important;
+  outline-offset:2px !important;
+}
+
+body #tblAccountSummary .dm-account-action-btn svg{
+  display:block !important;
+  width:14px !important;
+  height:14px !important;
+  fill:none !important;
+  stroke:#2f6fed !important;
+  stroke-width:1.65 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+
+body #tblAccountSummary .dm-account-action-btn:hover svg{
+  stroke:#174f9b !important;
 }
