@@ -58,6 +58,17 @@ body{
   cursor:pointer;
 }
 .pl-search button{border-radius:0;border-width:0 0 0 1px;}
+.pl-search-icon{
+  width:14px;
+  height:14px;
+  flex:0 0 14px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.75;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  opacity:.92;
+}
 .pl-search button:hover,.pl-new-btn:hover{background:#194cc3;}
 .pl-hint-btn{display:none;}
 

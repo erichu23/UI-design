@@ -3730,3 +3730,183 @@ html body .risk-sticky-table-head table{
 html body .risk-sticky-table-head th{
   position:static !important;
 }
+
+/* 特殊交易识别：与平台通用表格一致的列筛选弹层。 */
+html body .risk-column-filter-popover{
+  --risk-filter-arrow-left:24px;
+  position:fixed;
+  z-index:1200;
+  width:238px;
+  box-sizing:border-box;
+  padding:10px;
+  border:1px solid #d8e3ef;
+  border-radius:7px;
+  background:#fff;
+  color:#334155;
+  box-shadow:0 10px 28px rgba(15,23,42,.15);
+  font:11px/1.4 var(--font,"Microsoft YaHei",Arial,sans-serif);
+}
+html body .risk-column-filter-popover.is-range-filter{ width:226px; }
+html body .risk-column-filter-popover::before,
+html body .risk-column-filter-popover::after{
+  content:"";
+  position:absolute;
+  left:var(--risk-filter-arrow-left);
+  width:0;
+  height:0;
+  transform:translateX(-50%);
+  border-left:6px solid transparent;
+  border-right:6px solid transparent;
+}
+html body .risk-column-filter-popover::before{
+  top:-7px;
+  border-bottom:7px solid #d8e3ef;
+}
+html body .risk-column-filter-popover::after{
+  top:-6px;
+  border-bottom:7px solid #fff;
+}
+html body .risk-column-filter-popover.is-above::before{
+  top:auto;
+  bottom:-7px;
+  border-bottom:0;
+  border-top:7px solid #d8e3ef;
+}
+html body .risk-column-filter-popover.is-above::after{
+  top:auto;
+  bottom:-6px;
+  border-bottom:0;
+  border-top:7px solid #fff;
+}
+html body .risk-filter-title{
+  margin-bottom:8px;
+  color:#334155;
+  font-size:11px;
+  font-weight:700;
+}
+html body .risk-filter-search-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:8px;
+  align-items:center;
+  margin-bottom:7px;
+}
+html body .risk-filter-search{
+  position:relative;
+  display:block;
+}
+html body .risk-filter-search input,
+html body .risk-filter-range input{
+  width:100%;
+  height:28px;
+  box-sizing:border-box;
+  border:1px solid #d8e3ef;
+  border-radius:5px;
+  background:#fff;
+  color:#334155;
+  outline:0;
+  font:11px var(--font,"Microsoft YaHei",Arial,sans-serif);
+}
+html body .risk-filter-search input{ padding:0 27px 0 8px; }
+html body .risk-filter-search input:focus,
+html body .risk-filter-range input:focus{
+  border-color:#8eb4eb;
+  box-shadow:0 0 0 2px rgba(47,111,237,.08);
+}
+html body .risk-filter-search i{
+  position:absolute;
+  top:8px;
+  right:9px;
+  width:9px;
+  height:9px;
+  box-sizing:border-box;
+  border:1.5px solid #718096;
+  border-radius:50%;
+  pointer-events:none;
+}
+html body .risk-filter-search i::after{
+  content:"";
+  position:absolute;
+  width:4px;
+  height:1.5px;
+  right:-3px;
+  bottom:-1px;
+  transform:rotate(45deg);
+  background:#718096;
+  border-radius:1px;
+}
+html body .risk-filter-exclude,
+html body .risk-filter-select-all label,
+html body .risk-filter-options label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#52657b;
+  white-space:nowrap;
+  cursor:pointer;
+}
+html body .risk-filter-exclude input,
+html body .risk-filter-select-all input,
+html body .risk-filter-options input{
+  width:14px;
+  height:14px;
+  margin:0;
+  accent-color:#2f6fed;
+}
+html body .risk-filter-select-all{
+  padding:6px 3px;
+  border-top:1px solid #edf2f7;
+  border-bottom:1px solid #edf2f7;
+}
+html body .risk-filter-options{
+  max-height:184px;
+  overflow:auto;
+  padding:4px 0;
+  scrollbar-width:thin;
+  scrollbar-color:#cbd6e2 transparent;
+}
+html body .risk-filter-options label{
+  min-height:26px;
+  padding:0 4px;
+  border-radius:4px;
+}
+html body .risk-filter-options label:hover{ background:#f5f8fc; }
+html body .risk-filter-options span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+html body .risk-filter-range{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 12px minmax(0,1fr);
+  gap:6px;
+  align-items:center;
+}
+html body .risk-filter-range input{ padding:0 7px; }
+html body .risk-filter-range > span{ color:#94a3b8; text-align:center; }
+html body .risk-filter-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:6px;
+  margin-top:9px;
+  padding-top:8px;
+  border-top:1px solid #edf2f7;
+}
+html body .risk-filter-actions button{
+  height:27px !important;
+  min-height:27px !important;
+  padding:0 11px !important;
+  border:1px solid #d8e3ef !important;
+  border-radius:5px !important;
+  background:#fff !important;
+  color:#52657b !important;
+  font-size:11px !important;
+  font-weight:600 !important;
+  cursor:pointer;
+}
+html body .risk-filter-actions button[data-action="apply"]{
+  border-color:#2458db !important;
+  background:#2458db !important;
+  color:#fff !important;
+}
+html body .risk-filter-empty{ padding:16px 4px; color:#94a3b8; text-align:center; }

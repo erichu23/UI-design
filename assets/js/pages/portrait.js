@@ -60,6 +60,13 @@
   const fmtK=v=>v?`${fmt(v)}K`:'—';
   const fmtAmount=v=>v?(window.AuditUnit?.formatFromK?.(v)??fmtK(v)):'—';
   const typeClass=t=>t==='客户'?'is-customer':t==='供应商'?'is-supplier':'';
+  const syncCounterpartyTypeCells=scope=>{
+    (scope||document).querySelectorAll('.portrait-type-cell').forEach(cell=>{
+      const type=(cell.textContent||'').trim();
+      cell.classList.toggle('is-customer',type==='客户');
+      cell.classList.toggle('is-supplier',type==='供应商');
+    });
+  };
   const filterDefs=[
     {key:'all',label:'全体对手方'},
     {key:'related',label:'已知关联方'},
@@ -390,6 +397,7 @@
       const master=counterpartyMasterInfo(r);
       return `<tr><td class="portrait-fixed-col portrait-fixed-col-1">${esc(r.name)}</td>${blacklistCell(r,'portrait-fixed-col portrait-fixed-col-2')}<td class="portrait-fixed-col portrait-fixed-col-3">${mini(r,start+i)}</td><td class="portrait-type-cell portrait-fixed-col portrait-fixed-col-4 ${shownTypeClass}">${esc(shownType)}</td>${groupCells(r)}${yearsCells}<td>${esc(master.salesCategory)}</td><td>${esc(master.purchaseCategory)}</td><td>${esc(master.position)}</td><td>${master.customerApprovalDate}</td><td>${master.customerInvalidDate}</td><td>${master.supplierApprovalDate}</td><td>${master.supplierInvalidDate}</td><td>${master.employeeHireDate}</td><td>${master.employeeLeaveDate}</td><td>${esc(master.group)}</td><td class="portrait-remark-cell">${master.remark?esc(master.remark):'<span>—</span>'}</td><td class="portrait-operation-cell portrait-operation-sticky">${portraitActionButtons(r)}</td></tr>`;
     }).join('');
+    syncCounterpartyTypeCells(body);
     bindPortraitRowActions(body);
     document.getElementById('portraitTableCount').textContent=`共 ${total} 家对手方，当前展示 ${total?start+1:0}-${Math.min(start+pageSize,total)} / ${total}`;
     document.querySelectorAll('#portraitCounterpartyTable th[data-sort]').forEach(th=>{th.classList.toggle('is-asc',sortKey===th.dataset.sort&&sortDir===1);th.classList.toggle('is-desc',sortKey===th.dataset.sort&&sortDir===-1);th.onclick=()=>{if(sortKey===th.dataset.sort)sortDir*=-1;else{sortKey=th.dataset.sort;sortDir=1;}renderTable();};});
@@ -714,7 +722,21 @@
     };
     button.addEventListener('click',()=>{
       if(button.classList.contains('is-refreshing'))return;
+      const surface=document.querySelector('.portrait-table-wrap.tyc-sync-surface');
+      surface?.querySelector('.tyc-sync-feedback')?.remove();
+      surface?.classList.remove('is-tyc-sync-success');
+      surface?.classList.add('is-tyc-syncing');
+      surface?.setAttribute('aria-busy','true');
+      if(surface){
+        const feedback=document.createElement('div');
+        feedback.className='tyc-sync-feedback';
+        feedback.setAttribute('role','status');
+        feedback.innerHTML='<span class="tyc-sync-feedback-icon" aria-hidden="true"></span><span class="tyc-sync-feedback-copy"><strong>正在更新对手方工商信息</strong><span>同步天眼查数据并刷新当前表格</span></span>';
+        surface.appendChild(feedback);
+      }
       button.classList.add('is-refreshing');
+      button.disabled=true;
+      button.setAttribute('aria-busy','true');
       state.classList.remove('is-success');
       state.textContent='正在重新获取工商信息…';
       window.setTimeout(()=>{
@@ -722,8 +744,21 @@
         state.innerHTML=`工商信息最新更新时间：<time id="portraitBusinessUpdatedAt">${updated}</time>`;
         state.classList.add('is-success');
         button.classList.remove('is-refreshing');
+        button.disabled=false;
+        button.removeAttribute('aria-busy');
+        if(surface){
+          surface.classList.remove('is-tyc-syncing');
+          surface.classList.add('is-tyc-sync-success');
+          surface.removeAttribute('aria-busy');
+          const copy=surface.querySelector('.tyc-sync-feedback-copy');
+          if(copy)copy.innerHTML='<strong>工商信息更新完成</strong><span>当前表格数据已刷新</span>';
+          window.setTimeout(()=>{
+            surface.classList.remove('is-tyc-sync-success');
+            surface.querySelector('.tyc-sync-feedback')?.remove();
+          },1100);
+        }
         window.setTimeout(()=>state.classList.remove('is-success'),1600);
-      },650);
+      },850);
     });
   }
   function resetPortraitFilters(){

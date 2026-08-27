@@ -6,7 +6,7 @@
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/></noscript>
   <link rel="stylesheet" href="../assets/css/base.css?v=20260827-pager-select1"/>
-  <link rel="stylesheet" href="../assets/css/pages/project-list.css?v=20260813-project-list9"/>
+  <link rel="stylesheet" href="../assets/css/pages/project-list.css?v=20260827-search-icon1"/>
 </head>
 <body>
   <div class="pl-page">
@@ -22,7 +22,13 @@
     <div class="pl-toolbar">
       <div class="pl-search">
         <input type="text" placeholder="请输入项目编号/项目名称/客户名称/工作簿名称"/>
-        <button type="button">搜索</button>
+        <button type="button" aria-label="搜索">
+          <svg class="pl-search-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <circle cx="8.5" cy="8.5" r="4.75"></circle>
+            <path d="m12.1 12.1 3.65 3.65"></path>
+          </svg>
+          <span>搜索</span>
+        </button>
       </div>
       <button class="pl-hint-btn" type="button">操作提示</button>
     </div>

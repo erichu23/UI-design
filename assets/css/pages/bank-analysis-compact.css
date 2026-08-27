@@ -2266,38 +2266,192 @@ body .tab-pane #relationCounterpartyTable tbody tr:last-child td{
 .ba-table-filter-popover{
   position:fixed;
   z-index:9999;
-  width:230px;
-  max-height:320px;
-  padding:10px;
-  border:1px solid #d8e2ee;
+  width:248px;
+  max-height:350px;
+  padding:10px 11px;
+  border:1px solid #d7e2ee;
   border-radius:8px;
   background:#fff;
-  box-shadow:0 12px 30px rgba(15,23,42,.16);
-  font-size:12px;
+  box-shadow:0 14px 32px rgba(38,58,82,.16);
+  font-size:11px;
   color:#334155;
 }
 
+.ba-table-filter-popover::before,
+.ba-table-filter-popover::after{
+  content:"";
+  position:absolute;
+  left:var(--ba-filter-arrow-left,24px);
+  width:0;
+  height:0;
+  transform:translateX(-50%);
+  pointer-events:none;
+}
+
+.ba-table-filter-popover::before{
+  top:-7px;
+  border-left:7px solid transparent;
+  border-right:7px solid transparent;
+  border-bottom:7px solid #cfdbe8;
+}
+
+.ba-table-filter-popover::after{
+  top:-6px;
+  border-left:6px solid transparent;
+  border-right:6px solid transparent;
+  border-bottom:6px solid #fff;
+}
+
+.ba-table-filter-popover.is-above::before{
+  top:auto;
+  bottom:-7px;
+  border-bottom:0;
+  border-top:7px solid #cfdbe8;
+}
+
+.ba-table-filter-popover.is-above::after{
+  top:auto;
+  bottom:-6px;
+  border-bottom:0;
+  border-top:6px solid #fff;
+}
+
+.ba-table-filter-popover.is-range-filter{
+  width:236px;
+}
+
 .ba-filter-title{
-  margin-bottom:7px;
+  margin-bottom:8px;
   font-weight:700;
-  color:#1f2937;
+  color:#263b57;
+  line-height:18px;
+}
+
+.ba-filter-search-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:8px;
+  margin-bottom:7px;
+}
+
+.ba-filter-search{
+  position:relative;
+  display:block;
+  min-width:0;
+}
+
+.ba-filter-search input,
+.ba-filter-range input{
+  width:100%;
+  height:29px;
+  box-sizing:border-box;
+  border:1px solid #ced9e6;
+  border-radius:5px;
+  outline:none;
+  background:#fff;
+  color:#334155;
+  font:inherit;
+}
+
+.ba-filter-search input{
+  padding:0 29px 0 8px;
+}
+
+.ba-filter-search i{
+  position:absolute;
+  right:9px;
+  top:8px;
+  width:9px;
+  height:9px;
+  box-sizing:border-box;
+  border:1.5px solid #64748b;
+  border-radius:50%;
+  pointer-events:none;
+}
+
+.ba-filter-search i::after{
+  content:"";
+  position:absolute;
+  right:-4px;
+  bottom:-3px;
+  width:5px;
+  height:1.5px;
+  border-radius:2px;
+  background:#64748b;
+  transform:rotate(45deg);
+  transform-origin:left center;
+}
+
+.ba-filter-search input:focus,
+.ba-filter-range input:focus{
+  border-color:#6f9bdd;
+  box-shadow:0 0 0 2px rgba(47,111,237,.09);
+}
+
+.ba-filter-exclude,
+.ba-filter-select-all label{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  color:#617187;
+  white-space:nowrap;
+  cursor:pointer;
+}
+
+.ba-filter-exclude input,
+.ba-filter-select-all input,
+.ba-filter-options input{
+  width:13px;
+  height:13px;
+  margin:0;
+  accent-color:#2f6fed;
+}
+
+.ba-filter-select-all{
+  margin:0 -2px 5px;
+  padding:6px 6px;
+  border-top:1px solid #eef3f8;
+  border-bottom:1px solid #eef3f8;
+}
+
+.ba-filter-range{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 14px minmax(0,1fr);
+  align-items:center;
+  gap:5px;
+}
+
+.ba-filter-range input{
+  min-width:0;
+  padding:0 8px;
+  text-align:left;
+}
+
+.ba-filter-range > span{
+  color:#8190a3;
+  text-align:center;
 }
 
 .ba-filter-options{
-  max-height:220px;
+  max-height:205px;
   overflow:auto;
   display:flex;
   flex-direction:column;
-  gap:4px;
+  gap:2px;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(148,163,184,.28) transparent;
 }
 
 .ba-filter-options label{
   display:flex;
   align-items:center;
   gap:6px;
-  min-height:24px;
-  padding:2px 4px;
+  min-height:25px;
+  padding:2px 6px;
   border-radius:5px;
+  color:#46576d;
+  cursor:pointer;
 }
 
 .ba-filter-options label:hover{
@@ -2428,17 +2582,21 @@ body .tab-pane #relationCounterpartyTable tbody tr:last-child td{
   display:flex;
   justify-content:flex-end;
   gap:6px;
-  margin-top:8px;
+  margin-top:9px;
+  padding-top:8px;
+  border-top:1px solid #eef3f8;
 }
 
 .ba-filter-actions button{
-  height:26px;
-  padding:0 9px;
+  min-width:52px;
+  height:28px;
+  padding:0 10px;
   border:1px solid #d8e2ee;
   border-radius:6px;
   background:#fff;
   color:#475569;
-  font-size:12px;
+  font-size:11px;
+  font-weight:600;
   cursor:pointer;
 }
 
@@ -2446,6 +2604,16 @@ body .tab-pane #relationCounterpartyTable tbody tr:last-child td{
   border-color:#2f6fed;
   background:#2f6fed;
   color:#fff;
+}
+
+.ba-filter-actions button:hover{
+  border-color:#aebfd3;
+  background:#f7faff;
+}
+
+.ba-filter-actions button[data-action="apply"]:hover{
+  border-color:#245fd1;
+  background:#245fd1;
 }
 
 /* 流水画像表格：强制使用与数据综合分析一致的对手方类型底色和金额色系。 */
@@ -2457,12 +2625,14 @@ body #relationCounterpartyTable tbody td.portrait-type-cell{
 
 body #portraitCounterpartyTable tbody td.portrait-type-cell.is-customer,
 body #relationCounterpartyTable tbody td.portrait-type-cell.is-customer{
-  background:#f1f5f9 !important;
+  background-color:#f1f5f9 !important;
+  background-image:none !important;
 }
 
 body #portraitCounterpartyTable tbody td.portrait-type-cell.is-supplier,
 body #relationCounterpartyTable tbody td.portrait-type-cell.is-supplier{
-  background:#f8f3ea !important;
+  background-color:#f8f3ea !important;
+  background-image:none !important;
 }
 
 body #portraitCounterpartyTable tbody tr:hover td.portrait-type-cell.is-customer,
@@ -2508,6 +2678,10 @@ body .statement-query-card .head .bank-head-push{
   margin-left:auto;
 }
 
+body .statement-query-card{
+  overflow:hidden !important;
+}
+
 body .statement-query-card > .head.is-viewport-sticky{
   box-sizing:border-box !important;
   border:1px solid var(--bank-table-border-outer,#e7eef6) !important;
@@ -2527,7 +2701,8 @@ body .statement-sticky-toolbar-placeholder.is-active{
 
 body .statement-table-wrap{
   width:100%;
-  overflow:auto;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
   scrollbar-width:none;
 }
 
@@ -2541,12 +2716,44 @@ body .statement-flow-table{
   width:max-content;
 }
 
+body .statement-sticky-header-layer{
+  display:none;
+  position:fixed;
+  overflow:hidden;
+  z-index:120;
+  box-sizing:border-box;
+  border-left:1px solid var(--bank-table-border-outer,#e7eef6);
+  border-right:1px solid var(--bank-table-border-outer,#e7eef6);
+  background:var(--bank-table-head-bg,#f6f9fd);
+  box-shadow:0 4px 10px rgba(39,63,91,.08);
+}
+
+body .statement-sticky-header-layer.is-active{
+  display:block;
+}
+
+body .statement-sticky-clone-table{
+  table-layout:fixed !important;
+  margin:0 !important;
+  transition:none !important;
+}
+
+body .statement-sticky-clone-table thead{
+  position:static !important;
+  top:auto !important;
+}
+
+body .statement-sticky-clone-table thead th{
+  position:relative !important;
+  box-sizing:border-box !important;
+}
+
 body .statement-flow-table th,
 body .statement-flow-table td{
   white-space:nowrap;
 }
 
-body .statement-flow-table thead.is-viewport-sticky th{
+body .statement-flow-table thead th{
   height:38px !important;
   min-height:38px !important;
   box-sizing:border-box !important;
@@ -2556,11 +2763,13 @@ body .statement-flow-table thead.is-viewport-sticky th{
 }
 
 /* 流水查询表头脱离表格固定后，仍保持标题与排序/筛选工具的原始排布。 */
-body #statementFlowTable thead th:not(.no-sort){
+body #statementFlowTable thead th:not(.no-sort),
+body .statement-sticky-clone-table thead th:not(.no-sort){
   padding-right:40px !important;
 }
 
-body #statementFlowTable thead .ba-th-tools{
+body #statementFlowTable thead .ba-th-tools,
+body .statement-sticky-clone-table thead .ba-th-tools{
   position:absolute !important;
   right:7px !important;
   top:50% !important;
@@ -2575,7 +2784,8 @@ body #statementFlowTable thead .ba-th-tools{
   z-index:2 !important;
 }
 
-body #statementFlowTable thead .ba-sort-icons{
+body #statementFlowTable thead .ba-sort-icons,
+body .statement-sticky-clone-table thead .ba-sort-icons{
   display:inline-flex !important;
   flex:0 0 12px !important;
   width:12px !important;
@@ -2585,7 +2795,8 @@ body #statementFlowTable thead .ba-sort-icons{
   justify-content:center !important;
 }
 
-body #statementFlowTable thead .ba-sort-icons button{
+body #statementFlowTable thead .ba-sort-icons button,
+body .statement-sticky-clone-table thead .ba-sort-icons button{
   position:relative !important;
   display:block !important;
   flex:0 0 7px !important;
@@ -2598,7 +2809,8 @@ body #statementFlowTable thead .ba-sort-icons button{
   background:transparent !important;
 }
 
-body #statementFlowTable thead .ba-sort-icons button::before{
+body #statementFlowTable thead .ba-sort-icons button::before,
+body .statement-sticky-clone-table thead .ba-sort-icons button::before{
   content:"" !important;
   position:absolute !important;
   left:3px !important;
@@ -2608,25 +2820,30 @@ body #statementFlowTable thead .ba-sort-icons button::before{
   border-right:3.5px solid transparent !important;
 }
 
-body #statementFlowTable thead .ba-sort-up::before{
+body #statementFlowTable thead .ba-sort-up::before,
+body .statement-sticky-clone-table thead .ba-sort-up::before{
   top:1px !important;
   border-bottom:5px solid #9aa9bb !important;
 }
 
-body #statementFlowTable thead .ba-sort-down::before{
+body #statementFlowTable thead .ba-sort-down::before,
+body .statement-sticky-clone-table thead .ba-sort-down::before{
   bottom:1px !important;
   border-top:5px solid #9aa9bb !important;
 }
 
-body #statementFlowTable thead th.ba-sort-asc .ba-sort-up::before{
+body #statementFlowTable thead th.ba-sort-asc .ba-sort-up::before,
+body .statement-sticky-clone-table thead th.ba-sort-asc .ba-sort-up::before{
   border-bottom-color:#2f6fed !important;
 }
 
-body #statementFlowTable thead th.ba-sort-desc .ba-sort-down::before{
+body #statementFlowTable thead th.ba-sort-desc .ba-sort-down::before,
+body .statement-sticky-clone-table thead th.ba-sort-desc .ba-sort-down::before{
   border-top-color:#2f6fed !important;
 }
 
-body #statementFlowTable thead .ba-filter-btn{
+body #statementFlowTable thead .ba-filter-btn,
+body .statement-sticky-clone-table thead .ba-filter-btn{
   display:inline-flex !important;
   align-items:center !important;
   justify-content:center !important;
@@ -2640,7 +2857,8 @@ body #statementFlowTable thead .ba-filter-btn{
   background:transparent !important;
 }
 
-body #statementFlowTable thead .ba-filter-btn::before{
+body #statementFlowTable thead .ba-filter-btn::before,
+body .statement-sticky-clone-table thead .ba-filter-btn::before{
   content:"" !important;
   display:block !important;
   width:10px !important;
@@ -2649,7 +2867,8 @@ body #statementFlowTable thead .ba-filter-btn::before{
   clip-path:polygon(8% 14%,92% 14%,60% 52%,60% 88%,40% 88%,40% 52%) !important;
 }
 
-body #statementFlowTable thead th.ba-filtered .ba-filter-btn::before{
+body #statementFlowTable thead th.ba-filtered .ba-filter-btn::before,
+body .statement-sticky-clone-table thead th.ba-filtered .ba-filter-btn::before{
   background:#2f6fed !important;
 }
 

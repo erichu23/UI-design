@@ -348,6 +348,22 @@
     flowYearMenu.hidden=true;
     table.querySelector('[data-flow-year-trigger]')?.setAttribute('aria-expanded','false');
   };
+  const updateMonthlyFlowYear=()=>{
+    const trigger=table.querySelector('[data-flow-year-trigger]');
+    const label=trigger?.querySelector('span');
+    if(label)label.textContent=`${selectedFlowYear}年`;
+    const viewRows=scopedRows();
+    const start=(state.page-1)*state.pageSize;
+    const visibleRows=viewRows.slice(start,start+state.pageSize);
+    const rowByAccount=new Map(visibleRows.map(row=>[row.source[1],row]));
+    const renderedRows=Array.from(body.querySelectorAll('tr:not(.sum-row)'));
+    renderedRows.forEach(rowElement=>{
+      const flowCell=rowElement.querySelector('.monthly-flow-cell');
+      const account=rowElement.cells[1]?.textContent?.trim();
+      const row=rowByAccount.get(account);
+      if(flowCell&&row)flowCell.innerHTML=miniBars(row);
+    });
+  };
   const openFlowYearMenu=button=>{
     if(!flowYearMenu){
       flowYearMenu=document.createElement('div');
@@ -360,7 +376,7 @@
         selectedFlowYear=Number(option.dataset.flowYearOption)||2025;
         if(flowTooltip)flowTooltip.hidden=true;
         closeFlowYearMenu();
-        render();
+        updateMonthlyFlowYear();
       });
     }
     const willOpen=flowYearMenu.hidden;

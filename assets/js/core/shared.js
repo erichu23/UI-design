@@ -1240,6 +1240,22 @@
         flowYearMenu.hidden = true;
         table.querySelector('[data-account-flow-year-trigger]')?.setAttribute('aria-expanded','false');
       };
+      const updateMonthlyFlowYear = () => {
+        const trigger = table.querySelector('[data-account-flow-year-trigger]');
+        const label = trigger?.querySelector('span');
+        if (label) label.textContent = `${state.flowYear}年`;
+        const viewRows = scopedRows();
+        const start = (state.page - 1) * state.pageSize;
+        const visibleRows = viewRows.slice(start,start + state.pageSize);
+        const rowByCompany = new Map(visibleRows.map(row=>[row.company,row]));
+        const renderedRows = Array.from(body.querySelectorAll('tr:not(.sum-row)'));
+        renderedRows.forEach(rowElement=>{
+          const flowCell = rowElement.querySelector('.monthly-flow-cell');
+          const company = rowElement.cells[0]?.textContent?.trim();
+          const row = rowByCompany.get(company);
+          if (flowCell && row) flowCell.innerHTML = miniBars(row);
+        });
+      };
       const openFlowYearMenu = button => {
         if (!flowYearMenu) {
           flowYearMenu = document.createElement('div');
@@ -1252,7 +1268,7 @@
             state.flowYear = Number(option.dataset.accountFlowYearOption) || 2025;
             if (flowTooltip) flowTooltip.hidden = true;
             closeFlowYearMenu();
-            render();
+            updateMonthlyFlowYear();
           });
         }
         const willOpen = flowYearMenu.hidden;
@@ -2029,6 +2045,25 @@
     return (row.children[index]?.innerText || '').trim();
   }
 
+  function parseFilterNumber(value) {
+    const normalized = String(value ?? '')
+      .replace(/,/g, '')
+      .replace(/\s+/g, '')
+      .replace(/[万千百元个家条笔次人年月日%￥¥$]/g, '')
+      .replace(/[^0-9.+-]/g, '');
+    if (!normalized || !/[0-9]/.test(normalized)) return null;
+    const number = Number(normalized);
+    return Number.isFinite(number) ? number : null;
+  }
+
+  function isRangeFilterColumn(th, values) {
+    const label = getHeaderLabel(th).replace(/\s+/g, '');
+    const numericLabel = /(金额|余额|税额|价税合计|占比|比例|税率|数量|笔数|次数|个数|人数|天数|时长|差异|总额|净额|额度|规模|样本量)/;
+    if (!numericLabel.test(label)) return false;
+    const usable = values.filter(Boolean);
+    return usable.length > 0 && usable.filter(value => parseFilterNumber(value) !== null).length / usable.length >= .7;
+  }
+
   function compareCell(a, b, dir) {
     const na = Number(a.replace(/[^\d.-]/g, ''));
     const nb = Number(b.replace(/[^\d.-]/g, ''));
@@ -2046,8 +2081,24 @@
       if (row.classList.contains('wp-routine-group-row')) return;
       let visible = true;
       if (filters) {
-        filters.forEach((selected, index) => {
-          if (selected.size && !selected.has(getCellText(row, index))) visible = false;
+        filters.forEach((rule, index) => {
+          const value = getCellText(row, index);
+          if (rule instanceof Set) {
+            if (rule.size && !rule.has(value)) visible = false;
+            return;
+          }
+          if (!rule || !rule.type) return;
+          if (rule.type === 'range') {
+            const number = parseFilterNumber(value);
+            if (number === null) { visible = false; return; }
+            if (rule.min !== null && number < rule.min) visible = false;
+            if (rule.max !== null && number > rule.max) visible = false;
+            return;
+          }
+          if (rule.type === 'values') {
+            const matched = rule.selected.has(value);
+            if (rule.exclude ? matched : !matched) visible = false;
+          }
         });
       }
       row.style.display = visible ? '' : 'none';
@@ -2089,7 +2140,10 @@
   }
 
   function closeFilterPopovers() {
-    document.querySelectorAll('.ba-table-filter-popover').forEach(el => el.remove());
+    document.querySelectorAll('.ba-table-filter-popover').forEach(el => {
+      if (typeof el._baCleanup === 'function') el._baCleanup();
+      el.remove();
+    });
   }
 
   function closeColumnPopovers() {
@@ -2320,50 +2374,150 @@
       .map(row => getCellText(row, index))
       .filter(Boolean))).slice(0, 80);
     const filters = tableFilters.get(table) || new Map();
-    const selected = filters.get(index) || new Set(values);
+    const current = filters.get(index);
+    const rangeMode = isRangeFilterColumn(th, values);
+    const currentValues = current?.type === 'values'
+      ? current.selected
+      : current instanceof Set ? current : new Set(values);
+    const selected = new Set(currentValues || values);
+    const excluded = current?.type === 'values' ? Boolean(current.exclude) : false;
+    const currentMin = current?.type === 'range' && current.min !== null ? current.min : '';
+    const currentMax = current?.type === 'range' && current.max !== null ? current.max : '';
+    const title = getHeaderLabel(th);
 
     const pop = document.createElement('div');
-    pop.className = 'ba-table-filter-popover';
-    pop.innerHTML = `
-      <div class="ba-filter-title">${(th.childNodes[0]?.textContent || th.innerText || '筛选').trim()}</div>
-      <div class="ba-filter-options">
-        ${values.map(v => `
-          <label>
-            <input type="checkbox" value="${v.replace(/"/g, '&quot;')}" ${selected.has(v) ? 'checked' : ''}>
-            <span>${v}</span>
-          </label>
-        `).join('') || '<div class="ba-filter-empty">暂无可筛选内容</div>'}
-      </div>
-      <div class="ba-filter-actions">
-        <button type="button" data-action="clear">清空</button>
-        <button type="button" data-action="all">全选</button>
-        <button type="button" data-action="apply">确定</button>
-      </div>
-    `;
+    pop.className = `ba-table-filter-popover ${rangeMode ? 'is-range-filter' : 'is-value-filter'}`;
+    if (rangeMode) {
+      pop.innerHTML = `
+        <div class="ba-filter-title">${escapeHtml(title)}范围筛选</div>
+        <div class="ba-filter-range">
+          <input type="text" inputmode="decimal" data-range="min" value="${currentMin}" placeholder="最小值" aria-label="最小值">
+          <span>～</span>
+          <input type="text" inputmode="decimal" data-range="max" value="${currentMax}" placeholder="最大值" aria-label="最大值">
+        </div>
+        <div class="ba-filter-actions">
+          <button type="button" data-action="reset">重置</button>
+          <button type="button" data-action="apply">确定</button>
+        </div>
+      `;
+    } else {
+      pop.innerHTML = `
+        <div class="ba-filter-title">${escapeHtml(title)}筛选</div>
+        <div class="ba-filter-search-row">
+          <label class="ba-filter-search"><input type="search" placeholder="搜索" aria-label="搜索筛选项"><i aria-hidden="true"></i></label>
+          <label class="ba-filter-exclude"><input type="checkbox" ${excluded ? 'checked' : ''}><span>不包含</span></label>
+        </div>
+        <div class="ba-filter-select-all"><label><input type="checkbox" data-role="select-all"><span>全选</span></label></div>
+        <div class="ba-filter-options">
+          ${values.map(v => `
+            <label data-filter-value="${escapeHtml(v.toLowerCase())}">
+              <input type="checkbox" value="${escapeHtml(v)}" ${selected.has(v) ? 'checked' : ''}>
+              <span title="${escapeHtml(v)}">${escapeHtml(v)}</span>
+            </label>
+          `).join('') || '<div class="ba-filter-empty">暂无可筛选内容</div>'}
+        </div>
+        <div class="ba-filter-actions">
+          <button type="button" data-action="reset">重置</button>
+          <button type="button" data-action="apply">确定</button>
+        </div>
+      `;
+    }
     document.body.appendChild(pop);
-    const rect = th.getBoundingClientRect();
-    pop.style.left = Math.min(rect.left, window.innerWidth - 240) + 'px';
-    pop.style.top = (rect.bottom + 4) + 'px';
+    pop._baAnchor = event.target.closest('.ba-filter-btn') || th;
+    const removePopover = () => {
+      if (typeof pop._baCleanup === 'function') pop._baCleanup();
+      pop.remove();
+    };
+    const placePopover = () => {
+      const anchor = pop._baAnchor;
+      if (!pop.isConnected || !anchor?.isConnected) return;
+      const rect = anchor.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) {
+        removePopover();
+        return;
+      }
+      const left = Math.max(8, Math.min(rect.right - pop.offsetWidth, window.innerWidth - pop.offsetWidth - 8));
+      const below = rect.bottom + 8;
+      const placeAbove = below + pop.offsetHeight > window.innerHeight - 8 && rect.top > pop.offsetHeight + 8;
+      const top = placeAbove ? rect.top - pop.offsetHeight - 8 : below;
+      const arrowLeft = Math.max(12, Math.min(rect.left + rect.width / 2 - left, pop.offsetWidth - 12));
+      pop.classList.toggle('is-above', placeAbove);
+      pop.style.left = `${left}px`;
+      pop.style.top = `${Math.max(8, top)}px`;
+      pop.style.setProperty('--ba-filter-arrow-left', `${arrowLeft}px`);
+    };
+    pop._baPlace = placePopover;
+    placePopover();
+    window.addEventListener('scroll', placePopover, true);
+    window.addEventListener('resize', placePopover);
+    pop._baCleanup = () => {
+      window.removeEventListener('scroll', placePopover, true);
+      window.removeEventListener('resize', placePopover);
+    };
 
-    pop.querySelector('[data-action="clear"]').addEventListener('click', () => {
-      pop.querySelectorAll('input').forEach(input => input.checked = false);
-    });
-    pop.querySelector('[data-action="all"]').addEventListener('click', () => {
-      pop.querySelectorAll('input').forEach(input => input.checked = true);
+    if (!rangeMode) {
+      const optionInputs = Array.from(pop.querySelectorAll('.ba-filter-options input[type="checkbox"]'));
+      const selectAll = pop.querySelector('[data-role="select-all"]');
+      const syncSelectAll = () => {
+        const visibleInputs = optionInputs.filter(input => !input.closest('label').hidden);
+        const checked = visibleInputs.filter(input => input.checked).length;
+        selectAll.checked = visibleInputs.length > 0 && checked === visibleInputs.length;
+        selectAll.indeterminate = checked > 0 && checked < visibleInputs.length;
+      };
+      syncSelectAll();
+      optionInputs.forEach(input => input.addEventListener('change', syncSelectAll));
+      selectAll.addEventListener('change', () => {
+        optionInputs.forEach(input => {
+          if (!input.closest('label').hidden) input.checked = selectAll.checked;
+        });
+        syncSelectAll();
+      });
+      pop.querySelector('.ba-filter-search input').addEventListener('input', event => {
+        const keyword = event.target.value.trim().toLowerCase();
+        pop.querySelectorAll('.ba-filter-options label').forEach(label => {
+          label.hidden = Boolean(keyword && !label.dataset.filterValue.includes(keyword));
+        });
+        syncSelectAll();
+      });
+    }
+
+    pop.querySelector('[data-action="reset"]').addEventListener('click', () => {
+      filters.delete(index);
+      tableFilters.set(table, filters);
+      th.classList.remove('ba-filtered');
+      applyTableFilters(table);
+      removePopover();
     });
     pop.querySelector('[data-action="apply"]').addEventListener('click', () => {
-      const next = new Set(Array.from(pop.querySelectorAll('input:checked')).map(input => input.value));
-      filters.set(index, next);
+      if (rangeMode) {
+        let min = parseFilterNumber(pop.querySelector('[data-range="min"]').value);
+        let max = parseFilterNumber(pop.querySelector('[data-range="max"]').value);
+        if (min !== null && max !== null && min > max) [min, max] = [max, min];
+        if (min === null && max === null) filters.delete(index);
+        else filters.set(index, { type:'range', min, max });
+        th.classList.toggle('ba-filtered', min !== null || max !== null);
+      } else {
+        const next = new Set(Array.from(pop.querySelectorAll('.ba-filter-options input:checked')).map(input => input.value));
+        const exclude = pop.querySelector('.ba-filter-exclude input').checked;
+        if (!exclude && next.size === values.length) filters.delete(index);
+        else filters.set(index, { type:'values', selected:next, exclude });
+        th.classList.toggle('ba-filtered', exclude || next.size !== values.length);
+      }
       tableFilters.set(table, filters);
-      th.classList.toggle('ba-filtered', next.size !== values.length);
       applyTableFilters(table);
-      pop.remove();
+      removePopover();
     });
+
+    pop.querySelectorAll('input').forEach(input => input.addEventListener('keydown', keyEvent => {
+      if (keyEvent.key === 'Enter') pop.querySelector('[data-action="apply"]')?.click();
+      if (keyEvent.key === 'Escape') removePopover();
+    }));
+    requestAnimationFrame(() => pop.querySelector('input[type="search"], [data-range="min"]')?.focus());
 
     setTimeout(() => {
       document.addEventListener('click', function handler(ev) {
         if (!pop.contains(ev.target)) {
-          pop.remove();
+          removePopover();
           document.removeEventListener('click', handler);
         }
       });
@@ -2597,125 +2751,148 @@
     const thead = table?.tHead;
     if (!table || !wrap || !scrollPane || !card || !toolbar || !thead || table.dataset.statementStickyReady === '1') return;
     table.dataset.statementStickyReady = '1';
+
     const toolbarPlaceholder = document.createElement('div');
     toolbarPlaceholder.className = 'statement-sticky-toolbar-placeholder';
     toolbar.insertAdjacentElement('afterend', toolbarPlaceholder);
+
+    const stickyLayer = document.createElement('div');
+    stickyLayer.className = 'statement-sticky-header-layer';
+    stickyLayer.innerHTML = '<table class="table statement-flow-table statement-sticky-clone-table"></table>';
+    card.appendChild(stickyLayer);
+    const cloneTable = stickyLayer.querySelector('table');
     let frame = 0;
-    let stickyColgroup = null;
-    let lockedWidths = [];
-    const unlockColumnWidths = () => {
-      stickyColgroup?.remove();
-      stickyColgroup = null;
-      lockedWidths = [];
-      table.style.removeProperty('width');
-      table.style.removeProperty('min-width');
-    };
-    const clearFixedHeader = () => {
-      thead.classList.remove('is-viewport-sticky');
-      thead.style.removeProperty('height');
-      [...thead.rows].forEach(row => row.style.removeProperty('height'));
-      [...thead.querySelectorAll('th')].forEach(th => {
-        ['position','top','left','width','min-width','max-width','height','z-index'].forEach(prop => th.style.removeProperty(prop));
+    let cloneDirty = true;
+
+    const rebuildClone = () => {
+      const sourceHeaders = Array.from(thead.rows[0]?.cells || []);
+      if (!sourceHeaders.length || !table.getBoundingClientRect().width) return;
+      const cloneHead = thead.cloneNode(true);
+      cloneHead.removeAttribute('id');
+      cloneHead.querySelectorAll('[id]').forEach(node => node.removeAttribute('id'));
+      const colgroup = document.createElement('colgroup');
+      sourceHeaders.forEach(th => {
+        const col = document.createElement('col');
+        const hidden = getComputedStyle(th).display === 'none';
+        const width = hidden ? 0 : th.getBoundingClientRect().width;
+        col.style.width = `${width}px`;
+        col.style.minWidth = `${width}px`;
+        col.style.maxWidth = `${width}px`;
+        if (hidden) col.style.display = 'none';
+        colgroup.appendChild(col);
       });
-      unlockColumnWidths();
+      cloneTable.replaceChildren(colgroup, cloneHead);
+      const tableWidth = table.getBoundingClientRect().width;
+      cloneTable.style.width = `${tableWidth}px`;
+      cloneTable.style.minWidth = `${tableWidth}px`;
+      cloneDirty = false;
     };
-    const clearFixedToolbar = () => {
+
+    const clearSticky = () => {
       toolbar.classList.remove('is-viewport-sticky');
-      toolbarPlaceholder.style.removeProperty('height');
       toolbarPlaceholder.classList.remove('is-active');
+      toolbarPlaceholder.style.removeProperty('height');
       ['position','top','left','width','z-index'].forEach(prop => toolbar.style.removeProperty(prop));
+      stickyLayer.classList.remove('is-active');
+      ['top','left','width','height'].forEach(prop => stickyLayer.style.removeProperty(prop));
     };
+
     const update = () => {
       frame = 0;
       if (table.closest('.tab-pane')?.classList.contains('hide')) {
-        clearFixedHeader();
-        clearFixedToolbar();
+        clearSticky();
         return;
       }
+      if (cloneDirty) rebuildClone();
       const paneRect = scrollPane.getBoundingClientRect();
       const cardRect = card.getBoundingClientRect();
       const wrapRect = wrap.getBoundingClientRect();
+      const tableRect = table.getBoundingClientRect();
       const toolbarHeight = Math.max(36, toolbar.getBoundingClientRect().height || 36);
       const headerHeight = Math.max(32, thead.getBoundingClientRect().height || 32);
       const stickyTop = Math.max(0, paneRect.top);
       const shouldFixToolbar = cardRect.top < stickyTop && cardRect.bottom > stickyTop + toolbarHeight;
+
       if (shouldFixToolbar) {
         toolbar.classList.add('is-viewport-sticky');
         toolbarPlaceholder.classList.add('is-active');
+        toolbarPlaceholder.style.height = `${toolbarHeight}px`;
         Object.assign(toolbar.style, {
-          position: 'fixed',
-          top: `${stickyTop}px`,
-          left: `${cardRect.left}px`,
-          width: `${cardRect.width}px`,
-          zIndex: '130'
+          position:'fixed',
+          top:`${stickyTop}px`,
+          left:`${cardRect.left}px`,
+          width:`${cardRect.width}px`,
+          zIndex:'130'
         });
-        const fixedToolbarHeight = Math.max(toolbarHeight, toolbar.getBoundingClientRect().height || toolbarHeight);
-        toolbarPlaceholder.style.height = `${fixedToolbarHeight}px`;
       } else {
-        clearFixedToolbar();
+        toolbar.classList.remove('is-viewport-sticky');
+        toolbarPlaceholder.classList.remove('is-active');
+        toolbarPlaceholder.style.removeProperty('height');
+        ['position','top','left','width','z-index'].forEach(prop => toolbar.style.removeProperty(prop));
       }
-      const fixedToolbarHeight = shouldFixToolbar ? Math.max(toolbarHeight, toolbar.getBoundingClientRect().height || toolbarHeight) : 0;
-      const headerTop = stickyTop + fixedToolbarHeight;
+
+      const headerTop = stickyTop + (shouldFixToolbar ? toolbarHeight : 0);
       const shouldFixHeader = wrapRect.top < headerTop && wrapRect.bottom > headerTop + headerHeight;
       if (!shouldFixHeader) {
-        clearFixedHeader();
+        stickyLayer.classList.remove('is-active');
         return;
       }
-      const bodyCells = [...(table.tBodies[0]?.rows[0]?.cells || [])];
-      const headers = [...thead.rows[0].cells];
-      if (!stickyColgroup) {
-        lockedWidths = headers.map(th => getComputedStyle(th).display === 'none' ? 0 : th.getBoundingClientRect().width);
-        stickyColgroup = document.createElement('colgroup');
-        stickyColgroup.className = 'statement-sticky-colgroup';
-        lockedWidths.forEach(width => {
-          const col = document.createElement('col');
-          col.style.width = `${width}px`;
-          col.style.minWidth = `${width}px`;
-          col.style.maxWidth = `${width}px`;
-          if (!width) col.style.display = 'none';
-          stickyColgroup.appendChild(col);
-        });
-        table.insertBefore(stickyColgroup, thead);
-        const tableWidth = lockedWidths.reduce((sum, width) => sum + width, 0);
-        table.style.width = `${tableWidth}px`;
-        table.style.minWidth = `${tableWidth}px`;
-      }
-      thead.classList.add('is-viewport-sticky');
-      thead.style.height = `${headerHeight}px`;
-      thead.rows[0].style.height = `${headerHeight}px`;
-      headers.forEach((th, index) => {
-        const cell = bodyCells[index];
-        if (!cell || getComputedStyle(th).display === 'none' || getComputedStyle(cell).display === 'none') return;
-        const rect = cell.getBoundingClientRect();
-        const width = lockedWidths[index] || rect.width;
-        Object.assign(th.style, {
-          position: 'fixed',
-          top: `${headerTop}px`,
-          left: `${rect.left}px`,
-          width: `${width}px`,
-          minWidth: `${width}px`,
-          maxWidth: `${width}px`,
-          height: `${headerHeight}px`,
-          zIndex: '120'
-        });
+      stickyLayer.classList.add('is-active');
+      Object.assign(stickyLayer.style, {
+        top:`${headerTop}px`,
+        left:`${wrapRect.left}px`,
+        width:`${wrapRect.width}px`,
+        height:`${headerHeight}px`
       });
+      cloneTable.style.transform = `translateX(${tableRect.left - wrapRect.left}px)`;
     };
-    const schedule = () => {
+
+    const schedule = (markDirty = false) => {
+      if (markDirty) cloneDirty = true;
       if (frame) return;
       frame = requestAnimationFrame(update);
     };
-    scrollPane.addEventListener('scroll', schedule, { passive: true });
-    wrap.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', schedule);
-    new MutationObserver(schedule).observe(thead, { childList: true, subtree: true });
-    schedule();
+
+    stickyLayer.addEventListener('click', event => {
+      const cloneTh = event.target.closest('th');
+      const cloneButton = event.target.closest('.ba-sort-up, .ba-sort-down, .ba-filter-btn');
+      if (!cloneTh || !cloneButton) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const index = Array.from(cloneTh.parentElement.cells).indexOf(cloneTh);
+      const originalTh = thead.rows[0]?.cells[index];
+      const selector = cloneButton.classList.contains('ba-sort-up')
+        ? '.ba-sort-up'
+        : cloneButton.classList.contains('ba-sort-down') ? '.ba-sort-down' : '.ba-filter-btn';
+      originalTh?.querySelector(selector)?.click();
+      if (selector === '.ba-filter-btn') {
+        requestAnimationFrame(() => {
+          const popover = document.querySelector('.ba-table-filter-popover');
+          if (!popover) return;
+          popover._baAnchor = cloneButton;
+          popover._baPlace?.();
+        });
+      }
+      schedule(true);
+    });
+
+    scrollPane.addEventListener('scroll', () => schedule(), { passive:true });
+    wrap.addEventListener('scroll', () => schedule(), { passive:true });
+    window.addEventListener('resize', () => schedule(true), { passive:true });
+    new MutationObserver(() => schedule(true)).observe(thead, { childList:true, subtree:true, attributes:true });
+    new MutationObserver(() => schedule(true)).observe(table.tBodies[0], { childList:true, subtree:true });
+    if ('ResizeObserver' in window) {
+      const observer = new ResizeObserver(() => schedule(true));
+      observer.observe(table);
+      observer.observe(wrap);
+    }
+    schedule(true);
   }
 
   function initStatementFlowQuery() {
     const table = document.getElementById('statementFlowTable');
     if (!table) return;
     renderStatementFlowTable();
-    initStatementStickyHeader();
     if (statementFlowState.initialized) return;
     statementFlowState.initialized = true;
     document.getElementById('statementResetFilters')?.addEventListener('click', () => {
@@ -2750,9 +2927,14 @@
   function initBankTableTools() {
     initStatementFlowQuery();
     stripTableKUnits(document);
-    document.querySelectorAll('.tab-pane table.table, .dm-tab-pane table.table').forEach(enhanceTable);
+    const dataTables = document.querySelectorAll(
+      '.tab-pane table.table:not(.statement-sticky-clone-table), .dm-tab-pane table.table:not(.statement-sticky-clone-table)'
+    );
+    dataTables.forEach(enhanceTable);
     bindColumnChooserButtons();
-    document.querySelectorAll('.tab-pane table.table, .dm-tab-pane table.table').forEach(applyCustomizedColumns);
+    dataTables.forEach(applyCustomizedColumns);
+    // 排序、筛选及自定义列全部就绪后再生成流水查询吸顶表头。
+    initStatementStickyHeader();
   }
 
   if (document.readyState === 'loading') {

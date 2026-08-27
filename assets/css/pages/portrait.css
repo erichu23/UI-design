@@ -29,14 +29,14 @@ body .tab-pane .portrait-monthly-card > .head{
   flex-wrap:nowrap !important;
 }
 body .tab-pane .portrait-monthly-year-select{
-  flex:0 0 72px !important;
-  width:72px !important;
-  min-width:72px !important;
-  max-width:72px !important;
+  flex:0 0 82px !important;
+  width:82px !important;
+  min-width:82px !important;
+  max-width:82px !important;
   height:24px !important;
   min-height:24px !important;
   margin-left:auto !important;
-  padding:0 18px 0 7px !important;
+  padding:0 24px 0 9px !important;
   border:1px solid #d5e0ec;
   border-radius:5px !important;
   color:#334155;
@@ -44,6 +44,7 @@ body .tab-pane .portrait-monthly-year-select{
   font-size:10.5px !important;
   font-weight:600 !important;
   line-height:22px !important;
+  text-align:left !important;
   cursor:pointer;
   outline:0;
 }
@@ -1691,4 +1692,28 @@ body #pane-personal\—transaction #personalCounterpartyTable tbody td.is-outflo
 body #pane-personal\—transaction #personalCounterpartyTable tbody td.is-purchase-vat{
   color:var(--audit-pro-purchase,#dd8b22) !important;
   font-weight:700 !important;
+}
+
+/*
+ * 对手方类型是业务语义底色，应覆盖固定列的奇偶行和 hover 底色。
+ * 放在文件末尾，避免横向滚动固定列时客户/供应商颜色被重新刷成白色。
+ */
+body #pane-biz #portraitCounterpartyTable tbody tr td.portrait-type-cell.is-customer,
+body #pane-biz #portraitCounterpartyTable tbody tr:nth-child(even) td.portrait-type-cell.is-customer{
+  background:#f1f5f9 !important;
+  background-image:none !important;
+}
+
+body #pane-biz #portraitCounterpartyTable tbody tr td.portrait-type-cell.is-supplier,
+body #pane-biz #portraitCounterpartyTable tbody tr:nth-child(even) td.portrait-type-cell.is-supplier{
+  background:#f8f3ea !important;
+  background-image:none !important;
+}
+
+body #pane-biz #portraitCounterpartyTable tbody tr:hover td.portrait-type-cell.is-customer{
+  background:#e8eef5 !important;
+}
+
+body #pane-biz #portraitCounterpartyTable tbody tr:hover td.portrait-type-cell.is-supplier{
+  background:#f1eadf !important;
 }

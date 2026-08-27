@@ -2196,7 +2196,7 @@
   /* ─── END CFO DASHBOARD ─────────────────────────────────────────────────── */
 
   </style>
-  <link rel="stylesheet" href="../assets/css/pages/risk-reference-override.css?v=20260827-pager-select1">
+  <link rel="stylesheet" href="../assets/css/pages/risk-reference-override.css?v=20260827-filter-popover1">
   <script src="../assets/js/core/unit-runtime.js?v=20260811-unit5"></script>
 </head>
 <body>
@@ -2826,7 +2826,7 @@
                 <th colspan="9" class="gq-bizinfo group-collapsible" data-group-key="bizinfo" onclick="toggleCheckGroup('bizinfo')" style="border-right:1px solid var(--gray-200)">工商信息异常 <span class="group-hit-count" id="ghc-bizinfo"></span><span class="group-toggle-icon">▼</span></th>
                 <th colspan="2" class="gq-other group-collapsible" data-group-key="other" onclick="toggleCheckGroup('other')" style="border-right:2px solid var(--gray-300)">其他异常 <span class="group-hit-count" id="ghc-other"></span><span class="group-toggle-icon">▼</span></th>
                 <th class="risk-hit-count-head" data-col="hitCount">命中个数 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','hitCount','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','hitCount','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
-                <th class="cp-name-sticky" data-col="cpName">对手方名称 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','name','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','name','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="toggleCpNameFilter(event)"></span></span></th>
+                <th class="cp-name-sticky" data-col="cpName">对手方名称 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','name','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','name','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, 'cpName')"></span></span></th>
                 <th data-col="cpType">对手方类型 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','cpType','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','cpType','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th data-col="inflow">流入金额 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','inflow','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','inflow','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
                 <th data-col="salesTax">销项税价合计 <span class="th-icons"><span class="th-sort-icons"><span class="th-sort-arrow" onclick="sortTable('cp','salesTax','asc')">▲</span><span class="th-sort-arrow" onclick="sortTable('cp','salesTax','desc')">▼</span></span><span class="th-filter-icon" title="筛选" onclick="showCpColumnFilter(event, this.closest('th').dataset.col)"></span></span></th>
@@ -3560,6 +3560,7 @@ let cpNameFilterVisible = false;
 let cpColumnFilters = {};
 let txColumnFilters = {};
 let checkColumnFilters = {};
+const riskColumnFilterUiState = { cp: {}, tx: {} };
 let materialityLevel = 100; // 重要性水平（万元）
 let cpPage = 1;
 let txPage = 1;
@@ -4442,65 +4443,159 @@ function showCheckColumnFilter(event, checkId) {
   }, 0);
 }
 
-function showTxColumnFilter(event, col) {
-  event.stopPropagation();
-  document.querySelectorAll('.tx-column-filter-popover').forEach(el => el.remove());
-  let source = [...txData];
-  if (selectedCpId && activeTab === 'cp') source = source.filter(t => t.cpId === selectedCpId);
-  if (txSearchText) {
-    source = source.filter(r =>
-      r.remark.toLowerCase().includes(txSearchText) ||
-      r.account.toLowerCase().includes(txSearchText) ||
-      r.cp.toLowerCase().includes(txSearchText) ||
-      r.txId.toLowerCase().includes(txSearchText)
-    );
-  }
-  const values = Array.from(new Set(source.map(row => getTxColumnValue(row, col)).filter(Boolean))).slice(0, 80);
-  const selected = new Set(txColumnFilters[col] || values);
-  const th = event.target.closest('th');
-  const pop = document.createElement('div');
-  pop.className = 'tx-column-filter-popover mark-menu';
-  pop.style.minWidth = '220px';
-  pop.style.padding = '10px';
-  pop.innerHTML = `
-    <div style="font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:8px">${(th?.childNodes[0]?.textContent || '筛选').trim()}</div>
-    <div style="max-height:220px;overflow:auto;display:flex;flex-direction:column;gap:4px">
-      ${values.map(v => `
-        <label style="display:flex;align-items:center;gap:6px;min-height:24px;font-size:11px;color:var(--gray-600)">
-          <input type="checkbox" value="${v.replace(/"/g, '&quot;')}" ${selected.has(v) ? 'checked' : ''}>
-          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v}</span>
-        </label>
-      `).join('') || '<div style="padding:12px;text-align:center;color:var(--gray-400);font-size:11px">暂无可筛选内容</div>'}
-    </div>
-    <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:8px">
-      <button type="button" data-action="clear" style="height:26px;padding:0 9px;border:1px solid var(--gray-200);border-radius:6px;background:#fff;color:var(--gray-500);font-size:11px">清空</button>
-      <button type="button" data-action="all" style="height:26px;padding:0 9px;border:1px solid var(--gray-200);border-radius:6px;background:#fff;color:var(--gray-500);font-size:11px">全选</button>
-      <button type="button" data-action="apply" style="height:26px;padding:0 9px;border:0;border-radius:6px;background:var(--primary);color:#fff;font-size:11px">确定</button>
-    </div>
-  `;
-  const rect = th.getBoundingClientRect();
-  pop.style.position = 'fixed';
-  pop.style.left = Math.min(rect.left, window.innerWidth - 240) + 'px';
-  pop.style.top = (rect.bottom + 4) + 'px';
-  document.body.appendChild(pop);
-  pop.querySelector('[data-action="clear"]').addEventListener('click', () => pop.querySelectorAll('input').forEach(input => input.checked = false));
-  pop.querySelector('[data-action="all"]').addEventListener('click', () => pop.querySelectorAll('input').forEach(input => input.checked = true));
-  pop.querySelector('[data-action="apply"]').addEventListener('click', () => {
-    const next = Array.from(pop.querySelectorAll('input:checked')).map(input => input.value);
-    if (!next.length || next.length === values.length) delete txColumnFilters[col];
-    else txColumnFilters[col] = next;
-    txPage = 1;
-    renderTxTable();
+function parseRiskFilterNumber(value) {
+  const normalized = String(value ?? '').replace(/,/g, '').replace(/[^0-9.+-]/g, '');
+  if (!normalized || !/[0-9]/.test(normalized)) return null;
+  const number = Number(normalized);
+  return Number.isFinite(number) ? number : null;
+}
+
+function closeRiskColumnFilterPopovers() {
+  document.querySelectorAll('.risk-column-filter-popover,.cp-column-filter-popover,.tx-column-filter-popover').forEach(pop => {
+    if (typeof pop._riskCleanup === 'function') pop._riskCleanup();
     pop.remove();
   });
+}
+
+function openRiskColumnFilter({ event, kind, col, title, values, numeric, currentValues, onApply }) {
+  event.stopPropagation();
+  closeRiskColumnFilterPopovers();
+  const anchor = event.target.closest('.th-filter-icon') || event.target;
+  const prior = riskColumnFilterUiState[kind][col];
+  const selected = new Set(prior?.type === 'values' ? prior.chosen : (currentValues || values));
+  const excluded = prior?.type === 'values' && Boolean(prior.exclude);
+  const pop = document.createElement('div');
+  pop.className = `risk-column-filter-popover ${numeric ? 'is-range-filter' : 'is-value-filter'}`;
+  pop.innerHTML = numeric ? `
+    <div class="risk-filter-title">${escapeHtml(title)}范围筛选</div>
+    <div class="risk-filter-range">
+      <input type="text" inputmode="decimal" data-range="min" value="${escapeHtml(prior?.type === 'range' ? prior.min ?? '' : '')}" placeholder="最小值" aria-label="最小值">
+      <span>～</span>
+      <input type="text" inputmode="decimal" data-range="max" value="${escapeHtml(prior?.type === 'range' ? prior.max ?? '' : '')}" placeholder="最大值" aria-label="最大值">
+    </div>
+    <div class="risk-filter-actions"><button type="button" data-action="reset">重置</button><button type="button" data-action="apply">确定</button></div>
+  ` : `
+    <div class="risk-filter-title">${escapeHtml(title)}筛选</div>
+    <div class="risk-filter-search-row">
+      <label class="risk-filter-search"><input type="search" placeholder="搜索" aria-label="搜索筛选项"><i aria-hidden="true"></i></label>
+      <label class="risk-filter-exclude"><input type="checkbox" ${excluded ? 'checked' : ''}><span>不包含</span></label>
+    </div>
+    <div class="risk-filter-select-all"><label><input type="checkbox" data-role="select-all"><span>全选</span></label></div>
+    <div class="risk-filter-options">
+      ${values.map(value => `<label data-filter-value="${escapeHtml(value.toLowerCase())}"><input type="checkbox" value="${escapeHtml(value)}" ${selected.has(value) ? 'checked' : ''}><span title="${escapeHtml(value)}">${escapeHtml(value)}</span></label>`).join('') || '<div class="risk-filter-empty">暂无可筛选内容</div>'}
+    </div>
+    <div class="risk-filter-actions"><button type="button" data-action="reset">重置</button><button type="button" data-action="apply">确定</button></div>
+  `;
+  document.body.appendChild(pop);
+
+  const remove = () => {
+    if (typeof pop._riskCleanup === 'function') pop._riskCleanup();
+    pop.remove();
+  };
+  const place = () => {
+    if (!pop.isConnected || !anchor?.isConnected) return;
+    const rect = anchor.getBoundingClientRect();
+    const left = Math.max(8, Math.min(rect.left + rect.width / 2 - pop.offsetWidth + 28, window.innerWidth - pop.offsetWidth - 8));
+    const below = rect.bottom + 8;
+    const above = below + pop.offsetHeight > window.innerHeight - 8 && rect.top > pop.offsetHeight + 8;
+    const top = above ? rect.top - pop.offsetHeight - 8 : below;
+    const arrowLeft = Math.max(13, Math.min(rect.left + rect.width / 2 - left, pop.offsetWidth - 13));
+    pop.classList.toggle('is-above', above);
+    pop.style.left = `${left}px`;
+    pop.style.top = `${Math.max(8, top)}px`;
+    pop.style.setProperty('--risk-filter-arrow-left', `${arrowLeft}px`);
+  };
+  place();
+  window.addEventListener('scroll', place, true);
+  window.addEventListener('resize', place);
+  pop._riskCleanup = () => {
+    window.removeEventListener('scroll', place, true);
+    window.removeEventListener('resize', place);
+  };
+
+  if (!numeric) {
+    const optionInputs = Array.from(pop.querySelectorAll('.risk-filter-options input'));
+    const selectAll = pop.querySelector('[data-role="select-all"]');
+    const syncAll = () => {
+      const visible = optionInputs.filter(input => !input.closest('label').hidden);
+      const checked = visible.filter(input => input.checked).length;
+      selectAll.checked = visible.length > 0 && checked === visible.length;
+      selectAll.indeterminate = checked > 0 && checked < visible.length;
+    };
+    optionInputs.forEach(input => input.addEventListener('change', syncAll));
+    selectAll.addEventListener('change', () => {
+      optionInputs.forEach(input => { if (!input.closest('label').hidden) input.checked = selectAll.checked; });
+      syncAll();
+    });
+    pop.querySelector('.risk-filter-search input').addEventListener('input', inputEvent => {
+      const keyword = inputEvent.target.value.trim().toLowerCase();
+      pop.querySelectorAll('.risk-filter-options label').forEach(label => { label.hidden = Boolean(keyword && !label.dataset.filterValue.includes(keyword)); });
+      syncAll();
+    });
+    syncAll();
+  }
+
+  pop.querySelector('[data-action="reset"]').addEventListener('click', () => {
+    delete riskColumnFilterUiState[kind][col];
+    onApply(null);
+    remove();
+  });
+  pop.querySelector('[data-action="apply"]').addEventListener('click', () => {
+    if (numeric) {
+      let min = parseRiskFilterNumber(pop.querySelector('[data-range="min"]').value);
+      let max = parseRiskFilterNumber(pop.querySelector('[data-range="max"]').value);
+      if (min !== null && max !== null && min > max) [min, max] = [max, min];
+      if (min === null && max === null) {
+        delete riskColumnFilterUiState[kind][col];
+        onApply(null);
+      } else {
+        riskColumnFilterUiState[kind][col] = { type:'range', min, max };
+        onApply(values.filter(value => {
+          const number = parseRiskFilterNumber(value);
+          return number !== null && (min === null || number >= min) && (max === null || number <= max);
+        }));
+      }
+    } else {
+      const chosen = Array.from(pop.querySelectorAll('.risk-filter-options input:checked')).map(input => input.value);
+      const exclude = pop.querySelector('.risk-filter-exclude input').checked;
+      const allowed = exclude ? values.filter(value => !chosen.includes(value)) : chosen;
+      if ((!exclude && chosen.length === values.length) || (exclude && chosen.length === 0)) {
+        delete riskColumnFilterUiState[kind][col];
+        onApply(null);
+      } else {
+        riskColumnFilterUiState[kind][col] = { type:'values', chosen, exclude };
+        onApply(allowed);
+      }
+    }
+    remove();
+  });
+  pop.querySelectorAll('input').forEach(input => input.addEventListener('keydown', keyEvent => {
+    if (keyEvent.key === 'Enter') pop.querySelector('[data-action="apply"]')?.click();
+    if (keyEvent.key === 'Escape') remove();
+  }));
+  requestAnimationFrame(() => pop.querySelector('input[type="search"],input[data-range="min"]')?.focus());
   setTimeout(() => {
-    document.addEventListener('click', function handler(ev) {
-      if (!pop.contains(ev.target)) {
-        pop.remove();
-        document.removeEventListener('click', handler);
+    document.addEventListener('click', function outside(clickEvent) {
+      if (!pop.contains(clickEvent.target) && clickEvent.target !== anchor) {
+        remove();
+        document.removeEventListener('click', outside);
       }
     });
   }, 0);
+}
+
+function showTxColumnFilter(event, col) {
+  let source = [...txData];
+  if (selectedCpId && activeTab === 'cp') source = source.filter(t => t.cpId === selectedCpId);
+  if (txSearchText) source = source.filter(r => r.remark.toLowerCase().includes(txSearchText) || r.account.toLowerCase().includes(txSearchText) || r.cp.toLowerCase().includes(txSearchText) || r.txId.toLowerCase().includes(txSearchText));
+  const values = Array.from(new Set(source.map(row => getTxColumnValue(row, col)).filter(Boolean))).slice(0, 80);
+  const titles = { hitCount:'命中个数',txId:'交易编号',date:'交易日期',time:'交易时间',selfName:'本方名称',selfAccount:'本方账号',cp:'对手方名称',account:'对手方账号',currency:'币种',type:'交易类型',dir:'方向',inflowAmt:'流入金额',outflowAmt:'流出金额',flag:'标记状态' };
+  const numeric = new Set(['hitCount','inflowAmt','outflowAmt']).has(col);
+  openRiskColumnFilter({ event,kind:'tx',col,title:titles[col] || '筛选',values,numeric,currentValues:txColumnFilters[col] || values,onApply:allowed => {
+    if (!allowed) delete txColumnFilters[col]; else txColumnFilters[col] = allowed;
+    txPage = 1;
+    renderTxTable();
+  }});
 }
 
 function getCpColumnValue(row, col) {
@@ -4529,12 +4624,6 @@ function getCpColumnValue(row, col) {
 }
 
 function showCpColumnFilter(event, col) {
-  event.stopPropagation();
-  if (col === 'cpName') {
-    toggleCpNameFilter(event);
-    return;
-  }
-  document.querySelectorAll('.cp-column-filter-popover').forEach(el => el.remove());
   let source = [...cpData];
   if (cpSearchText) {
     source = source.filter(r =>
@@ -4545,51 +4634,16 @@ function showCpColumnFilter(event, col) {
     );
   }
   const values = Array.from(new Set(source.map(row => getCpColumnValue(row, col)).filter(Boolean))).slice(0, 100);
-  const selected = new Set(cpColumnFilters[col] || values);
-  const th = event.target.closest('th');
-  const pop = document.createElement('div');
-  pop.className = 'cp-column-filter-popover mark-menu';
-  pop.style.minWidth = '220px';
-  pop.style.padding = '10px';
-  pop.innerHTML = `
-    <div style="font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:8px">${(th?.childNodes[0]?.textContent || '筛选').trim()}</div>
-    <div style="max-height:220px;overflow:auto;display:flex;flex-direction:column;gap:4px">
-      ${values.map(v => `
-        <label style="display:flex;align-items:center;gap:6px;min-height:24px;font-size:11px;color:var(--gray-600)">
-          <input type="checkbox" value="${v.replace(/"/g, '&quot;')}" ${selected.has(v) ? 'checked' : ''}>
-          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v}</span>
-        </label>
-      `).join('') || '<div style="padding:12px;text-align:center;color:var(--gray-400);font-size:11px">暂无可筛选内容</div>'}
-    </div>
-    <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:8px">
-      <button type="button" data-action="clear" style="height:26px;padding:0 9px;border:1px solid var(--gray-200);border-radius:6px;background:#fff;color:var(--gray-500);font-size:11px">清空</button>
-      <button type="button" data-action="all" style="height:26px;padding:0 9px;border:1px solid var(--gray-200);border-radius:6px;background:#fff;color:var(--gray-500);font-size:11px">全选</button>
-      <button type="button" data-action="apply" style="height:26px;padding:0 9px;border:0;border-radius:6px;background:var(--primary);color:#fff;font-size:11px">确定</button>
-    </div>
-  `;
-  const rect = th.getBoundingClientRect();
-  pop.style.position = 'fixed';
-  pop.style.left = Math.min(rect.left, window.innerWidth - 240) + 'px';
-  pop.style.top = (rect.bottom + 4) + 'px';
-  document.body.appendChild(pop);
-  pop.querySelector('[data-action="clear"]').addEventListener('click', () => pop.querySelectorAll('input').forEach(input => input.checked = false));
-  pop.querySelector('[data-action="all"]').addEventListener('click', () => pop.querySelectorAll('input').forEach(input => input.checked = true));
-  pop.querySelector('[data-action="apply"]').addEventListener('click', () => {
-    const next = Array.from(pop.querySelectorAll('input:checked')).map(input => input.value);
-    if (!next.length || next.length === values.length) delete cpColumnFilters[col];
-    else cpColumnFilters[col] = next;
+  const titles = { hitCount:'命中个数',cpName:'对手方名称',cpType:'对手方类型',inflow:'流入金额',salesTax:'销项税价合计',outflow:'流出金额',inputTax:'进项税价合计',txCount:'交易笔数',industry:'经营天数',bizAge:'参保人数',executives:'公司类型',markStatus:'标记状态' };
+  const numeric = new Set(['hitCount','inflow','salesTax','outflow','inputTax','txCount','industry','bizAge']).has(col);
+  const currentValues = col === 'cpName' ? (cpNameFilterSelected.length ? cpNameFilterSelected : values) : (cpColumnFilters[col] || values);
+  openRiskColumnFilter({ event,kind:'cp',col,title:titles[col] || '筛选',values,numeric,currentValues,onApply:allowed => {
+    if (col === 'cpName') cpNameFilterSelected = allowed || [];
+    else if (!allowed) delete cpColumnFilters[col];
+    else cpColumnFilters[col] = allowed;
     cpPage = 1;
     renderCpTable();
-    pop.remove();
-  });
-  setTimeout(() => {
-    document.addEventListener('click', function handler(ev) {
-      if (!pop.contains(ev.target)) {
-        pop.remove();
-        document.removeEventListener('click', handler);
-      }
-    });
-  }, 0);
+  }});
 }
 
 // ─── RENDER COUNTERPARTY TABLE ───────────────────────────────────────────────
@@ -4994,18 +5048,18 @@ function selectCheck(id) {
   document.getElementById('fpTitle').textContent = meta.title;
   document.getElementById('fpBadge').textContent = meta.badge;
   document.querySelectorAll('.condition-editor').forEach(e => e.classList.remove('show'));
-  resetCheckGroupExpanded(id);
-  resetVisibleCheckGroups(id);
+  activateCheckGroupForRoutine(id);
 
   // 动态生成筛选条件 chips 和 editors
   renderFilterPanel(id, meta);
+
+  // 组头、子表头和数据行统一使用当前可见列状态，避免切换 routine 后错位。
+  applyCheckGroupVisibility();
 
   // 第5类特殊处理：高亮命中对手方
   if (id === '5.1' || id === '5.2') {
     const matchIds = meta._matchIds || [];
     renderCpTableWithHighlight(matchIds);
-  } else {
-    renderCpTable();
   }
 
   showToast('info', `已切换至「${meta.title}」`);
@@ -6079,6 +6133,16 @@ function resetVisibleCheckGroups(checkId = activeCheck) {
   renderCheckGroupDisplayControls();
 }
 
+// 左侧 routine 与表格上方分类选择共同控制列组：routine 切换只确保
+// 其所属分类可见并展开，不清除用户额外勾选的其他分类。
+function activateCheckGroupForRoutine(checkId = activeCheck) {
+  const groupKey = getCheckGroupKey(checkId);
+  if (!groupKey) return;
+  selectedCheckGroupKeys.add(groupKey);
+  checkGroupExpanded[groupKey] = true;
+  renderCheckGroupDisplayControls();
+}
+
 function toggleCheckGroupVisible(event, groupKey) {
   event.stopPropagation();
   const nextChecked = event.target.checked;
@@ -6151,12 +6215,39 @@ function renderCheckGroupHeader(group) {
   `;
 }
 
+// 第二层分类表头始终按当前可见列重新生成。不要保留 display:none 的旧 th，
+// 否则多层表头在连续切换 routine 时可能参与浏览器列宽计算并造成错位。
+function rebuildCheckGroupHeaderRows() {
+  const visibleGroups = getVisibleCheckGroups();
+  ['cpTable', 'txTable'].forEach(tableId => {
+    const table = document.getElementById(tableId);
+    const row = table?.tHead?.rows?.[1];
+    if (!row) return;
+
+    row.querySelectorAll('th.group-collapsible').forEach(th => th.remove());
+    const firstBusinessHeader = row.querySelector('th');
+
+    visibleGroups.forEach((group, index) => {
+      const th = document.createElement('th');
+      const expanded = Boolean(checkGroupExpanded[group.groupKey]);
+      th.className = `gq-${group.groupKey} group-collapsible ${expanded ? 'is-expanded' : 'is-collapsed'}`;
+      th.dataset.groupKey = group.groupKey;
+      th.colSpan = expanded ? group.checks.length : 1;
+      th.style.borderRight = index === visibleGroups.length - 1
+        ? '2px solid var(--gray-300)'
+        : '1px solid var(--gray-200)';
+      th.innerHTML = renderCheckGroupHeader(group);
+      th.addEventListener('click', () => toggleCheckGroup(group.groupKey));
+      row.insertBefore(th, firstBusinessHeader);
+    });
+  });
+}
+
 function updateCheckGroupHeaderState() {
   document.querySelectorAll('th.group-collapsible').forEach(th => {
     const groupKey = th.getAttribute('data-group-key');
     const group = CHECK_COLUMNS.find(g => g.groupKey === groupKey);
     if (!group) return;
-    th.style.display = selectedCheckGroupKeys.has(groupKey) ? '' : 'none';
     th.innerHTML = renderCheckGroupHeader(group);
     th.classList.toggle('is-collapsed', !checkGroupExpanded[groupKey]);
     th.classList.toggle('is-expanded', Boolean(checkGroupExpanded[groupKey]));
@@ -6170,22 +6261,8 @@ function applyCheckGroupVisibility() {
     checkTotalCols += checkGroupExpanded[group.groupKey] ? group.checks.length : 1;
   });
 
-  // 更新所有组头的 colspan 和图标（同时影响 cpTable 和 txTable）
-  document.querySelectorAll('th.group-collapsible').forEach(th => {
-    const groupKey = th.getAttribute('data-group-key');
-    if (!groupKey) return;
-    const group = CHECK_COLUMNS.find(g => g.groupKey === groupKey);
-    if (!group) return;
-    if (!selectedCheckGroupKeys.has(groupKey)) {
-      th.style.display = 'none';
-      return;
-    }
-
-    const expanded = checkGroupExpanded[groupKey];
-    th.style.display = '';
-    th.setAttribute('colspan', expanded ? group.checks.length : 1);
-    th.innerHTML = renderCheckGroupHeader(group);
-  });
+  // 第二层分类组头直接按当前状态重建，杜绝隐藏旧列参与表格布局。
+  rebuildCheckGroupHeaderRows();
   updateCheckGroupHeaderState();
 
   // 动态更新两个表的第0行总组头 colspan
@@ -6203,7 +6280,10 @@ function applyCheckGroupVisibility() {
 
   // 延迟更新 sticky 列的 left 偏移（确保布局完成后再计算）
   requestAnimationFrame(() => {
-    requestAnimationFrame(() => { updateStickyLeft(); });
+    requestAnimationFrame(() => {
+      updateStickyLeft();
+      refreshRiskTableZoomIfOpen(activeTab === 'tx' ? 'tx' : 'cp');
+    });
   });
 }
 

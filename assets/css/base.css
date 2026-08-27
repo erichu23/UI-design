@@ -20,7 +20,140 @@ html,body{width:100%;height:100%}
     /* 兼容内容页自用变量 */
     --primary:#2563eb; --primary-600:#1e40af; --muted:#64748b; --text:#0f172a;
     --bg:#f5f7fa; --card:#fff; --border:#e8e8ed; --shadow:0 6px 18px rgba(17,24,39,.08);
-  }
+}
+
+/* 天眼查数据同步：保留表格上下文，只在数据区域展示轻量进度反馈。 */
+.tyc-sync-surface{
+  position:relative;
+  isolation:isolate;
+}
+
+.tyc-sync-surface table{
+  transition:opacity .18s ease,filter .18s ease;
+}
+
+.tyc-sync-surface.is-tyc-syncing table{
+  opacity:.46;
+  filter:saturate(.62);
+  pointer-events:none;
+}
+
+.tyc-sync-surface.is-tyc-syncing{ cursor:wait; }
+
+.tyc-sync-feedback{
+  position:absolute;
+  z-index:12;
+  top:50%;
+  left:50%;
+  display:flex;
+  width:max-content;
+  max-width:calc(100% - 32px);
+  min-width:224px;
+  align-items:center;
+  gap:10px;
+  padding:9px 13px;
+  border:1px solid rgba(132,164,205,.55);
+  border-radius:7px;
+  color:#324760;
+  background:rgba(255,255,255,.96);
+  box-shadow:0 8px 22px rgba(38,63,92,.13);
+  transform:translate(-50%,-50%);
+  box-sizing:border-box;
+  pointer-events:none;
+}
+
+.tyc-sync-feedback-icon{
+  position:relative;
+  flex:0 0 22px;
+  width:22px;
+  height:22px;
+  border:2px solid #dbe8f6;
+  border-top-color:#3777c8;
+  border-radius:50%;
+  box-sizing:border-box;
+  animation:tycSyncSpin .72s linear infinite;
+}
+
+.tyc-sync-feedback-copy{
+  display:grid;
+  min-width:0;
+  gap:1px;
+}
+
+.tyc-sync-feedback-copy strong{
+  font-size:12px;
+  line-height:17px;
+  color:#2d435d;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.tyc-sync-feedback-copy span{
+  overflow:hidden;
+  color:#75869a;
+  font-size:10.5px;
+  line-height:15px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.tyc-sync-feedback::after{
+  position:absolute;
+  right:12px;
+  bottom:0;
+  left:44px;
+  height:2px;
+  border-radius:999px;
+  background:linear-gradient(90deg,transparent,#4c86ce,transparent);
+  content:"";
+  animation:tycSyncProgress 1.05s ease-in-out infinite;
+  transform-origin:left center;
+}
+
+.tyc-sync-surface.is-tyc-sync-success table{
+  opacity:1;
+  filter:none;
+}
+
+.tyc-sync-surface.is-tyc-sync-success .tyc-sync-feedback{
+  border-color:#b8d9ce;
+  color:#356d5d;
+  background:rgba(248,253,251,.98);
+  box-shadow:0 7px 18px rgba(50,111,91,.11);
+}
+
+.tyc-sync-surface.is-tyc-sync-success .tyc-sync-feedback-icon{
+  border-color:#68a58f;
+  background:#68a58f;
+  animation:none;
+}
+
+.tyc-sync-surface.is-tyc-sync-success .tyc-sync-feedback-icon::after{
+  position:absolute;
+  top:4px;
+  left:6px;
+  width:6px;
+  height:3px;
+  border-bottom:2px solid #fff;
+  border-left:2px solid #fff;
+  content:"";
+  transform:rotate(-45deg);
+}
+
+.tyc-sync-surface.is-tyc-sync-success .tyc-sync-feedback-copy strong{ color:#356d5d; }
+.tyc-sync-surface.is-tyc-sync-success .tyc-sync-feedback::after{ display:none; }
+
+@keyframes tycSyncSpin{ to{ transform:rotate(360deg); } }
+@keyframes tycSyncProgress{
+  0%{ opacity:.25; transform:scaleX(.12); }
+  55%{ opacity:1; transform:scaleX(.82); }
+  100%{ opacity:.25; transform:scaleX(.18); }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .tyc-sync-feedback-icon,
+  .tyc-sync-feedback::after{ animation:none; }
+}
 
   body,
   button,
