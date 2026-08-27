@@ -5,6 +5,9 @@
   const pager=document.getElementById('pagination-account');
   const wrap=table?.closest('.account-summary-table-wrap');
   if(!table||!head||!body||!pager||!wrap)return;
+  // 与资金流水分析存在同名表格 ID；提前声明所有权，避免 shared.js 再次重绘并覆盖校验交互。
+  table.dataset.accountSummaryOwner='data-management';
+  table.dataset.accountPagerReady='1';
 
   const years=[2023,2024,2025];
   const months=Array.from({length:12},(_,index)=>index+1);
@@ -42,7 +45,7 @@
     const decision=checkDecisions.get(key);
     const label=status==='chk-warn'?'当日余额不连续':status==='chk-err'?'余额错误':status==='chk-none'?'无流水数据':'检验无误';
     if(!actionable)return `<i class="chk-dot ${status} col-year-${year}" title="${year}-${String(month).padStart(2,'0')} · ${label}"></i>`;
-    return `<button type="button" class="chk-dot ${status} dm-check-status-trigger col-year-${year}${decision?' is-processed':''}" data-check-kind="${kind}" data-check-key="${key}" data-company="${escapeText(source[0])}" data-account="${escapeText(source[1])}" data-bank="${escapeText(source[2])}" data-year="${year}" data-month="${month}" title="${year}-${String(month).padStart(2,'0')} · ${label}${decision?' · 已处理':''}" aria-label="查看${label}详情"></button>`;
+    return `<button type="button" class="chk-dot ${status} dm-check-status-trigger col-year-${year}${decision?' is-processed':''}" data-no-drag data-check-kind="${kind}" data-check-key="${key}" data-company="${escapeText(source[0])}" data-account="${escapeText(source[1])}" data-bank="${escapeText(source[2])}" data-year="${year}" data-month="${month}" title="${year}-${String(month).padStart(2,'0')} · ${label}${decision?' · 已处理':''}" aria-label="查看${label}详情" onpointerdown="event.stopPropagation()" onclick="return window.openDmBalanceCheckDrawer(this,event)"></button>`;
   }).join('')).join(yearSeparator);
   let selectedFlowYear=2025;
   const miniBars=row=>{
@@ -167,7 +170,12 @@
       <footer class="dm-balance-check-actions" id="dmBalanceCheckActions"></footer>
     </aside>`;
     document.body.appendChild(mask);
-    const close=()=>{mask.hidden=true;document.body.classList.remove('dm-check-drawer-open');};
+    const close=()=>{
+      mask.hidden=true;
+      mask.setAttribute('hidden','');
+      mask.style.display='none';
+      document.body.classList.remove('dm-check-drawer-open');
+    };
     mask.addEventListener('click',event=>{if(event.target===mask||event.target.closest('[data-check-close]'))close();});
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!mask.hidden)close();});
     return mask;
@@ -236,7 +244,7 @@
         });
         checkDecisions.set(key,{type:'marked',groups});
         trigger.classList.add('is-processed');trigger.title=trigger.title.replace(/ · 已处理$/,'')+' · 已处理';
-        mask.hidden=true;document.body.classList.remove('dm-check-drawer-open');
+        mask.hidden=true;mask.setAttribute('hidden','');mask.style.display='none';document.body.classList.remove('dm-check-drawer-open');
       };
     }else{
       title.textContent='余额不连续详情';
@@ -254,7 +262,7 @@
         <div class="dm-check-batch-bar"><span>已选择 <b data-error-selected-count>0</b> 条</span><input class="dm-check-reason" data-error-reason value="${escapeText(existing.reason||'')}" placeholder="填写批量忽略原因"><button type="button" class="btn primary" data-check-ignore disabled>忽略错误</button></div>
         <div class="dm-check-table-wrap"><table class="table dm-check-detail-table"><thead><tr><th class="dm-check-select-col"><input type="checkbox" data-error-select-all aria-label="全选错误记录"></th><th>错误日期</th><th>前一笔交易后余额</th><th>后一笔交易前余额</th><th>差额（绝对值）</th><th>原始文件</th><th>处理状态</th></tr></thead><tbody>${errorRows.map(row=>{const ignored=ignoredRows.has(row.id);return `<tr class="${ignored?'is-ignored':''}"><td class="dm-check-select-col"><input type="checkbox" data-error-select value="${row.id}" ${ignored?'disabled':''} aria-label="选择 ${row.start} 的错误记录"></td><td>${row.start}<br>${row.end}</td><td class="is-num">${format(row.previous)}<br><span class="small">${row.start} 日末</span></td><td class="is-num flow-in">${format(row.following)}<br><span class="small">${row.end} 首笔前</span></td><td class="is-num flow-out">${format(row.diff)}</td><td><a href="javascript:void(0)" class="dm-check-file-link">查看文件</a></td><td>${ignored?'<span class="dm-check-ignored-state"><i>✓</i>已忽略</span>':'<span class="dm-check-pending-state">待处理</span>'}</td></tr>`;}).join('')}</tbody></table></div>${drawerPager(errorRows.length)}`;
       actions.innerHTML='<button type="button" class="btn" data-check-close>关闭</button>';
-      actions.querySelector('[data-check-close]').onclick=()=>{mask.hidden=true;document.body.classList.remove('dm-check-drawer-open');};
+      actions.querySelector('[data-check-close]').onclick=()=>{mask.hidden=true;mask.setAttribute('hidden','');mask.style.display='none';document.body.classList.remove('dm-check-drawer-open');};
       const selectAll=body.querySelector('[data-error-select-all]');
       const rowChecks=Array.from(body.querySelectorAll('[data-error-select]'));
       const ignoreButton=body.querySelector('[data-check-ignore]');
@@ -282,13 +290,19 @@
       syncBatchSelection();
     }
     mask.hidden=false;
+    mask.removeAttribute('hidden');
+    mask.style.display='block';
     document.body.classList.add('dm-check-drawer-open');
   };
-  wrap.addEventListener('click',event=>{
-    const trigger=event.target.closest('.dm-check-status-trigger');
-    if(!trigger)return;
-    event.preventDefault();event.stopPropagation();openCheckDrawer(trigger);
-  });
+  window.openDmBalanceCheckDrawer=(trigger,event)=>{
+    if(!trigger||!body.contains(trigger))return false;
+    if(event){
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    openCheckDrawer(trigger);
+    return false;
+  };
   let flowTooltip=null;
   let flowYearMenu=null;
   const ensureFlowTooltip=()=>{

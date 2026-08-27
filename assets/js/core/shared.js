@@ -306,7 +306,9 @@
         }).join('');
       }
 
-      const checkWindows = [...document.querySelectorAll('#tblAccountSummary .check-window')];
+      const accountSummaryTable = document.getElementById('tblAccountSummary');
+      const ownsValidationChecks = Boolean(accountSummaryTable?.closest('.data-management-page'));
+      const checkWindows = ownsValidationChecks ? [] : [...document.querySelectorAll('#tblAccountSummary .check-window')];
       let syncingCheckWindows = false;
       checkWindows.forEach(windowEl=>windowEl.addEventListener('scroll', ()=>{
         if (syncingCheckWindows) return;
@@ -347,6 +349,9 @@
         let startX = 0;
         let startScroll = 0;
         windowEl.addEventListener('pointerdown', event=>{
+          // 保留按钮等控件自身点击，避免 Chromium 将 click 改派给拖拽容器。
+          if (event.target.closest?.('button,a,input,select,textarea,[role="button"],[data-no-drag]')) return;
+          if (event.button !== undefined && event.button !== 0) return;
           dragging = true;
           startX = event.clientX;
           startScroll = windowEl.scrollLeft;
@@ -1132,6 +1137,7 @@
       const body = document.getElementById('accountSummaryBody');
       const pager = document.getElementById('pagination-account');
       const wrap = table?.closest('.account-summary-table-wrap');
+      if (table?.dataset.accountSummaryOwner === 'data-management' || table?.closest('.data-management-page')) return;
       if (!table || !head || !body || !pager || !wrap || table.dataset.accountPagerReady === '1') return;
       table.dataset.accountPagerReady = '1';
       const years = [2023, 2024, 2025];
