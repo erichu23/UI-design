@@ -340,12 +340,14 @@ body{
 
 .data-validation-page .wp-pager.audit-pager .audit-pager-size select,
 .data-validation-page .pagination.audit-pager .audit-pager-size select{
-  width:82px !important;
-  min-width:82px !important;
-  max-width:82px !important;
+  width:94px !important;
+  min-width:94px !important;
+  max-width:94px !important;
   height:26px !important;
   min-height:26px !important;
-  padding:0 18px 0 7px !important;
+  padding:0 25px 0 8px !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
   border-radius:4px !important;
   font-size:12px !important;
 }

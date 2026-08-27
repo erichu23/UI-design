@@ -1637,13 +1637,35 @@ html body .risk-table-pager.audit-pager .audit-pager-btn{
 
 html body .risk-table-pager.audit-pager .audit-pager-size select{
   flex:0 0 auto !important;
-  width:82px !important;
-  min-width:82px !important;
-  max-width:82px !important;
+  width:94px !important;
+  min-width:94px !important;
+  max-width:94px !important;
   height:26px !important;
-  padding:0 18px 0 7px !important;
+  padding:0 25px 0 8px !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
   border-radius:4px !important;
   font-size:12px !important;
+}
+html body .risk-table-pager.audit-pager .audit-pager-size,
+html body .bank-risk-zoom-pager.audit-pager .audit-pager-size{
+  position:relative !important;
+  display:inline-flex !important;
+  flex:0 0 94px !important;
+  min-width:94px !important;
+}
+html body .risk-table-pager.audit-pager .audit-pager-size::after,
+html body .bank-risk-zoom-pager.audit-pager .audit-pager-size::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  right:9px;
+  width:6px;
+  height:6px;
+  border-right:1.5px solid #7c8da4;
+  border-bottom:1.5px solid #7c8da4;
+  pointer-events:none;
+  transform:translateY(-68%) rotate(45deg);
 }
 
 html body .risk-table-pager.audit-pager .audit-pager-jump{

@@ -2727,12 +2727,14 @@ body .tab-pane .pagination.audit-pager .audit-pager-size select,
 body .statement-pagination.audit-pager .audit-pager-size select,
 body .portrait-pagination.audit-pager .audit-pager-size select{
   flex:0 0 auto !important;
-  width:82px !important;
-  min-width:82px !important;
-  max-width:82px !important;
+  width:94px !important;
+  min-width:94px !important;
+  max-width:94px !important;
   height:26px !important;
   min-height:26px !important;
-  padding:0 18px 0 7px !important;
+  padding:0 25px 0 8px !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
   border-radius:4px !important;
   font-size:12px !important;
 }
@@ -3784,9 +3786,12 @@ body #pane-workingpaper .wp-form-row .field{
 }
 
 body #pane-workingpaper #riskSel{
-  width:150px !important;
-  min-width:150px !important;
-  height:26px !important;
+  width:180px !important;
+  min-width:180px !important;
+  height:28px !important;
+  padding-right:30px !important;
+  line-height:26px !important;
+  box-sizing:border-box !important;
 }
 
 body #pane-workingpaper .wp-pager.audit-pager{
@@ -3812,9 +3817,9 @@ body #pane-workingpaper .wp-pager.audit-pager .audit-pager-jump{
 }
 
 body #pane-workingpaper .wp-pager.audit-pager .audit-pager-size select{
-  width:82px !important;
-  min-width:82px !important;
-  max-width:82px !important;
+  width:94px !important;
+  min-width:94px !important;
+  max-width:94px !important;
 }
 
 body #pane-workingpaper .wp-table-wrap{

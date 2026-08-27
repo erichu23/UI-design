@@ -7997,9 +7997,32 @@ body:has(.ds3-vat-page #ds3SelectedModal.is-show){
 }
 .ds3-vat-page .audit-pager .audit-pager-size select,
 .ds3-pagination.audit-pager .audit-pager-size select{
-  width:82px;
-  min-width:82px;
-  max-width:82px;
+  width:94px;
+  min-width:94px;
+  max-width:94px;
+  padding-right:25px;
+  appearance:none;
+  -webkit-appearance:none;
+}
+.ds3-vat-page .audit-pager .audit-pager-size,
+.ds3-pagination.audit-pager .audit-pager-size{
+  position:relative;
+  display:inline-flex;
+  flex:0 0 94px;
+  min-width:94px;
+}
+.ds3-vat-page .audit-pager .audit-pager-size::after,
+.ds3-pagination.audit-pager .audit-pager-size::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  right:9px;
+  width:6px;
+  height:6px;
+  border-right:1.5px solid #7c8da4;
+  border-bottom:1.5px solid #7c8da4;
+  pointer-events:none;
+  transform:translateY(-68%) rotate(45deg);
 }
 .ds3-vat-page .audit-pager .audit-pager-jump,
 .ds3-pagination.audit-pager .audit-pager-jump{

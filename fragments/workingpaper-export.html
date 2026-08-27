@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <link rel="stylesheet" href="../assets/css/base.css?v=20260807-blacklist3"/>
+  <link rel="stylesheet" href="../assets/css/base.css?v=20260827-pager-select1"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260811-daily-trend1"/>
-  <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260811-workingpaper1"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260811-account-years1"/>
+  <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260827-workingpaper-tools1"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260827-workingpaper-tools1"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper-export.css?v=20260817-report-year-table10"/>
   <script>
     if (new URLSearchParams(location.search).get('embed')) {
@@ -140,7 +140,7 @@
           </div>
           <div class="wp-table-wrap">
             <table class="table wp-table" id="wpTable1">
-              <thead><tr><th>被审计单位名称</th><th>银行账号</th><th>本方银行</th><th class="num">交易总额</th><th class="num">交易笔数</th><th>银行流水获取方式</th><th>更新人</th><th>更新时间</th></tr></thead>
+              <thead><tr><th>被审计单位名称</th><th>银行账号</th><th>本方银行</th><th class="num no-filter">交易总额</th><th class="num no-filter">交易笔数</th><th>银行流水获取方式</th><th class="no-filter">更新人</th><th class="no-filter">更新时间</th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
@@ -164,7 +164,7 @@
           <div class="wp-form-row" id="sampleConfigRow"><div class="field"><label>设置风险等级：</label><select id="riskSel"><option value="">选择风险等级…</option><option value="重大+">重要的+</option><option value="重大">重要的</option><option value="提高">提高的</option><option value="基础">基础的</option></select></div></div>
           <div class="wp-card-desc" id="wpDirectTestDesc">系统根据直接测试方案的属性抽样样本量表，自动计算最小样本量并进行随机抽样。用于评价资金流水的准确性（对应底稿中的 &lt;1.3 网银交易流水准确性测试&gt;）。</div>
           <div class="wp-table-wrap" id="wpTable2Wrap">
-            <table class="table wp-table" id="wpTable2"><thead><tr><th>被审计单位名称</th><th>银行账号</th><th>本方银行</th><th class="num">交易总额</th><th class="num">交易笔数</th><th>最小样本量（自动计算）</th></tr></thead><tbody></tbody></table>
+            <table class="table wp-table" id="wpTable2"><thead><tr><th>被审计单位名称</th><th>银行账号</th><th>本方银行</th><th class="num no-filter">交易总额</th><th class="num no-filter">交易笔数</th><th class="no-sort no-filter">最小样本量（自动计算）</th></tr></thead><tbody></tbody></table>
           </div>
           <div class="wp-pager audit-pager" id="wpTable2Pager"><span class="audit-pager-total">共 <b id="wpTable2Total">0</b> 条</span><button class="audit-pager-btn audit-pager-arrow" disabled>‹</button><button class="audit-pager-btn is-active">1</button><button class="audit-pager-btn audit-pager-arrow" disabled>›</button><label class="audit-pager-size"><select><option selected>20 条/页</option></select></label><span class="audit-pager-jump-label">跳至</span><input class="audit-pager-jump" type="number" min="1" inputmode="numeric"><span class="audit-pager-jump-label">页</span></div>
         </div>
@@ -197,14 +197,14 @@
               </colgroup>
               <thead>
                 <tr>
-                  <th style="width:34%;">核查程序</th>
-                  <th style="width:82px;">标识号</th>
-                  <th>Audit Compass系统设定筛选条件</th>
-                  <th style="width:82px;">执行状态</th>
-                  <th class="num" style="width:100px;">识别对手方数</th>
-                  <th class="num" style="width:120px;">识别交易总额</th>
-                  <th class="num" style="width:100px;">识别交易笔数</th>
-                  <th class="no-sort" style="width:140px;">解释理由</th>
+                  <th class="no-sort no-filter" style="width:34%;">核查程序</th>
+                  <th class="no-sort no-filter" style="width:82px;">标识号</th>
+                  <th class="no-sort no-filter">Audit Compass系统设定筛选条件</th>
+                  <th class="no-sort no-filter" style="width:82px;">执行状态</th>
+                  <th class="num no-sort no-filter" style="width:100px;">识别对手方数</th>
+                  <th class="num no-sort no-filter" style="width:120px;">识别交易总额</th>
+                  <th class="num no-sort no-filter" style="width:100px;">识别交易笔数</th>
+                  <th class="no-sort no-filter" style="width:140px;">解释理由</th>
                 </tr>
               </thead>
               <tbody id="rngTbody"></tbody>

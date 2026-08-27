@@ -11,13 +11,13 @@
   <!-- ECharts -->
   <script defer src="../assets/vendor/echarts/echarts.min.js?v=5.6.0-local"></script>
   <script defer src="../assets/vendor/leaflet/leaflet.js?v=1.9.4-local"></script>
-  <link rel="stylesheet" href="../assets/css/base.css?v=20260807-blacklist3"/>
+  <link rel="stylesheet" href="../assets/css/base.css?v=20260827-pager-select1"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260811-daily-trend1"/>
   <link rel="stylesheet" href="../assets/css/pages/account.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/biz.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/routine.css?v=20260507-routine"/>
-  <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260507-routine"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260826-portrait-actions1"/>
+  <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260827-workingpaper-tools1"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260827-workingpaper-tools1"/>
   <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260826-business-sync3"/>
   <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260624-riskflow1"/>
 </head>
@@ -649,7 +649,7 @@
 </section>
 <!-- ===================== 资金流水核查底稿导出 ===================== -->
 <section class="tab-pane hide" id="pane-transaction">
-<iframe class="risk-reference-frame" src="./fund-flow-check.html?v=20260814-routine-sync1" title="高风险核查"></iframe>
+<iframe class="risk-reference-frame" src="./fund-flow-check.html?v=20260827-pager-select1" title="高风险核查"></iframe>
 <div class="risk-page" hidden>
   <aside class="risk-sidebar" id="riskSidebar"><div class="risk-sidebar-head"><div><b>核查程序</b><span id="riskProcedureCount">29 项</span></div><button id="riskSidebarToggle" type="button" title="收起核查程序">‹</button></div><div class="risk-procedure-list" id="riskProcedureList"></div><button class="risk-add-btn" id="riskAddProcedure" type="button">+ 新增核查程序</button></aside>
   <div class="risk-main">
@@ -715,9 +715,9 @@
                 <th>被审计单位名称</th>
                 <th>银行账号</th>
                 <th>本方银行</th>
-                <th class="num">交易总额</th>
-                <th class="num">交易笔数</th>
-                <th>最小样本量（自动计算）</th>
+                <th class="num no-filter">交易总额</th>
+                <th class="num no-filter">交易笔数</th>
+                <th class="no-sort no-filter">最小样本量（自动计算）</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -765,15 +765,15 @@
           <table class="table wp-table wp-standard-table" id="rngTable">
             <thead>
               <tr>
-                <th style="width:34%;">核查程序</th>
-                <th style="width:82px;">标识号</th>
-                <th>Audit Compass系统设定筛选条件</th>
-                <th style="width:82px;">执行状态</th>
-                <th class="num" style="width:100px;">识别对手方数</th>
-                <th class="num" style="width:120px;">识别交易总额</th>
-                <th class="num" style="width:100px;">识别交易笔数</th>
-                <th style="width:90px;">操作</th>
-                <th style="width:140px;">解释理由</th>
+                <th class="no-sort no-filter" style="width:34%;">核查程序</th>
+                <th class="no-sort no-filter" style="width:82px;">标识号</th>
+                <th class="no-sort no-filter">Audit Compass系统设定筛选条件</th>
+                <th class="no-sort no-filter" style="width:82px;">执行状态</th>
+                <th class="num no-sort no-filter" style="width:100px;">识别对手方数</th>
+                <th class="num no-sort no-filter" style="width:120px;">识别交易总额</th>
+                <th class="num no-sort no-filter" style="width:100px;">识别交易笔数</th>
+                <th class="no-sort no-filter" style="width:90px;">操作</th>
+                <th class="no-sort no-filter" style="width:140px;">解释理由</th>
               </tr>
             </thead>
             <tbody id="rngTbody"></tbody>

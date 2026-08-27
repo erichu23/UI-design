@@ -364,14 +364,19 @@
 }
 
 #riskSel{
-  min-width:180px;
+  width:190px;
+  min-width:190px;
+  height:32px;
   border:1px solid #d9e2ec;
   border-radius:6px;
-  padding:6px 10px;
+  padding:0 32px 0 10px;
   background:#fff;
   font-size:12px;
+  line-height:30px;
   color:#334155;
   outline:none;
+  box-sizing:border-box;
+  white-space:nowrap;
 }
 
 #riskSel:focus{
@@ -584,11 +589,13 @@
 
 .wp-pager.audit-pager .audit-pager-size select{
   flex:0 0 auto !important;
-  width:82px !important;
-  min-width:82px !important;
-  max-width:82px !important;
+  width:94px !important;
+  min-width:94px !important;
+  max-width:94px !important;
   height:26px !important;
-  padding:0 18px 0 7px !important;
+  padding:0 25px 0 8px !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
   border-radius:4px !important;
   font-size:12px !important;
 }
