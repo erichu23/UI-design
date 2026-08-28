@@ -220,10 +220,29 @@
   };
   const portraitActionButtons=row=>`<div class="portrait-row-actions" data-row-name="${esc(row.name)}">
     <button class="portrait-row-action is-tianyancha" data-portrait-action="tianyancha" type="button" aria-label="天眼查工商信息">${portraitActionIcon('tianyancha')}</button>
-    <button class="portrait-row-action" data-portrait-action="remark" type="button" title="备注说明" aria-label="备注说明">${portraitActionIcon('remark')}</button>
-    <button class="portrait-row-action" data-portrait-action="detail" type="button" title="对手方详情" aria-label="对手方详情">${portraitActionIcon('detail')}</button>
-    <button class="portrait-row-action" data-portrait-action="flows" type="button" title="流水明细" aria-label="流水明细">${portraitActionIcon('flows')}</button>
+    <button class="portrait-row-action" data-portrait-action="remark" data-portrait-tooltip="备注说明" type="button" aria-label="备注说明">${portraitActionIcon('remark')}</button>
+    <button class="portrait-row-action" data-portrait-action="detail" data-portrait-tooltip="对手方详情" type="button" aria-label="对手方详情">${portraitActionIcon('detail')}</button>
+    <button class="portrait-row-action" data-portrait-action="flows" data-portrait-tooltip="流水明细" type="button" aria-label="流水明细">${portraitActionIcon('flows')}</button>
   </div>`;
+  let portraitHostShadeState=null;
+  const showPortraitHostShade=()=>{
+    const doc=portraitHostDocument();
+    if(doc===document)return;
+    let shade=doc.getElementById('portraitHostPageShade');
+    if(!shade){shade=doc.createElement('div');shade.id='portraitHostPageShade';shade.style.cssText='position:fixed;z-index:12000;inset:0;background:rgba(18,34,55,.34);backdrop-filter:blur(1px) saturate(.9);';doc.body.appendChild(shade);}
+    const frame=doc.getElementById('module-frame');
+    portraitHostShadeState={shade,frame,position:frame?.style.position||'',zIndex:frame?.style.zIndex||''};
+    shade.hidden=false;
+    if(frame){frame.style.position='relative';frame.style.zIndex='12001';}
+    doc.body.style.overflow='hidden';
+  };
+  const hidePortraitHostShade=()=>{
+    if(!portraitHostShadeState)return;
+    const {shade,frame,position,zIndex}=portraitHostShadeState;shade.hidden=true;
+    if(frame){frame.style.position=position;frame.style.zIndex=zIndex;}
+    shade.ownerDocument.body.style.overflow='';portraitHostShadeState=null;
+  };
+  const closePortraitDialog=mask=>{mask?.classList.remove('is-open');hidePortraitHostShade();};
   const ensurePortraitDialog=()=>{
     let mask=document.getElementById('portraitActionDialog');
     if(mask)return mask;
@@ -232,16 +251,19 @@
     mask.className='portrait-action-dialog';
     mask.innerHTML='<div class="portrait-action-dialog-panel" role="dialog" aria-modal="true"><div class="portrait-action-dialog-head"><div><b id="portraitActionDialogTitle"></b><span id="portraitActionDialogSubtitle"></span></div><button type="button" data-dialog-close aria-label="关闭">×</button></div><div class="portrait-action-dialog-body" id="portraitActionDialogBody"></div><div class="portrait-action-dialog-foot" id="portraitActionDialogFoot"><button class="btn" type="button" data-dialog-close>关闭</button></div></div>';
     document.body.appendChild(mask);
-    mask.addEventListener('click',event=>{if(event.target===mask||event.target.closest('[data-dialog-close]'))mask.classList.remove('is-open');});
+    mask.addEventListener('click',event=>{if(event.target===mask||event.target.closest('[data-dialog-close]'))closePortraitDialog(mask);});
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&mask.classList.contains('is-open'))closePortraitDialog(mask);});
     return mask;
   };
   const openPortraitDialog=(title,subtitle,content,footer='')=>{
     const mask=ensurePortraitDialog();
+    mask.classList.remove('is-flow-query');
     mask.querySelector('#portraitActionDialogTitle').textContent=title;
     mask.querySelector('#portraitActionDialogSubtitle').textContent=subtitle||'';
     mask.querySelector('#portraitActionDialogBody').innerHTML=content;
     mask.querySelector('#portraitActionDialogFoot').innerHTML=footer||'<button class="btn" type="button" data-dialog-close>关闭</button>';
     mask.classList.add('is-open');
+    showPortraitHostShade();
     return mask;
   };
   const detailGrid=(row,source='主档信息')=>{
@@ -252,47 +274,186 @@
     const base=Math.max(row.inflow,row.outflow,100);
     return `<div class="portrait-flow-table-wrap"><table class="table portrait-flow-table"><thead><tr><th>交易日期</th><th>方向</th><th>金额</th><th>交易摘要</th><th>流水识别号</th></tr></thead><tbody>${Array.from({length:8},(_,i)=>{const incoming=i%3!==0;const amount=base*(.035+(i%5)*.012);return `<tr><td>2025-${String((i%12)+1).padStart(2,'0')}-${String(8+i*2).padStart(2,'0')}</td><td>${incoming?'流入':'流出'}</td><td class="${incoming?'is-flow-in':'is-flow-out'}">${fmtAmount(amount)}</td><td>${incoming?'货款及服务费回款':'采购及服务付款'}</td><td>TX2025${String(rowIndex(row)+1).padStart(3,'0')}${String(i+1).padStart(2,'0')}</td></tr>`;}).join('')}</tbody></table></div>`;
   };
+  const portraitFlowHeaders=['本方名称','本方账号','对方名称','交易日期','交易时间','币种','流入金额','流出金额','交易后余额','等值人民币余额','交易类型','流水识别号','摘要','流水明细尽调备注','关联关系','所属集团','对手方类型','销售类别','采购类别','批准日期_客户','无效日期_客户','批准日期_供应商','无效日期_供应商','入职日期','离职日期'];
+  const portraitFlowState={row:null,rows:[],page:1,pageSize:20};
+  const buildPortraitFlowRows=row=>{
+    const index=Math.max(0,rowIndex(row)),master=counterpartyMasterInfo(row),total=Math.max(36,Math.min(86,Math.round(row.count/5)));
+    let balance=318000+index*2370;
+    return Array.from({length:total},(_,i)=>{
+      const year=2023+i%3,month=String(i%12+1).padStart(2,'0'),day=String((i*7+index)%27+1).padStart(2,'0'),incoming=(i+index)%3!==0;
+      const amount=Math.round(Math.max(row.inflow,row.outflow,800)*(.006+(i%9)*.0017));
+      balance=Math.max(0,balance+(incoming?amount:-amount));
+      return {
+        selfName:['华东制造集团有限公司','上海星河科技有限公司','深圳启明电子有限公司'][index%3],
+        selfAccount:['1001***0821','1002***4186','2001***7739'][index%3],counterparty:row.name,date:`${year}-${month}-${day}`,time:`${String(8+i%10).padStart(2,'0')}:${String((i*13)%60).padStart(2,'0')}:${String((i*19)%60).padStart(2,'0')}`,currency:'RMB',
+        inflow:incoming?amount:0,outflow:incoming?0:amount,balance,rmbBalance:balance,txType:['网银转账','银企直连','柜面转账','承兑到期'][i%4],flowId:`BF${year}${month}${String(index+1).padStart(3,'0')}${String(i+1).padStart(5,'0')}`,
+        summary:incoming?'销售回款及服务费':'采购付款及服务费',dueNote:'',relation:isRelated(row)?'已知关联方':'非关联方',group:master.group,cpType:displayType(row),salesType:master.salesCategory,purchaseType:master.purchaseCategory,
+        customerApprove:master.customerApprovalDate,customerInvalid:master.customerInvalidDate,supplierApprove:master.supplierApprovalDate,supplierInvalid:master.supplierInvalidDate,hireDate:master.employeeHireDate,leaveDate:master.employeeLeaveDate
+      };
+    });
+  };
+  const portraitFlowCell=(flow,key)=>{
+    if(key==='inflow')return `<td class="amount-in">${flow.inflow?fmtAmount(flow.inflow):'0'}</td>`;
+    if(key==='outflow')return `<td class="amount-out">${flow.outflow?fmtAmount(flow.outflow):'0'}</td>`;
+    if(key==='balance'||key==='rmbBalance')return `<td>${fmtAmount(flow[key])}</td>`;
+    if(key==='dueNote')return `<td><input class="ba-note-input" value="${esc(flow.dueNote)}" placeholder="填写尽调备注"></td>`;
+    return `<td>${esc(flow[key]||'—')}</td>`;
+  };
+  const portraitFlowKeys=['selfName','selfAccount','counterparty','date','time','currency','inflow','outflow','balance','rmbBalance','txType','flowId','summary','dueNote','relation','group','cpType','salesType','purchaseType','customerApprove','customerInvalid','supplierApprove','supplierInvalid','hireDate','leaveDate'];
+  const renderPortraitFlowPage=()=>{
+    const table=document.getElementById('portraitFlowQueryTable'),body=table?.tBodies?.[0],pager=document.getElementById('portraitFlowQueryPager'),count=document.getElementById('portraitFlowQueryCount');
+    if(!table||!body||!pager)return;
+    const total=portraitFlowState.rows.length,pages=Math.max(1,Math.ceil(total/portraitFlowState.pageSize));
+    portraitFlowState.page=Math.min(Math.max(1,portraitFlowState.page),pages);
+    const start=(portraitFlowState.page-1)*portraitFlowState.pageSize,list=portraitFlowState.rows.slice(start,start+portraitFlowState.pageSize);
+    body.innerHTML=list.map(flow=>`<tr>${portraitFlowKeys.map(key=>portraitFlowCell(flow,key)).join('')}</tr>`).join('');
+    if(count)count.textContent=`共 ${total} 条，当前展示 ${start+1}-${Math.min(start+portraitFlowState.pageSize,total)} / ${total}`;
+    window.renderAuditPager?.(pager,{total,page:portraitFlowState.page,pageSize:portraitFlowState.pageSize,onPage(next){portraitFlowState.page=next;renderPortraitFlowPage();},onPageSize(size){portraitFlowState.pageSize=size;portraitFlowState.page=1;renderPortraitFlowPage();}});
+    if(table.dataset.baEnhanced!=='1')window.dispatchEvent(new CustomEvent('bank-analysis:tab-change'));
+  };
+  const openPortraitFlowDialog=row=>{
+    portraitFlowState.row=row;portraitFlowState.rows=buildPortraitFlowRows(row);portraitFlowState.page=1;
+    const content=`<div class="portrait-flow-query tab-pane"><div class="portrait-flow-query-toolbar"><div><b>当前对手方：${esc(row.name)}</b><span id="portraitFlowQueryCount"></span></div><div><button class="btn" id="portraitFlowReset" type="button">重置筛选</button><button class="btn" id="portraitFlowColumns" type="button">自定义表头</button><button class="btn primary" id="portraitFlowGenerate" type="button">生成流水</button></div></div><div class="portrait-flow-query-table-wrap"><table class="table statement-flow-table" id="portraitFlowQueryTable"><thead><tr>${portraitFlowHeaders.map(label=>`<th>${label}</th>`).join('')}</tr></thead><tbody></tbody></table></div><div class="pagination portrait-flow-query-pager" id="portraitFlowQueryPager"></div></div>`;
+    const mask=openPortraitDialog('流水明细',`仅展示与“${row.name}”相关的资金流水`,content);
+    mask.classList.add('is-flow-query');
+    renderPortraitFlowPage();
+    mask.querySelector('#portraitFlowColumns').onclick=event=>window.openBankColumnChooser?.(event.currentTarget,mask.querySelector('#portraitFlowQueryTable'));
+    mask.querySelector('#portraitFlowReset').onclick=()=>{
+      const old=mask.querySelector('#portraitFlowQueryTable'),fresh=document.createElement('table');
+      fresh.className='table statement-flow-table';fresh.id='portraitFlowQueryTable';fresh.innerHTML=`<thead><tr>${portraitFlowHeaders.map(label=>`<th>${label}</th>`).join('')}</tr></thead><tbody></tbody>`;
+      old.replaceWith(fresh);portraitFlowState.page=1;renderPortraitFlowPage();
+    };
+    mask.querySelector('#portraitFlowGenerate').onclick=()=>{
+      const lines=[portraitFlowHeaders,...portraitFlowState.rows.map(flow=>portraitFlowKeys.map(key=>flow[key]??''))].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const link=document.createElement('a'),url=URL.createObjectURL(new Blob(['\ufeff'+lines],{type:'text/csv;charset=utf-8'}));link.href=url;link.download=`${row.name}_流水明细.csv`;link.click();URL.revokeObjectURL(url);
+    };
+  };
+  const portraitHostDocument=()=>{try{if(parent&&parent!==window&&parent.document?.body)return parent.document;}catch(error){}return document;};
+  const ensurePortraitHostStyle=doc=>{
+    if(doc===document||doc.getElementById('portrait-account-detail-style'))return;
+    const link=doc.createElement('link');link.id='portrait-account-detail-style';link.rel='stylesheet';link.href='./assets/css/pages/account-action-details.css?v=20260828-portrait-actions4';doc.head.appendChild(link);
+  };
+  const counterpartyChartData=(row,year)=>{
+    const seed=Math.max(1,rowIndex(row)+11),factor=year===2023?.82:year===2024?.91:1;
+    const inWeights=[.066,.073,.061,.081,.069,.078,.075,.086,.079,.091,.094,.147],outWeights=[.071,.064,.077,.068,.082,.073,.085,.075,.088,.079,.092,.126];
+    const inflow=inWeights.map((weight,index)=>Math.round(row.inflow*factor*weight*(.92+((seed+index*5)%13)/100)));
+    const outflow=outWeights.map((weight,index)=>Math.round(row.outflow*factor*weight*(.91+((seed+index*7)%15)/100)));
+    const bubbles=[];
+    for(let day=1;day<=31;day+=1){if((day+seed)%3===0)bubbles.push([day,(day+seed)%7,500+((day*seed*17)%7200),'in']);if((day+seed)%4===0)bubbles.push([day,(day+seed+2)%7,450+((day*(seed+19)*13)%8400),'out']);}
+    return {inflow,outflow,bubbles,weekdays:['星期一','星期二','星期三','星期四','星期五','星期六','星期日']};
+  };
+  const counterpartyMonthlySvg=(data,year)=>{
+    const width=760,height=244,left=50,right=18,top=28,bottom=36,plotWidth=width-left-right,plotHeight=height-top-bottom,max=Math.max(1,...data.inflow,...data.outflow)*1.12,groupWidth=plotWidth/12,barWidth=Math.min(13,groupWidth*.24);
+    const grid=[0,.25,.5,.75,1].map(rate=>{const y=top+plotHeight*(1-rate);return `<line x1="${left}" y1="${y}" x2="${width-right}" y2="${y}"/><text x="${left-8}" y="${y+3}" text-anchor="end">${Math.round(max*rate).toLocaleString()}</text>`;}).join('');
+    const bars=Array.from({length:12},(_,index)=>{const center=left+groupWidth*(index+.5),a=data.inflow[index]/max*plotHeight,b=data.outflow[index]/max*plotHeight;return `<g><rect class="is-in" data-chart-tooltip="${year}年${String(index+1).padStart(2,'0')}月|流入金额|${data.inflow[index].toLocaleString()}" x="${center-barWidth-1}" y="${top+plotHeight-a}" width="${barWidth}" height="${Math.max(1,a)}" rx="2"/><rect class="is-out" data-chart-tooltip="${year}年${String(index+1).padStart(2,'0')}月|流出金额|${data.outflow[index].toLocaleString()}" x="${center+1}" y="${top+plotHeight-b}" width="${barWidth}" height="${Math.max(1,b)}" rx="2"/><text x="${center}" y="${height-15}" text-anchor="middle">${String(index+1).padStart(2,'0')}月</text></g>`;}).join('');
+    return `<svg class="account-action-native-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img"><g class="grid">${grid}</g>${bars}<g class="legend"><circle class="is-in" cx="622" cy="12" r="4"/><text x="631" y="15">流入</text><circle class="is-out" cx="682" cy="12" r="4"/><text x="691" y="15">流出</text></g></svg>`;
+  };
+  const counterpartyBubbleSvg=data=>{
+    const width=760,height=238,left=58,right=18,top=26,bottom=28,plotWidth=width-left-right,plotHeight=height-top-bottom;
+    const rows=data.weekdays.map((label,index)=>{const y=top+plotHeight*index/6;return `<line x1="${left}" y1="${y}" x2="${width-right}" y2="${y}"/><text x="${left-8}" y="${y+3}" text-anchor="end">${label}</text>`;}).join('');
+    const ticks=[1,5,10,15,20,25,30].map(day=>{const x=left+(day-1)/30*plotWidth;return `<line x1="${x}" y1="${top}" x2="${x}" y2="${top+plotHeight}"/><text x="${x}" y="${height-9}" text-anchor="middle">${day}</text>`;}).join('');
+    const points=data.bubbles.map(item=>{const x=left+(item[0]-1)/30*plotWidth,y=top+item[1]/6*plotHeight,r=Math.max(3,Math.min(12,Math.sqrt(item[2])*.1)),direction=item[3]==='in'?'流入':'流出';return `<circle class="${item[3]==='in'?'is-in':'is-out'}" data-chart-tooltip="${item[0]}日|${direction}金额|${item[2].toLocaleString()}" cx="${x}" cy="${y}" r="${r}"/>`;}).join('');
+    return `<svg class="account-action-native-chart is-bubble" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img"><g class="grid">${rows}${ticks}</g>${points}<g class="legend"><circle class="is-in" cx="622" cy="12" r="4"/><text x="631" y="15">流入</text><circle class="is-out" cx="682" cy="12" r="4"/><text x="691" y="15">流出</text></g></svg>`;
+  };
+  const openCounterpartyDrawer=row=>{
+    const doc=portraitHostDocument();ensurePortraitHostStyle(doc);
+    let mask=doc.getElementById('portraitCounterpartyDetailMask');
+    if(!mask){
+      mask=doc.createElement('div');mask.id='portraitCounterpartyDetailMask';mask.className='account-action-detail-mask';mask.hidden=true;
+      mask.innerHTML='<aside class="account-action-detail-drawer" role="dialog" aria-modal="true"><header><div><b id="portraitCounterpartyDetailTitle">对手方详情</b><span id="portraitCounterpartyDetailSubtitle"></span></div><button type="button" data-counterparty-drawer-close aria-label="关闭">×</button></header><div class="account-action-detail-body" id="portraitCounterpartyDetailBody"></div><footer><button type="button" class="btn" data-counterparty-drawer-close>关闭</button></footer></aside>';
+      doc.body.appendChild(mask);
+      mask.addEventListener('click',event=>{if(event.target===mask||event.target.closest('[data-counterparty-drawer-close]')){mask.hidden=true;mask.style.display='none';doc.body.classList.remove('account-action-drawer-open');}});
+      doc.addEventListener('keydown',event=>{if(event.key==='Escape'&&!mask.hidden){mask.hidden=true;mask.style.display='none';doc.body.classList.remove('account-action-drawer-open');}});
+    }
+    const master=counterpartyMasterInfo(row),body=mask.querySelector('#portraitCounterpartyDetailBody');
+    mask.querySelector('#portraitCounterpartyDetailTitle').textContent=`对手方详情：${row.name}`;
+    mask.querySelector('#portraitCounterpartyDetailSubtitle').textContent=`${displayType(row)} · ${master.group==='—'?'非集团内主体':master.group}`;
+    body.innerHTML=`<div class="account-detail-content counterparty-detail-content"><section><h3>收支统计</h3><div class="account-detail-kpis"><div><span>流入金额</span><b class="flow-in">${fmtAmount(row.inflow)}</b></div><div><span>流出金额</span><b class="flow-out">${fmtAmount(row.outflow)}</b></div><div><span>交易总额</span><b>${fmtAmount(row.inflow+row.outflow)}</b></div><div><span>交易笔数</span><b>${row.count}</b></div><div><span>流入流出差额</span><b>${fmtAmount(row.inflow-row.outflow)}</b></div></div></section><section><div class="account-detail-section-head"><h3>月度汇总</h3><label>年度<select data-counterparty-detail-year><option>2023</option><option>2024</option><option selected>2025</option></select></label></div><div class="account-detail-chart" data-counterparty-month-chart></div></section><section><h3>交易日期分析</h3><div class="account-detail-chart is-bubble" data-counterparty-bubble-chart></div></section></div>`;
+    mask.hidden=false;mask.style.display='block';doc.body.classList.add('account-action-drawer-open');
+    const render=()=>{const year=Number(body.querySelector('[data-counterparty-detail-year]').value)||2025,data=counterpartyChartData(row,year);body.querySelector('[data-counterparty-month-chart]').innerHTML=counterpartyMonthlySvg(data,year);body.querySelector('[data-counterparty-bubble-chart]').innerHTML=counterpartyBubbleSvg(data);};
+    const chartTooltip=ensureHostChartTooltip(doc);
+    body.onpointerover=event=>{const target=event.target.closest?.('[data-chart-tooltip]');if(target)showHostChartTooltip(chartTooltip,target,event);};
+    body.onpointermove=event=>{const target=event.target.closest?.('[data-chart-tooltip]');if(target)positionHostChartTooltip(chartTooltip,event);};
+    body.onpointerout=event=>{if(event.target.closest?.('[data-chart-tooltip]'))chartTooltip.hidden=true;};
+    body.querySelector('[data-counterparty-detail-year]').addEventListener('change',render);requestAnimationFrame(render);
+  };
+  const ensureHostChartTooltip=doc=>{
+    let tooltip=doc.getElementById('auditChartValueTooltip');
+    if(!tooltip){tooltip=doc.createElement('div');tooltip.id='auditChartValueTooltip';tooltip.className='account-chart-tooltip';tooltip.hidden=true;doc.body.appendChild(tooltip);}
+    return tooltip;
+  };
+  const positionHostChartTooltip=(tooltip,event)=>{
+    const width=tooltip.offsetWidth,height=tooltip.offsetHeight,view=tooltip.ownerDocument.defaultView;
+    tooltip.style.left=`${Math.min(view.innerWidth-width-10,Math.max(10,event.clientX-width/2))}px`;
+    tooltip.style.top=`${Math.max(10,event.clientY-height-14)}px`;
+  };
+  const showHostChartTooltip=(tooltip,target,event)=>{
+    const [period,label,value]=String(target.dataset.chartTooltip||'').split('|');
+    tooltip.classList.toggle('is-in',label.includes('流入'));tooltip.classList.toggle('is-out',label.includes('流出'));
+    tooltip.innerHTML=`<b>${esc(period)}</b><span><i></i><em>${esc(label)}</em><strong>${esc(value)}</strong></span>`;tooltip.hidden=false;positionHostChartTooltip(tooltip,event);
+  };
   let portraitTooltipTimer;
   const tianyanchaTooltip=()=>{
     let tooltip=document.getElementById('portraitTianyanchaTooltip');
     if(tooltip)return tooltip;
-    tooltip=document.createElement('div');
-    tooltip.id='portraitTianyanchaTooltip';
-    tooltip.className='portrait-tianyancha-tooltip';
-    tooltip.innerHTML='点击该图标查询工商信息。如果查询不生效，请点击 <a href="https://www.tianyancha.com/login" target="_blank" rel="noopener">这里</a> 登陆天眼查';
-    document.body.appendChild(tooltip);
+    tooltip=document.createElement('div');tooltip.id='portraitTianyanchaTooltip';tooltip.className='portrait-tianyancha-tooltip';
+    tooltip.innerHTML='点击该图标查询工商信息。如果查询不生效，请点击 <a href="https://www.tianyancha.com/login" target="_blank" rel="noopener">这里</a> 登陆天眼查';document.body.appendChild(tooltip);
     tooltip.addEventListener('mouseenter',()=>window.clearTimeout(portraitTooltipTimer));
-    tooltip.addEventListener('mouseleave',()=>{portraitTooltipTimer=window.setTimeout(()=>tooltip.classList.remove('is-visible'),120);});
-    return tooltip;
+    tooltip.addEventListener('mouseleave',()=>{portraitTooltipTimer=window.setTimeout(()=>tooltip.classList.remove('is-visible'),120);});return tooltip;
   };
   const showTianyanchaTooltip=button=>{
-    const tooltip=tianyanchaTooltip(),rect=button.getBoundingClientRect();
-    window.clearTimeout(portraitTooltipTimer);
-    tooltip.style.left=`${Math.min(window.innerWidth-340,Math.max(10,rect.right-18))}px`;
-    tooltip.style.top=`${Math.min(window.innerHeight-74,rect.bottom+7)}px`;
-    tooltip.classList.add('is-visible');
+    const tooltip=tianyanchaTooltip(),rect=button.getBoundingClientRect();window.clearTimeout(portraitTooltipTimer);tooltip.classList.add('is-visible','is-left');
+    tooltip.style.left=`${Math.max(8,rect.left-tooltip.offsetWidth-10)}px`;
+    tooltip.style.top=`${Math.min(innerHeight-tooltip.offsetHeight-8,Math.max(8,rect.top+(rect.height-tooltip.offsetHeight)/2))}px`;
   };
-  const hideTianyanchaTooltip=()=>{portraitTooltipTimer=window.setTimeout(()=>tianyanchaTooltip().classList.remove('is-visible'),180);};
+  const hideTianyanchaTooltip=()=>{portraitTooltipTimer=window.setTimeout(()=>tianyanchaTooltip().classList.remove('is-visible'),160);};
+  const showPortraitActionToast=message=>{
+    let toast=document.getElementById('portraitActionToast');if(!toast){toast=document.createElement('div');toast.id='portraitActionToast';toast.className='portrait-action-toast';document.body.appendChild(toast);}
+    toast.textContent=message;toast.classList.add('is-visible');window.clearTimeout(showPortraitActionToast.timer);showPortraitActionToast.timer=window.setTimeout(()=>toast.classList.remove('is-visible'),1800);
+  };
+  const runTianyanchaLookup=(button,row)=>{
+    if(button.classList.contains('is-loading'))return;
+    hideTianyanchaTooltip();button.classList.add('is-loading');button.setAttribute('aria-busy','true');
+    window.setTimeout(()=>{button.classList.remove('is-loading');button.removeAttribute('aria-busy');showPortraitActionToast(`已获取“${row.name}”最新工商信息`);},650);
+  };
+  let portraitActionTooltip;
+  const ensurePortraitActionTooltip=()=>{
+    if(portraitActionTooltip)return portraitActionTooltip;
+    portraitActionTooltip=document.createElement('div');portraitActionTooltip.className='portrait-action-tooltip';portraitActionTooltip.hidden=true;document.body.appendChild(portraitActionTooltip);return portraitActionTooltip;
+  };
+  const showPortraitActionTooltip=button=>{
+    const tooltip=ensurePortraitActionTooltip(),rect=button.getBoundingClientRect();
+    tooltip.textContent=button.dataset.portraitTooltip||button.getAttribute('aria-label')||'';tooltip.hidden=false;
+    const width=tooltip.offsetWidth,height=tooltip.offsetHeight;
+    tooltip.style.left=`${Math.min(innerWidth-width-8,Math.max(8,rect.left+(rect.width-width)/2))}px`;
+    tooltip.style.top=`${Math.max(8,rect.top-height-8)}px`;
+  };
+  const hidePortraitActionTooltip=()=>{if(portraitActionTooltip)portraitActionTooltip.hidden=true;};
   const bindPortraitRowActions=body=>{
     body.querySelectorAll('.portrait-row-action.is-tianyancha').forEach(button=>{
-      button.addEventListener('mouseenter',()=>showTianyanchaTooltip(button));
-      button.addEventListener('mouseleave',hideTianyanchaTooltip);
-      button.addEventListener('focus',()=>showTianyanchaTooltip(button));
-      button.addEventListener('blur',hideTianyanchaTooltip);
+      button.addEventListener('mouseenter',()=>showTianyanchaTooltip(button));button.addEventListener('mouseleave',hideTianyanchaTooltip);
+      button.addEventListener('focus',()=>showTianyanchaTooltip(button));button.addEventListener('blur',hideTianyanchaTooltip);
+    });
+    body.querySelectorAll('.portrait-row-action[data-portrait-tooltip]').forEach(button=>{
+      button.addEventListener('mouseenter',()=>showPortraitActionTooltip(button));
+      button.addEventListener('mouseleave',hidePortraitActionTooltip);
+      button.addEventListener('focus',()=>showPortraitActionTooltip(button));
+      button.addEventListener('blur',hidePortraitActionTooltip);
     });
     body.onclick=event=>{
       const button=event.target.closest('[data-portrait-action]');
       if(!button)return;
+      hidePortraitActionTooltip();
       const name=button.closest('[data-row-name]')?.dataset.rowName;
       const row=rows.find(item=>item.name===name);
       if(!row)return;
       const action=button.dataset.portraitAction;
-      if(action==='tianyancha')openPortraitDialog('天眼查工商信息',row.name,detailGrid(row,'天眼查'));
-      if(action==='detail')openPortraitDialog('对手方详情',row.name,detailGrid(row));
-      if(action==='flows')openPortraitDialog('流水明细',row.name,flowTable(row));
+      if(action==='tianyancha')runTianyanchaLookup(button,row);
+      if(action==='detail')openCounterpartyDrawer(row);
+      if(action==='flows')openPortraitFlowDialog(row);
       if(action==='remark'){
         const mask=openPortraitDialog('备注说明',row.name,`<textarea class="portrait-remark-editor" id="portraitRemarkEditor" placeholder="填写对手方备注说明">${esc(portraitRemarks[row.name]||'')}</textarea>`,'<button class="btn" type="button" data-dialog-close>取消</button><button class="btn primary" id="portraitRemarkSave" type="button">保存备注</button>');
-        mask.querySelector('#portraitRemarkSave').onclick=()=>{portraitRemarks[row.name]=mask.querySelector('#portraitRemarkEditor').value.trim();mask.classList.remove('is-open');renderTable();};
+        mask.querySelector('#portraitRemarkSave').onclick=()=>{portraitRemarks[row.name]=mask.querySelector('#portraitRemarkEditor').value.trim();closePortraitDialog(mask);renderTable();};
       }
     };
   };
@@ -769,6 +930,41 @@
     document.querySelectorAll('.ba-table-filter-popover').forEach(element=>element.remove());
     renderTable();
   }
+  function bindSynchronizedAnalysisCards(){
+    const cards=[
+      document.querySelector('.portrait-monthly-card'),
+      document.querySelector('.portrait-feature-card')
+    ].filter(Boolean);
+    if(cards.length!==2)return;
+
+    const buttons=cards.map(card=>card.querySelector(':scope > .head .card-fold-btn'));
+    if(buttons.some(button=>!button))return;
+
+    let syncing=false;
+    buttons.forEach((button,index)=>{
+      if(button.dataset.portraitFoldSync==='1')return;
+      button.dataset.portraitFoldSync='1';
+      button.addEventListener('click',()=>{
+        if(syncing)return;
+        window.requestAnimationFrame(()=>{
+          const expanded=button.getAttribute('aria-expanded')!=='false';
+          const peerButton=buttons[index===0?1:0];
+          const peerExpanded=peerButton.getAttribute('aria-expanded')!=='false';
+          if(peerExpanded!==expanded){
+            syncing=true;
+            peerButton.click();
+            syncing=false;
+          }
+          if(expanded){
+            window.setTimeout(()=>{
+              charts.monthly?.resize();
+              window.dispatchEvent(new Event('resize'));
+            },40);
+          }
+        });
+      });
+    });
+  }
   function generatePortraitResult(){
     const button=document.getElementById('portraitGenerateResult');
     if(!button||button.disabled)return;
@@ -793,5 +989,5 @@
     }));
   });
   window.addEventListener('audit-unit-ready',()=>{renderTable();renderFeatureTable();renderRelationAll();renderPersonalAll();});
-  document.addEventListener('DOMContentLoaded',()=>{renderTable();bind();bindBusinessRefresh();document.getElementById('portraitResetFilters')?.addEventListener('click',resetPortraitFilters);document.getElementById('portraitGenerateResult')?.addEventListener('click',generatePortraitResult);document.getElementById('portraitMonthlyYearSelect')?.addEventListener('change',event=>{monthlyYear=Number(event.target.value)||2025;charts.monthly?.setOption(monthlyOption(),true);charts.monthly?.resize();});document.getElementById('portraitExportBtn')?.addEventListener('click',exportPortraitCurrent,true);renderFeatureTable();renderRelationAll();renderPersonalAll();setTimeout(renderCharts,80);});
+  document.addEventListener('DOMContentLoaded',()=>{renderTable();bind();bindBusinessRefresh();bindSynchronizedAnalysisCards();document.getElementById('portraitResetFilters')?.addEventListener('click',resetPortraitFilters);document.getElementById('portraitGenerateResult')?.addEventListener('click',generatePortraitResult);document.getElementById('portraitMonthlyYearSelect')?.addEventListener('change',event=>{monthlyYear=Number(event.target.value)||2025;charts.monthly?.setOption(monthlyOption(),true);charts.monthly?.resize();});document.getElementById('portraitExportBtn')?.addEventListener('click',exportPortraitCurrent,true);renderFeatureTable();renderRelationAll();renderPersonalAll();setTimeout(renderCharts,80);});
 })();

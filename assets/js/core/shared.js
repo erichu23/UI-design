@@ -1378,7 +1378,14 @@
           return `<td class="is-num">${isTotal?'<strong>':''}${row.fileCount}${isTotal?'</strong>':''}</td>`;
         }).join('');
         const sumRow = `<tr class="sum-row"><td><strong>合计</strong></td><td class="monthly-flow-cell account-flow-year-cell"><button type="button" class="account-flow-year-trigger" data-account-flow-year-trigger aria-haspopup="listbox" aria-expanded="false" title="切换月度流入/流出年份"><span>${state.flowYear}年</span><i aria-hidden="true"></i></button></td>${metricCells(totals,true)}${sumYearCells}<td class="account-action-sticky"></td></tr>`;
-        const dataRows = viewRows.slice(start,end).map(row=>`<tr><td>${row.company}</td><td class="monthly-flow-cell">${miniBars(row)}</td>${metricCells(row)}${yearCells(row)}<td class="actions account-action-sticky"><button class="dm-account-action-btn" type="button" title="查看账号详情" aria-label="查看账号详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.6"></circle></svg></button><button class="dm-account-action-btn" type="button" title="查看文件详情" aria-label="查看文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button></td></tr>`).join('');
+        const dataRows = viewRows.slice(start,end).map(row=>{
+          const accountNumbers=['1001***0821','1002***4186','2001***7739','3001***6290','3002***9052','4001***1578','5001***6426','6001***3385'];
+          const bankNames=['工行上海分行','建行上海分行','招行上海分行','平安深圳分行','中行深圳分行','广发广州分行','农行苏州分行','浦发广州分行'];
+          const account=accountNumbers[row.index%accountNumbers.length];
+          const bank=bankNames[row.index%bankNames.length];
+          const actionData=`data-company="${row.company}" data-account="${account}" data-bank="${bank}" data-inflow="${row.inflow}" data-outflow="${row.outflow}" data-tx-count="${row.txCount}"`;
+          return `<tr><td>${row.company}</td><td class="monthly-flow-cell">${miniBars(row)}</td>${metricCells(row)}${yearCells(row)}<td class="actions account-action-sticky"><button class="dm-account-action-btn" type="button" data-ba-account-action="account-detail" data-action-tooltip="账号详情" ${actionData} aria-label="账号详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.6"></circle></svg></button><button class="dm-account-action-btn" type="button" data-ba-account-action="file-detail" data-action-tooltip="文件详情" ${actionData} aria-label="文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button></td></tr>`;
+        }).join('');
         body.innerHTML = sumRow + dataRows;
         renderAuditPager(pager, {
           total,

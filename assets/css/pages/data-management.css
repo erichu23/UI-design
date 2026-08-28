@@ -679,6 +679,65 @@ html.dm-embedded-module .data-management-page{
   stroke:#174f9b !important;
 }
 
+/* 账号操作提示与文件浮层直接挂到页面根节点，避免被横向表格裁切。 */
+.dm-action-tooltip{
+  position:fixed;
+  z-index:14020;
+  padding:5px 8px;
+  border-radius:5px;
+  background:#263b55;
+  color:#fff;
+  box-shadow:0 4px 12px rgba(23,42,66,.18);
+  font:500 11px/1.25 Arial,"Microsoft YaHei",sans-serif;
+  white-space:nowrap;
+  pointer-events:none;
+}
+.dm-action-tooltip[hidden]{display:none;}
+.dm-action-tooltip::after{
+  position:absolute;
+  top:100%;
+  left:50%;
+  width:0;
+  height:0;
+  border:4px solid transparent;
+  border-top-color:#263b55;
+  content:"";
+  transform:translateX(-50%);
+}
+.dm-file-popover{
+  position:fixed;
+  z-index:14015;
+  display:grid;
+  width:270px;
+  grid-template-columns:minmax(0,1fr) 32px;
+  gap:6px 10px;
+  padding:10px 10px 10px 12px;
+  border:1px solid #dbe5f0;
+  border-radius:7px;
+  background:#fff;
+  box-shadow:0 10px 28px rgba(26,53,86,.16);
+  box-sizing:border-box;
+}
+.dm-file-popover[hidden]{display:none;}
+.dm-file-popover::after{
+  position:absolute;
+  top:50%;
+  left:100%;
+  width:8px;
+  height:8px;
+  border-top:1px solid #dbe5f0;
+  border-right:1px solid #dbe5f0;
+  background:#fff;
+  content:"";
+  transform:translate(-4px,-50%) rotate(45deg);
+}
+.dm-file-popover > div{display:grid;grid-column:1;grid-template-columns:54px minmax(0,1fr);align-items:center;gap:7px;min-width:0;}
+.dm-file-popover > div span{color:#8693a4;font-size:10.5px;}
+.dm-file-popover > div b{min-width:0;overflow:hidden;color:#31465f;font-size:11px;font-weight:600;text-overflow:ellipsis;white-space:nowrap;}
+.dm-file-popover > button{display:inline-flex;grid-column:2;grid-row:1/3;width:28px;height:28px;align-self:center;align-items:center;justify-content:center;padding:0;border:0;border-radius:50%;background:#edf4ff;color:#2f6fed;cursor:pointer;}
+.dm-file-popover > button:hover{background:#dfeaff;color:#174f9b;}
+.dm-file-popover svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+
 /* 月度流入/流出年份放在合计行对应单元格内，不额外占用表格上方空间。 */
 .data-management-page #tblAccountSummary .monthly-flow-year-cell{
   padding:3px 5px !important;
@@ -850,8 +909,9 @@ body.dm-check-drawer-open{overflow:hidden;}
   position:fixed;
   z-index:12050;
   inset:0;
-  background:rgba(20,35,55,.27);
-  backdrop-filter:saturate(.9);
+  background:rgba(20,35,55,.34);
+  -webkit-backdrop-filter:blur(1px) saturate(.88);
+  backdrop-filter:blur(1px) saturate(.88);
 }
 .dm-balance-check-mask[hidden]{display:none;}
 .dm-balance-check-drawer{
@@ -862,9 +922,11 @@ body.dm-check-drawer-open{overflow:hidden;}
   min-width:660px;
   flex-direction:column;
   background:#fff;
-  box-shadow:-16px 0 42px rgba(25,46,74,.18);
+  box-shadow:-18px 0 46px rgba(18,39,66,.24);
   animation:dmCheckDrawerIn .2s ease-out;
 }
+.dm-balance-check-drawer.is-account-detail{width:min(860px,68vw);}
+.dm-balance-check-drawer.is-flow-detail{width:min(760px,60vw);}
 @keyframes dmCheckDrawerIn{from{transform:translateX(22px);opacity:.76}to{transform:translateX(0);opacity:1}}
 .dm-balance-check-head{
   display:flex;
@@ -895,6 +957,55 @@ body.dm-check-drawer-open{overflow:hidden;}
 }
 .dm-balance-check-head > button:hover{border-color:#b9c9db;background:#f6f9fd;color:#314b6b;}
 .dm-balance-check-body{flex:1;min-height:0;overflow:auto;padding:14px 18px;background:#fff;}
+.dm-account-detail{display:grid;gap:12px;}
+.dm-account-detail-section{min-width:0;}
+.dm-account-detail-section > h3,.dm-account-detail-section-head h3{
+  margin:0;
+  padding-left:9px;
+  border-left:2px solid #7ea8de;
+  color:#2d435e;
+  font-size:12px;
+  font-weight:650;
+  line-height:18px;
+}
+.dm-account-detail-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-top:8px;}
+.dm-account-detail-kpis > div{display:grid;min-width:0;gap:3px;padding:9px 10px;border:1px solid #e4eaf2;border-radius:6px;background:#f9fbfe;}
+.dm-account-detail-kpis span{overflow:hidden;color:#7b899b;font-size:10.5px;text-overflow:ellipsis;white-space:nowrap;}
+.dm-account-detail-kpis b{color:#2b405a;font-size:13px;font-weight:650;font-variant-numeric:tabular-nums;}
+.dm-account-detail-kpis b.flow-in{color:#356fce;}.dm-account-detail-kpis b.flow-out{color:#c74468;}
+.dm-account-detail-section-head{display:flex;align-items:center;justify-content:space-between;}
+.dm-account-detail-section-head label{display:inline-flex;align-items:center;gap:6px;color:#738297;font-size:10.5px;}
+.dm-account-detail-section-head select{
+  width:88px;
+  height:28px;
+  padding:0 22px 0 9px;
+  border:1px solid #d4deea;
+  border-radius:5px;
+  background-color:#fff;
+  color:#314861;
+  font-family:Arial,"Microsoft YaHei",sans-serif;
+  font-size:11px;
+  font-weight:500;
+  line-height:normal;
+  box-sizing:border-box;
+  outline:0;
+}
+.dm-account-chart{width:100%;height:250px;margin-top:4px;}
+.dm-account-chart.is-bubble{height:245px;}
+.dm-account-native-chart{display:block;width:100%;height:100%;overflow:visible;}
+.dm-account-native-chart .grid line{stroke:#e9eef4;stroke-width:1;vector-effect:non-scaling-stroke;}
+.dm-account-native-chart text{fill:#748398;font:10px Arial,"Microsoft YaHei",sans-serif;letter-spacing:0;}
+.dm-account-native-chart .month{fill:#697b91;}
+.dm-account-native-chart rect.is-in,.dm-account-native-chart circle.is-in{fill:#4f8fe8;}
+.dm-account-native-chart rect.is-out,.dm-account-native-chart circle.is-out{fill:#df5a76;}
+.dm-account-native-chart.is-bubble circle.is-in,.dm-account-native-chart.is-bubble circle.is-out{opacity:.82;stroke:#fff;stroke-width:.8;vector-effect:non-scaling-stroke;}
+.dm-account-native-chart .legend text{fill:#64758b;font-size:10.5px;}
+.dm-flow-detail-toolbar{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+.dm-flow-detail-toolbar .btn{height:28px!important;min-width:0!important;padding:0 10px!important;border-radius:6px!important;font-size:11px!important;}
+.dm-flow-detail-company{display:inline-block;margin:0 0 8px;color:#2f6fed;font-size:11px;text-decoration:underline;text-underline-offset:2px;}
+.dm-flow-detail-table{min-width:620px;}
+.dm-flow-detail-table td:nth-child(2) b{display:block;color:#2f6fed;font-size:11px;font-weight:550;}
+.dm-flow-detail-table td:nth-child(2) small{display:block;margin-top:2px;color:#8996a6;font-size:10px;}
 .dm-check-context{
   display:flex;
   flex-wrap:wrap;
@@ -1006,7 +1117,7 @@ body.dm-check-drawer-open{overflow:hidden;}
 .dm-check-mini-pager button:disabled{opacity:.42;}
 .dm-balance-check-actions{display:flex;min-height:48px;align-items:center;justify-content:flex-end;gap:6px;padding:8px 18px;border-top:1px solid #e5ebf2;background:#fbfcfe;box-sizing:border-box;}
 .dm-balance-check-actions .btn{height:28px!important;min-width:58px!important;padding:0 12px!important;border-radius:6px!important;font-size:12px!important;}
-@media (max-width:900px){.dm-balance-check-drawer{width:92vw;min-width:0;}.dm-check-context{display:grid;grid-template-columns:1fr;gap:5px;}.dm-check-batch-bar{grid-template-columns:1fr auto;}.dm-check-batch-bar > span{grid-column:1/-1;}}
+@media (max-width:900px){.dm-balance-check-drawer,.dm-balance-check-drawer.is-account-detail,.dm-balance-check-drawer.is-flow-detail{width:92vw;min-width:0;}.dm-check-context{display:grid;grid-template-columns:1fr;gap:5px;}.dm-check-batch-bar{grid-template-columns:1fr auto;}.dm-check-batch-bar > span{grid-column:1/-1;}.dm-account-detail-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}}
 .data-management-page #tblMissingSameName .expand-btn{
   position:relative;
   display:inline-flex;

@@ -18,8 +18,9 @@
   <link rel="stylesheet" href="../assets/css/pages/routine.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260827-workingpaper-tools1"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260827-type-cell2"/>
-  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260827-monthly-year1"/>
+  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260828-portrait-actions4"/>
   <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260624-riskflow1"/>
+  <link rel="stylesheet" href="../assets/css/pages/account-action-details.css?v=20260828-portrait-actions4"/>
 </head>
 <body>
   <!-- 2) KPI + 数据问题分析（整块） -->
@@ -102,7 +103,7 @@
 <section class="tab-pane active" id="pane-account">
 <div class="tab-scroll">
 <div class="card bank-balance-trend-card">
-<div class="head"><div class="title">资金变动趋势</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><select class="account-trend-year-select" id="accountTrendYearSelect" aria-label="资金变动趋势年份"><option value="2023-2025" selected>2023—2025</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option></select></div>
+<div class="head"><div class="title">资金变动趋势</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="account-trend-head-actions"><button class="account-trend-note-trigger" id="accountTrendNoteTrigger" type="button" aria-label="备注说明"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4.2-1 10-10a2.2 2.2 0 0 0-3.1-3.1l-10 10L4 20Z"></path><path d="m13.8 7.2 3 3"></path></svg><span>备注说明</span></button><select class="account-trend-year-select" id="accountTrendYearSelect" aria-label="资金变动趋势年份"><option value="2023-2025" selected>2023-2025</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option></select></div></div>
 <div class="content">
 <div class="account-trend-stack">
 <div class="chart-md account-trend-chart" id="chart-account-balance"></div>
@@ -178,7 +179,7 @@
       <div class="portrait-meter"><i id="portraitSupplierBar" style="width:86%"></i></div>
       <div class="portrait-metric-foot"><span id="portraitSupplierLabel">前10大供应商集中度</span><strong>250,999K / <em id="portraitSupplierRatio">86%</em></strong></div>
     </div>
-    <div class="portrait-metric is-master"><div class="portrait-master-title"><span>主档信息完整度</span><b>3/5</b><small>已获取 3 项，共 5 项主档</small></div><div class="portrait-tags"><span class="is-ready">客户</span><span class="is-ready">供应商</span><span>关联方</span><span>员工主档</span><span class="is-ready">工商信息</span></div></div>
+    <div class="portrait-metric is-master"><div class="portrait-master-title"><span>主档信息完整度</span><b>5/5</b><small>已获取 5 项，共 5 项主档</small></div><div class="portrait-tags"><span class="is-ready">客户</span><span class="is-ready">供应商</span><span  class="is-ready">关联方</span><span class="is-ready">员工主档</span><span class="is-ready">工商信息</span></div></div>
   </div>
 
   <div class="portrait-chart-grid">
@@ -877,9 +878,10 @@
 
 
 <script src="../assets/js/config/fund-flow-tab-layout.js?v=20260827-check-browser6"></script>
-<script defer src="../assets/js/core/shared.js?v=20260827-type-cell2"></script>
+<script defer src="../assets/js/core/shared.js?v=20260828-account-actions3"></script>
+<script defer src="../assets/js/pages/account-action-details.js?v=20260828-portrait-actions4"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260508-fast2"></script>
-<script defer src="../assets/js/pages/portrait.js?v=20260827-type-cell2"></script>
+<script defer src="../assets/js/pages/portrait.js?v=20260828-portrait-actions4"></script>
 <script defer src="../assets/js/pages/routine.js?v=20260508-fast2"></script>
 </body>
 </html>

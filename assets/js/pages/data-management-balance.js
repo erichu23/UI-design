@@ -157,9 +157,35 @@
     document.getElementById('checkScrollPrev')?.addEventListener('click',()=>move(-240));
     document.getElementById('checkScrollNext')?.addEventListener('click',()=>move(240));
   };
+  const getCheckDrawerHostDocument=()=>{
+    try{
+      if(window.parent&&window.parent!==window&&window.parent.document?.body)return window.parent.document;
+    }catch(error){}
+    return document;
+  };
+  const setCheckDrawerOpen=(mask,open)=>{
+    const hostDocument=mask?.ownerDocument||document;
+    if(!open&&typeof mask?._dmCleanup==='function'){
+      mask._dmCleanup();
+      mask._dmCleanup=null;
+    }
+    mask.hidden=!open;
+    if(open){mask.removeAttribute('hidden');mask.style.display='block';}
+    else{mask.setAttribute('hidden','');mask.style.display='none';}
+    document.body.classList.toggle('dm-check-drawer-open',open);
+    if(hostDocument.body!==document.body)hostDocument.body.classList.toggle('dm-check-drawer-open',open);
+  };
   const ensureCheckDrawer=()=>{
-    let mask=document.getElementById('dmBalanceCheckDrawerMask');
+    const hostDocument=getCheckDrawerHostDocument();
+    let mask=hostDocument.getElementById('dmBalanceCheckDrawerMask');
     if(mask)return mask;
+    if(hostDocument!==document&&!hostDocument.getElementById('dm-check-drawer-host-style')){
+      const styleLink=hostDocument.createElement('link');
+      styleLink.id='dm-check-drawer-host-style';
+      styleLink.rel='stylesheet';
+      styleLink.href='./assets/css/pages/data-management.css?v=20260828-account-actions3';
+      hostDocument.head.appendChild(styleLink);
+    }
     mask=document.createElement('div');
     mask.id='dmBalanceCheckDrawerMask';
     mask.className='dm-balance-check-mask';
@@ -169,20 +195,160 @@
       <div class="dm-balance-check-body" id="dmBalanceCheckBody"></div>
       <footer class="dm-balance-check-actions" id="dmBalanceCheckActions"></footer>
     </aside>`;
-    document.body.appendChild(mask);
+    hostDocument.body.appendChild(mask);
     const close=()=>{
-      mask.hidden=true;
-      mask.setAttribute('hidden','');
-      mask.style.display='none';
-      document.body.classList.remove('dm-check-drawer-open');
+      setCheckDrawerOpen(mask,false);
     };
     mask.addEventListener('click',event=>{if(event.target===mask||event.target.closest('[data-check-close]'))close();});
-    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!mask.hidden)close();});
+    hostDocument.addEventListener('keydown',event=>{if(event.key==='Escape'&&!mask.hidden)close();});
     return mask;
   };
   const drawerPager=total=>`<div class="dm-check-mini-pager"><span>共 ${total} 条</span><button type="button" disabled>‹</button><button type="button" class="is-current">1</button><button type="button" disabled>›</button><span>20 条/页</span></div>`;
+  const setDrawerMode=(mask,mode='check')=>{
+    const drawer=mask.querySelector('.dm-balance-check-drawer');
+    drawer.classList.toggle('is-account-detail',mode==='account');
+    drawer.classList.toggle('is-flow-detail',mode==='flow');
+  };
+  const drawerNodes=mask=>({
+    body:mask.querySelector('#dmBalanceCheckBody'),
+    actions:mask.querySelector('#dmBalanceCheckActions'),
+    title:mask.querySelector('#dmBalanceCheckTitle'),
+    subtitle:mask.querySelector('#dmBalanceCheckSubtitle')
+  });
+  const accountSeed=account=>Array.from(String(account||'')).reduce((sum,char)=>sum+char.charCodeAt(0),0);
+  const getActionRowData=trigger=>{
+    const row=trigger.closest('tr');
+    const cells=row?.cells||[];
+    return {
+      company:trigger.dataset.company||cells[0]?.textContent?.replace(/[└　]/g,'').trim()||'华东制造集团有限公司',
+      account:trigger.dataset.account||cells[1]?.textContent?.trim()||'1001***0821',
+      bank:trigger.dataset.bank||cells[2]?.textContent?.trim()||'工行上海分行',
+      inflow:Number(trigger.dataset.inflow)||Number(cells[4]?.textContent?.replace(/[^\d.-]/g,''))||140680,
+      outflow:Number(trigger.dataset.outflow)||Number(cells[5]?.textContent?.replace(/[^\d.-]/g,''))||128640,
+      txCount:Number(trigger.dataset.txCount)||Number(cells[8]?.textContent?.replace(/[^\d.-]/g,''))||4280
+    };
+  };
+  const buildAccountDetailData=(source,year)=>{
+    const seed=accountSeed(source.account)+year;
+    const weights=[.07,.055,.08,.06,.09,.065,.075,.085,.07,.09,.08,.08];
+    const outWeights=[.065,.078,.05,.082,.06,.073,.09,.055,.088,.064,.087,.058];
+    const yearFactor=year===2023?.82:year===2024?.91:1;
+    const inflow=weights.map((weight,index)=>Math.round(source.inflow*yearFactor*weight*(.92+((seed+index*7)%17)/100)));
+    const outflow=outWeights.map((weight,index)=>Math.round(source.outflow*yearFactor*weight*(.91+((seed+index*5)%19)/100)));
+    const weekday=['星期一','星期二','星期三','星期四','星期五','星期六','星期日'];
+    const bubbles=[];
+    for(let day=1;day<=31;day+=1){
+      if((day+seed)%3===0)bubbles.push([day,(day+seed)%7,800+((day*seed)%9200),'in']);
+      if((day+seed)%4===0)bubbles.push([day,(day+seed+2)%7,700+((day*(seed+13))%10800),'out']);
+    }
+    return {inflow,outflow,bubbles,weekday};
+  };
+  const openAccountDetailDrawer=trigger=>{
+    const source=getActionRowData(trigger);
+    const mask=ensureCheckDrawer();
+    if(typeof mask._dmCleanup==='function')mask._dmCleanup();
+    setDrawerMode(mask,'account');
+    const {body,actions,title,subtitle}=drawerNodes(mask);
+    let selectedYear=2025;
+    title.textContent=`账号详情：${source.account}`;
+    subtitle.textContent=`${source.company} · ${source.bank}`;
+    const total=source.inflow+source.outflow;
+    body.innerHTML=`<div class="dm-account-detail">
+      <section class="dm-account-detail-section"><h3>收支统计</h3><div class="dm-account-detail-kpis">
+        <div><span>流入金额</span><b class="flow-in">${format(source.inflow)}</b></div><div><span>流出金额</span><b class="flow-out">${format(source.outflow)}</b></div><div><span>交易总额</span><b>${format(total)}</b></div><div><span>交易笔数</span><b>${format(source.txCount)}</b></div><div><span>流入流出差额</span><b>${format(source.inflow-source.outflow)}</b></div>
+      </div></section>
+      <section class="dm-account-detail-section"><div class="dm-account-detail-section-head"><h3>月度汇总</h3><label>年度<select data-account-detail-year><option>2023</option><option>2024</option><option selected>2025</option></select></label></div><div class="dm-account-chart" data-account-month-chart style="width:100%;height:250px"></div></section>
+      <section class="dm-account-detail-section"><h3>交易日期分析</h3><div class="dm-account-chart is-bubble" data-account-bubble-chart style="width:100%;height:245px"></div></section>
+    </div>`;
+    actions.innerHTML='<button type="button" class="btn" data-check-close>关闭</button>';
+    actions.querySelector('[data-check-close]').onclick=()=>setCheckDrawerOpen(mask,false);
+    const monthElement=body.querySelector('[data-account-month-chart]');
+    const bubbleElement=body.querySelector('[data-account-bubble-chart]');
+    const monthChartSvg=data=>{
+      const width=760,height=244,left=50,right=18,top=28,bottom=36;
+      const plotWidth=width-left-right,plotHeight=height-top-bottom;
+      const max=Math.max(1,...data.inflow,...data.outflow)*1.12;
+      const groupWidth=plotWidth/12,barWidth=Math.min(13,groupWidth*.24);
+      const lines=[0,.25,.5,.75,1].map(rate=>{const y=top+plotHeight*(1-rate);return `<line x1="${left}" y1="${y}" x2="${width-right}" y2="${y}"/><text x="${left-8}" y="${y+3}" text-anchor="end">${format(Math.round(max*rate))}</text>`;}).join('');
+      const bars=months.map((month,index)=>{const center=left+groupWidth*(index+.5);const inHeight=data.inflow[index]/max*plotHeight;const outHeight=data.outflow[index]/max*plotHeight;return `<g><rect class="is-in" x="${center-barWidth-1}" y="${top+plotHeight-inHeight}" width="${barWidth}" height="${Math.max(1,inHeight)}" rx="2"><title>${selectedYear}年${String(month).padStart(2,'0')}月 流入 ${format(data.inflow[index])}</title></rect><rect class="is-out" x="${center+1}" y="${top+plotHeight-outHeight}" width="${barWidth}" height="${Math.max(1,outHeight)}" rx="2"><title>${selectedYear}年${String(month).padStart(2,'0')}月 流出 ${format(data.outflow[index])}</title></rect><text class="month" x="${center}" y="${height-15}" text-anchor="middle">${String(month).padStart(2,'0')}月</text></g>`;}).join('');
+      return `<svg class="dm-account-native-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="${selectedYear}年月度流入流出图"><g class="grid">${lines}</g>${bars}<g class="legend"><circle class="is-in" cx="${width-138}" cy="12" r="4"/><text x="${width-129}" y="15">流入</text><circle class="is-out" cx="${width-78}" cy="12" r="4"/><text x="${width-69}" y="15">流出</text></g></svg>`;
+    };
+    const bubbleChartSvg=data=>{
+      const width=760,height=238,left=58,right=18,top=26,bottom=28;
+      const plotWidth=width-left-right,plotHeight=height-top-bottom;
+      const vertical=Array.from({length:7},(_,index)=>{const y=top+plotHeight*(index/6);return `<line x1="${left}" y1="${y}" x2="${width-right}" y2="${y}"/><text x="${left-8}" y="${y+3}" text-anchor="end">${data.weekday[index]}</text>`;}).join('');
+      const ticks=[1,5,10,15,20,25,30].map(day=>{const x=left+(day-1)/30*plotWidth;return `<line x1="${x}" y1="${top}" x2="${x}" y2="${top+plotHeight}"/><text x="${x}" y="${height-9}" text-anchor="middle">${day}</text>`;}).join('');
+      const points=data.bubbles.map(item=>{const x=left+(item[0]-1)/30*plotWidth;const y=top+item[1]/6*plotHeight;const radius=Math.max(3,Math.min(12,Math.sqrt(item[2])*.1));return `<circle class="${item[3]==='in'?'is-in':'is-out'}" cx="${x}" cy="${y}" r="${radius}"><title>${selectedYear}年${item[0]}日 ${item[3]==='in'?'流入':'流出'} ${format(item[2])}</title></circle>`;}).join('');
+      return `<svg class="dm-account-native-chart is-bubble" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="${selectedYear}年交易日期分析"><g class="grid">${vertical}${ticks}</g>${points}<g class="legend"><circle class="is-in" cx="${width-138}" cy="12" r="4"/><text x="${width-129}" y="15">流入</text><circle class="is-out" cx="${width-78}" cy="12" r="4"/><text x="${width-69}" y="15">流出</text></g></svg>`;
+    };
+    const updateCharts=()=>{
+      const data=buildAccountDetailData(source,selectedYear);
+      monthElement.innerHTML=monthChartSvg(data);
+      bubbleElement.innerHTML=bubbleChartSvg(data);
+    };
+    body.querySelector('[data-account-detail-year]').addEventListener('change',event=>{selectedYear=Number(event.target.value)||2025;updateCharts();});
+    mask._dmCleanup=()=>{};
+    setCheckDrawerOpen(mask,true);
+    requestAnimationFrame(updateCharts);
+  };
+  const openMissingFlowDrawer=trigger=>{
+    const source=getActionRowData(trigger);
+    const mask=ensureCheckDrawer();
+    if(typeof mask._dmCleanup==='function')mask._dmCleanup();
+    setDrawerMode(mask,'flow');
+    const {body,actions,title,subtitle}=drawerNodes(mask);
+    title.textContent='流水明细';
+    subtitle.textContent=`${source.company} · ${source.account}`;
+    const seed=accountSeed(source.account);
+    const detailRows=[
+      [`2025-04-${String(10+seed%8).padStart(2,'0')} 09:18:26`,'锦汇贸易有限公司','货款结算','流出',5600],
+      [`2025-07-${String(12+seed%6).padStart(2,'0')} 14:36:08`,'上海星河科技有限公司','项目回款','流入',8200],
+      [`2025-11-${String(8+seed%9).padStart(2,'0')} 16:42:51`,'华南物流服务有限公司','运输服务费','流出',3400]
+    ];
+    body.innerHTML=`<div class="dm-flow-detail-toolbar"><button type="button" class="btn" data-open-flow-search>在流水查询中查看</button><button type="button" class="btn primary" data-generate-flow>生成流水</button></div><a class="dm-flow-detail-company" href="javascript:void(0)">${escapeText(source.company)}</a><div class="dm-check-table-wrap"><table class="table dm-check-detail-table dm-flow-detail-table"><thead><tr><th>交易日期时间</th><th>对方名称 / 摘要</th><th>交易类型</th><th>金额</th></tr></thead><tbody>${detailRows.map(row=>`<tr><td>${row[0]}</td><td><b>${row[1]}</b><small>${row[2]}</small></td><td>${row[3]}</td><td class="is-num ${row[3]==='流入'?'flow-in':'flow-out'}">${format(row[4])}</td></tr>`).join('')}</tbody></table></div>${drawerPager(detailRows.length)}`;
+    actions.innerHTML='<button type="button" class="btn" data-check-close>关闭</button>';
+    actions.querySelector('[data-check-close]').onclick=()=>setCheckDrawerOpen(mask,false);
+    body.querySelector('[data-generate-flow]').onclick=event=>{event.currentTarget.textContent='已生成';event.currentTarget.disabled=true;};
+    body.querySelector('[data-open-flow-search]').onclick=()=>{setCheckDrawerOpen(mask,false);window.parent?.postMessage?.({type:'audit:navigate',target:'bank-flow-query'},'*');};
+    setCheckDrawerOpen(mask,true);
+  };
+  let actionTooltip=null;
+  let filePopover=null;
+  const closeActionTooltip=()=>{if(actionTooltip)actionTooltip.hidden=true;};
+  const ensureActionTooltip=()=>{
+    if(actionTooltip)return actionTooltip;
+    actionTooltip=document.createElement('div');actionTooltip.className='dm-action-tooltip';actionTooltip.hidden=true;document.body.appendChild(actionTooltip);return actionTooltip;
+  };
+  const positionFloating=(floating,trigger,side='top')=>{
+    const rect=trigger.getBoundingClientRect();
+    const width=floating.offsetWidth;const height=floating.offsetHeight;
+    if(side==='left'){
+      floating.style.left=`${Math.max(8,rect.left-width-10)}px`;
+      floating.style.top=`${Math.min(window.innerHeight-height-8,Math.max(8,rect.top+(rect.height-height)/2))}px`;
+      return;
+    }
+    floating.style.left=`${Math.min(window.innerWidth-width-8,Math.max(8,rect.left+(rect.width-width)/2))}px`;
+    floating.style.top=`${Math.max(8,rect.top-height-8)}px`;
+  };
+  const showActionTooltip=trigger=>{
+    const tooltip=ensureActionTooltip();tooltip.textContent=trigger.dataset.actionTooltip||'';tooltip.hidden=false;positionFloating(tooltip,trigger);
+  };
+  const closeFilePopover=()=>{if(filePopover)filePopover.hidden=true;};
+  const openFilePopover=trigger=>{
+    closeActionTooltip();
+    if(!filePopover){filePopover=document.createElement('div');filePopover.className='dm-file-popover';filePopover.hidden=true;document.body.appendChild(filePopover);}
+    const source=getActionRowData(trigger);
+    const filename=`${source.company.replace(/有限公司|集团/g,'')}_${source.account.replace(/\*/g,'')}_资金流水.xlsx`;
+    filePopover.innerHTML=`<div><span>文件名称</span><b>${escapeText(filename)}</b></div><div><span>上传人</span><b>Ken</b></div><button type="button" data-download-file aria-label="下载 ${escapeText(filename)}" title="下载"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"></path></svg></button>`;
+    filePopover.hidden=false;positionFloating(filePopover,trigger,'left');
+    filePopover.querySelector('[data-download-file]').onclick=()=>{
+      const url=URL.createObjectURL(new Blob([`文件名称,上传人\n${filename},Ken\n`],{type:'text/csv;charset=utf-8'}));
+      const link=document.createElement('a');link.href=url;link.download=filename.replace(/\.xlsx$/,'.csv');link.click();URL.revokeObjectURL(url);closeFilePopover();
+    };
+  };
   const openCheckDrawer=trigger=>{
     const mask=ensureCheckDrawer();
+    setDrawerMode(mask,'check');
     const kind=trigger.dataset.checkKind;
     const company=trigger.dataset.company;
     const account=trigger.dataset.account;
@@ -244,7 +410,7 @@
         });
         checkDecisions.set(key,{type:'marked',groups});
         trigger.classList.add('is-processed');trigger.title=trigger.title.replace(/ · 已处理$/,'')+' · 已处理';
-        mask.hidden=true;mask.setAttribute('hidden','');mask.style.display='none';document.body.classList.remove('dm-check-drawer-open');
+        setCheckDrawerOpen(mask,false);
       };
     }else{
       title.textContent='余额不连续详情';
@@ -262,7 +428,7 @@
         <div class="dm-check-batch-bar"><span>已选择 <b data-error-selected-count>0</b> 条</span><input class="dm-check-reason" data-error-reason value="${escapeText(existing.reason||'')}" placeholder="填写批量忽略原因"><button type="button" class="btn primary" data-check-ignore disabled>忽略错误</button></div>
         <div class="dm-check-table-wrap"><table class="table dm-check-detail-table"><thead><tr><th class="dm-check-select-col"><input type="checkbox" data-error-select-all aria-label="全选错误记录"></th><th>错误日期</th><th>前一笔交易后余额</th><th>后一笔交易前余额</th><th>差额（绝对值）</th><th>原始文件</th><th>处理状态</th></tr></thead><tbody>${errorRows.map(row=>{const ignored=ignoredRows.has(row.id);return `<tr class="${ignored?'is-ignored':''}"><td class="dm-check-select-col"><input type="checkbox" data-error-select value="${row.id}" ${ignored?'disabled':''} aria-label="选择 ${row.start} 的错误记录"></td><td>${row.start}<br>${row.end}</td><td class="is-num">${format(row.previous)}<br><span class="small">${row.start} 日末</span></td><td class="is-num flow-in">${format(row.following)}<br><span class="small">${row.end} 首笔前</span></td><td class="is-num flow-out">${format(row.diff)}</td><td><a href="javascript:void(0)" class="dm-check-file-link">查看文件</a></td><td>${ignored?'<span class="dm-check-ignored-state"><i>✓</i>已忽略</span>':'<span class="dm-check-pending-state">待处理</span>'}</td></tr>`;}).join('')}</tbody></table></div>${drawerPager(errorRows.length)}`;
       actions.innerHTML='<button type="button" class="btn" data-check-close>关闭</button>';
-      actions.querySelector('[data-check-close]').onclick=()=>{mask.hidden=true;mask.setAttribute('hidden','');mask.style.display='none';document.body.classList.remove('dm-check-drawer-open');};
+      actions.querySelector('[data-check-close]').onclick=()=>setCheckDrawerOpen(mask,false);
       const selectAll=body.querySelector('[data-error-select-all]');
       const rowChecks=Array.from(body.querySelectorAll('[data-error-select]'));
       const ignoreButton=body.querySelector('[data-check-ignore]');
@@ -289,10 +455,7 @@
       };
       syncBatchSelection();
     }
-    mask.hidden=false;
-    mask.removeAttribute('hidden');
-    mask.style.display='block';
-    document.body.classList.add('dm-check-drawer-open');
+    setCheckDrawerOpen(mask,true);
   };
   window.openDmBalanceCheckDrawer=(trigger,event)=>{
     if(!trigger||!body.contains(trigger))return false;
@@ -303,6 +466,35 @@
     openCheckDrawer(trigger);
     return false;
   };
+  document.addEventListener('pointerover',event=>{
+    const trigger=event.target.closest('[data-action-tooltip]');
+    if(!trigger||trigger.contains(event.relatedTarget))return;
+    showActionTooltip(trigger);
+  });
+  document.addEventListener('pointerout',event=>{
+    const trigger=event.target.closest('[data-action-tooltip]');
+    if(!trigger||trigger.contains(event.relatedTarget))return;
+    closeActionTooltip();
+  });
+  document.addEventListener('focusin',event=>{const trigger=event.target.closest('[data-action-tooltip]');if(trigger)showActionTooltip(trigger);});
+  document.addEventListener('focusout',event=>{if(event.target.closest('[data-action-tooltip]'))closeActionTooltip();});
+  document.addEventListener('click',event=>{
+    const accountDetail=event.target.closest('[data-dm-action="account-detail"]');
+    const fileDetail=event.target.closest('[data-dm-action="file-detail"]');
+    const missingFlow=event.target.closest('[data-dm-action="missing-flow"], .dm-missing-file-action');
+    if(accountDetail){event.preventDefault();event.stopPropagation();closeFilePopover();openAccountDetailDrawer(accountDetail);return;}
+    if(fileDetail){event.preventDefault();event.stopPropagation();openFilePopover(fileDetail);return;}
+    if(missingFlow){event.preventDefault();event.stopPropagation();closeFilePopover();openMissingFlowDrawer(missingFlow);return;}
+    if(!event.target.closest('.dm-file-popover'))closeFilePopover();
+  });
+  document.querySelectorAll('.dm-missing-file-action').forEach(button=>{
+    button.removeAttribute('title');
+    button.dataset.dmAction='missing-flow';
+    button.dataset.actionTooltip='流水明细';
+    button.setAttribute('aria-label','流水明细');
+  });
+  window.addEventListener('scroll',()=>{closeActionTooltip();closeFilePopover();},{passive:true,capture:true});
+  window.addEventListener('resize',()=>{closeActionTooltip();closeFilePopover();},{passive:true});
   let flowTooltip=null;
   let flowYearMenu=null;
   const ensureFlowTooltip=()=>{
@@ -409,7 +601,7 @@
     renderHead();
     wrap.classList.toggle('is-year-expanded',state.yearExpanded);
     const totalYearCells=yearCells(totals);
-    body.innerHTML=`<tr class="sum-row"><td><strong>合计</strong></td><td></td><td></td><td class="monthly-flow-cell monthly-flow-year-cell"><button type="button" class="monthly-flow-year-trigger" data-flow-year-trigger aria-haspopup="listbox" aria-expanded="false" title="切换月度流入/流出年份"><span>${selectedFlowYear}年</span><i aria-hidden="true"></i></button></td><td class="flow-in is-num"><strong>${format(totals.inflow)}</strong></td><td class="flow-out is-num"><strong>${format(totals.outflow)}</strong></td><td class="is-num"><strong>${format(totals.total)}</strong></td><td class="is-num"><strong>100.00%</strong></td><td class="is-num"><strong>${format(totals.txCount)}</strong></td><td class="is-num"><strong>${totals.cpCount}</strong></td><td class="is-num"><strong>${totals.fileCount}</strong></td>${totalYearCells}<td class="account-action-sticky"></td><td class="check-col"><div class="check-window"><div class="months-grid">${monthNumbers}</div></div></td></tr>${visible.map(row=>{const source=row.source;return `<tr><td>${source[0]}</td><td>${source[1]}</td><td>${source[2]}</td><td class="monthly-flow-cell">${miniBars(row)}</td><td class="flow-in is-num">${format(row.inflow)}</td><td class="flow-out is-num">${format(row.outflow)}</td><td class="is-num"><b>${format(row.total)}</b></td><td class="is-num">${ratio(row.total,totals.total)}</td><td class="is-num">${format(row.txCount)}</td><td class="is-num">${row.cpCount}</td><td class="is-num">${row.fileCount}</td>${yearCells(row)}<td class="actions account-action-sticky"><button class="dm-account-action-btn" type="button" title="查看账号详情" aria-label="查看账号详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.6"></circle></svg></button><button class="dm-account-action-btn" type="button" title="查看文件详情" aria-label="查看文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button></td><td class="check-col"><div class="check-window"><div class="months-grid check-row">${statusDots(row.index,source)}</div></div></td></tr>`;}).join('')}`;
+    body.innerHTML=`<tr class="sum-row"><td><strong>合计</strong></td><td></td><td></td><td class="monthly-flow-cell monthly-flow-year-cell"><button type="button" class="monthly-flow-year-trigger" data-flow-year-trigger aria-haspopup="listbox" aria-expanded="false" title="切换月度流入/流出年份"><span>${selectedFlowYear}年</span><i aria-hidden="true"></i></button></td><td class="flow-in is-num"><strong>${format(totals.inflow)}</strong></td><td class="flow-out is-num"><strong>${format(totals.outflow)}</strong></td><td class="is-num"><strong>${format(totals.total)}</strong></td><td class="is-num"><strong>100.00%</strong></td><td class="is-num"><strong>${format(totals.txCount)}</strong></td><td class="is-num"><strong>${totals.cpCount}</strong></td><td class="is-num"><strong>${totals.fileCount}</strong></td>${totalYearCells}<td class="account-action-sticky"></td><td class="check-col"><div class="check-window"><div class="months-grid">${monthNumbers}</div></div></td></tr>${visible.map(row=>{const source=row.source;const actionData=`data-company="${escapeText(source[0])}" data-account="${escapeText(source[1])}" data-bank="${escapeText(source[2])}" data-inflow="${row.inflow}" data-outflow="${row.outflow}" data-tx-count="${row.txCount}"`;return `<tr><td>${source[0]}</td><td>${source[1]}</td><td>${source[2]}</td><td class="monthly-flow-cell">${miniBars(row)}</td><td class="flow-in is-num">${format(row.inflow)}</td><td class="flow-out is-num">${format(row.outflow)}</td><td class="is-num"><b>${format(row.total)}</b></td><td class="is-num">${ratio(row.total,totals.total)}</td><td class="is-num">${format(row.txCount)}</td><td class="is-num">${row.cpCount}</td><td class="is-num">${row.fileCount}</td>${yearCells(row)}<td class="actions account-action-sticky"><button class="dm-account-action-btn" type="button" data-dm-action="account-detail" data-action-tooltip="账号详情" ${actionData} aria-label="账号详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.6"></circle></svg></button><button class="dm-account-action-btn" type="button" data-dm-action="file-detail" data-action-tooltip="文件详情" ${actionData} aria-label="文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button></td><td class="check-col"><div class="check-window"><div class="months-grid check-row">${statusDots(row.index,source)}</div></div></td></tr>`;}).join('')}`;
     window.renderAuditPager?.(pager,{total:viewRows.length,page:state.page,pageSize:state.pageSize,onPage:page=>{state.page=page;render();},onPageSize:size=>{state.pageSize=size;state.page=1;render();}});
     delete table.dataset.baEnhanced;
     table.querySelectorAll('.ba-th-tools').forEach(tool=>tool.remove());

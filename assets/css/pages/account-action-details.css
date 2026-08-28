@@ -1,0 +1,81 @@
+body.account-action-drawer-open{overflow:hidden;}
+.account-action-detail-mask{position:fixed;z-index:12060;inset:0;background:rgba(20,35,55,.34);backdrop-filter:blur(1px) saturate(.88);}
+.account-action-detail-mask[hidden]{display:none;}
+.account-action-detail-drawer{position:absolute;inset:0 0 0 auto;display:flex;width:min(860px,68vw);min-width:660px;flex-direction:column;background:#fff;box-shadow:-18px 0 46px rgba(18,39,66,.24);animation:accountDrawerIn .2s ease-out;}
+@keyframes accountDrawerIn{from{transform:translateX(22px);opacity:.76}to{transform:translateX(0);opacity:1}}
+.account-action-detail-drawer>header{display:flex;min-height:62px;align-items:center;justify-content:space-between;gap:18px;padding:10px 18px 10px 20px;border-bottom:1px solid #e5ebf2;background:#fbfcfe;box-sizing:border-box;}
+.account-action-detail-drawer>header>div{display:grid;gap:4px;min-width:0;}
+.account-action-detail-drawer>header b{overflow:hidden;color:#20344e;font-size:15px;font-weight:650;text-overflow:ellipsis;white-space:nowrap;}
+.account-action-detail-drawer>header span{color:#7b899b;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.account-action-detail-drawer>header button{display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;padding:0;border:1px solid #dce5ef;border-radius:50%;background:#fff;color:#66778c;font:400 20px/1 Arial,sans-serif;cursor:pointer;}
+.account-action-detail-drawer>header button:hover{border-color:#b9c9db;background:#f6f9fd;color:#314b6b;}
+.account-action-detail-body{flex:1;min-height:0;overflow:auto;padding:16px 20px;background:#fff;}
+.account-action-detail-drawer>footer{display:flex;min-height:48px;align-items:center;justify-content:flex-end;padding:8px 18px;border-top:1px solid #e5ebf2;background:#fbfcfe;box-sizing:border-box;}
+.account-action-detail-drawer>footer .btn{height:28px!important;min-width:58px!important;padding:0 12px!important;border-radius:6px!important;font-size:12px!important;}
+.account-detail-content{display:grid;gap:16px;}
+.account-detail-content section>h3,.account-detail-section-head h3{margin:0;padding-left:9px;border-left:2px solid #7ea8de;color:#2d435e;font-size:12px;font-weight:650;line-height:18px;}
+.account-detail-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-top:8px;}
+.account-detail-kpis>div{display:grid;min-width:0;gap:3px;padding:9px 10px;border:1px solid #e4eaf2;border-radius:6px;background:#f9fbfe;}
+.account-detail-kpis span{overflow:hidden;color:#7b899b;font-size:10.5px;text-overflow:ellipsis;white-space:nowrap;}
+.account-detail-kpis b{color:#2b405a;font-size:13px;font-weight:650;font-variant-numeric:tabular-nums;}
+.account-detail-kpis b.flow-in{color:#356fce;}.account-detail-kpis b.flow-out{color:#c74468;}
+.account-detail-section-head{display:flex;align-items:center;justify-content:space-between;}
+.account-detail-section-head label{display:inline-flex;align-items:center;gap:6px;color:#738297;font-size:10.5px;}
+.account-detail-section-head select{width:88px;height:28px;padding:0 22px 0 9px;border:1px solid #d4deea;border-radius:5px;background:#fff;color:#314861;font:500 11px/normal Arial,"Microsoft YaHei",sans-serif;box-sizing:border-box;outline:0;}
+.account-detail-chart{width:100%;height:250px;margin-top:4px;}.account-detail-chart.is-bubble{height:245px;}
+.counterparty-detail-content{gap:16px;}
+.counterparty-detail-grid{display:grid;grid-template-columns:130px minmax(180px,1fr) 130px minmax(180px,1fr);overflow:hidden;margin-top:8px;border:1px solid #e2e9f1;border-radius:6px;}
+.counterparty-detail-grid>*{display:flex;min-height:35px;align-items:center;padding:7px 10px;border-right:1px solid #e8eef5;border-bottom:1px solid #e8eef5;box-sizing:border-box;}
+.counterparty-detail-grid>:nth-child(4n){border-right:0;}.counterparty-detail-grid>:nth-last-child(-n+4){border-bottom:0;}
+.counterparty-detail-grid span{color:#718096;background:#f8fafc;font-size:11px;}.counterparty-detail-grid b{color:#334155;font-size:11px;font-weight:550;}
+.counterparty-detail-note{min-height:38px;margin:8px 0 0;padding:9px 10px;border:1px solid #e4eaf2;border-radius:6px;color:#52657b;background:#fafcff;font-size:11px;line-height:1.55;}
+.account-action-native-chart{display:block;width:100%;height:100%;overflow:visible;}
+.account-action-native-chart .grid line{stroke:#e9eef4;stroke-width:1;vector-effect:non-scaling-stroke;}
+.account-action-native-chart text{fill:#748398;font:10px Arial,"Microsoft YaHei",sans-serif;}
+.account-action-native-chart rect.is-in,.account-action-native-chart circle.is-in{fill:#4f8fe8;}
+.account-action-native-chart rect.is-out,.account-action-native-chart circle.is-out{fill:#df5a76;}
+.account-action-native-chart.is-bubble circle.is-in,.account-action-native-chart.is-bubble circle.is-out{opacity:.82;stroke:#fff;stroke-width:.8;vector-effect:non-scaling-stroke;}
+.account-action-native-chart [data-chart-tooltip]{cursor:pointer;transition:opacity .12s ease,filter .12s ease;}
+.account-action-native-chart [data-chart-tooltip]:hover{opacity:1;filter:brightness(.94) saturate(1.08);}
+.account-action-native-chart .legend text{fill:#64758b;font-size:10.5px;}
+.account-chart-tooltip{position:fixed;z-index:14030;display:grid;min-width:148px;gap:6px;padding:9px 10px;border:1px solid #d9e3ee;border-radius:7px;color:#33465e;background:#fff;box-shadow:0 10px 28px rgba(25,52,84,.16);font:500 11px/1.35 Arial,"Microsoft YaHei",sans-serif;pointer-events:none;}
+.account-chart-tooltip[hidden]{display:none;}.account-chart-tooltip::after{position:absolute;top:100%;left:50%;width:8px;height:8px;border-right:1px solid #d9e3ee;border-bottom:1px solid #d9e3ee;background:#fff;content:"";transform:translate(-50%,-5px) rotate(45deg);}.account-chart-tooltip b{color:#5f7187;font-size:10.5px;font-weight:600;}.account-chart-tooltip span{display:grid;grid-template-columns:7px minmax(0,1fr) auto;align-items:center;gap:6px;}.account-chart-tooltip span i{width:7px;height:7px;border-radius:50%;background:#73859a;}.account-chart-tooltip span em{color:#53667d;font-style:normal;white-space:nowrap;}.account-chart-tooltip strong{color:#243950;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;}.account-chart-tooltip.is-in span i{background:#4f8fe8;}.account-chart-tooltip.is-in strong{color:#356fce;}.account-chart-tooltip.is-out span i{background:#df5a76;}.account-chart-tooltip.is-out strong{color:#c74468;}
+.account-action-tooltip{position:fixed;z-index:14020;padding:5px 8px;border-radius:5px;background:#263b55;color:#fff;box-shadow:0 4px 12px rgba(23,42,66,.18);font:500 11px/1.25 Arial,"Microsoft YaHei",sans-serif;white-space:nowrap;pointer-events:none;}
+.account-action-tooltip[hidden]{display:none;}.account-action-tooltip::after{position:absolute;top:100%;left:50%;border:4px solid transparent;border-top-color:#263b55;content:"";transform:translateX(-50%);}
+.account-file-popover{position:fixed;z-index:14015;display:grid;width:270px;grid-template-columns:minmax(0,1fr) 32px;gap:6px 10px;padding:10px 10px 10px 12px;border:1px solid #dbe5f0;border-radius:7px;background:#fff;box-shadow:0 10px 28px rgba(26,53,86,.16);box-sizing:border-box;}
+.account-file-popover[hidden]{display:none;}.account-file-popover::after{position:absolute;top:50%;left:100%;width:8px;height:8px;border-top:1px solid #dbe5f0;border-right:1px solid #dbe5f0;background:#fff;content:"";transform:translate(-4px,-50%) rotate(45deg);}
+.account-file-popover>div{display:grid;grid-column:1;grid-template-columns:54px minmax(0,1fr);align-items:center;gap:7px;min-width:0;}.account-file-popover>div span{color:#8693a4;font-size:10.5px;}.account-file-popover>div b{min-width:0;overflow:hidden;color:#31465f;font-size:11px;font-weight:600;text-overflow:ellipsis;white-space:nowrap;}
+.account-file-popover>button{display:inline-flex;grid-column:2;grid-row:1/3;width:28px;height:28px;align-self:center;align-items:center;justify-content:center;padding:0;border:0;border-radius:50%;background:#edf4ff;color:#2f6fed;cursor:pointer;}.account-file-popover>button:hover{background:#dfeaff;color:#174f9b;}.account-file-popover svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+#pane-account #tblAccountSummary .dm-account-action-btn{display:inline-flex;width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;align-items:center;justify-content:center;margin:0 2px!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:#2f6fed!important;box-shadow:none!important;cursor:pointer;vertical-align:middle;}
+#pane-account #tblAccountSummary .dm-account-action-btn:hover{color:#174f9b!important;transform:translateY(-1px);}
+#pane-account #tblAccountSummary .dm-account-action-btn svg{display:block!important;width:14px!important;height:14px!important;fill:none;stroke:currentColor!important;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;}
+.account-trend-head-actions{display:flex;margin-left:auto;align-items:center;gap:10px;white-space:nowrap;}
+body .account-trend-head-actions .account-trend-year-select{
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  margin-left:0!important;
+  width:132px!important;
+  min-width:132px!important;
+  max-width:132px!important;
+  flex:0 0 132px!important;
+  height:28px!important;
+  min-height:28px!important;
+  padding:0 32px 0 11px!important;
+  background-color:#fff!important;
+  background-image:linear-gradient(45deg,transparent 50%,#718096 50%),linear-gradient(135deg,#718096 50%,transparent 50%)!important;
+  background-position:calc(100% - 14px) 11px,calc(100% - 10px) 11px!important;
+  background-repeat:no-repeat!important;
+  background-size:4px 4px,4px 4px!important;
+  color:#334155;
+  font:650 11px/normal Arial,"Microsoft YaHei",sans-serif!important;
+  line-height:normal!important;
+  box-sizing:border-box!important;
+}
+.account-trend-note-trigger{display:inline-flex;height:26px;align-items:center;gap:5px;padding:0;border:0;border-bottom:1px solid #8ba8ca;border-radius:0;background:transparent;color:#416b9d;font:550 11px/24px Arial,"Microsoft YaHei",sans-serif;cursor:pointer;}
+.account-trend-note-trigger:hover{border-bottom-color:#2f6fed;color:#245dad;}.account-trend-note-trigger svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+.account-trend-note-mask{position:fixed;z-index:13050;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(18,34,55,.34);backdrop-filter:blur(1px);}
+.account-trend-note-mask[hidden]{display:none;}.account-trend-note-dialog{width:min(520px,calc(100vw - 36px));overflow:hidden;border:1px solid #dce6f1;border-radius:9px;background:#fff;box-shadow:0 22px 60px rgba(15,35,60,.22);}
+.account-trend-note-dialog>header{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid #e7edf4;background:#fbfcfe;}.account-trend-note-dialog>header div{display:grid;gap:2px;}.account-trend-note-dialog>header b{color:#20344e;font-size:14px;font-weight:650;}.account-trend-note-dialog>header span{color:#7d8b9d;font-size:10.5px;}.account-trend-note-dialog>header button{display:inline-flex;width:26px;height:26px;align-items:center;justify-content:center;padding:0;border:1px solid #dce5ef;border-radius:50%;background:#fff;color:#68798d;font:18px/1 Arial,sans-serif;cursor:pointer;}
+.account-trend-note-dialog main{padding:14px;}.account-trend-note-dialog textarea{display:block;width:100%;height:132px;resize:vertical;padding:9px 10px;border:1px solid #d5e0ec;border-radius:6px;box-sizing:border-box;color:#30455f;font:12px/1.55 Arial,"Microsoft YaHei",sans-serif;outline:0;}.account-trend-note-dialog textarea:focus{border-color:#7ca5dc;box-shadow:0 0 0 2px rgba(47,111,237,.09);}
+.account-trend-note-dialog>footer{display:flex;justify-content:flex-end;gap:6px;padding:9px 14px;border-top:1px solid #e7edf4;background:#fbfcfe;}.account-trend-note-dialog>footer .btn{height:28px!important;min-width:58px!important;padding:0 12px!important;border-radius:6px!important;font-size:12px!important;}
+@media(max-width:900px){.account-action-detail-drawer{width:92vw;min-width:0;}.account-detail-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}}

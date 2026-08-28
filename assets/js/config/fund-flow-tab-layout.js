@@ -8,7 +8,7 @@
       key: 'scope-control',
       label: '分析范围管控',
       before: 'account',
-      source: './data-management.html?embed=scope-control&v=20260827-check-browser6',
+      source: './data-management.html?embed=scope-control&v=20260828-account-actions3',
       title: '分析范围管控'
     },
     {

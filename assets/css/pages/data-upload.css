@@ -282,40 +282,69 @@ body{
 .du-status{
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  min-width: 64px;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 999px;
+  gap:6px;
+  min-width:58px;
+  height:auto;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  font-size:12px;
+  font-weight:600;
+  line-height:1;
+  letter-spacing:0;
+  white-space:nowrap;
 }
 
 .du-status i{
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  display: inline-block;
-  flex: 0 0 7px;
+  display:inline-block;
+  width:7px;
+  height:7px;
+  flex:0 0 7px;
+  border-radius:50%;
 }
 
 .du-status.done{
-  color: var(--du-success);
-  background: var(--du-success-bg);
+  background:transparent;
+  color:#27775e;
 }
 
 .du-status.done i{
-  background: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+  background:#24a271;
+  box-shadow:none;
 }
 
 .du-status.pending{
-  color: var(--du-pending);
-  background: var(--du-pending-bg);
+  background:transparent;
+  color:#7f8b99;
 }
 
 .du-status.pending i{
-  background: #cbd5e1;
-  box-shadow: 0 0 0 3px rgba(203, 213, 225, 0.18);
+  background:#aeb8c4;
+  box-shadow:none;
+}
+
+.du-item-with-issue{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  white-space:nowrap;
+}
+
+.du-item-issue-icon{
+  display:inline-flex;
+  width:13px;
+  height:13px;
+  flex:0 0 13px;
+  align-items:center;
+  justify-content:center;
+  border:1.3px solid #d14b5e;
+  border-radius:50%;
+  background:transparent;
+  box-shadow:none;
+  color:#c84052;
+  font-style:normal;
+  font:700 8px/1 Arial,sans-serif;
 }
 
 /* 操作列 */
@@ -370,6 +399,15 @@ body{
   font-size: 12px;
   font-weight: 600;
   cursor: not-allowed;
+}
+
+.du-analyze-btn:disabled{
+  border-color:#dce4ed !important;
+  background:#edf1f5 !important;
+  color:#9aa7b6 !important;
+  box-shadow:none !important;
+  opacity:1;
+  cursor:not-allowed !important;
 }
 
 /* 如果后面启用按钮，加这个类即可 */
