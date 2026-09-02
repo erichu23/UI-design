@@ -25,7 +25,6 @@
   const scopeExcluded=(value,index)=>Math.round(value*scopeFactor(index));
   const yearWeights=[.28,.33,.39];
   const format=value=>Number(value).toLocaleString('zh-CN');
-  const ratio=(value,total)=>`${(total?value/total*100:0).toFixed(2)}%`;
   const statusClass=(row,year,month)=>{
     const seed=month+row*3+(year-2023)*2;
     if(seed%11===0)return 'chk-err';
@@ -63,14 +62,35 @@
     const maxValue=Math.max(1,...inflow,...outflow);
     return `<div class="monthly-flow-bars" aria-label="${selectedFlowYear}年月度流入流出分布">${inflow.map((value,month)=>`<span class="monthly-flow-pair" data-flow-year="${selectedFlowYear}" data-flow-month="${month+1}" data-flow-in="${value}" data-flow-out="${outflow[month]}" data-flow-account="${escapeText(row.source[1])}" aria-label="${selectedFlowYear}年${month+1}月，流入${format(value)}，流出${format(outflow[month])}"><i class="flow-in-bar" style="height:${Math.max(3,value/maxValue*100)}%"></i><i class="flow-out-bar" style="height:${Math.max(3,outflow[month]/maxValue*100)}%"></i></span>`).join('')}</div>`;
   };
-  const state={page:1,pageSize:20,yearExpanded:false,scopeView:'included'};
+  const metricOptions=[
+    {key:'inflow',label:'流入金额',group:'inflow',groupLabel:'流入',symbol:'¥',annual:true},
+    {key:'inflowRatio',label:'流入金额占比',group:'inflow',groupLabel:'流入',symbol:'%',annual:true,defaultHidden:true},
+    {key:'inflowTxCount',label:'流入笔数',group:'inflow',groupLabel:'流入',symbol:'#',annual:true,defaultHidden:true},
+    {key:'outflow',label:'流出金额',group:'outflow',groupLabel:'流出',symbol:'¥',annual:true},
+    {key:'outflowRatio',label:'流出金额占比',group:'outflow',groupLabel:'流出',symbol:'%',annual:true,defaultHidden:true},
+    {key:'outflowTxCount',label:'流出笔数',group:'outflow',groupLabel:'流出',symbol:'#',annual:true,defaultHidden:true},
+    {key:'total',label:'交易总额',group:'total',groupLabel:'交易总额',symbol:'¥',annual:true},
+    {key:'totalRatio',label:'交易总额占比',group:'total',groupLabel:'交易总额',symbol:'%',annual:true,defaultHidden:true},
+    {key:'txCount',label:'交易笔数',group:'total',groupLabel:'交易总额',symbol:'#',annual:true,defaultHidden:true},
+    {key:'cpCount',label:'对手方数量',group:'counterparty',groupLabel:'对手方数量',symbol:'#',defaultHidden:true},
+    {key:'fileCount',label:'文件数量',group:'file',groupLabel:'文件数量',symbol:'#',defaultHidden:true}
+  ];
+  const state={
+    page:1,
+    pageSize:20,
+    yearExpanded:true,
+    scopeView:'included',
+    visibleMetrics:new Set(metricOptions.filter(item=>!item.defaultHidden).map(item=>item.key))
+  };
   const scopedRows=()=>rows.map((row,index)=>{
     const excluded=state.scopeView==='excluded';
     const inflow=excluded?scopeExcluded(row[3],index):row[3];
     const outflow=excluded?scopeExcluded(row[4],index):row[4];
+    const txCount=excluded?scopeExcluded(row[6],index):row[6];
+    const inflowTxCount=Math.round(txCount*inflow/(inflow+outflow));
     return {
       source:row,index,inflow,outflow,total:inflow+outflow,
-      txCount:excluded?scopeExcluded(row[6],index):row[6],
+      txCount,inflowTxCount,outflowTxCount:txCount-inflowTxCount,
       cpCount:excluded?Math.max(1,scopeExcluded(row[7],index)):row[7],
       fileCount:row[8]
     };
@@ -80,8 +100,10 @@
       inflow:sum.inflow+row.inflow,
       outflow:sum.outflow+row.outflow,
       total:sum.total+row.total,
-      txCount:sum.txCount+row.txCount
-    }),{inflow:0,outflow:0,total:0,txCount:0});
+      txCount:sum.txCount+row.txCount,
+      inflowTxCount:sum.inflowTxCount+row.inflowTxCount,
+      outflowTxCount:sum.outflowTxCount+row.outflowTxCount
+    }),{inflow:0,outflow:0,total:0,txCount:0,inflowTxCount:0,outflowTxCount:0});
     result.cpCount=state.scopeView==='excluded'?88:100;
     result.fileCount=8;
     return result;
@@ -92,10 +114,13 @@
       colgroup=document.createElement('colgroup');
       table.insertBefore(colgroup,table.firstChild);
     }
-    const totals='<col class="account-amount-col"><col class="account-amount-col"><col class="account-total-col"><col class="account-ratio-col"><col class="account-count-col"><col class="account-counterparty-col"><col class="account-file-col">';
-    const annual='<col class="account-amount-col"><col class="account-amount-col"><col class="account-total-col">';
+    const visibleOptions=metricOptions.filter(item=>state.visibleMetrics.has(item.key));
+    const annualOptions=visibleOptions.filter(item=>item.annual);
+    table.style.setProperty('--account-metric-width','72px');
+    table.style.setProperty('--account-count-width','78px');
+    const metricCols=options=>options.map(item=>`<col class="account-metric-compact-col${item.annual?'':' account-count-label-col'}">`).join('');
     colgroup.innerHTML='<col class="account-company-col"><col class="account-number-col"><col class="account-bank-col"><col class="account-monthly-col">'+
-      totals+(state.yearExpanded?annual.repeat(years.length):'')+
+      metricCols(visibleOptions)+(state.yearExpanded?years.map(()=>metricCols(annualOptions)).join(''):'')+
       '<col class="account-action-col"><col class="account-flex-col">';
   };
   const splitYears=value=>{
@@ -103,23 +128,51 @@
     const second=Math.round(value*yearWeights[1]);
     return [first,second,value-first-second];
   };
-  const yearCells=row=>{
+  const formatRatio=(value,total,isTotal=false)=>isTotal?'100.00':(total?value/total*100:0).toFixed(2);
+  const yearCells=(row,isTotal,totals)=>{
     if(!state.yearExpanded)return '';
     const inflow=splitYears(row.inflow);
     const outflow=splitYears(row.outflow);
-    return years.map((year,index)=>`<td class="account-year-metric flow-in is-num">${format(inflow[index])}</td><td class="account-year-metric flow-out is-num">${format(outflow[index])}</td><td class="account-year-metric is-num"><b>${format(inflow[index]+outflow[index])}</b></td>`).join('');
+    const inflowTxCount=splitYears(row.inflowTxCount);
+    const outflowTxCount=splitYears(row.outflowTxCount);
+    const txCount=splitYears(row.txCount);
+    const totalInflow=splitYears(totals.inflow);
+    const totalOutflow=splitYears(totals.outflow);
+    const annualOptions=metricOptions.filter(item=>item.annual&&state.visibleMetrics.has(item.key));
+    return years.map((year,index)=>annualOptions.map(item=>{
+      const totalValue=inflow[index]+outflow[index];
+      const allTotalValue=totalInflow[index]+totalOutflow[index];
+      if(item.key==='inflow')return `<td class="account-year-metric flow-in is-num">${format(inflow[index])}</td>`;
+      if(item.key==='inflowRatio')return `<td class="account-year-metric is-num" data-audit-unit-ignore>${formatRatio(inflow[index],totalInflow[index],isTotal)}</td>`;
+      if(item.key==='inflowTxCount')return `<td class="account-year-metric is-num" data-audit-unit-ignore>${format(inflowTxCount[index])}</td>`;
+      if(item.key==='outflow')return `<td class="account-year-metric flow-out is-num">${format(outflow[index])}</td>`;
+      if(item.key==='outflowRatio')return `<td class="account-year-metric is-num" data-audit-unit-ignore>${formatRatio(outflow[index],totalOutflow[index],isTotal)}</td>`;
+      if(item.key==='outflowTxCount')return `<td class="account-year-metric is-num" data-audit-unit-ignore>${format(outflowTxCount[index])}</td>`;
+      if(item.key==='total')return `<td class="account-year-metric is-num"><b>${format(totalValue)}</b></td>`;
+      if(item.key==='totalRatio')return `<td class="account-year-metric is-num" data-audit-unit-ignore>${formatRatio(totalValue,allTotalValue,isTotal)}</td>`;
+      return `<td class="account-year-metric is-num" data-audit-unit-ignore>${format(txCount[index])}</td>`;
+    }).join('')).join('');
   };
   const renderHead=()=>{
     const icon=state.yearExpanded?'«':'»';
-    const scopeActive=state.scopeView==='excluded';
-    const yearHeads=state.yearExpanded?years.map(year=>`<th colspan="3" class="account-year-head no-sort">${window.auditFiscalYearLabel?.(year)||year}</th>`).join(''):'';
-    const yearSubs=state.yearExpanded?years.map(()=>'<th class="account-year-metric no-sort no-filter">流入金额</th><th class="account-year-metric no-sort no-filter">流出金额</th><th class="account-year-metric no-sort no-filter">交易总额</th>').join(''):'';
-    head.innerHTML=`<tr class="account-year-group-head"><th rowspan="2" class="no-filter">被审计单位公司</th><th rowspan="2" class="no-filter">本方账号</th><th rowspan="2" class="no-filter">银行名称</th><th rowspan="2" class="monthly-flow-head no-sort">月度流入/流出</th><th colspan="7" class="account-group-toggle-cell no-sort"><div class="account-group-head-controls"><button class="account-scope-inline-toggle ${scopeActive?'is-active':''}" id="validationAccountScopeInlineToggle" type="button" title="${scopeActive?'恢复包含被审计单位之间往来':'剔除被审计单位之间往来'}" aria-pressed="${scopeActive}"><i aria-hidden="true"></i><span>剔除被审计单位间往来</span></button><span class="account-group-head-divider" aria-hidden="true"></span><button class="account-group-toggle" id="validationAccountYearToggle" type="button" title="展开或收起年度金额"><span>合计</span><i>${icon}</i></button></div></th>${yearHeads}<th rowspan="2" class="no-sort account-action-sticky">操作</th><th rowspan="2" class="check-col no-sort"><div class="check-head"><button class="arrow-btn" id="btnToggleCheck" data-local-bound="1" type="button" title="展开或收起三年校验月份"><svg aria-hidden="true" viewBox="0 0 16 16"><path d="M6.2 3.5l5 4.5-5 4.5V3.5z"></path></svg></button><span>校验情况</span><span class="check-nav" aria-label="切换校验月份"><button class="check-nav-btn" id="checkScrollPrev" type="button" title="向前查看月份">‹</button><button class="check-nav-btn" id="checkScrollNext" type="button" title="向后查看月份">›</button></span></div><div class="check-window check-window-head"><div class="y-labels">${years.map(year=>`<span class="y y-${year}">${year}</span>`).join(yearSeparator)}</div></div></th></tr><tr class="account-year-sub-head"><th class="no-filter">流入金额</th><th class="no-filter">流出金额</th><th class="no-filter">交易总额</th><th class="no-filter">交易总额占比</th><th class="no-filter">交易笔数</th><th class="no-filter">对手方数量</th><th class="no-filter">流水文件</th>${yearSubs}</tr>`;
-    document.getElementById('validationAccountScopeInlineToggle')?.addEventListener('click',()=>{
-      state.scopeView=state.scopeView==='excluded'?'included':'excluded';
-      state.page=1;
-      render();
-    });
+    const visibleOptions=metricOptions.filter(item=>state.visibleMetrics.has(item.key));
+    const annualOptions=visibleOptions.filter(item=>item.annual);
+    const groupHeads=options=>{
+      const groups=[];
+      options.forEach(item=>{
+        const current=groups[groups.length-1];
+        if(current?.key===item.group)current.count+=1;
+        else groups.push({key:item.group,label:item.groupLabel,count:1});
+      });
+      return groups.map(group=>`<th colspan="${group.count}" class="account-metric-direction no-sort no-filter">${group.label}</th>`).join('');
+    };
+    const metricSymbols=options=>options.map(item=>`<th class="account-metric-symbol no-filter${item.annual?'':' account-count-metric'}" data-account-metric="${item.key}" title="${item.label}"><span>${item.symbol}</span></th>`).join('');
+    const yearHeads=state.yearExpanded&&annualOptions.length?years.map(year=>`<th colspan="${annualOptions.length}" class="account-year-head no-sort">${window.auditFiscalYearLabel?.(year)||year}</th>`).join(''):'';
+    const totalDirections=groupHeads(visibleOptions);
+    const yearDirections=state.yearExpanded?years.map(()=>groupHeads(annualOptions)).join(''):'';
+    const totalSymbols=metricSymbols(visibleOptions);
+    const yearSymbols=state.yearExpanded?years.map(()=>metricSymbols(annualOptions)).join(''):'';
+    head.innerHTML=`<tr class="account-year-group-head"><th rowspan="3" class="no-filter dm-account-fixed-col dm-account-fixed-1">被审计单位公司</th><th rowspan="3" class="no-filter dm-account-fixed-col dm-account-fixed-2">本方账号</th><th rowspan="3" class="no-filter dm-account-fixed-col dm-account-fixed-3">银行名称</th><th rowspan="3" class="monthly-flow-head no-sort dm-account-fixed-col dm-account-fixed-4">月度流入/流出</th><th colspan="${visibleOptions.length}" class="account-group-toggle-cell no-sort"><div class="account-group-head-controls"><button class="account-group-toggle" id="validationAccountYearToggle" type="button" title="展开或收起年度数据"><span>合计</span><i>${icon}</i></button></div></th>${yearHeads}<th rowspan="3" class="no-sort account-action-sticky">操作</th><th rowspan="3" class="check-col no-sort"><div class="check-head"><button class="arrow-btn" id="btnToggleCheck" data-local-bound="1" type="button" title="展开或收起三年校验月份"><svg aria-hidden="true" viewBox="0 0 16 16"><path d="M6.2 3.5l5 4.5-5 4.5V3.5z"></path></svg></button><span>校验情况</span><span class="check-nav" aria-label="切换校验月份"><button class="check-nav-btn" id="checkScrollPrev" type="button" title="向前查看月份">‹</button><button class="check-nav-btn" id="checkScrollNext" type="button" title="向后查看月份">›</button></span></div><div class="check-window check-window-head"><div class="y-labels">${years.map(year=>`<span class="y y-${year}">${year}</span>`).join(yearSeparator)}</div></div></th></tr><tr class="account-direction-head">${totalDirections}${yearDirections}</tr><tr class="account-metric-symbol-head">${totalSymbols}${yearSymbols}</tr>`;
     document.getElementById('validationAccountYearToggle')?.addEventListener('click',()=>{
       state.yearExpanded=!state.yearExpanded;
       render();
@@ -600,13 +653,84 @@
     syncAccountColumns();
     renderHead();
     wrap.classList.toggle('is-year-expanded',state.yearExpanded);
-    const totalYearCells=yearCells(totals);
-    body.innerHTML=`<tr class="sum-row"><td><strong>合计</strong></td><td></td><td></td><td class="monthly-flow-cell monthly-flow-year-cell"><button type="button" class="monthly-flow-year-trigger" data-flow-year-trigger aria-haspopup="listbox" aria-expanded="false" title="切换月度流入/流出年份"><span>${selectedFlowYear}年</span><i aria-hidden="true"></i></button></td><td class="flow-in is-num"><strong>${format(totals.inflow)}</strong></td><td class="flow-out is-num"><strong>${format(totals.outflow)}</strong></td><td class="is-num"><strong>${format(totals.total)}</strong></td><td class="is-num"><strong>100.00%</strong></td><td class="is-num"><strong>${format(totals.txCount)}</strong></td><td class="is-num"><strong>${totals.cpCount}</strong></td><td class="is-num"><strong>${totals.fileCount}</strong></td>${totalYearCells}<td class="account-action-sticky"></td><td class="check-col"><div class="check-window"><div class="months-grid">${monthNumbers}</div></div></td></tr>${visible.map(row=>{const source=row.source;const actionData=`data-company="${escapeText(source[0])}" data-account="${escapeText(source[1])}" data-bank="${escapeText(source[2])}" data-inflow="${row.inflow}" data-outflow="${row.outflow}" data-tx-count="${row.txCount}"`;return `<tr><td>${source[0]}</td><td>${source[1]}</td><td>${source[2]}</td><td class="monthly-flow-cell">${miniBars(row)}</td><td class="flow-in is-num">${format(row.inflow)}</td><td class="flow-out is-num">${format(row.outflow)}</td><td class="is-num"><b>${format(row.total)}</b></td><td class="is-num">${ratio(row.total,totals.total)}</td><td class="is-num">${format(row.txCount)}</td><td class="is-num">${row.cpCount}</td><td class="is-num">${row.fileCount}</td>${yearCells(row)}<td class="actions account-action-sticky"><button class="dm-account-action-btn" type="button" data-dm-action="account-detail" data-action-tooltip="账号详情" ${actionData} aria-label="账号详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.6"></circle></svg></button><button class="dm-account-action-btn" type="button" data-dm-action="file-detail" data-action-tooltip="文件详情" ${actionData} aria-label="文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button></td><td class="check-col"><div class="check-window"><div class="months-grid check-row">${statusDots(row.index,source)}</div></div></td></tr>`;}).join('')}`;
+    const metricCells=(row,isTotal=false)=>metricOptions.filter(item=>state.visibleMetrics.has(item.key)).map(item=>{
+      const strong=value=>isTotal?`<strong>${value}</strong>`:value;
+      if(item.key==='inflow')return `<td class="account-total-metric flow-in is-num">${strong(format(row.inflow))}</td>`;
+      if(item.key==='inflowRatio')return `<td class="account-total-metric is-num" data-audit-unit-ignore>${strong(formatRatio(row.inflow,totals.inflow,isTotal))}</td>`;
+      if(item.key==='inflowTxCount')return `<td class="account-total-metric is-num" data-audit-unit-ignore>${strong(format(row.inflowTxCount))}</td>`;
+      if(item.key==='outflow')return `<td class="account-total-metric flow-out is-num">${strong(format(row.outflow))}</td>`;
+      if(item.key==='outflowRatio')return `<td class="account-total-metric is-num" data-audit-unit-ignore>${strong(formatRatio(row.outflow,totals.outflow,isTotal))}</td>`;
+      if(item.key==='outflowTxCount')return `<td class="account-total-metric is-num" data-audit-unit-ignore>${strong(format(row.outflowTxCount))}</td>`;
+      if(item.key==='total')return `<td class="account-total-metric is-num"><b>${format(row.total)}</b></td>`;
+      if(item.key==='totalRatio')return `<td class="account-total-metric is-num" data-audit-unit-ignore>${strong(formatRatio(row.total,totals.total,isTotal))}</td>`;
+      if(item.key==='txCount')return `<td class="account-total-metric is-num" data-audit-unit-ignore>${strong(format(row.txCount))}</td>`;
+      if(item.key==='cpCount')return `<td class="account-total-metric account-count-metric is-num" data-audit-unit-ignore>${strong(row.cpCount)}</td>`;
+      return `<td class="account-total-metric account-count-metric is-num" data-audit-unit-ignore>${strong(row.fileCount)}</td>`;
+    }).join('');
+    const totalYearCells=yearCells(totals,true,totals);
+    body.innerHTML=`<tr class="sum-row"><td class="dm-account-fixed-col dm-account-fixed-1"><strong>合计</strong></td><td class="dm-account-fixed-col dm-account-fixed-2"></td><td class="dm-account-fixed-col dm-account-fixed-3"></td><td class="monthly-flow-cell dm-account-fixed-col dm-account-fixed-4"></td>${metricCells(totals,true)}${totalYearCells}<td class="account-action-sticky"></td><td class="check-col"><div class="check-window"><div class="months-grid">${monthNumbers}</div></div></td></tr>${visible.map(row=>{const source=row.source;const actionData=`data-company="${escapeText(source[0])}" data-account="${escapeText(source[1])}" data-bank="${escapeText(source[2])}" data-inflow="${row.inflow}" data-outflow="${row.outflow}" data-tx-count="${row.txCount}"`;return `<tr><td class="dm-account-fixed-col dm-account-fixed-1">${source[0]}</td><td class="dm-account-fixed-col dm-account-fixed-2">${source[1]}</td><td class="dm-account-fixed-col dm-account-fixed-3">${source[2]}</td><td class="monthly-flow-cell dm-account-fixed-col dm-account-fixed-4">${miniBars(row)}</td>${metricCells(row)}${yearCells(row,false,totals)}<td class="actions account-action-sticky"><button class="dm-account-action-btn" type="button" data-dm-action="account-detail" data-action-tooltip="账号详情" ${actionData} aria-label="账号详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.6"></circle></svg></button><button class="dm-account-action-btn" type="button" data-dm-action="file-detail" data-action-tooltip="文件详情" ${actionData} aria-label="文件详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6Z"></path><path d="M14 3.5v4h4M9 12h6M9 16h6"></path></svg></button></td><td class="check-col"><div class="check-window"><div class="months-grid check-row">${statusDots(row.index,source)}</div></div></td></tr>`;}).join('')}`;
+    document.querySelectorAll('#validationAccountScopeTabs [data-validation-account-scope]').forEach(button=>{
+      const active=button.dataset.validationAccountScope===state.scopeView;
+      button.classList.toggle('is-active',active);
+      button.setAttribute('aria-selected',String(active));
+    });
     window.renderAuditPager?.(pager,{total:viewRows.length,page:state.page,pageSize:state.pageSize,onPage:page=>{state.page=page;render();},onPageSize:size=>{state.pageSize=size;state.page=1;render();}});
     delete table.dataset.baEnhanced;
     table.querySelectorAll('.ba-th-tools').forEach(tool=>tool.remove());
     bindCheckControls();
     window.dispatchEvent(new CustomEvent('bank-analysis:tab-change'));
   };
+  table._baOpenColumnChooser=anchor=>{
+    document.querySelectorAll('.ba-table-filter-popover,.ba-column-popover').forEach(current=>{
+      current._baCleanup?.();
+      current.remove();
+    });
+    const pop=document.createElement('div');
+    pop.className='ba-column-popover account-column-popover';
+    pop.innerHTML=`<div class="ba-column-popover-title"><b>自定义表头</b><span>合计与年度同步</span></div><div class="ba-column-options">${metricOptions.map(item=>`<label><input type="checkbox" value="${item.key}" ${state.visibleMetrics.has(item.key)?'checked':''}><span>${item.label}</span></label>`).join('')}</div><div class="ba-column-popover-foot"><button type="button" data-action="show-default">恢复默认字段</button><button type="button" data-action="show-all">显示全部字段</button></div>`;
+    document.body.appendChild(pop);
+    const place=()=>{
+      if(!pop.isConnected)return;
+      const rect=anchor.getBoundingClientRect();
+      const width=Math.min(520,Math.max(360,window.innerWidth-24));
+      pop.style.width=`${width}px`;
+      pop.style.left=`${Math.max(12,Math.min(rect.right-width,window.innerWidth-width-12))+window.scrollX}px`;
+      pop.style.top=`${rect.bottom+6+window.scrollY}px`;
+    };
+    const applySelection=changed=>{
+      const checked=[...pop.querySelectorAll('input:checked')].map(input=>input.value);
+      if(!checked.length){changed.checked=true;return;}
+      state.visibleMetrics=new Set(checked);
+      render();
+    };
+    place();
+    pop.querySelectorAll('input').forEach(input=>input.addEventListener('change',()=>applySelection(input)));
+    pop.querySelector('[data-action="show-default"]')?.addEventListener('click',()=>{
+      state.visibleMetrics=new Set(metricOptions.filter(item=>!item.defaultHidden).map(item=>item.key));
+      pop.querySelectorAll('input').forEach(input=>{input.checked=state.visibleMetrics.has(input.value);});
+      render();
+    });
+    pop.querySelector('[data-action="show-all"]')?.addEventListener('click',()=>{
+      state.visibleMetrics=new Set(metricOptions.map(item=>item.key));
+      pop.querySelectorAll('input').forEach(input=>{input.checked=true;});
+      render();
+    });
+    setTimeout(()=>{
+      window.addEventListener('scroll',place,true);
+      window.addEventListener('resize',place);
+      pop._baCleanup=()=>{window.removeEventListener('scroll',place,true);window.removeEventListener('resize',place);};
+      document.addEventListener('click',function close(event){
+        if(pop.contains(event.target)||event.target===anchor)return;
+        pop._baCleanup?.();pop.remove();document.removeEventListener('click',close);
+      });
+    },0);
+  };
+  document.getElementById('validationAccountScopeTabs')?.addEventListener('click',event=>{
+    const button=event.target.closest('[data-validation-account-scope]');
+    if(!button||button.dataset.validationAccountScope===state.scopeView)return;
+    state.scopeView=button.dataset.validationAccountScope==='excluded'?'excluded':'included';
+    state.page=1;
+    render();
+  });
   render();
 })();

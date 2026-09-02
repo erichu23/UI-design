@@ -117,6 +117,7 @@
     Array.from(table.tBodies || []).forEach(body => {
       Array.from(body.rows).forEach(row => {
         Array.from(row.cells).forEach((cell, index) => {
+          if (cell.matches('[data-audit-unit-ignore]') || cell.querySelector('[data-audit-unit-ignore]')) return;
           if (!isAmountHeader(headers[index])) return;
           const target = cell.children.length === 1 && /^(STRONG|B|SPAN)$/i.test(cell.firstElementChild?.tagName || '')
             ? cell.firstElementChild : cell;

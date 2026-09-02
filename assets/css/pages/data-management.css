@@ -633,6 +633,29 @@ html.dm-embedded-module .data-management-page{
   text-align:center !important;
   white-space:nowrap !important;
 }
+
+/* 数据校验账号总览：固定公司、账号、银行与月度分布前四列。 */
+.data-management-page #checkScope #tblAccountSummary .dm-account-fixed-col{
+  position:sticky !important;
+  z-index:22 !important;
+  box-sizing:border-box !important;
+  background:#fff !important;
+  background-clip:padding-box !important;
+}
+.data-management-page #checkScope #tblAccountSummary th.dm-account-fixed-col{
+  z-index:62 !important;
+  background:#eef5ff !important;
+}
+.data-management-page #checkScope #tblAccountSummary .dm-account-fixed-1{ left:0 !important; }
+.data-management-page #checkScope #tblAccountSummary .dm-account-fixed-2{ left:180px !important; }
+.data-management-page #checkScope #tblAccountSummary .dm-account-fixed-3{ left:310px !important; }
+.data-management-page #checkScope #tblAccountSummary .dm-account-fixed-4{
+  left:420px !important;
+  box-shadow:7px 0 10px -10px rgba(39,63,91,.65) !important;
+}
+.data-management-page #checkScope #tblAccountSummary .sum-row td.dm-account-fixed-col{ background:#f8fbff !important; }
+.data-management-page #checkScope #tblAccountSummary tbody tr:nth-child(even) td.dm-account-fixed-col{ background:#fbfdff !important; }
+.data-management-page #checkScope #tblAccountSummary tbody tr:hover td.dm-account-fixed-col{ background:#f7faff !important; }
 .data-management-page .dm-account-action-btn{
   display:inline-flex;
   width:18px !important;

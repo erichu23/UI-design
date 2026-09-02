@@ -168,8 +168,8 @@ function initCollapsedSidebarFlyout(){
 const APP_FRAME_STATE_KEY = 'auditCompass.currentFrameState';
 const DEFAULT_PROJECT = 'Test2';
 const DEFAULT_BOOK = '20251022';
-const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260828-portrait-actions4';
-const DATA_MANAGEMENT_SRC = './fragments/data-management.html?v=20260828-upload-status4';
+const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260902-total-label1';
+const DATA_MANAGEMENT_SRC = './fragments/data-management.html?v=20260902-total-label1';
 const DATA_SUMMARY_SRC = './fragments/data-summary.html?v=20260827-pager-select1';
 const WORKINGPAPER_EXPORT_SRC = './fragments/workingpaper-export.html?v=20260827-filter-popover1';
 const PROJECT_LIST_SRC = './fragments/project-list.html?v=20260827-search-icon1';
@@ -216,7 +216,7 @@ function injectAmountUnitRuntime(){
   if (!doc?.head || doc.getElementById('auditUnitRuntime')) return;
   const script = doc.createElement('script');
   script.id = 'auditUnitRuntime';
-  script.src = new URL('./assets/js/core/unit-runtime.js?v=20260811-unit-sync1', window.location.href).href;
+  script.src = new URL('./assets/js/core/unit-runtime.js?v=20260901-chart-scale-ignore1', window.location.href).href;
   doc.head.appendChild(script);
 }
 

@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260827-filter-popover1"/>
   <link rel="stylesheet" href="../assets/css/pages/data-upload.css?v=20260828-upload-status4"/>
   <link rel="stylesheet" href="../assets/css/pages/data-validation.css?v=20260827-pager-select1"/>
-  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260828-upload-status1"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260902-validation-metrics1"/>
   <title>数据上传及管理</title>
   <script>
     if (new URLSearchParams(location.search).get('embed')) {
@@ -368,6 +368,10 @@
 <div class="card dm-balance-continuity-card">
 <div class="head">
 <div class="title">账号总览</div>
+<div class="account-scope-tabs" id="validationAccountScopeTabs" role="tablist" aria-label="账号总览交易范围">
+<button class="is-active" type="button" role="tab" aria-selected="true" data-validation-account-scope="included">包含被审计单位间往来</button>
+<button type="button" role="tab" aria-selected="false" data-validation-account-scope="excluded">剔除被审计单位间往来</button>
+</div>
 <!-- 紧跟标题：业务逻辑 / 操作提示 -->
 <!-- 右侧：自定义表头 / 生成分析结果 -->
 <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
@@ -389,10 +393,10 @@
 <table class="table" id="tblAccountSummary">
 <thead>
 <tr>
-<th>被审计单位公司</th>
-<th>本方账号</th>
-<th>银行名称</th>
-<th class="monthly-flow-head no-sort">月度流入/流出</th>
+<th class="dm-account-fixed-col dm-account-fixed-1">被审计单位公司</th>
+<th class="dm-account-fixed-col dm-account-fixed-2">本方账号</th>
+<th class="dm-account-fixed-col dm-account-fixed-3">银行名称</th>
+<th class="monthly-flow-head no-sort dm-account-fixed-col dm-account-fixed-4">月度流入/流出</th>
 <th>流入总额</th>
 <th>流出总额</th>
 <th>交易总额</th>
@@ -734,8 +738,8 @@
     </div>
   </section>
 </div>
-<script defer src="../assets/js/core/shared.js?v=20260827-filter-popover1"></script>
-<script defer src="../assets/js/pages/data-management-balance.js?v=20260828-account-actions3"></script>
+<script defer src="../assets/js/core/shared.js?v=20260902-total-label1"></script>
+<script defer src="../assets/js/pages/data-management-balance.js?v=20260902-total-label1"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260811-data-management19"></script>
 <script>
   (function(){
