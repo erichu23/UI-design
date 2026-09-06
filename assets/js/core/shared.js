@@ -452,7 +452,7 @@
           inflow:indexes.map(index => dailyCashModel.inflow[index]),
           outflow:indexes.map(index => dailyCashModel.outflow[index]),
           zoomStart:0,
-          zoomEnd:endYear > startYear ? Math.min(100, 100 / (endYear - startYear + 1)) : 100
+          zoomEnd:100
         };
       };
       const getMonthlyFlowView = view => {
@@ -477,7 +477,7 @@
       let activeMonthlyFlowView = getMonthlyFlowView(activeTrendView);
       const trendUnitLabel = () => window.AuditUnit?.ready ? window.AuditUnit.label : '千元';
       const formatTrendNumber = value => {
-        const decimals = window.AuditUnit?.ready ? window.AuditUnit.decimals : 0;
+        const decimals = window.AuditUnit?.ready ? window.AuditUnit.decimals : 2;
         return Number(value || 0).toLocaleString('zh-CN', {
           minimumFractionDigits:decimals,
           maximumFractionDigits:decimals
@@ -1088,6 +1088,71 @@
         general: { body: document.getElementById('generalLedgerReconcileBody'), pager: document.getElementById('generalLedgerReconcilePager'), rows: generalRows, page: 1, pageSize: 20, editing:false },
         account: { body: document.getElementById('accountReconcileBody'), pager: document.getElementById('accountReconcilePager'), rows: accountRows, page: 1, pageSize: 20, editing:false }
       };
+      const parseCsv = text => {
+        const rows = [];
+        let row = [], cell = '', quoted = false;
+        for (let index = 0; index < text.length; index += 1) {
+          const character = text[index];
+          if (character === '"') {
+            if (quoted && text[index + 1] === '"') { cell += '"'; index += 1; }
+            else quoted = !quoted;
+          } else if (character === ',' && !quoted) {
+            row.push(cell.trim()); cell = '';
+          } else if ((character === '\n' || character === '\r') && !quoted) {
+            if (character === '\r' && text[index + 1] === '\n') index += 1;
+            row.push(cell.trim());
+            if (row.some(value => value !== '')) rows.push(row);
+            row = []; cell = '';
+          } else cell += character;
+        }
+        row.push(cell.trim());
+        if (row.some(value => value !== '')) rows.push(row);
+        return rows;
+      };
+      const readImportMatrix = async file => {
+        if (window.auditReconcileImportAdapter?.parseFile) return window.auditReconcileImportAdapter.parseFile(file);
+        if (/\.csv$/i.test(file.name)) return parseCsv(await file.text());
+        if (window.XLSX) {
+          const workbook = window.XLSX.read(await file.arrayBuffer(), { type: 'array' });
+          return window.XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1, raw: false, defval: '' });
+        }
+        throw new Error('EXCEL_PARSER_UNAVAILABLE');
+      };
+      const importHeaderAliases = {
+        company:['公司名称','被审计单位公司'], account:['银行账号','本方账号'], bank:['开户银行','银行名称'],
+        year:['期间','年度'], currency:['币种'], bookOpen:['账面期初金额'], bookOut:['账面流出金额'],
+        bookIn:['账面流入金额'], bookFinal:['账面期末金额'], note:['差异说明','备注']
+      };
+      const normalizeNumber = value => Number(String(value ?? '').replace(/[,%\s]/g,'')) || 0;
+      const importRows = (matrix, state, key) => {
+        if (!Array.isArray(matrix) || matrix.length < 2) return 0;
+        const headers = matrix[0].map(value => String(value ?? '').trim());
+        const positions = Object.fromEntries(Object.entries(importHeaderAliases).map(([field,labels]) => [field,headers.findIndex(header => labels.includes(header))]));
+        if (positions.company < 0) return 0;
+        const imported = matrix.slice(1).filter(values => values.some(value => String(value ?? '').trim())).map((values,index) => {
+          const existing = state.rows[index] || makeRow(836000, index, key === 'account');
+          const read = field => positions[field] < 0 ? undefined : values[positions[field]];
+          const now = new Date();
+          const stamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+          return {
+            ...existing, company:String(read('company') ?? existing.company).trim(),
+            account:key === 'account' ? String(read('account') ?? existing.account).trim() : '',
+            bank:key === 'account' ? String(read('bank') ?? existing.bank).trim() : '',
+            year:Number(read('year')) || existing.year, currency:String(read('currency') ?? existing.currency).trim() || 'RMB',
+            bookValues:[
+              positions.bookOpen < 0 ? existing.bookValues[0] : normalizeNumber(read('bookOpen')),
+              positions.bookOut < 0 ? existing.bookValues[1] : normalizeNumber(read('bookOut')),
+              positions.bookIn < 0 ? existing.bookValues[2] : normalizeNumber(read('bookIn')),
+              positions.bookFinal < 0 ? existing.bookValues[3] : normalizeNumber(read('bookFinal'))
+            ],
+            note:String(read('note') ?? existing.note).trim(), updater:'当前用户', updateTime:stamp
+          };
+        });
+        if (!imported.length) return 0;
+        state.rows.splice(0, state.rows.length, ...imported);
+        state.page = 1;
+        return imported.length;
+      };
       const differences = row => [
         Math.abs(row.bankValues[0]-row.bookValues[0]),
         Math.abs(row.bankValues[1]-row.bookValues[1]),
@@ -1156,6 +1221,27 @@
           render(key);
           if(isSaving)showReconcileSaveToast(`${key==='account'?'分账号核对':'总账核对'}数据保存成功`);
         });
+        const importButton = document.querySelector(`[data-reconcile-import="${key}"]`);
+        const importInput = document.querySelector(`[data-reconcile-import-file="${key}"]`);
+        importButton?.addEventListener('click',()=>importInput?.click());
+        importInput?.addEventListener('change',async event=>{
+          const file=event.target.files?.[0];
+          if(!file)return;
+          importButton.disabled=true;
+          importButton.setAttribute('aria-busy','true');
+          try{
+            const count=importRows(await readImportMatrix(file),state,key);
+            if(!count)throw new Error('EMPTY_TEMPLATE');
+            render(key);
+            showReconcileSaveToast(`${key==='account'?'分账号核对':'总账核对'}模板导入成功，共 ${count} 条`);
+          }catch(error){
+            showReconcileSaveToast(error?.message==='EXCEL_PARSER_UNAVAILABLE'?'当前环境暂不支持解析 Excel，请使用 CSV 模板导入':'模板内容未识别，请检查表头和数据后重试');
+          }finally{
+            importButton.disabled=false;
+            importButton.removeAttribute('aria-busy');
+            event.target.value='';
+          }
+        });
         document.querySelector(`[data-reconcile-export="${key}"]`)?.addEventListener('click',()=>{
           const header=key==='account'
             ? ['公司名称','银行账号','开户银行','期间','币种','期初金额','流入金额','流出金额','期末金额','账面期初金额','账面流出金额','账面流入金额','账面期末金额','期初差异','借方差异','贷方差异','期末差异','差异说明','更新人','更新时间']
@@ -1171,6 +1257,79 @@
       render('general');
       render('account');
     }
+
+    const monthlyFlowExpandButton = () => `<span class="monthly-flow-head-label"><span>月度流入/流出</span><button class="monthly-flow-expand-btn" type="button" data-monthly-flow-expand aria-label="放大查看月度流入流出" title="放大查看月度流入流出"><span class="monthly-flow-expand-icon" aria-hidden="true"></span></button></span>`;
+    window.auditMonthlyFlowExpandButton = monthlyFlowExpandButton;
+    window.openAuditMonthlyFlowOverview = table => {
+      if (!table) return;
+      document.querySelector('.monthly-flow-overview-mask')?.remove();
+      const escape = value => String(value ?? '').replace(/[&<>"']/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
+      const chartModels = [];
+      const rows = [...table.querySelectorAll('tbody tr:not(.sum-row)')].map(row => {
+        const company = row.cells[0]?.textContent?.trim() || '—';
+        const pairs = [...row.querySelectorAll('.monthly-flow-cell .monthly-flow-pair')];
+        if (!pairs.length) return '';
+        const years = [...new Set(pairs.map(pair=>pair.dataset.flowYear).filter(Boolean))];
+        const maxValue = Math.max(1,...pairs.flatMap(pair=>[Number(pair.dataset.flowIn)||0,Number(pair.dataset.flowOut)||0]));
+        const bars = pairs.map((pair,index)=>{
+          const year=pair.dataset.flowYear||'';
+          const month=pair.dataset.flowMonth||String(index+1);
+          const inflow=Number(pair.dataset.flowIn)||0;
+          const outflow=Number(pair.dataset.flowOut)||0;
+          const yearStart=index>0&&year&&year!==pairs[index-1]?.dataset.flowYear;
+          const label=`${year?`${year}年`:''}${String(month).padStart(2,'0')}月，流入 ${inflow.toLocaleString('zh-CN')}，流出 ${outflow.toLocaleString('zh-CN')}`;
+          return `<span class="monthly-flow-dialog-pair${yearStart?' is-year-start':''}" title="${escape(label)}"><i class="is-in" style="height:${Math.max(4,inflow/maxValue*100)}%"></i><i class="is-out" style="height:${Math.max(4,outflow/maxValue*100)}%"></i></span>`;
+        }).join('');
+        const modelIndex=chartModels.length;
+        chartModels.push({
+          labels:pairs.map((pair,index)=>{
+            const year=pair.dataset.flowYear||'';
+            const month=pair.dataset.flowMonth||String(index+1);
+            return years.length>1?`${String(year).slice(-2)}/${String(month).padStart(2,'0')}`:`${String(month).padStart(2,'0')}月`;
+          }),
+          inflow:pairs.map(pair=>Number(pair.dataset.flowIn)||0),
+          outflow:pairs.map(pair=>Number(pair.dataset.flowOut)||0),
+          fallback:bars
+        });
+        return `<tr><td><b>${escape(company)}</b></td><td><div class="monthly-flow-dialog-echart" data-monthly-flow-chart="${modelIndex}"><div class="monthly-flow-dialog-bars is-fallback">${bars}</div></div></td></tr>`;
+      }).filter(Boolean).join('');
+      const mask = document.createElement('div');
+      mask.className = 'monthly-flow-overview-mask';
+      mask.innerHTML = `<section class="monthly-flow-overview-dialog" role="dialog" aria-modal="true" aria-labelledby="monthlyFlowOverviewTitle"><header><div><b id="monthlyFlowOverviewTitle">月度流入/流出</b><span>当前表格视图</span></div><button type="button" data-monthly-flow-close aria-label="关闭">×</button></header><div class="monthly-flow-overview-legend"><span><i class="is-in"></i>流入</span><span><i class="is-out"></i>流出</span></div><main><table><thead><tr><th>被审计单位</th><th>月度流入/流出</th></tr></thead><tbody>${rows||'<tr><td colspan="2" class="is-empty">暂无数据</td></tr>'}</tbody></table></main><footer><button class="btn primary" type="button" data-monthly-flow-close>关闭</button></footer></section>`;
+      const charts=[];
+      const resizeCharts=()=>charts.forEach(chart=>chart.resize());
+      const close = () => { document.removeEventListener('keydown',onKeydown);window.removeEventListener('resize',resizeCharts);charts.forEach(chart=>chart.dispose());mask.remove(); };
+      const onKeydown = event => { if (event.key === 'Escape') close(); };
+      mask.addEventListener('click',event=>{ if(event.target===mask||event.target.closest('[data-monthly-flow-close]'))close(); });
+      document.addEventListener('keydown',onKeydown);
+      document.body.appendChild(mask);
+      if (window.echarts) {
+        mask.querySelectorAll('[data-monthly-flow-chart]').forEach(element=>{
+          const model=chartModels[Number(element.dataset.monthlyFlowChart)];
+          if(!model)return;
+          element.innerHTML='';
+          const chart=window.echarts.init(element);
+          chart.setOption({
+            animationDuration:350,
+            color:['#3b82f6','#d95785'],
+            grid:{left:48,right:14,top:12,bottom:28},
+            tooltip:{trigger:'axis',appendToBody:true,axisPointer:{type:'shadow'},formatter:items=>{
+              const first=items?.[0];
+              const lines=(items||[]).map(item=>`${item.marker}${item.seriesName}：<b>${Number(item.value||0).toLocaleString('zh-CN')}</b>`).join('<br>');
+              return `<div class="monthly-flow-chart-tip"><b>${first?.axisValue||''}</b><div>${lines}</div></div>`;
+            }},
+            xAxis:{type:'category',data:model.labels,axisTick:{show:false},axisLine:{lineStyle:{color:'#cfd9e5'}},axisLabel:{color:'#718096',fontSize:9,interval:model.labels.length>12?2:0,hideOverlap:true}},
+            yAxis:{type:'value',min:0,axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#8090a3',fontSize:9,formatter:value=>Number(value).toLocaleString('zh-CN',{notation:'compact',maximumFractionDigits:1})},splitLine:{lineStyle:{color:'#edf2f7'}}},
+            series:[
+              {name:'流入金额',type:'bar',data:model.inflow,barMaxWidth:9,barGap:'18%',itemStyle:{color:'#3b82f6',borderRadius:[2,2,0,0]}},
+              {name:'流出金额',type:'bar',data:model.outflow,barMaxWidth:9,itemStyle:{color:'#d95785',borderRadius:[2,2,0,0]}}
+            ]
+          });
+          charts.push(chart);
+        });
+        window.addEventListener('resize',resizeCharts,{passive:true});
+      }
+    };
 
     function initAccountSummaryPagination(){
       const table = document.getElementById('tblAccountSummary');
@@ -1357,7 +1516,8 @@
           table.insertBefore(colgroup, table.firstChild);
         }
         const amountUnit = window.AuditUnit?.unit || localStorage.getItem('auditCompass.amountUnit') || 'm';
-        const amountDecimals = Math.max(0,Math.min(4,Number(localStorage.getItem('auditCompass.amountDecimals') || 0)));
+        const storedAmountDecimals = localStorage.getItem('auditCompass.amountDecimals');
+        const amountDecimals = storedAmountDecimals === null ? 2 : Math.max(0,Math.min(4,Number(storedAmountDecimals) || 0));
         const unitWidths = { b:46, m:46, w:54, k:62, yuan:76 };
         const minimumMetricWidth = (unitWidths[amountUnit] || 46) + amountDecimals * 5;
         const companyWidth = 180;
@@ -1412,7 +1572,7 @@
         const yearDirections = state.yearExpanded ? years.map(()=>groupHeads(annualOptions)).join('') : '';
         const totalSymbols = metricSymbols(visibleOptions);
         const yearSymbols = state.yearExpanded ? years.map(()=>metricSymbols(annualOptions)).join('') : '';
-        head.innerHTML = `<tr class="account-year-group-head"><th rowspan="3" class="no-filter">被审计单位公司</th><th rowspan="3" class="monthly-flow-head no-sort">月度流入/流出</th><th colspan="${visibleOptions.length}" class="account-group-toggle-cell no-sort"><div class="account-group-head-controls"><button class="account-group-toggle" id="accountYearToggle" type="button" title="展开或收起年度金额"><span>合计</span><i>${icon}</i></button></div></th>${yearHeads}<th rowspan="3" class="no-sort account-action-sticky">操作</th></tr><tr class="account-direction-head">${totalDirections}${yearDirections}</tr><tr class="account-metric-symbol-head">${totalSymbols}${yearSymbols}</tr>`;
+        head.innerHTML = `<tr class="account-year-group-head"><th rowspan="3" class="no-filter">被审计单位公司</th><th rowspan="3" class="monthly-flow-head no-sort no-filter">${monthlyFlowExpandButton()}</th><th colspan="${visibleOptions.length}" class="account-group-toggle-cell no-sort"><div class="account-group-head-controls"><button class="account-group-toggle" id="accountYearToggle" type="button" title="展开或收起年度金额"><span>合计</span><i>${icon}</i></button></div></th>${yearHeads}<th rowspan="3" class="no-sort account-action-sticky">操作</th></tr><tr class="account-direction-head">${totalDirections}${yearDirections}</tr><tr class="account-metric-symbol-head">${totalSymbols}${yearSymbols}</tr>`;
         document.querySelectorAll('#accountScopeTabs [data-account-scope]').forEach(button=>{
           const active = button.dataset.accountScope === state.scopeView;
           button.classList.toggle('is-active',active);
@@ -1519,6 +1679,13 @@
         state.scopeView = button.dataset.accountScope === 'excluded' ? 'excluded' : 'included';
         state.page = 1;
         render();
+      });
+      table.addEventListener('click',event=>{
+        const button=event.target.closest('[data-monthly-flow-expand]');
+        if(!button)return;
+        event.preventDefault();
+        event.stopPropagation();
+        window.openAuditMonthlyFlowOverview?.(table);
       });
       render();
     }

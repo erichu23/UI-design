@@ -3643,6 +3643,155 @@ body #pane-account #tblAccountSummary td.monthly-flow-cell{
 .account-monthly-flow-tooltip strong.is-in{color:#356fce;}
 .account-monthly-flow-tooltip strong.is-out{color:#c74468;}
 
+.monthly-flow-head-label{
+  position:relative;
+  z-index:6;
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-width:0;
+  width:100%;
+  white-space:nowrap;
+}
+.monthly-flow-expand-btn{
+  position:relative !important;
+  z-index:8 !important;
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 18px;
+  width:18px !important;
+  min-width:18px !important;
+  height:18px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#2467d6 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  overflow:visible !important;
+  cursor:pointer !important;
+  box-shadow:none !important;
+  vertical-align:middle;
+  transition:color .15s ease,transform .15s ease;
+}
+.monthly-flow-expand-btn:hover,
+.monthly-flow-expand-btn:focus-visible{
+  outline:0;
+  color:#174da8;
+  transform:scale(1.08);
+}
+.monthly-flow-expand-icon{
+  position:relative;
+  display:block !important;
+  width:14px !important;
+  height:14px !important;
+  color:inherit !important;
+}
+.monthly-flow-expand-icon::before{
+  content:"";
+  position:absolute;
+  left:1px;
+  top:1px;
+  width:8px;
+  height:8px;
+  box-sizing:border-box;
+  border:1.8px solid currentColor;
+  border-radius:50%;
+}
+.monthly-flow-expand-icon::after{
+  content:"";
+  position:absolute;
+  left:9px;
+  top:9px;
+  width:5px;
+  height:1.8px;
+  border-radius:2px;
+  background:currentColor;
+  transform:rotate(45deg);
+  transform-origin:left center;
+}
+.monthly-flow-head .monthly-flow-expand-btn,
+.monthly-flow-head .monthly-flow-expand-btn:hover,
+.monthly-flow-head .monthly-flow-expand-btn:focus-visible{
+  border:0 !important;
+  outline:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+.monthly-flow-overview-mask{
+  position:fixed;
+  inset:0;
+  z-index:14000;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  background:rgba(28,42,61,.28);
+  backdrop-filter:blur(1px);
+}
+.monthly-flow-overview-dialog{
+  width:min(920px,calc(100vw - 36px));
+  max-height:min(720px,calc(100vh - 36px));
+  display:grid;
+  grid-template-rows:auto auto minmax(0,1fr) auto;
+  overflow:hidden;
+  border:1px solid #d8e3ef;
+  border-radius:8px;
+  background:#fff;
+  box-shadow:0 22px 58px rgba(27,47,74,.22);
+}
+.monthly-flow-overview-dialog > header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:52px;
+  padding:0 18px;
+  border-bottom:1px solid #e6edf5;
+}
+.monthly-flow-overview-dialog > header > div{display:flex;align-items:baseline;gap:10px;}
+.monthly-flow-overview-dialog > header b{color:#20354f;font-size:15px;}
+.monthly-flow-overview-dialog > header span{color:#8a98aa;font-size:11px;}
+.monthly-flow-overview-dialog > header button{
+  width:28px;height:28px;border:0;background:transparent;color:#718096;font-size:22px;line-height:1;cursor:pointer;
+}
+.monthly-flow-overview-legend{display:flex;justify-content:flex-end;gap:16px;padding:10px 18px 5px;color:#64748b;font-size:11px;}
+.monthly-flow-overview-legend span{display:inline-flex;align-items:center;gap:5px;}
+.monthly-flow-overview-legend i{width:7px;height:7px;border-radius:2px;}
+.monthly-flow-overview-legend i.is-in{background:#3b82f6;}
+.monthly-flow-overview-legend i.is-out{background:#d95785;}
+.monthly-flow-overview-dialog > main{overflow:auto;padding:0 18px 14px;}
+.monthly-flow-overview-dialog table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;border:1px solid #dfe7f1;border-radius:7px;overflow:hidden;}
+.monthly-flow-overview-dialog th,.monthly-flow-overview-dialog td{border-right:1px solid #e7edf4;border-bottom:1px solid #e7edf4;padding:8px 12px;text-align:left;}
+.monthly-flow-overview-dialog th:last-child,.monthly-flow-overview-dialog td:last-child{border-right:0;}
+.monthly-flow-overview-dialog tbody tr:last-child td{border-bottom:0;}
+.monthly-flow-overview-dialog th{height:34px;background:#f2f6fb;color:#405168;font-size:11px;font-weight:700;}
+.monthly-flow-overview-dialog th:first-child,.monthly-flow-overview-dialog td:first-child{width:220px;}
+.monthly-flow-overview-dialog td:first-child b{color:#334a66;font-size:11px;font-weight:600;}
+.monthly-flow-dialog-echart{width:100%;height:132px;min-width:430px;}
+.monthly-flow-dialog-echart .is-fallback{height:112px;margin-top:8px;}
+.monthly-flow-dialog-chart{display:grid;grid-template-rows:48px 15px;min-width:390px;}
+.monthly-flow-dialog-bars{display:flex;align-items:flex-end;gap:2px;height:48px;padding:2px 3px 0;border-bottom:1px solid #dbe5f0;}
+.monthly-flow-dialog-pair{position:relative;display:flex;flex:1 1 0;align-items:flex-end;justify-content:center;gap:2px;height:44px;min-width:5px;border-radius:3px 3px 0 0;}
+.monthly-flow-dialog-pair.is-year-start{border-left:1px solid #b8c8da;}
+.monthly-flow-dialog-pair:hover{background:#edf4fd;}
+.monthly-flow-dialog-pair i{display:block;width:min(5px,38%);min-width:2px;min-height:2px;border-radius:2px 2px 0 0;}
+.monthly-flow-dialog-pair i.is-in{background:#3b82f6;}
+.monthly-flow-dialog-pair i.is-out{background:#d95785;}
+.monthly-flow-chart-tip{min-width:128px;color:#52657b;font-size:11px;line-height:1.7;}
+.monthly-flow-chart-tip>b{display:block;margin-bottom:3px;color:#263d59;font-size:12px;}
+.monthly-flow-dialog-years{display:grid;grid-template-columns:repeat(var(--flow-year-count),1fr);height:15px;color:#8493a6;font-size:9px;text-align:center;}
+.monthly-flow-dialog-years span{padding-top:3px;border-top:1px solid #dbe5f0;}
+.monthly-flow-dialog-years span+span{border-left:1px solid #c2d0df;}
+.monthly-flow-overview-dialog .is-empty{text-align:center;color:#94a3b8;height:90px;}
+.monthly-flow-overview-dialog > footer{display:flex;justify-content:flex-end;padding:10px 18px;border-top:1px solid #e6edf5;background:#fbfcfe;}
+@media (max-width:700px){
+  .monthly-flow-overview-dialog th:first-child,.monthly-flow-overview-dialog td:first-child{width:150px;}
+  .monthly-flow-overview-dialog > main{padding-inline:10px;}
+}
+
 /* 全平台表格体验：资金流水分析内所有可纵向滚动表格固定表头。 */
 body .tab-pane .account-summary-table-wrap table thead,
 body .tab-pane .portrait-table-wrap table thead,

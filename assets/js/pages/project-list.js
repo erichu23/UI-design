@@ -31,7 +31,7 @@
     pie:false,
     capitalMarket:'',
     fiscalYearEnd:'12-31',
-    materiality:null
+    materiality:1000000
   }];
   const loadWorkbooks = () => {
     try {
@@ -50,7 +50,7 @@
     search:'',
     sortKey:'updated',
     sortDirection:'desc',
-    filters:{name:'',files:'',updated:'',period:''}
+    filters:{name:'',files:'',updated:'',period:'',reportPeriod:'',fiscalYearEnd:'',ipo:'',pie:'',materiality:''}
   };
   let toastTimer = null;
 
@@ -82,6 +82,14 @@
     try { localStorage.setItem(WORKBOOKS_KEY, JSON.stringify(workbooks)); } catch (error) {}
   };
 
+  const reportPeriod = row => row.reportPeriod || (row.reportStart && row.reportEnd ? `${row.reportStart} - ${row.reportEnd}` : '');
+  const workbookValue = (row, key) => {
+    if (key === 'reportPeriod') return reportPeriod(row);
+    if (key === 'ipo') return row.ipo === true ? `是 ${row.capitalMarket || ''}` : '否';
+    if (key === 'pie') return row.ipo === true ? '不适用' : row.pie === true ? `是 ${row.capitalMarket || ''}` : '否';
+    return row[key] ?? '';
+  };
+
   const filteredRows = () => {
     const search = state.search.trim().toLowerCase();
     const projectMatched = projectMatchesSearch(search);
@@ -89,12 +97,12 @@
       if (search && !projectMatched && String(row.name || '').trim().toLowerCase() !== search) return false;
       return Object.entries(state.filters).every(([key, value]) => {
         if (!value) return true;
-        return String(row[key]).toLowerCase().includes(String(value).trim().toLowerCase());
+        return String(workbookValue(row,key)).toLowerCase().includes(String(value).trim().toLowerCase());
       });
     });
     return filtered.sort((a, b) => {
-      const left = a[state.sortKey];
-      const right = b[state.sortKey];
+      const left = workbookValue(a,state.sortKey);
+      const right = workbookValue(b,state.sortKey);
       const result = typeof left === 'number'
         ? left - right
         : String(left).localeCompare(String(right), 'zh-CN', {numeric:true});
@@ -144,16 +152,26 @@
     const start = (state.page - 1) * state.pageSize;
     const visible = result.slice(start, start + state.pageSize);
 
+    const statusCell = (enabled, market, notApplicable=false) => notApplicable
+      ? '<span class="pl-book-flag is-na">不适用</span>'
+      : enabled
+        ? `<span class="pl-book-flag is-yes" aria-label="是${market ? `，资本市场${escapeHtml(market)}` : ''}"><i class="fa-solid fa-circle-check" aria-hidden="true"></i>${market ? `<small>${escapeHtml(market)}</small>` : ''}</span>`
+        : '<span class="pl-book-flag is-no">否</span>';
     rowsEl.innerHTML = visible.length ? visible.map(row => `
       <tr>
         <td>${escapeHtml(row.name)}</td>
         <td>${row.files}</td>
         <td>${escapeHtml(row.updated)}</td>
         <td>${escapeHtml(row.period)}</td>
+        <td>${escapeHtml(reportPeriod(row))}</td>
+        <td>${escapeHtml(row.fiscalYearEnd || '—')}</td>
+        <td>${statusCell(row.ipo === true,row.capitalMarket)}</td>
+        <td>${statusCell(row.pie === true,row.capitalMarket,row.ipo === true)}</td>
+        <td class="pl-materiality">${row.materiality === null || row.materiality === undefined || row.materiality === '' ? '—' : `${Number(row.materiality).toLocaleString('zh-CN')} 元`}</td>
         <td>${escapeHtml(row.remark)}</td>
         <td><span class="pl-row-actions"><a class="pl-row-action" href="javascript:void(0)" data-edit-workbook="${escapeHtml(row.name)}"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>编辑</a><a class="pl-row-action" href="javascript:void(0)" data-enter-workbook="${escapeHtml(row.name)}"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i>进入</a></span></td>
       </tr>
-    `).join('') : '<tr><td class="pl-empty" colspan="6">当前条件下暂无工作簿</td></tr>';
+    `).join('') : '<tr><td class="pl-empty" colspan="11">当前条件下暂无工作簿</td></tr>';
 
     renderPager(result.length, pages);
     updateHeaderState();
@@ -161,17 +179,18 @@
   };
 
   const closeFilterPopover = () => document.querySelector('.pl-filter-popover')?.remove();
-  const filterLabels = {name:'工作簿名称',files:'接口文件总数',updated:'更新日期',period:'分析期间'};
+  const filterLabels = {name:'工作簿名称',files:'接口文件总数',updated:'更新日期',period:'分析期间',reportPeriod:'报告期间',fiscalYearEnd:'财年结束日期',ipo:'IPO',pie:'PIE',materiality:'重要性水平'};
 
   const openFilterPopover = (button, key) => {
     closeFilterPopover();
     const popover = document.createElement('div');
     popover.className = 'pl-filter-popover';
-    const inputType = key === 'files' ? 'number' : 'text';
+    const numericFilter = key === 'files' || key === 'materiality';
+    const inputType = numericFilter ? 'number' : 'text';
     const placeholder = key === 'files' ? '请输入文件数量' : `请输入${filterLabels[key]}`;
     popover.innerHTML = `
       <label>${filterLabels[key]}筛选</label>
-      <input type="${inputType}" ${key === 'files' ? 'min="0"' : ''} value="${escapeHtml(state.filters[key])}" placeholder="${placeholder}">
+      <input type="${inputType}" ${numericFilter ? 'min="0"' : ''} value="${escapeHtml(state.filters[key])}" placeholder="${placeholder}">
       <div class="pl-filter-actions"><button class="pl-filter-clear" type="button">清空</button><button class="pl-filter-confirm" type="button">确定</button></div>
     `;
     document.body.appendChild(popover);
@@ -403,6 +422,7 @@
       analysisEnd,
       reportStart,
       reportEnd,
+      reportPeriod:`${reportStart} - ${reportEnd}`,
       ipo:ipo === 'yes',
       pie:ipo === 'no' ? pie === 'yes' : null,
       capitalMarket:document.getElementById('newCapitalMarket').value,
@@ -431,7 +451,7 @@
 
     const wasEditing = editingIndex >= 0;
     state.search = '';
-    state.filters = {name:'',files:'',updated:'',period:''};
+    state.filters = {name:'',files:'',updated:'',period:'',reportPeriod:'',fiscalYearEnd:'',ipo:'',pie:'',materiality:''};
     state.sortKey = 'updated';
     state.sortDirection = 'desc';
     state.page = 1;

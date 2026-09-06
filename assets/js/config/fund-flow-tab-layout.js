@@ -6,10 +6,10 @@
   const layout = [
     {
       key: 'scope-control',
-      label: '分析范围管控',
+      label: '分析范围',
       before: 'account',
-      source: './data-management.html?embed=scope-control&v=20260828-account-actions3',
-      title: '分析范围管控'
+      source: './data-management.html?embed=scope-control&v=20260906-scope-firstcol1',
+      title: '分析范围'
     },
     {
       key: 'risk-report-export',

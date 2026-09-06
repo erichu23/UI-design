@@ -470,6 +470,7 @@ html.dm-embedded-module .data-management-page{
   min-width:1080px;
   table-layout:auto;
 }
+.data-management-page #dmMasterCheckTable{ min-width:860px; }
 .data-management-page .dm-master-table th,
 .data-management-page .dm-master-table td{
   padding:6px 8px !important;
@@ -1737,4 +1738,14 @@ body.dm-check-drawer-open{overflow:hidden;}
     border-bottom:0;
   }
 
+}
+
+/* 分析范围内各卡片的首列统一左对齐，表头增强后仍保持一致。 */
+.data-management-page #pane-scope-control .card table th:first-child,
+.data-management-page #pane-scope-control .card table td:first-child{
+  text-align:left !important;
+}
+.data-management-page #pane-scope-control .card table th:first-child .ba-th-title{
+  justify-content:flex-start !important;
+  text-align:left !important;
 }

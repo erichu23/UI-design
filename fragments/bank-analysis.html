@@ -17,8 +17,8 @@
   <link rel="stylesheet" href="../assets/css/pages/biz.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/routine.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260827-workingpaper-tools1"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260902-account-scope-position1"/>
-  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260902-blacklist-indicator1"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260906-flow-zoom5"/>
+  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260906-top10-edge1"/>
   <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260624-riskflow1"/>
   <link rel="stylesheet" href="../assets/css/pages/account-action-details.css?v=20260828-portrait-actions4"/>
 </head>
@@ -187,7 +187,7 @@
   </div>
 
   <div class="portrait-chart-grid">
-    <div class="card portrait-chart-card portrait-monthly-card"><div class="head"><div class="title">月度收支构成分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><select class="portrait-monthly-year-select" id="portraitMonthlyYearSelect" aria-label="月度收支构成年份"><option value="2023">2023</option><option value="2024">2024</option><option value="2025" selected>2025</option></select><div class="portrait-legend"></div></div><div class="content"><div class="portrait-chart" id="portraitMonthlyChart"></div></div></div>
+    <div class="card portrait-chart-card portrait-monthly-card"><div class="head"><div class="title">月度收支构成分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><select class="portrait-monthly-year-select" id="portraitMonthlyYearSelect" aria-label="选择分析年份"><option value="all" selected>2023-2025</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option></select><div class="portrait-legend"></div></div><div class="content"><div class="portrait-chart" id="portraitMonthlyChart"></div></div></div>
     <div class="card portrait-chart-card portrait-feature-card"><div class="head"><div class="title">前10大</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-feature-tools"><div class="portrait-segment" id="portraitBubbleTabs"><button class="is-active" data-view="customer" type="button">客户</button><button data-view="supplier" type="button">供应商</button><button data-view="nonbusiness" type="button">非客户非供应商</button><button data-view="related" type="button">关联方</button></div></div></div><div class="content"><div class="portrait-feature-ranking-grid" id="portraitFeatureBody"></div></div></div>
   </div>
 
@@ -881,11 +881,11 @@
 </section></div>
 
 
-<script src="../assets/js/config/fund-flow-tab-layout.js?v=20260827-check-browser6"></script>
-<script defer src="../assets/js/core/shared.js?v=20260902-total-label1"></script>
+<script src="../assets/js/config/fund-flow-tab-layout.js?v=20260906-scope-firstcol1"></script>
+<script defer src="../assets/js/core/shared.js?v=20260906-flow-zoom5"></script>
 <script defer src="../assets/js/pages/account-action-details.js?v=20260828-portrait-actions4"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260508-fast2"></script>
-<script defer src="../assets/js/pages/portrait.js?v=20260902-blacklist-cases2"></script>
+<script defer src="../assets/js/pages/portrait.js?v=20260906-top10-edge1"></script>
 <script defer src="../assets/js/pages/routine.js?v=20260508-fast2"></script>
 </body>
 </html>

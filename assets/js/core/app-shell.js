@@ -168,22 +168,29 @@ function initCollapsedSidebarFlyout(){
 const APP_FRAME_STATE_KEY = 'auditCompass.currentFrameState';
 const DEFAULT_PROJECT = 'Test2';
 const DEFAULT_BOOK = '20251022';
-const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260902-total-label1';
-const DATA_MANAGEMENT_SRC = './fragments/data-management.html?v=20260902-total-label1';
+const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260906-scope-firstcol1';
+const DATA_MANAGEMENT_SRC = './fragments/data-management.html?v=20260906-scope-firstcol1';
 const DATA_SUMMARY_SRC = './fragments/data-summary.html?v=20260827-pager-select1';
 const WORKINGPAPER_EXPORT_SRC = './fragments/workingpaper-export.html?v=20260827-filter-popover1';
-const PROJECT_LIST_SRC = './fragments/project-list.html?v=20260827-search-icon1';
+const PROJECT_LIST_SRC = './fragments/project-list.html?v=20260906-workbook-hints1';
 const AMOUNT_UNIT_KEY = 'auditCompass.amountUnit';
 const AMOUNT_DECIMAL_KEY = 'auditCompass.amountDecimals';
+const AMOUNT_DECIMAL_DEFAULT_VERSION_KEY = 'auditCompass.amountDecimalsDefaultVersion';
 const AMOUNT_UNIT_LABELS = { yuan:'元', k:'千元/K', w:'万元/W', m:'百万元/M', b:'亿元/B' };
 const LEGACY_BANK_TITLE = '\u94f6\u884c\u6d41\u6c34\u5206\u6790';
 const LEGACY_WORKINGPAPER_TITLE = '\u8d44\u91d1\u6d41\u6c34\u6838\u67e5\u5e95\u7a3f\u5bfc\u51fa';
 
 function getAmountDisplayState(){
   const storedUnit = localStorage.getItem(AMOUNT_UNIT_KEY);
+  if (localStorage.getItem(AMOUNT_DECIMAL_DEFAULT_VERSION_KEY) !== '2') {
+    localStorage.setItem(AMOUNT_DECIMAL_KEY, '2');
+    localStorage.setItem(AMOUNT_DECIMAL_DEFAULT_VERSION_KEY, '2');
+  }
+  const storedDecimals = localStorage.getItem(AMOUNT_DECIMAL_KEY);
   const unit = AMOUNT_UNIT_LABELS[storedUnit] ? storedUnit : 'm';
-  const decimals = Math.max(0, Math.min(4, Number(localStorage.getItem(AMOUNT_DECIMAL_KEY) ?? 0) || 0));
+  const decimals = storedDecimals === null ? 2 : Math.max(0, Math.min(4, Number(storedDecimals) || 0));
   if (!storedUnit) localStorage.setItem(AMOUNT_UNIT_KEY, unit);
+  if (storedDecimals === null) localStorage.setItem(AMOUNT_DECIMAL_KEY, String(decimals));
   return { unit, decimals };
 }
 
@@ -216,7 +223,7 @@ function injectAmountUnitRuntime(){
   if (!doc?.head || doc.getElementById('auditUnitRuntime')) return;
   const script = doc.createElement('script');
   script.id = 'auditUnitRuntime';
-  script.src = new URL('./assets/js/core/unit-runtime.js?v=20260901-chart-scale-ignore1', window.location.href).href;
+  script.src = new URL('./assets/js/core/unit-runtime.js?v=20260906-decimal-default2', window.location.href).href;
   doc.head.appendChild(script);
 }
 

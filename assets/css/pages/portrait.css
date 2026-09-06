@@ -31,10 +31,10 @@ body .tab-pane .portrait-monthly-card > .head{
 body .tab-pane .portrait-monthly-year-select{
   -webkit-appearance:none !important;
   appearance:none !important;
-  flex:0 0 96px !important;
-  width:96px !important;
-  min-width:96px !important;
-  max-width:96px !important;
+  flex:0 0 108px !important;
+  width:108px !important;
+  min-width:108px !important;
+  max-width:108px !important;
   height:26px !important;
   min-height:26px !important;
   margin-left:auto !important;
@@ -215,11 +215,12 @@ body .tab-pane .portrait-monthly-year-select + .portrait-legend{
   width:100%;
   table-layout:fixed;
 }
-.portrait-feature-ranking-grid .feature-rank-col{ width:30px; }
-.portrait-feature-ranking-grid .feature-name-col{ width:148px; }
-.portrait-feature-ranking-grid .feature-blacklist-col{ width:38px; }
-.portrait-feature-ranking-grid .feature-amount-col,
-.portrait-feature-ranking-grid .feature-share-col{ width:58px; }
+.portrait-feature-ranking-grid .feature-rank-col{ width:28px; }
+.portrait-feature-ranking-grid .feature-name-col{ width:198px; }
+.portrait-feature-ranking-grid .feature-blacklist-col{ width:32px; }
+.portrait-feature-ranking-grid .feature-amount-col{ width:52px; }
+.portrait-feature-ranking-grid .feature-share-col{ width:54px; }
+.portrait-feature-ranking-grid .feature-last-share-col{ width:64px; }
 .portrait-feature-ranking-grid .portrait-feature-table th{
   box-sizing:border-box;
   height:22px;
@@ -251,10 +252,10 @@ body .tab-pane .portrait-monthly-year-select + .portrait-legend{
 }
 .portrait-feature-ranking-grid .portrait-feature-name{
   display:block;
-  flex:1 1 auto;
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  flex:0 0 auto;
+  min-width:max-content;
+  overflow:visible;
+  text-overflow:clip;
   white-space:nowrap;
 }
 .portrait-feature-roles{ display:inline-flex; flex:0 0 auto; align-items:center; gap:3px; }
@@ -346,6 +347,25 @@ body .tab-pane .portrait-monthly-year-select + .portrait-legend{
 .portrait-feature-ranking-grid .portrait-feature-rank.rank-1{ --podium-color:#b88316; --podium-border:#dfc47d; --podium-bg:#fff8e6; --podium-shadow:rgba(184,131,22,.18); }
 .portrait-feature-ranking-grid .portrait-feature-rank.rank-2{ --podium-color:#718096; --podium-border:#c5ced8; --podium-bg:#f4f7fa; --podium-shadow:rgba(113,128,150,.18); }
 .portrait-feature-ranking-grid .portrait-feature-rank.rank-3{ --podium-color:#a7623a; --podium-border:#d7af98; --podium-bg:#fff5ef; --podium-shadow:rgba(167,98,58,.18); }
+
+/* 月度构成与前10大采用同高扩展布局，完整展示36个月及10条排名。 */
+.portrait-chart-grid{ grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr); align-items:stretch; }
+.portrait-chart-card{ display:grid; grid-template-rows:auto minmax(0,1fr); }
+.portrait-chart-card .content{ box-sizing:border-box; height:286px; min-height:286px; max-height:286px; }
+.portrait-chart{ height:274px; }
+.portrait-feature-card .content{ height:286px; min-height:286px; max-height:286px; padding-bottom:9px !important; overflow:hidden; }
+.portrait-feature-ranking-grid .portrait-feature-scroll-shell{ height:100%; padding-right:0; }
+.portrait-feature-ranking-grid .portrait-feature-table-wrap{ height:100%; overflow:hidden; border-color:#dfe7f1; }
+.portrait-feature-ranking-grid .portrait-feature-scroll-rail{ display:none; }
+.portrait-feature-ranking-grid .portrait-feature-table th{ box-sizing:border-box; height:18px; padding:1px 3px; font-size:9px; line-height:15px; }
+.portrait-feature-ranking-grid .portrait-feature-table thead tr:nth-child(2) th{ top:18px; }
+.portrait-feature-ranking-grid .portrait-feature-table td{ box-sizing:border-box; height:21px; padding:1px 3px; font-size:9.5px; line-height:16px; }
+.portrait-feature-ranking-grid .portrait-feature-table tbody tr:last-child td{ border-bottom:0; }
+.portrait-feature-ranking-grid .portrait-feature-table th:last-child,
+.portrait-feature-ranking-grid .portrait-feature-table td:last-child{ padding-right:8px; }
+.portrait-feature-ranking-grid .portrait-feature-name{ font-size:9.5px; }
+.portrait-feature-ranking-grid .portrait-feature-money,
+.portrait-feature-ranking-grid .portrait-feature-share{ font-size:9px; }
 .portrait-table-card{ margin-top:0; }.portrait-table-count{ margin-left:6px; color:#64748b; font-size:10px; }.portrait-table-card .head .btn:first-of-type{ margin-left:auto; }.portrait-table-tabs{ display:inline-flex; align-items:center; gap:0; margin:0 0 8px; border:1px solid #d9e2ec; border-radius:8px; overflow:hidden; background:#fff; }.portrait-table-tabs button{ position:relative; min-height:32px; padding:0 10px; border:0; border-right:1px solid #d9e2ec; background:#fff; color:#64748b; font-size:12px; font-weight:600; cursor:pointer; }.portrait-table-tabs button:last-child{ border-right:0; }.portrait-table-tabs button.is-active{ background:#eef3ff; color:#1d4ed8; font-weight:700; }.portrait-table-tabs button.is-active::after{ content:none; }.portrait-table-wrap{ width:100%; overflow:auto; border:1px solid #cfd8e3; border-radius:5px; background:#fff; }.portrait-table-wrap .table{ min-width:1560px; table-layout:auto; }.portrait-table-wrap th,.portrait-table-wrap td{ height:30px !important; padding:4px 7px !important; font-size:11px !important; }.portrait-table-wrap th[data-sort]{ position:relative; cursor:pointer; }
 .portrait-table-wrap th:first-child,
 .portrait-table-wrap td:first-child{

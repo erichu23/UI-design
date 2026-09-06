@@ -113,7 +113,8 @@
   const metricUnitShort=()=>({yuan:'元',k:'K',w:'W',m:'M',b:'B'})[metricUnit()]||'M';
   const metricAmountValue=value=>{
     const converted=window.AuditUnit?.convert?window.AuditUnit.convert(value,'k'):Number(value)*1000/({yuan:1,k:1000,w:10000,m:1000000,b:100000000}[metricUnit()]||1000000);
-    const decimals=Math.max(1,window.AuditUnit?.decimals??Number(localStorage.getItem('auditCompass.amountDecimals')||0));
+    const storedDecimals=localStorage.getItem('auditCompass.amountDecimals');
+    const decimals=Math.max(1,window.AuditUnit?.decimals??(storedDecimals===null?2:Number(storedDecimals)||0));
     return Number(converted).toLocaleString('zh-CN',{minimumFractionDigits:decimals,maximumFractionDigits:decimals});
   };
   const syncMetricAmounts=()=>{

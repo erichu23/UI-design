@@ -18,9 +18,10 @@
     '百万元':'m', '百万':'m', 'M':'m', 'm':'m',
     '亿元':'b', '亿':'b', 'B':'b', 'b':'b'
   };
+  const storedDecimals = localStorage.getItem(DECIMAL_KEY);
   const state = {
     unit: units[localStorage.getItem(UNIT_KEY)] ? localStorage.getItem(UNIT_KEY) : 'm',
-    decimals: Math.max(0, Math.min(4, Number(localStorage.getItem(DECIMAL_KEY) ?? 0) || 0))
+    decimals: storedDecimals === null ? 2 : Math.max(0, Math.min(4, Number(storedDecimals) || 0))
   };
   const originalText = new WeakMap();
   const originalNumeric = new WeakMap();

@@ -202,14 +202,15 @@ body{
 .pl-table-wrap{padding:9px 10px 8px;}
 .pl-table-frame{
   position:relative;
-  overflow:auto;
+  overflow-x:hidden;
+  overflow-y:auto;
   border:1px solid var(--audit-table-border-outer,#e7eef6);
   border-radius:6px;
   background:#fff;
 }
 .pl-table{
   width:100%;
-  min-width:900px;
+  min-width:0;
   border-collapse:separate;
   border-spacing:0;
   background:#fff;
@@ -234,32 +235,45 @@ body{
   top:0;
   z-index:2;
   height:38px;
+  padding-right:4px;
+  padding-left:4px;
   border-right-color:var(--audit-table-border-head,#dbe5f0);
   border-bottom-color:var(--audit-table-border-head,#dbe5f0);
   background:var(--audit-table-head-bg,#f6f9fd);
   color:#26384f;
+  font-size:11px;
   font-weight:600;
 }
-.pl-table th:nth-child(1){width:21%;}
-.pl-table th:nth-child(2){width:14%;text-align:center;}
-.pl-table th:nth-child(3){width:15%;text-align:center;}
-.pl-table th:nth-child(4){width:25%;text-align:center;}
-.pl-table th:nth-child(5){width:12%;}
-.pl-table th:nth-child(6){width:13%;text-align:center;}
+.pl-table th:nth-child(1){width:9%;}
+.pl-table th:nth-child(2){width:8%;text-align:center;}
+.pl-table th:nth-child(3){width:8%;text-align:center;}
+.pl-table th:nth-child(4),.pl-table th:nth-child(5){width:13%;text-align:center;}
+.pl-table th:nth-child(6){width:10%;text-align:center;}
+.pl-table th:nth-child(7),.pl-table th:nth-child(8){width:5.5%;text-align:center;}
+.pl-table th:nth-child(9){width:10%;text-align:center;}
+.pl-table th:nth-child(10){width:8%;}
+.pl-table th:nth-child(11){width:10%;text-align:center;}
 .pl-table td:nth-child(2),
 .pl-table td:nth-child(3),
 .pl-table td:nth-child(4),
-.pl-table td:nth-child(6){text-align:center;}
+.pl-table td:nth-child(5),
+.pl-table td:nth-child(6),
+.pl-table td:nth-child(7),
+.pl-table td:nth-child(8),
+.pl-table td:nth-child(9),
+.pl-table td:nth-child(11){text-align:center;}
+.pl-table td{padding-right:7px;padding-left:7px;}
+.pl-table td:nth-child(4),.pl-table td:nth-child(5){font-size:11px;}
 .pl-table th:last-child,.pl-table td:last-child{border-right:0;}
 .pl-table tbody tr:last-child td{border-bottom:0;}
 .pl-table tbody tr:hover td{background:var(--audit-table-hover-bg,#f8fbff);}
 
-.pl-th-inner{display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0;}
-.pl-th-inner > span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;}
-.pl-th-tools{flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;}
-.pl-sort-icons{width:10px;height:17px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:0;}
+.pl-th-inner{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px;min-width:0;}
+.pl-th-inner > span:first-child{min-width:0;overflow:visible;color:inherit;line-height:15px;text-overflow:clip;white-space:nowrap;}
+.pl-th-tools{flex:0 0 auto;display:inline-flex;align-items:center;gap:2px;}
+.pl-sort-icons{width:8px;height:17px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:0;}
 .pl-sort-icons button{
-  width:10px;
+  width:8px;
   height:8px;
   padding:0;
   border:0;
@@ -271,7 +285,7 @@ body{
 }
 .pl-sort-icons button:hover,.pl-sort-icons button.is-active{color:#2b65c3;}
 .pl-filter-btn{
-  width:18px;
+  width:16px;
   height:20px;
   display:inline-flex;
   align-items:center;
@@ -287,7 +301,7 @@ body{
 .pl-filter-btn:hover{background:#edf3fb;color:#5f7592;}
 .pl-filter-btn.is-active{background:#e9f1ff;color:#245dc0;}
 
-.pl-row-actions{display:inline-flex;align-items:center;justify-content:center;gap:12px;}
+.pl-row-actions{display:inline-flex;align-items:center;justify-content:center;gap:6px;}
 .pl-row-action{
   display:inline-flex;
   align-items:center;
@@ -299,6 +313,13 @@ body{
 }
 .pl-row-action i{width:13px;text-align:center;font-size:11px;}
 .pl-row-action:hover{color:#174ca8;text-decoration:underline;text-underline-offset:2px;}
+.pl-book-flag{display:inline-flex;align-items:center;justify-content:center;gap:4px;color:#65758a;font-size:11px;white-space:nowrap;}
+.pl-book-flag.is-yes{color:#238457;font-weight:650;}
+.pl-book-flag.is-yes i{color:#28a66b;font-size:12px;}
+.pl-book-flag.is-yes small{margin-left:1px;color:#3f627f;font-size:11px;font-weight:650;}
+.pl-book-flag.is-na{color:#98a5b5;}
+.pl-book-flag.is-no{color:#64748b;}
+.pl-materiality{font-variant-numeric:tabular-nums;}
 .pl-empty{height:90px !important;color:#94a3b8 !important;text-align:center !important;}
 
 /* ===== 列筛选浮层 ===== */

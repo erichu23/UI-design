@@ -6,7 +6,7 @@
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/></noscript>
   <link rel="stylesheet" href="../assets/css/base.css?v=20260827-pager-select1"/>
-  <link rel="stylesheet" href="../assets/css/pages/project-list.css?v=20260827-search-icon1"/>
+  <link rel="stylesheet" href="../assets/css/pages/project-list.css?v=20260906-workbook-nowrap1"/>
 </head>
 <body>
   <div class="pl-page">
@@ -67,6 +67,11 @@
                   <th data-column="files"><div class="pl-th-inner"><span>接口文件总数</span><span class="pl-th-tools"><span class="pl-sort-icons"><button type="button" data-sort="files" data-direction="asc" aria-label="接口文件总数升序">▲</button><button type="button" data-sort="files" data-direction="desc" aria-label="接口文件总数降序">▼</button></span><button class="pl-filter-btn" type="button" data-filter="files" aria-label="筛选接口文件总数"><i class="fa-solid fa-filter" aria-hidden="true"></i></button></span></div></th>
                   <th data-column="updated"><div class="pl-th-inner"><span>更新日期</span><span class="pl-th-tools"><span class="pl-sort-icons"><button type="button" data-sort="updated" data-direction="asc" aria-label="更新日期升序">▲</button><button type="button" data-sort="updated" data-direction="desc" aria-label="更新日期降序">▼</button></span><button class="pl-filter-btn" type="button" data-filter="updated" aria-label="筛选更新日期"><i class="fa-solid fa-filter" aria-hidden="true"></i></button></span></div></th>
                   <th data-column="period"><div class="pl-th-inner"><span>分析期间</span><span class="pl-th-tools"><span class="pl-sort-icons"><button type="button" data-sort="period" data-direction="asc" aria-label="分析期间升序">▲</button><button type="button" data-sort="period" data-direction="desc" aria-label="分析期间降序">▼</button></span><button class="pl-filter-btn" type="button" data-filter="period" aria-label="筛选分析期间"><i class="fa-solid fa-filter" aria-hidden="true"></i></button></span></div></th>
+                  <th data-column="reportPeriod"><div class="pl-th-inner"><span>报告期间</span><span class="pl-th-tools"><span class="pl-sort-icons"><button type="button" data-sort="reportPeriod" data-direction="asc" aria-label="报告期间升序">▲</button><button type="button" data-sort="reportPeriod" data-direction="desc" aria-label="报告期间降序">▼</button></span><button class="pl-filter-btn" type="button" data-filter="reportPeriod" aria-label="筛选报告期间"><i class="fa-solid fa-filter" aria-hidden="true"></i></button></span></div></th>
+                  <th data-column="fiscalYearEnd"><div class="pl-th-inner"><span>财年结束日期</span><span class="pl-th-tools"><span class="pl-sort-icons"><button type="button" data-sort="fiscalYearEnd" data-direction="asc" aria-label="财年结束日期升序">▲</button><button type="button" data-sort="fiscalYearEnd" data-direction="desc" aria-label="财年结束日期降序">▼</button></span><button class="pl-filter-btn" type="button" data-filter="fiscalYearEnd" aria-label="筛选财年结束日期"><i class="fa-solid fa-filter" aria-hidden="true"></i></button></span></div></th>
+                  <th data-column="ipo"><div class="pl-th-inner"><span>IPO</span><span class="pl-th-tools"><span class="pl-sort-icons"><button type="button" data-sort="ipo" data-direction="asc" aria-label="IPO升序">▲</button><button type="button" data-sort="ipo" data-direction="desc" aria-label="IPO降序">▼</button></span><button class="pl-filter-btn" type="button" data-filter="ipo" aria-label="筛选IPO"><i class="fa-solid fa-filter" aria-hidden="true"></i></button></span></div></th>
+                  <th data-column="pie"><div class="pl-th-inner"><span>PIE</span><span class="pl-th-tools"><span class="pl-sort-icons"><button type="button" data-sort="pie" data-direction="asc" aria-label="PIE升序">▲</button><button type="button" data-sort="pie" data-direction="desc" aria-label="PIE降序">▼</button></span><button class="pl-filter-btn" type="button" data-filter="pie" aria-label="筛选PIE"><i class="fa-solid fa-filter" aria-hidden="true"></i></button></span></div></th>
+                  <th data-column="materiality"><div class="pl-th-inner"><span>重要性水平</span><span class="pl-th-tools"><span class="pl-sort-icons"><button type="button" data-sort="materiality" data-direction="asc" aria-label="重要性水平升序">▲</button><button type="button" data-sort="materiality" data-direction="desc" aria-label="重要性水平降序">▼</button></span><button class="pl-filter-btn" type="button" data-filter="materiality" aria-label="筛选重要性水平"><i class="fa-solid fa-filter" aria-hidden="true"></i></button></span></div></th>
                   <th>备注</th>
                   <th>操作</th>
                 </tr>
@@ -102,13 +107,13 @@
           <div class="pl-form-field pl-radio-field" id="newPieField" hidden><span>是否PIE</span><div class="pl-radio-options"><label><input type="radio" name="newWorkbookPie" value="yes"><span>是</span></label><label><input type="radio" name="newWorkbookPie" value="no" checked><span>否</span></label></div></div>
           <label class="pl-form-field pl-form-field-compact is-required" id="newCapitalMarketField"><span>资本市场</span><select id="newCapitalMarket" required><option value="">请选择</option><option value="A股">A股</option><option value="港股">港股</option><option value="美股">美股</option><option value="N/A">N/A</option></select></label>
           <label class="pl-form-field pl-form-field-compact is-required"><span>财年结束日期</span><select id="newFiscalYearEnd" required><option value="12-31" selected>12-31</option><option value="03-31">03-31</option><option value="06-30">06-30</option><option value="09-30">09-30</option></select></label>
-          <label class="pl-form-field pl-form-field-compact"><span>重要性水平</span><div class="pl-input-suffix"><input id="newMateriality" type="number" min="0" step="0.01" placeholder="请输入"><em>元</em></div><small>保存后自动带入资金流水核查底稿导出</small></label>
+          <label class="pl-form-field pl-form-field-compact is-required"><span>重要性水平</span><div class="pl-input-suffix"><input id="newMateriality" type="number" min="0.01" step="0.01" required placeholder="请输入重要性水平"><em>元</em></div><small>保存后自动带入资金流水核查底稿导出</small></label>
         </div>
         <div class="pl-modal-actions"><button class="pl-modal-secondary" type="button" data-create-close>取消</button><button class="pl-modal-primary" id="workbookFormSubmit" type="submit">创建工作簿</button></div>
       </form>
     </div>
   </div>
 
-  <script src="../assets/js/pages/project-list.js?v=20260813-project-list8"></script>
+  <script src="../assets/js/pages/project-list.js?v=20260906-workbook-hints1"></script>
 </body>
 </html>

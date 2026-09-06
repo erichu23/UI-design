@@ -33,7 +33,7 @@
   "dataManagementTabs": {
     "dataUpload": "数据上传",
     "dataValidation": "数据校验",
-    "analysisScopeControl": "分析范围管控"
+    "analysisScopeControl": "分析范围"
   },
   "fields": {
     "auditEntity": "被审计单位公司",
