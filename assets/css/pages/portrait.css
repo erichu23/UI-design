@@ -1897,3 +1897,33 @@ body #pane-biz #portraitCounterpartyTable tbody tr:hover td.portrait-type-cell.i
 body #pane-biz #portraitCounterpartyTable tbody tr:hover td.portrait-type-cell.is-supplier{
   background:#f1eadf !important;
 }
+
+/* 对手方汇总清单：首列数据内容左对齐，表头继续沿用平台居中样式。 */
+body #pane-biz #portraitCounterpartyTable tbody td:first-child{
+  padding-left:10px !important;
+  text-align:left !important;
+}
+
+/* 对手方汇总清单：表头、分组表头与全部数据内容统一左对齐。 */
+body #pane-biz #portraitCounterpartyTable.table th,
+body #pane-biz #portraitCounterpartyTable.table td{
+  text-align:left !important;
+}
+body #pane-biz #portraitCounterpartyTable.table th .ba-th-title{
+  justify-content:flex-start !important;
+  text-align:left !important;
+}
+body #pane-biz #portraitCounterpartyTable.table td.is-num,
+body #pane-biz #portraitCounterpartyTable.table td.amount-in,
+body #pane-biz #portraitCounterpartyTable.table td.amount-out,
+body #pane-biz #portraitCounterpartyTable.table .portrait-year-sub-head th{
+  text-align:center !important;
+}
+body #pane-biz #portraitCounterpartyTable.table .portrait-group-toggle-cell,
+body #pane-biz #portraitCounterpartyTable.table .portrait-year-head,
+body #pane-biz #portraitCounterpartyTable.table .portrait-operation-head,
+body #pane-biz #portraitCounterpartyTable.table .portrait-operation-cell,
+body #pane-biz #portraitCounterpartyTable.table .portrait-remark-head,
+body #pane-biz #portraitCounterpartyTable.table .portrait-remark-cell{
+  text-align:center !important;
+}

@@ -50,7 +50,7 @@
     search:'',
     sortKey:'updated',
     sortDirection:'desc',
-    filters:{name:'',files:'',updated:'',period:'',reportPeriod:'',fiscalYearEnd:'',ipo:'',pie:'',materiality:''}
+    filters:{name:'',files:'',updated:'',period:'',reportPeriod:'',fiscalYearEnd:[],ipo:[],pie:[],materiality:''}
   };
   let toastTimer = null;
 
@@ -89,6 +89,11 @@
     if (key === 'pie') return row.ipo === true ? '不适用' : row.pie === true ? `是 ${row.capitalMarket || ''}` : '否';
     return row[key] ?? '';
   };
+  const workbookSelectValue = (row, key) => {
+    if (key === 'ipo') return row.ipo === true ? `yes:${row.capitalMarket || 'unset'}` : 'no';
+    if (key === 'pie') return row.ipo === true ? 'na' : row.pie === true ? `yes:${row.capitalMarket || 'unset'}` : 'no';
+    return String(row[key] ?? '');
+  };
 
   const filteredRows = () => {
     const search = state.search.trim().toLowerCase();
@@ -96,6 +101,7 @@
     const filtered = workbooks.filter(row => {
       if (search && !projectMatched && String(row.name || '').trim().toLowerCase() !== search) return false;
       return Object.entries(state.filters).every(([key, value]) => {
+        if (Array.isArray(value)) return value.length === 0 || value.includes(workbookSelectValue(row,key));
         if (!value) return true;
         return String(workbookValue(row,key)).toLowerCase().includes(String(value).trim().toLowerCase());
       });
@@ -122,7 +128,8 @@
       button.classList.toggle('is-active', button.dataset.sort === state.sortKey && button.dataset.direction === state.sortDirection);
     });
     document.querySelectorAll('[data-filter]').forEach(button => {
-      button.classList.toggle('is-active', Boolean(state.filters[button.dataset.filter]));
+      const value = state.filters[button.dataset.filter];
+      button.classList.toggle('is-active', Array.isArray(value) ? value.length > 0 : Boolean(value));
     });
   };
 
@@ -180,11 +187,63 @@
 
   const closeFilterPopover = () => document.querySelector('.pl-filter-popover')?.remove();
   const filterLabels = {name:'工作簿名称',files:'接口文件总数',updated:'更新日期',period:'分析期间',reportPeriod:'报告期间',fiscalYearEnd:'财年结束日期',ipo:'IPO',pie:'PIE',materiality:'重要性水平'};
+  const selectFilterOptions = {
+    fiscalYearEnd:[['12-31','12-31'],['03-31','03-31'],['06-30','06-30'],['09-30','09-30']],
+    ipo:[['yes:A股','是（A股）'],['yes:港股','是（港股）'],['yes:美股','是（美股）'],['yes:N/A','是（N/A）'],['yes:unset','是（资本市场未填写）'],['no','否']],
+    pie:[['yes:A股','是（A股）'],['yes:港股','是（港股）'],['yes:美股','是（美股）'],['yes:N/A','是（N/A）'],['yes:unset','是（资本市场未填写）'],['no','否'],['na','不适用']]
+  };
+
+  const positionFilterPopover = (popover, button) => {
+    const rect = button.getBoundingClientRect();
+    const left = Math.min(rect.right - popover.offsetWidth, window.innerWidth - popover.offsetWidth - 8);
+    const resolvedLeft = Math.max(8, left);
+    popover.style.left = `${resolvedLeft}px`;
+    popover.style.top = `${Math.min(rect.bottom + 7, window.innerHeight - popover.offsetHeight - 8)}px`;
+    popover.style.setProperty('--pl-filter-arrow-left', `${Math.max(14, Math.min(popover.offsetWidth - 14, rect.left + rect.width / 2 - resolvedLeft))}px`);
+  };
 
   const openFilterPopover = (button, key) => {
     closeFilterPopover();
     const popover = document.createElement('div');
     popover.className = 'pl-filter-popover';
+    const selectOptions = selectFilterOptions[key];
+    if (selectOptions) {
+      const selected = new Set(Array.isArray(state.filters[key]) ? state.filters[key] : []);
+      const allSelected = selected.size === 0 || selectOptions.every(([value]) => selected.has(value));
+      popover.classList.add('is-select-filter');
+      popover.innerHTML = `
+        <div class="pl-filter-title">${filterLabels[key]}筛选</div>
+        <label class="pl-filter-select-all"><input type="checkbox" data-select-all ${allSelected ? 'checked' : ''}><span>全选</span></label>
+        <div class="pl-filter-options">
+          ${selectOptions.map(([value,label]) => `<label><input type="checkbox" value="${value}" ${allSelected || selected.has(value) ? 'checked' : ''}><span>${label}</span></label>`).join('')}
+        </div>
+        <div class="pl-filter-actions"><button class="pl-filter-clear" type="button">清空</button><button class="pl-filter-confirm" type="button">确定</button></div>
+      `;
+      document.body.appendChild(popover);
+      positionFilterPopover(popover,button);
+      const optionInputs = Array.from(popover.querySelectorAll('.pl-filter-options input'));
+      const selectAll = popover.querySelector('[data-select-all]');
+      const syncSelectAll = () => {
+        selectAll.checked = optionInputs.every(input => input.checked);
+        selectAll.indeterminate = !selectAll.checked && optionInputs.some(input => input.checked);
+      };
+      selectAll.addEventListener('change', () => optionInputs.forEach(input => { input.checked = selectAll.checked; }));
+      optionInputs.forEach(input => input.addEventListener('change',syncSelectAll));
+      popover.querySelector('.pl-filter-confirm').addEventListener('click', () => {
+        const checked = optionInputs.filter(input => input.checked).map(input => input.value);
+        state.filters[key] = checked.length === selectOptions.length ? [] : checked;
+        state.page = 1;
+        closeFilterPopover();
+        render();
+      });
+      popover.querySelector('.pl-filter-clear').addEventListener('click', () => {
+        state.filters[key] = [];
+        state.page = 1;
+        closeFilterPopover();
+        render();
+      });
+      return;
+    }
     const numericFilter = key === 'files' || key === 'materiality';
     const inputType = numericFilter ? 'number' : 'text';
     const placeholder = key === 'files' ? '请输入文件数量' : `请输入${filterLabels[key]}`;
@@ -194,10 +253,7 @@
       <div class="pl-filter-actions"><button class="pl-filter-clear" type="button">清空</button><button class="pl-filter-confirm" type="button">确定</button></div>
     `;
     document.body.appendChild(popover);
-    const rect = button.getBoundingClientRect();
-    const left = Math.min(rect.right - popover.offsetWidth, window.innerWidth - popover.offsetWidth - 8);
-    popover.style.left = `${Math.max(8, left)}px`;
-    popover.style.top = `${Math.min(rect.bottom + 5, window.innerHeight - popover.offsetHeight - 8)}px`;
+    positionFilterPopover(popover,button);
     const input = popover.querySelector('input');
     const apply = () => {
       state.filters[key] = input.value.trim();
@@ -451,7 +507,7 @@
 
     const wasEditing = editingIndex >= 0;
     state.search = '';
-    state.filters = {name:'',files:'',updated:'',period:'',reportPeriod:'',fiscalYearEnd:'',ipo:'',pie:'',materiality:''};
+    state.filters = {name:'',files:'',updated:'',period:'',reportPeriod:'',fiscalYearEnd:[],ipo:[],pie:[],materiality:''};
     state.sortKey = 'updated';
     state.sortDirection = 'desc';
     state.page = 1;

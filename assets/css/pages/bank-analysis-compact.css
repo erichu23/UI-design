@@ -4851,3 +4851,32 @@ body #tblAccountSummary .dm-account-action-btn svg{
 body #tblAccountSummary .dm-account-action-btn:hover svg{
   stroke:#174f9b !important;
 }
+
+/* 账号总览与资金总览：仅将第一列数据内容左对齐。 */
+body #tblAccountSummary tbody td:first-child{
+  padding-left:10px !important;
+  text-align:left !important;
+}
+
+/* 账号总览与资金总览整表统一左对齐。 */
+body #tblAccountSummary.table th,
+body #tblAccountSummary.table td{
+  text-align:left !important;
+}
+body #tblAccountSummary.table th .ba-th-title{
+  justify-content:flex-start !important;
+  text-align:left !important;
+}
+body #tblAccountSummary.table td.is-num,
+body #tblAccountSummary.table td.amount-in,
+body #tblAccountSummary.table td.amount-out{
+  text-align:center !important;
+}
+body #tblAccountSummary.table .account-year-head,
+body #tblAccountSummary.table .account-group-toggle-cell,
+body #tblAccountSummary.table .account-direction-head th,
+body #tblAccountSummary.table .account-metric-symbol-head th,
+body #tblAccountSummary.table td.actions,
+body #tblAccountSummary.table .account-action-sticky{
+  text-align:center !important;
+}

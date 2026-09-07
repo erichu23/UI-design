@@ -11,10 +11,10 @@
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260811-data-management19"/>
   <link rel="stylesheet" href="../assets/css/pages/account.css?v=20260811-data-management19"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260827-pager-select1"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260906-flow-zoom5"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260907-table-align3"/>
   <link rel="stylesheet" href="../assets/css/pages/data-upload.css?v=20260828-upload-status4"/>
   <link rel="stylesheet" href="../assets/css/pages/data-validation.css?v=20260827-pager-select1"/>
-  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260906-scope-firstcol1"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260907-scope-columns1"/>
   <title>数据上传及管理</title>
   <script>
     if (new URLSearchParams(location.search).get('embed')) {
@@ -1487,14 +1487,21 @@
       const sourceState=(value,label)=>`<span class="dm-master-source-state ${value?'is-present':'is-absent'}" title="${value?label:'无对应记录'}" aria-label="${value?label:'无对应记录'}"></span><span class="dm-source-filter-value">${value?'有':'无'}</span>`;
       const refreshCompanyMerge=()=>{
         const rendered=[...body.rows];
-        rendered.forEach(row=>row.classList.remove('has-company-continuation','is-company-continuation'));
-        const visible=rendered.filter(row=>row.style.display!=='none');
-        visible.forEach((row,index)=>{
-          const previous=visible[index-1];
-          const next=visible[index+1];
-          if(previous?.dataset.company===row.dataset.company)row.classList.add('is-company-continuation');
-          if(next?.dataset.company===row.dataset.company)row.classList.add('has-company-continuation');
-        });
+        rendered.forEach(row=>{const cell=row.cells[0];if(!cell)return;cell.rowSpan=1;cell.hidden=false;});
+        let start=0;
+        while(start<rendered.length){
+          const company=rendered[start].dataset.company;
+          let end=start+1;
+          while(end<rendered.length&&rendered[end].dataset.company===company)end+=1;
+          const visibleIndexes=[];
+          for(let index=start;index<end;index+=1){if(rendered[index].style.display!=='none')visibleIndexes.push(index);}
+          if(visibleIndexes.length>1){
+            const first=visibleIndexes[0],last=visibleIndexes[visibleIndexes.length-1];
+            rendered[first].cells[0].rowSpan=last-first+1;
+            for(let index=first+1;index<=last;index+=1)rendered[index].cells[0].hidden=true;
+          }
+          start=end;
+        }
       };
       const render=()=>{
         const maxPage=Math.max(1,Math.ceil(rows.length/state.pageSize));

@@ -1749,3 +1749,67 @@ body.dm-check-drawer-open{overflow:hidden;}
   justify-content:flex-start !important;
   text-align:left !important;
 }
+
+/* 上下两张范围表共用公司名称列宽；账号分组名称在合并区域左侧垂直居中。 */
+.data-management-page #pane-scope-control #dmMasterCheckTable th:first-child,
+.data-management-page #pane-scope-control #dmMasterCheckTable td:first-child,
+.data-management-page #pane-scope-control #dmAccountScopeTable th:first-child,
+.data-management-page #pane-scope-control #dmAccountScopeTable td:first-child{
+  box-sizing:border-box;
+  width:220px !important;
+  min-width:220px !important;
+  max-width:220px !important;
+}
+.data-management-page #pane-scope-control #dmAccountScopeTable .dm-account-company-cell{
+  padding-left:12px !important;
+  text-align:left !important;
+  vertical-align:middle !important;
+}
+
+/* 数据校验账号总览：表头及全部内容统一左对齐。 */
+.data-management-page #checkScope #tblAccountSummary.table th,
+.data-management-page #checkScope #tblAccountSummary.table td{
+  text-align:left !important;
+}
+.data-management-page #checkScope #tblAccountSummary.table th .ba-th-title{
+  justify-content:flex-start !important;
+  text-align:left !important;
+}
+.data-management-page #checkScope #tblAccountSummary.table td.is-num,
+.data-management-page #checkScope #tblAccountSummary.table td.amount-in,
+.data-management-page #checkScope #tblAccountSummary.table td.amount-out{
+  text-align:center !important;
+}
+.data-management-page #checkScope #tblAccountSummary.table .account-year-head,
+.data-management-page #checkScope #tblAccountSummary.table .account-group-toggle-cell,
+.data-management-page #checkScope #tblAccountSummary.table .account-direction-head th,
+.data-management-page #checkScope #tblAccountSummary.table .account-metric-symbol-head th,
+.data-management-page #checkScope #tblAccountSummary.table td.actions,
+.data-management-page #checkScope #tblAccountSummary.table .account-action-sticky{
+  text-align:center !important;
+}
+
+/* 分析范围：清单编码/关系字段及账号字段采用文本列左对齐。 */
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(2),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(2),
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(3),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(3),
+.data-management-page #pane-scope-control #dmRelatedMasterTable th:nth-child(2),
+.data-management-page #pane-scope-control #dmRelatedMasterTable td:nth-child(2),
+.data-management-page #pane-scope-control #dmRelatedMasterTable th:nth-child(3),
+.data-management-page #pane-scope-control #dmRelatedMasterTable td:nth-child(3),
+.data-management-page #pane-scope-control #dmAccountScopeTable th:nth-child(2),
+.data-management-page #pane-scope-control #dmAccountScopeTable td:nth-child(2){
+  text-align:left !important;
+}
+
+/* 两张范围表的备注输入框铺满单元格内容区。 */
+.data-management-page #pane-scope-control .dm-master-note,
+.data-management-page #pane-scope-control .dm-account-scope-note{
+  display:block !important;
+  box-sizing:border-box !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  margin:0 !important;
+}
