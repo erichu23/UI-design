@@ -53,7 +53,7 @@
   addGeneratedRows(sourceCustomerNames,'客户',0);
   addGeneratedRows(sourceSupplierNames,'供应商',45);
   addGeneratedRows(sourceOtherNames,'其他',90);
-  const charts={}; let mode='inflow',featureView='customer',monthlyYear='all',sortKey='',sortDir=1,page=1,pageSize=20,tableView='summary',yearExpanded=true,counterpartyFilter='all',portraitKpisHidden=false;
+  const charts={}; let mode='inflow',featureView='customer',monthlyYear='all',monthlyLayout='combined',monthlyZoomStart=0,monthlyZoomEnd=100,sortKey='',sortDir=1,page=1,pageSize=20,tableView='summary',yearExpanded=true,counterpartyFilter='all',portraitKpisHidden=false,businessInfoReady=false,businessInfoLoading=false;
   let relationMode='total',relationFilter='related',relationPage=1,relationPageSize=20,relationTableView='summary',relationYearExpanded=false,relationSortKey='',relationSortDir=1,relationKpisHidden=false;
   let personalMode='total',personalFilter='all',personalPage=1,personalPageSize=20,personalTableView='summary',personalYearExpanded=false,personalSortKey='',personalSortDir=1,personalKpisHidden=false;
   const fmt=v=>v?Number(v).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';
@@ -189,6 +189,22 @@
   const blacklistLabel=row=>blacklistHit(row)?'命中':'未命中';
   const blacklistIndicator=hit=>hit?'<span class="counterparty-blacklist-indicator" role="img" aria-label="命中黑名单">i</span>':'';
   const blacklistCell=(row,extraClass='')=>{const hit=blacklistHit(row);return `<td class="counterparty-blacklist-cell ${extraClass} ${hit?'is-hit':''}">${blacklistIndicator(hit)}</td>`;};
+  const lawsuitCount=row=>{
+    const index=Math.max(0,rowIndex(row));
+    return (index*7+3)%18;
+  };
+  const businessInlineControl=(compact=false)=>businessInfoLoading
+    ? compact
+      ? `<span class="portrait-business-compact-loading"><span class="portrait-business-compact-progress"><i aria-hidden="true"></i><em>0%</em></span><strong>${businessInfoReady?'正在更新':'正在获取'}</strong></span>`
+      : `<span class="portrait-business-loading-state"><strong>${businessInfoReady?'正在重新获取工商信息':'正在获取工商信息'}</strong><span class="portrait-business-gate-progress-row"><span class="portrait-business-gate-progress"><i></i></span><em>0%</em></span></span>`
+    : '<button type="button" data-business-gate-fetch title="获取工商信息" aria-label="获取工商信息"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 4.5 4.5"/></svg><span>获取工商信息</span></button>';
+  const dishonestCell=(row,extraClass='',showFetch=false)=>businessInfoReady
+    ? `<td class="portrait-dishonest-cell portrait-business-data-cell ${showFetch&&businessInfoLoading?'has-risk-inline':''} ${extraClass}" data-filter-value="未命中">${showFetch&&businessInfoLoading?`<div class="portrait-risk-inline-state is-refreshing">${businessInlineControl(true)}</div>`:''}</td>`
+    : `<td class="portrait-dishonest-cell portrait-business-data-cell portrait-business-pending ${businessInfoLoading?'is-loading':''} ${showFetch?'has-risk-inline':''} ${extraClass}">${showFetch?`<div class="portrait-risk-inline-state">${businessInlineControl(true)}</div>`:''}</td>`;
+  const lawsuitCell=(row,extraClass='')=>businessInfoReady
+    ? `<td class="portrait-lawsuit-cell portrait-business-data-cell is-num ${extraClass}">${lawsuitCount(row)}</td>`
+    : `<td class="portrait-lawsuit-cell portrait-business-data-cell portrait-business-pending ${businessInfoLoading?'is-loading':''} ${extraClass}"></td>`;
+  const businessRiskCells=(row,showFetch=false)=>dishonestCell(row,'portrait-fixed-col portrait-fixed-col-3',showFetch)+lawsuitCell(row,'portrait-fixed-col portrait-fixed-col-4');
   const businessInfo=row=>{
     const idx=rows.findIndex(r=>r.name===row.name);
     const start=2014+(idx%8);
@@ -200,12 +216,23 @@
       start:`${start}-${month}-${day}`,
       end:idx%7===0?'2035-12-31':'长期',
       term:idx%7===0?`${21-idx%5}年`:'长期',
+      operatingDays:Math.max(365,Math.round((new Date('2025-12-31')-new Date(`${start}-${month}-${day}`))/86400000)),
       capital:((idx%9)+1)*1000,
       currency:capitalCurrency[idx%capitalCurrency.length],
+      industry:row.industry,
       scope:row.type==='客户'?'设备销售、技术服务、电子产品批发':'原材料采购、仓储物流、供应链服务',
+      personnelScale:['50-99人','100-199人','200-499人','500-999人'][idx%4],
+      insuredCount:[68,126,245,517,93,184][idx%6],
+      legalPersonType:['自然人','法人独资','其他组织'][idx%3],
+      companyType:['有限责任公司','股份有限公司','个人独资企业','个体工商户'][idx%4],
       address:['上海市浦东新区','深圳市南山区','苏州市工业园区','杭州市余杭区','成都市高新区'][idx%5],
       contact:`021-${String(60000000+idx*1379).slice(0,8)}`,
-      people:row.people
+      people:row.people,
+      directors:['张明远、陈静','李伟、王敏','赵晨、周宁'][idx%3],
+      supervisors:['刘洋','孙悦','吴昊'][idx%3],
+      executives:['陈静、刘洋','王敏、周宁','赵晨、吴昊'][idx%3],
+      shareholders:['华东制造集团有限公司','上海产业投资有限公司','自然人股东'][idx%3],
+      keyPersonnel:['张明远、陈静、刘洋','李伟、王敏、孙悦','赵晨、周宁、吴昊'][idx%3]
     };
   };
   const portraitRemarks={};
@@ -229,6 +256,76 @@
       remark:portraitRemarks[row.name]||''
     };
   };
+  const portraitTransactionDetailDefs=[
+    {key:'businessStatus',label:'经营状态',source:'business',field:'status'},
+    {key:'founded',label:'成立日期',source:'business',field:'founded'},
+    {key:'businessStart',label:'经营开始时间',source:'business',field:'start',defaultHidden:true},
+    {key:'businessEnd',label:'经营结束时间',source:'business',field:'end',defaultHidden:true},
+    {key:'businessTerm',label:'营业期限',source:'business',field:'term'},
+    {key:'operatingDays',label:'经营天数',source:'business',field:'operatingDays',numeric:true},
+    {key:'registeredCapital',label:'注册资本',source:'business',field:'capital',numeric:true},
+    {key:'capitalCurrency',label:'注册资本币种',source:'business',field:'currency'},
+    {key:'industry',label:'行业',source:'business',field:'industry'},
+    {key:'businessScope',label:'经营范围',source:'business',field:'scope'},
+    {key:'personnelScale',label:'人员规模',source:'business',field:'personnelScale'},
+    {key:'insuredCount',label:'参保人数',source:'business',field:'insuredCount',numeric:true},
+    {key:'legalPersonType',label:'法人类型',source:'business',field:'legalPersonType',defaultHidden:true},
+    {key:'companyType',label:'公司类型',source:'business',field:'companyType'},
+    {key:'registeredAddress',label:'注册地址',source:'business',field:'address'},
+    {key:'businessContact',label:'企业联系方式',source:'business',field:'contact'},
+    {key:'directors',label:'董事',source:'business',field:'directors'},
+    {key:'supervisors',label:'监事',source:'business',field:'supervisors'},
+    {key:'executives',label:'高管',source:'business',field:'executives'},
+    {key:'shareholders',label:'股东',source:'business',field:'shareholders'},
+    {key:'keyPersonnel',label:'主要人员',source:'business',field:'keyPersonnel'},
+    {key:'position',label:'职位',source:'master',field:'position',defaultHidden:true,noFilter:true},
+    {key:'employeeHireDate',label:'员工入职日期',source:'master',field:'employeeHireDate',defaultHidden:true,noFilter:true},
+    {key:'employeeLeaveDate',label:'员工离职日期',source:'master',field:'employeeLeaveDate',defaultHidden:true,noFilter:true},
+    {key:'group',label:'所属集团',source:'master',field:'group',defaultHidden:true,noFilter:true}
+  ];
+  const portraitTransactionDetailValue=(row,def)=>{
+    if(def.source==='business'&&!businessInfoReady)return '';
+    const source=def.source==='master'?counterpartyMasterInfo(row):businessInfo(row);
+    return source[def.field]??'—';
+  };
+  const portraitFilterOnlyDetailKeys=new Set([
+    'businessStatus','businessTerm','capitalCurrency','industry','businessScope','personnelScale','companyType',
+    'registeredAddress','businessContact','directors','supervisors','executives','shareholders','keyPersonnel'
+  ]);
+  const portraitTransactionDetailHeaders=()=>portraitTransactionDetailDefs.map(def=>{
+    const filterOnly=portraitFilterOnlyDetailKeys.has(def.key);
+    const classes=['portrait-detail-head',def.source==='business'?'portrait-business-data-head':'',filterOnly?'portrait-filter-only':'',def.noFilter?'no-filter':''].filter(Boolean).join(' ');
+    return `<th rowspan="2" class="${classes}" data-detail-key="${def.key}" ${filterOnly?'':`data-sort="${def.key}"`} ${def.defaultHidden?'data-default-hidden="true"':''}>${def.label}</th>`;
+  }).join('');
+  const portraitTransactionDetailCells=row=>{
+    return portraitTransactionDetailDefs.map(def=>{
+    const value=portraitTransactionDetailValue(row,def);
+    const pending=def.source==='business'&&!businessInfoReady;
+    return `<td class="portrait-detail-cell ${def.source==='business'?'portrait-business-data-cell':''} ${def.numeric?'is-num':''} ${pending?'portrait-business-pending':''} ${pending&&businessInfoLoading?'is-loading':''}" data-detail-key="${def.key}" ${value?`title="${esc(value)}"`:''}>${esc(value)}</td>`;
+    }).join('');
+  };
+
+  function syncBusinessDetailState(){
+    const body=document.getElementById('portraitCounterpartyBody');
+    if(!body)return;
+    body.querySelectorAll('.portrait-detail-inline-state').forEach(node=>node.remove());
+    body.querySelectorAll('td.has-detail-inline').forEach(cell=>cell.classList.remove('has-detail-inline'));
+    if(businessInfoReady&&!businessInfoLoading)return;
+    const firstRow=body.rows[0];
+    if(!firstRow)return;
+    const visibleCells=[...firstRow.querySelectorAll('td.portrait-detail-cell.portrait-business-data-cell')]
+      .filter(cell=>getComputedStyle(cell).display!=='none'&&cell.getBoundingClientRect().width>0);
+    const anchor=visibleCells[0];
+    if(!anchor)return;
+    anchor.classList.add('has-detail-inline');
+    const state=document.createElement('div');
+    state.className=`portrait-detail-inline-state${businessInfoReady&&businessInfoLoading?' is-refreshing':''}`;
+    state.innerHTML=businessInlineControl();
+    const startRect=anchor.getBoundingClientRect();
+    const endRect=visibleCells[visibleCells.length-1].getBoundingClientRect();
+    state.style.width=`${Math.max(startRect.width,endRect.right-startRect.left)}px`;
+    anchor.appendChild(state);
+  }
   const portraitActionIcon=type=>{
     const paths={
       tianyancha:'<path d="M12 2.5 19 5v5.4c0 4.6-2.8 8.7-7 10.6-4.2-1.9-7-6-7-10.6V5Z"/><text x="12" y="14.9" text-anchor="middle">天</text>',
@@ -486,9 +583,9 @@
     const yearHeads=yearExpanded?years.map(y=>`<th colspan="${portraitMetricDefs.length}" class="portrait-year-head">${window.auditFiscalYearLabel?.(y)||y}</th>`).join(''):'';
     const yearSubs=yearExpanded?years.map(()=>portraitMetricDefs.map(metric=>`<th class="audit-period-metric portrait-year-detail-head no-sort" ${metric.defaultHidden?'data-default-hidden="true"':''}>${metric.label}</th>`).join('')).join(''):'';
     if(tableView==='business'){
-      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-1">对手方名称</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-2 no-filter" data-sort="blacklist">黑名单</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-3">对手方类型</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-4">行业</th><th colspan="${portraitMetricDefs.length}" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="portraitYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2">经营状态</th><th rowspan="2">成立日期</th><th rowspan="2">经营开始时间</th><th rowspan="2">经营结束时间</th><th rowspan="2">营业期限</th><th rowspan="2">注册资本</th><th rowspan="2">币种</th><th rowspan="2">经营范围</th><th rowspan="2">注册地址</th><th rowspan="2">企业联系方式</th><th rowspan="2">董监高</th></tr><tr class="portrait-year-sub-head">${metricHeaders}${yearSubs}</tr>`;
+      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-1">对手方名称</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-2 no-filter" data-sort="blacklist">黑名单</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-3 portrait-compact-risk-head portrait-dishonest-head portrait-filter-only"><span>失信被<br>执行人</span></th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-4 portrait-compact-risk-head" data-sort="lawsuitCount"><span>诉讼<br>数量</span></th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-5"><span class="portrait-type-head-label">对手方<br>类型</span></th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-6">行业</th><th colspan="${portraitMetricDefs.length}" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="portraitYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2">经营状态</th><th rowspan="2">成立日期</th><th rowspan="2">经营开始时间</th><th rowspan="2">经营结束时间</th><th rowspan="2">营业期限</th><th rowspan="2">注册资本</th><th rowspan="2">币种</th><th rowspan="2">经营范围</th><th rowspan="2">注册地址</th><th rowspan="2">企业联系方式</th><th rowspan="2">董监高</th></tr><tr class="portrait-year-sub-head">${metricHeaders}${yearSubs}</tr>`;
     }else{
-      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-1" data-sort="name">对手方名称</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-2 no-filter" data-sort="blacklist">黑名单</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-3">月度分布</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-4" data-sort="type">对手方类型</th><th colspan="${portraitMetricDefs.length}" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="portraitYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2" class="no-filter" data-sort="salesCategory">销售类别</th><th rowspan="2" class="no-filter" data-sort="purchaseCategory">采购类别</th><th rowspan="2" class="no-filter" data-sort="position">职位</th><th rowspan="2" class="no-filter" data-sort="employeeHireDate">员工入职日期</th><th rowspan="2" class="no-filter" data-sort="employeeLeaveDate">员工离职日期</th><th rowspan="2" class="no-filter" data-sort="group">所属集团</th><th rowspan="2" class="portrait-remark-head">备注说明</th><th rowspan="2" class="no-sort portrait-operation-head portrait-operation-sticky">操作</th></tr><tr class="portrait-year-sub-head">${metricHeaders}${yearSubs}</tr>`;
+      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-1" data-sort="name">对手方名称</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-2 no-filter" data-sort="blacklist">黑名单</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-3 portrait-compact-risk-head portrait-dishonest-head portrait-business-data-head portrait-filter-only"><span>失信被<br>执行人</span></th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-4 portrait-compact-risk-head portrait-business-data-head" data-sort="lawsuitCount"><span>诉讼<br>数量</span></th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-5">月度分布</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-6" data-sort="type"><span class="portrait-type-head-label">对手方<br>类型</span></th><th colspan="${portraitMetricDefs.length}" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="portraitYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}${portraitTransactionDetailHeaders()}<th rowspan="2" class="portrait-remark-head">备注说明</th><th rowspan="2" class="no-sort portrait-operation-head portrait-operation-sticky">操作</th></tr><tr class="portrait-year-sub-head">${metricHeaders}${yearSubs}</tr>`;
     }
     document.getElementById('portraitYearToggle')?.addEventListener('click',()=>{yearExpanded=!yearExpanded;renderTable();});
   }
@@ -500,7 +597,9 @@
     if(key==='outflowCount')return row.count-Math.round(row.count*row.inflow/Math.max(1,row.inflow+row.outflow));
     if(key==='type')return displayType(row);
     if(key==='blacklist')return blacklistHit(row)?1:0;
-    if(['salesCategory','purchaseCategory','position','customerApprovalDate','customerInvalidDate','supplierApprovalDate','supplierInvalidDate','employeeHireDate','employeeLeaveDate','group'].includes(key))return counterpartyMasterInfo(row)[key];
+    if(key==='lawsuitCount')return lawsuitCount(row);
+    const transactionDetail=portraitTransactionDetailDefs.find(def=>def.key===key);
+    if(transactionDetail)return portraitTransactionDetailValue(row,transactionDetail);
     return row[key]??'';
   }
   function refreshTableTools(){
@@ -551,13 +650,13 @@
     let colgroup=table.querySelector('colgroup');
     if(!colgroup){colgroup=document.createElement('colgroup');table.insertBefore(colgroup,table.firstChild);}
     const leading=tableView==='business'
-      ? '<col class="portrait-name-col"><col class="portrait-small-col"><col class="portrait-type-col"><col class="portrait-industry-col">'
-      : '<col class="portrait-name-col"><col class="portrait-small-col"><col class="portrait-monthly-col"><col class="portrait-type-col">';
+      ? '<col class="portrait-name-col"><col class="portrait-small-col"><col class="portrait-dishonest-col"><col class="portrait-lawsuit-col"><col class="portrait-type-col"><col class="portrait-industry-col">'
+      : '<col class="portrait-name-col"><col class="portrait-small-col"><col class="portrait-dishonest-col"><col class="portrait-lawsuit-col"><col class="portrait-monthly-col"><col class="portrait-type-col">';
     const metric='<col class="portrait-metric-col">'.repeat(portraitMetricDefs.length);
     const yearMetric=yearExpanded?'<col class="portrait-year-metric-col">'.repeat(years.length*portraitMetricDefs.length):'';
     const trailing=tableView==='business'
       ? '<col class="portrait-flex-col">'.repeat(11)
-      : '<col class="portrait-flex-col">'.repeat(7)+'<col class="portrait-operation-col">';
+      : portraitTransactionDetailDefs.map(def=>`<col class="portrait-detail-col" data-detail-key="${def.key}">`).join('')+'<col class="portrait-flex-col portrait-remark-col"><col class="portrait-operation-col">';
     colgroup.innerHTML=leading+metric+yearMetric+trailing;
   }
   function renderTable(){
@@ -581,16 +680,20 @@
       const shownType=displayType(r),shownTypeClass=typeClass(shownType);
       if(tableView==='business'){
         const bi=businessInfo(r);
-        return `<tr><td class="portrait-fixed-col portrait-fixed-col-1">${esc(r.name)}</td>${blacklistCell(r,'portrait-fixed-col portrait-fixed-col-2')}<td class="portrait-type-cell portrait-fixed-col portrait-fixed-col-3 ${shownTypeClass}">${esc(shownType)}</td><td class="portrait-fixed-col portrait-fixed-col-4">${esc(r.industry)}</td>${groupCells(r,null,aggregateTotals)}${yearsCells}<td>${bi.status}</td><td>${bi.founded}</td><td>${bi.start}</td><td>${bi.end}</td><td>${bi.term}</td><td class="is-num">${bi.capital}</td><td>${bi.currency}</td><td>${esc(bi.scope)}</td><td>${esc(bi.address)}</td><td>${bi.contact}</td><td>${esc(bi.people)}</td></tr>`;
+        return `<tr><td class="portrait-fixed-col portrait-fixed-col-1">${esc(r.name)}</td>${blacklistCell(r,'portrait-fixed-col portrait-fixed-col-2')}${businessRiskCells(r,i===0)}<td class="portrait-type-cell portrait-fixed-col portrait-fixed-col-5 ${shownTypeClass}">${esc(shownType)}</td><td class="portrait-fixed-col portrait-fixed-col-6">${esc(r.industry)}</td>${groupCells(r,null,aggregateTotals)}${yearsCells}<td>${bi.status}</td><td>${bi.founded}</td><td>${bi.start}</td><td>${bi.end}</td><td>${bi.term}</td><td class="is-num">${bi.capital}</td><td>${bi.currency}</td><td>${esc(bi.scope)}</td><td>${esc(bi.address)}</td><td>${bi.contact}</td><td>${esc(bi.people)}</td></tr>`;
       }
       const master=counterpartyMasterInfo(r);
-      return `<tr><td class="portrait-fixed-col portrait-fixed-col-1">${esc(r.name)}</td>${blacklistCell(r,'portrait-fixed-col portrait-fixed-col-2')}<td class="portrait-fixed-col portrait-fixed-col-3">${mini(r,start+i)}</td><td class="portrait-type-cell portrait-fixed-col portrait-fixed-col-4 ${shownTypeClass}">${esc(shownType)}</td>${groupCells(r,null,aggregateTotals)}${yearsCells}<td>${esc(master.salesCategory)}</td><td>${esc(master.purchaseCategory)}</td><td>${esc(master.position)}</td><td>${master.employeeHireDate}</td><td>${master.employeeLeaveDate}</td><td>${esc(master.group)}</td><td class="portrait-remark-cell">${master.remark?esc(master.remark):'<span>—</span>'}</td><td class="portrait-operation-cell portrait-operation-sticky">${portraitActionButtons(r)}</td></tr>`;
+      return `<tr><td class="portrait-fixed-col portrait-fixed-col-1">${esc(r.name)}</td>${blacklistCell(r,'portrait-fixed-col portrait-fixed-col-2')}${businessRiskCells(r,i===0)}<td class="portrait-fixed-col portrait-fixed-col-5">${mini(r,start+i)}</td><td class="portrait-type-cell portrait-fixed-col portrait-fixed-col-6 ${shownTypeClass}">${esc(shownType)}</td>${groupCells(r,null,aggregateTotals)}${yearsCells}${portraitTransactionDetailCells(r)}<td class="portrait-remark-cell">${master.remark?esc(master.remark):'<span>—</span>'}</td><td class="portrait-operation-cell portrait-operation-sticky">${portraitActionButtons(r)}</td></tr>`;
     }).join('');
+    const table=document.getElementById('portraitCounterpartyTable');
+    table?.style.setProperty('--portrait-business-body-height',`${Math.max(body.offsetHeight,34)}px`);
     syncCounterpartyTypeCells(body);
     bindPortraitRowActions(body);
     document.getElementById('portraitTableCount').textContent=`共 ${total} 家对手方，当前展示 ${total?start+1:0}-${Math.min(start+pageSize,total)} / ${total}`;
     document.querySelectorAll('#portraitCounterpartyTable th[data-sort]').forEach(th=>{th.classList.toggle('is-asc',sortKey===th.dataset.sort&&sortDir===1);th.classList.toggle('is-desc',sortKey===th.dataset.sort&&sortDir===-1);th.onclick=()=>{if(sortKey===th.dataset.sort)sortDir*=-1;else{sortKey=th.dataset.sort;sortDir=1;}renderTable();};});
     refreshTableTools();
+    syncBusinessDetailState();
+    window.requestAnimationFrame(syncBusinessDetailState);
     const pager=document.getElementById('portraitPager');
     if(pager)window.renderAuditPager?.(pager,{total,page,pageSize,onPage:next=>{page=next;renderTable();},onPageSize:size=>{pageSize=size;page=1;renderTable();}});
   }
@@ -892,25 +995,32 @@
       {name:'供应商流出',type:'供应商',key:'outflow',stack:'outflow',color:'#df88a0'},
       {name:'其他流出',type:'其他',key:'outflow',stack:'outflow',color:'#f1c5d2'}
     ];
+    const splitLayout=monthlyLayout==='split';
     const series=groups.map(group=>({
       name:group.name,type:'bar',stack:group.stack,barMaxWidth:10,barGap:'20%',barCategoryGap:'34%',
-      itemStyle:{color:group.color,borderRadius:group.name.startsWith('其他')?[2,2,0,0]:0},
+      itemStyle:{color:group.color,borderRadius:group.name.startsWith('其他')?(splitLayout&&group.key==='outflow'?[0,0,2,2]:[2,2,0,0]):0},
       emphasis:{focus:'series'},
-      data:points.map(point=>{const raw=+rows.filter(row=>row.type===group.type||(group.type==='其他'&&row.type!=='客户'&&row.type!=='供应商')).reduce((sum,row)=>sum+monthlyYearMetricValue(row,point.monthIndex,group.key,point.year),0).toFixed(1);return {value:chartAmount(raw),raw};})
+      data:points.map(point=>{const raw=+rows.filter(row=>row.type===group.type||(group.type==='其他'&&row.type!=='客户'&&row.type!=='供应商')).reduce((sum,row)=>sum+monthlyYearMetricValue(row,point.monthIndex,group.key,point.year),0).toFixed(1);const amount=chartAmount(raw);return {value:splitLayout&&group.key==='outflow'?-amount:amount,raw};})
     }));
+    const categoryAxis={type:'category',data:points.map(point=>point.label),axisTick:{show:true,alignWithLabel:true,lineStyle:{color:'#cbd5e1'}},axisLine:{lineStyle:{color:'#cbd5e1'}},axisLabel:{fontSize:9,color:'#64748b',interval:selectedYears.length>1?2:0,hideOverlap:true}};
+    const splitLimit=splitLayout?Math.max(1,...points.map((_,index)=>Math.max(series.filter(item=>item.stack==='inflow').reduce((sum,item)=>sum+Math.abs(Number(item.data[index]?.value)||0),0),series.filter(item=>item.stack==='outflow').reduce((sum,item)=>sum+Math.abs(Number(item.data[index]?.value)||0),0))))*1.08:null;
+    const valueAxis={type:'value',...(splitLayout?{min:-splitLimit,max:splitLimit}:{min:0}),name:`金额（${chartUnit}）`,nameGap:10,nameTextStyle:{fontSize:9,color:'#94a3b8',align:'left'},axisLine:{show:false},axisTick:{show:false},axisLabel:{show:true,color:'#64748b',fontSize:9,margin:7,hideOverlap:true,formatter:value=>Math.abs(Number(value)).toLocaleString('zh-CN',{maximumFractionDigits:1})},splitLine:{lineStyle:{color:'#edf2f7'}}};
     return {
       animationDuration:420,
       tooltip:{trigger:'axis',appendToBody:true,confine:false,axisPointer:{type:'shadow'},extraCssText:'z-index:10050;box-shadow:0 6px 20px rgba(15,23,42,.14);',formatter:params=>{const list=Array.isArray(params)?params:[];const point=points[list[0]?.dataIndex||0];return `<b>${point?.year||''}年${String((point?.monthIndex||0)+1).padStart(2,'0')}月</b><br/>${list.map(item=>`${item.marker}${item.seriesName}：${fmtAmount(item.data?.raw||0)}`).join('<br/>')}`;}},
       legend:{top:0,right:4,itemWidth:9,itemHeight:6,itemGap:8,textStyle:{fontSize:9,color:'#64748b'},selectedMode:false},
       grid:{left:52,right:16,top:34,bottom:54},
-      dataZoom:[{type:'inside',start:0,end:100,zoomOnMouseWheel:false,moveOnMouseWheel:true},{type:'slider',start:0,end:100,height:10,bottom:5,showDetail:false,brushSelect:false,handleSize:0,borderColor:'transparent',backgroundColor:'#eef2f7',fillerColor:'rgba(47,111,237,.14)'}],
-      xAxis:{type:'category',data:points.map(point=>point.label),axisTick:{show:true,alignWithLabel:true,lineStyle:{color:'#cbd5e1'}},axisLine:{lineStyle:{color:'#cbd5e1'}},axisLabel:{fontSize:9,color:'#64748b',interval:selectedYears.length>1?2:0,hideOverlap:true}},
-      yAxis:{type:'value',min:0,name:`金额（${chartUnit}）`,nameGap:10,nameTextStyle:{fontSize:9,color:'#94a3b8',align:'left'},axisLine:{show:false},axisTick:{show:false},axisLabel:{show:true,color:'#64748b',fontSize:9,margin:7,hideOverlap:true,formatter:value=>Number(value).toLocaleString('zh-CN',{maximumFractionDigits:1})},splitLine:{lineStyle:{color:'#edf2f7'}}},
+      dataZoom:[
+        {type:'inside',start:monthlyZoomStart,end:monthlyZoomEnd,filterMode:'filter',zoomOnMouseWheel:false,moveOnMouseWheel:true,moveOnMouseMove:true},
+        {type:'slider',start:monthlyZoomStart,end:monthlyZoomEnd,filterMode:'filter',height:10,bottom:5,showDetail:false,showDataShadow:false,brushSelect:false,realtime:true,zoomLock:false,handleSize:'90%',moveHandleSize:0,borderColor:'transparent',backgroundColor:'#eef2f7',fillerColor:'rgba(47,111,237,.16)',handleStyle:{color:'#fff',borderColor:'#7fa8d8',borderWidth:1,shadowBlur:3,shadowColor:'rgba(50,87,128,.16)'}}
+      ],
+      xAxis:categoryAxis,
+      yAxis:valueAxis,
       series
     };
   }
   function bubbleOption(){const xMin=+document.getElementById('portraitXMin')?.value||0,xMax=+document.getElementById('portraitXMax')?.value||40000,yMin=+document.getElementById('portraitYMin')?.value||0,yMax=+document.getElementById('portraitYMax')?.value||100;const key=mode==='inflow'?'inflow':mode==='outflow'?'outflow':null;const data=rows.map(r=>({name:r.name,value:[key?r[key]:r.inflow+r.outflow,r.count,Math.max(r.inflow,r.outflow),r.type]}));const dataMaxX=Math.max(...data.map(d=>d.value[0]||0),xMin+1000),dataMaxY=Math.max(...data.map(d=>d.value[1]||0),yMin+5);return {tooltip:{formatter:p=>`${p.name}<br/>${mode==='inflow'?'流入':mode==='outflow'?'流出':'交易总额'}：${fmt(p.value[0])} 万元<br/>交易次数：${p.value[1]}<br/>对手方类型：${p.value[3]}`},grid:{left:55,right:18,top:16,bottom:54},dataZoom:[{type:'inside',xAxisIndex:0,filterMode:'none'},{type:'slider',xAxisIndex:0,height:12,bottom:8,borderColor:'transparent',backgroundColor:'#eef2f7',fillerColor:'rgba(47,111,237,.18)',handleSize:0,showDetail:false}],xAxis:{type:'value',min:xMin,max:Math.max(xMin+1000,xMax,dataMaxX*1.08),name:mode==='inflow'?'流入金额（万元）':mode==='outflow'?'流出金额（万元）':'交易总额（万元）',nameLocation:'middle',nameGap:28,axisLabel:{fontSize:10},splitLine:{lineStyle:{color:'#edf2f7'}}},yAxis:{type:'value',min:yMin,max:Math.max(yMin+5,yMax,dataMaxY*1.08),name:'交易次数',axisLabel:{fontSize:10},splitLine:{lineStyle:{color:'#edf2f7'}}},series:[{type:'scatter',data,symbolSize:v=>Math.max(7,Math.min(26,Math.sqrt(v[2]||1)/7)),itemStyle:{color:p=>p.value[3]==='客户'?'#2f6fed':p.value[3]==='供应商'?'#d9466f':'#64748b',opacity:.72},label:{show:true,position:'top',fontSize:9,formatter:p=>p.name.length>8?p.name.slice(0,8)+'…':p.name}}]};}
-  function renderCharts(){if(!window.echarts)return;[['monthly','portraitMonthlyChart']].forEach(([key,id])=>{const el=document.getElementById(id);if(!el)return;charts[key]=echarts.getInstanceByDom(el)||echarts.init(el);charts[key].setOption(monthlyOption(),true);charts[key].resize();});renderFeatureTable();}
+  function renderCharts(){if(!window.echarts)return;[['monthly','portraitMonthlyChart']].forEach(([key,id])=>{const el=document.getElementById(id);if(!el)return;charts[key]=echarts.getInstanceByDom(el)||echarts.init(el);if(key==='monthly'&&el.dataset.zoomBound!=='1'){el.dataset.zoomBound='1';charts[key].on('datazoom',event=>{const range=event.batch?.[0]||event;if(Number.isFinite(range.start))monthlyZoomStart=range.start;if(Number.isFinite(range.end))monthlyZoomEnd=range.end;});}charts[key].setOption(monthlyOption(),true);charts[key].resize();});renderFeatureTable();}
   function updateConcentration(kind){
     const isCustomer=kind==='Customer';
     const select=document.getElementById(`portrait${kind}TopN`);
@@ -929,12 +1039,12 @@
     event?.stopImmediatePropagation();
     const isBiz=tableView==='business',exportRows=filterRows(rows);
     const head=isBiz
-      ? ['对手方名称','对手方类型','行业','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','经营状态','成立日期','注册资本','经营范围','注册地址','企业联系方式','董监高']
-      : ['对手方名称','黑名单','对手方类型','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','销售类别','采购类别','职位','员工入职日期','员工离职日期','所属集团','备注说明'];
+      ? ['对手方名称','黑名单','失信被执行人','诉讼数量','对手方类型','行业','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','经营状态','成立日期','注册资本','经营范围','注册地址','企业联系方式','董监高']
+      : ['对手方名称','黑名单','失信被执行人','诉讼数量','对手方类型','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数',...portraitTransactionDetailDefs.map(def=>def.label),'备注说明'];
     const data=exportRows.map(row=>{
-      if(isBiz){const bi=businessInfo(row);return [row.name,row.type,row.industry,row.inflow,row.salesVat,row.outflow,row.purchaseVat,row.inflow+row.outflow,row.count,bi.status,bi.founded,bi.capital,bi.scope,bi.address,bi.contact,bi.people];}
+      if(isBiz){const bi=businessInfo(row);return [row.name,blacklistLabel(row),'',lawsuitCount(row),row.type,row.industry,row.inflow,row.salesVat,row.outflow,row.purchaseVat,row.inflow+row.outflow,row.count,bi.status,bi.founded,bi.capital,bi.scope,bi.address,bi.contact,bi.people];}
       const master=counterpartyMasterInfo(row);
-      return [row.name,blacklistLabel(row),displayType(row),row.inflow,row.salesVat,row.outflow,row.purchaseVat,row.inflow+row.outflow,row.count,master.salesCategory,master.purchaseCategory,master.position,master.employeeHireDate,master.employeeLeaveDate,master.group,master.remark];
+      return [row.name,blacklistLabel(row),'',lawsuitCount(row),displayType(row),row.inflow,row.salesVat,row.outflow,row.purchaseVat,row.inflow+row.outflow,row.count,...portraitTransactionDetailDefs.map(def=>portraitTransactionDetailValue(row,def)),master.remark];
     });
     const csv=[head,...data].map(record=>record.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');
     const link=document.createElement('a');
@@ -954,45 +1064,81 @@
       const pad=number=>String(number).padStart(2,'0');
       return `${value.getFullYear()}-${pad(value.getMonth()+1)}-${pad(value.getDate())} ${pad(value.getHours())}:${pad(value.getMinutes())}`;
     };
+    const syncUi=()=>{
+      button.title=businessInfoReady?'重新获取工商信息':'获取工商信息';
+      button.setAttribute('aria-label',button.title);
+      const tag=document.getElementById('portraitBusinessMasterTag');
+      const master=document.querySelector('.portrait-metric.is-master');
+      if(tag){
+        tag.classList.toggle('is-ready',businessInfoReady);
+        tag.classList.toggle('is-pending',!businessInfoReady);
+        tag.textContent=businessInfoReady?'工商信息':businessInfoLoading?'工商信息 · 获取中':'工商信息 · 待获取';
+      }
+      const count=master?.querySelector('.portrait-master-title b');
+      const detail=master?.querySelector('.portrait-master-title small');
+      if(count)count.textContent=businessInfoReady?'5/5':'4/5';
+      if(detail)detail.textContent=businessInfoReady?'已获取 5 项，共 5 项主档':'已获取 4 项，共 5 项主档';
+    };
+    syncUi();
+    const wrap=document.querySelector('.portrait-table-wrap.tyc-sync-surface');
+    if(wrap&&wrap.dataset.businessGateBound!=='1'){
+      wrap.dataset.businessGateBound='1';
+      wrap.addEventListener('click',event=>{
+        if(!event.target.closest('[data-business-gate-fetch]'))return;
+        event.preventDefault();
+        button.click();
+      });
+    }
     button.addEventListener('click',()=>{
-      if(button.classList.contains('is-refreshing'))return;
+      if(businessInfoLoading)return;
+      const wasReady=businessInfoReady;
+      if(!wasReady)businessInfoReady=false;
+      businessInfoLoading=true;
+      renderTable();
+      syncUi();
       const surface=document.querySelector('.portrait-table-wrap.tyc-sync-surface');
       surface?.querySelector('.tyc-sync-feedback')?.remove();
-      surface?.classList.remove('is-tyc-sync-success');
-      surface?.classList.add('is-tyc-syncing');
+      surface?.classList.remove('is-tyc-syncing','is-tyc-sync-success','is-business-sync-complete');
+      surface?.classList.add('is-business-syncing');
       surface?.setAttribute('aria-busy','true');
-      if(surface){
-        const feedback=document.createElement('div');
-        feedback.className='tyc-sync-feedback';
-        feedback.setAttribute('role','status');
-        feedback.innerHTML='<span class="tyc-sync-feedback-icon" aria-hidden="true"></span><span class="tyc-sync-feedback-copy"><strong>正在更新对手方工商信息</strong><span>同步天眼查数据并刷新当前表格</span></span>';
-        surface.appendChild(feedback);
-      }
       button.classList.add('is-refreshing');
       button.disabled=true;
       button.setAttribute('aria-busy','true');
       state.classList.remove('is-success');
-      state.textContent='正在重新获取工商信息…';
+      const startedAt=Date.now();
+      const duration=12000;
+      const updateProgress=()=>{
+        const percent=Math.min(96,Math.round((Date.now()-startedAt)/duration*100));
+        state.textContent=`${wasReady?'正在重新获取':'正在获取'}工商信息 ${percent}%`;
+        surface?.querySelectorAll('.portrait-business-gate-progress i').forEach(bar=>{bar.style.width=`${percent}%`;});
+        surface?.querySelectorAll('.portrait-business-gate-progress-row em').forEach(value=>{value.textContent=`${percent}%`;});
+        surface?.querySelectorAll('.portrait-business-compact-progress').forEach(progress=>{progress.style.setProperty('--business-progress',`${percent}%`);});
+        surface?.querySelectorAll('.portrait-business-compact-progress em').forEach(value=>{value.textContent=`${percent}%`;});
+      };
+      updateProgress();
+      const progressTimer=window.setInterval(updateProgress,300);
       window.setTimeout(()=>{
+        window.clearInterval(progressTimer);
+        businessInfoReady=true;
+        businessInfoLoading=false;
+        renderTable();
         const updated=format(new Date());
         state.innerHTML=`工商信息最新更新时间：<time id="portraitBusinessUpdatedAt">${updated}</time>`;
         state.classList.add('is-success');
         button.classList.remove('is-refreshing');
         button.disabled=false;
         button.removeAttribute('aria-busy');
+        syncUi();
         if(surface){
-          surface.classList.remove('is-tyc-syncing');
-          surface.classList.add('is-tyc-sync-success');
+          surface.classList.remove('is-business-syncing');
+          surface.classList.add('is-business-sync-complete');
           surface.removeAttribute('aria-busy');
-          const copy=surface.querySelector('.tyc-sync-feedback-copy');
-          if(copy)copy.innerHTML='<strong>工商信息更新完成</strong><span>当前表格数据已刷新</span>';
           window.setTimeout(()=>{
-            surface.classList.remove('is-tyc-sync-success');
-            surface.querySelector('.tyc-sync-feedback')?.remove();
-          },1100);
+            surface.classList.remove('is-business-sync-complete');
+          },900);
         }
         window.setTimeout(()=>state.classList.remove('is-success'),1600);
-      },850);
+      },12000);
     });
   }
   function resetPortraitFilters(){
@@ -1062,5 +1208,5 @@
     }));
   });
   window.addEventListener('audit-unit-ready',()=>{renderTable();renderFeatureTable();renderRelationAll();renderPersonalAll();charts.monthly?.setOption(monthlyOption(),true);charts.monthly?.resize();});
-  document.addEventListener('DOMContentLoaded',()=>{renderTable();bind();bindBusinessRefresh();bindSynchronizedAnalysisCards();document.getElementById('portraitResetFilters')?.addEventListener('click',resetPortraitFilters);document.getElementById('portraitGenerateResult')?.addEventListener('click',generatePortraitResult);document.getElementById('portraitMonthlyYearSelect')?.addEventListener('change',event=>{monthlyYear=event.target.value==='all'?'all':Number(event.target.value)||2025;charts.monthly?.setOption(monthlyOption(),true);charts.monthly?.resize();});document.getElementById('portraitExportBtn')?.addEventListener('click',exportPortraitCurrent,true);renderFeatureTable();renderRelationAll();renderPersonalAll();setTimeout(renderCharts,80);});
+  document.addEventListener('DOMContentLoaded',()=>{renderTable();bind();bindBusinessRefresh();bindSynchronizedAnalysisCards();document.getElementById('portraitResetFilters')?.addEventListener('click',resetPortraitFilters);document.getElementById('portraitGenerateResult')?.addEventListener('click',generatePortraitResult);document.getElementById('portraitMonthlyYearSelect')?.addEventListener('change',event=>{monthlyYear=event.target.value==='all'?'all':Number(event.target.value)||2025;charts.monthly?.setOption(monthlyOption(),true);charts.monthly?.resize();});document.getElementById('portraitMonthlyLayoutToggle')?.addEventListener('click',event=>{monthlyLayout=monthlyLayout==='combined'?'split':'combined';const button=event.currentTarget,isSplit=monthlyLayout==='split';button.classList.toggle('is-active',isSplit);button.setAttribute('aria-pressed',String(isSplit));button.querySelector('b').textContent=isSplit?'横向视图':'上下视图';button.setAttribute('aria-label',isSplit?'切换为横向视图':'切换为流入在上、流出在下');button.title=button.getAttribute('aria-label');charts.monthly?.setOption(monthlyOption(),true);charts.monthly?.resize();});document.getElementById('portraitExportBtn')?.addEventListener('click',exportPortraitCurrent,true);renderFeatureTable();renderRelationAll();renderPersonalAll();setTimeout(renderCharts,80);});
 })();

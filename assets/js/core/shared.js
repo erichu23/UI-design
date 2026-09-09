@@ -2294,7 +2294,8 @@
   let generatedTableId = 0;
 
   function getCellText(row, index) {
-    return (row.children[index]?.innerText || '').trim();
+    const cell = row.children[index];
+    return String(cell?.dataset.filterValue ?? cell?.innerText ?? '').trim();
   }
 
   function parseFilterNumber(value) {

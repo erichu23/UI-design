@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260907-table-align3"/>
   <link rel="stylesheet" href="../assets/css/pages/data-upload.css?v=20260828-upload-status4"/>
   <link rel="stylesheet" href="../assets/css/pages/data-validation.css?v=20260827-pager-select1"/>
-  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260907-scope-columns1"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260908-master-head-tools1"/>
   <title>数据上传及管理</title>
   <script>
     if (new URLSearchParams(location.search).get('embed')) {
@@ -638,13 +638,13 @@
       </div>
       <div class="dm-reconcile-cards" id="dmReconcileCards">
       <div class="card">
-      <div class="head"><div class="title">总账核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="dm-reconcile-actions"><button class="btn primary" type="button" data-reconcile-import="general">导入</button><input type="file" data-reconcile-import-file="general" accept=".xlsx,.xls,.csv" hidden><button class="btn" type="button" data-reconcile-edit="general">编辑</button><button class="btn" type="button" onclick="window.openBankColumnChooser?.(this,this.closest('.card').querySelector('table'))">自定义表头</button><button class="btn primary" type="button" data-reconcile-export="general">导出结果</button></div></div>
+      <div class="head"><div class="title">总账核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="dm-reconcile-actions"><button class="btn" type="button" data-reconcile-edit="general">编辑</button><button class="btn" type="button" onclick="window.openBankColumnChooser?.(this,this.closest('.card').querySelector('table'))">自定义表头</button><button class="btn primary" type="button" data-reconcile-import="general">导入</button><input type="file" data-reconcile-import-file="general" accept=".xlsx,.xls,.csv" hidden><button class="btn primary" type="button" data-reconcile-export="general">导出结果</button></div></div>
       <div class="content"><div style="overflow:auto"><table class="table bank-reconcile-table">
       <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">资金流水数据</th><th colspan="4">科目余额表-总账数据</th><th colspan="4">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" data-default-hidden="true">更新人</th><th rowspan="2" data-default-hidden="true">更新时间</th></tr><tr><th><span>期初金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>期初差异</span><em>a1-a2</em></th><th><span>借方差异</span><em>b1-b2</em></th><th><span>贷方差异</span><em>c1-c2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
       <tbody id="generalLedgerReconcileBody"><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2025</td><td>RMB</td><td>1,218,000</td><td class="amount-in">243,344K</td><td class="amount-out">221,614K</td><td>1,239,730</td><td>1,218,000</td><td>221,614</td><td>243,344</td><td>1,239,730</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2025</td><td>RMB</td><td>1,896,000</td><td class="amount-in">282,511K</td><td class="amount-out">261,319K</td><td>1,917,192</td><td>1,896,000</td><td>261,319</td><td>282,511</td><td>1,917,192</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
       </table></div><div class="pagination reconcile-pagination" id="generalLedgerReconcilePager"></div></div></div>
       <div class="card">
-      <div class="head"><div class="title">分账号核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="dm-reconcile-actions"><button class="btn primary" type="button" data-reconcile-import="account">导入</button><input type="file" data-reconcile-import-file="account" accept=".xlsx,.xls,.csv" hidden><button class="btn" type="button" data-reconcile-edit="account">编辑</button><button class="btn" type="button" onclick="window.openBankColumnChooser?.(this,this.closest('.card').querySelector('table'))">自定义表头</button><button class="btn primary" type="button" data-reconcile-export="account">导出结果</button></div></div>
+      <div class="head"><div class="title">分账号核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="dm-reconcile-actions"><button class="btn" type="button" data-reconcile-edit="account">编辑</button><button class="btn" type="button" onclick="window.openBankColumnChooser?.(this,this.closest('.card').querySelector('table'))">自定义表头</button><button class="btn primary" type="button" data-reconcile-import="account">导入</button><input type="file" data-reconcile-import-file="account" accept=".xlsx,.xls,.csv" hidden><button class="btn primary" type="button" data-reconcile-export="account">导出结果</button></div></div>
       <div class="content"><div style="overflow:auto"><table class="table bank-reconcile-table">
       <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">银行账号</th><th rowspan="2">开户银行</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">资金流水数据</th><th colspan="4">科目余额表-分账号数据</th><th colspan="4">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" data-default-hidden="true">更新人</th><th rowspan="2" data-default-hidden="true">更新时间</th></tr><tr><th><span>期初金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>期初差异</span><em>a1-a2</em></th><th><span>借方差异</span><em>b1-b2</em></th><th><span>贷方差异</span><em>c1-c2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
       <tbody id="accountReconcileBody"><tr><td>华东制造集团有限公司</td><td>发行人</td><td>1001***0821</td><td>工行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>1,128,000</td><td class="amount-in">140,680K</td><td class="amount-out">128,640K</td><td>1,140,040</td><td>1,128,000</td><td>128,640</td><td>140,680</td><td>1,140,040</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>上海星河科技有限公司</td><td>发行人</td><td>1002***4186</td><td>建行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>915,000</td><td class="amount-in">112,430K</td><td class="amount-out">103,260K</td><td>924,170</td><td>915,000</td><td>103,260</td><td>112,430</td><td>924,170</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
@@ -679,7 +679,7 @@
             <div class="dm-master-table-wrap tyc-sync-surface">
               <table class="table dm-master-table" id="dmMasterCheckTable">
                 <thead><tr>
-                  <th>公司名称</th><th>统一社会信用代码</th><th>持股比例</th><th>天眼查清单</th><th>被审计单位主档</th><th class="no-sort">操作</th><th class="no-sort">备注</th>
+                  <th>公司名称</th><th>与被审计单位关系</th><th>持股比例</th><th>注册资本</th><th>成立日期</th><th>行业</th><th>董事</th><th>监事</th><th>高管</th><th>天眼查清单</th><th>被审计单位主档</th><th class="no-sort">操作</th><th class="no-sort">备注</th>
                 </tr></thead>
                 <tbody id="dmMasterCheckBody"></tbody>
               </table>
@@ -1340,7 +1340,18 @@
         ['上海华东工业服务有限公司','91310113MA1GM7K52P','控股子公司','100%',false,true,'master-only'],
         ['天津华东设备有限公司','91120116MA06F4T73L','参股公司','30%',false,true,'master-only'],
         ['华东制造集团西安分公司','91610131MA6W2K9D5C','分支机构','—',false,true,'master-only']
-      ].map((row,index)=>({id:index+1,name:row[0],code:row[1],relation:row[2],holding:row[3],external:row[4],master:row[5],compare:'',range:row[6]==='matched'?'include':'pending',note:'',supplemented:false}));
+      ].map((row,index)=>{
+        const profiles=[
+          ['100,000万元','2001-06-18','通用设备制造业','张建国等5人','王静','赵凯等3人'],
+          ['30,000万元','2015-03-26','软件和信息技术服务业','李明等3人','周敏','陈浩等2人'],
+          ['20,000万元','2017-08-09','电子设备制造业','王磊等4人','孙洁','刘洋等3人'],
+          ['15,000万元','2012-11-16','专用设备制造业','陈伟等3人','徐婷','黄杰等2人'],
+          ['8,000万元','2019-05-21','商务服务业','赵峰等3人','吴倩','郑凯等2人'],
+          ['5,000万元','2020-09-14','供应链管理服务','周强等2人','林洁','许晨等2人']
+        ];
+        const profile=profiles[index%profiles.length];
+        return {id:index+1,name:row[0],code:row[1],relation:row[2],holding:row[3],capital:profile[0],founded:profile[1],industry:profile[2],directors:profile[3],supervisors:profile[4],executives:profile[5],external:row[4],master:row[5],compare:'',range:row[6]==='matched'?'include':'pending',note:'',supplemented:false};
+      });
       const state={page:1,pageSize:10};
       const compareLabels={matched:'核对一致','external-only':'待补充至主档','source-gap':'来源待核实'};
       const escape=value=>String(value??'').replace(/[&<>"]/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[character]));
@@ -1361,8 +1372,8 @@
             : row.compare==='external-only'
               ? '<button class="dm-master-row-action" type="button" data-master-action="supplement" title="补充至被审计单位主档"><i aria-hidden="true">＋</i><span>补充至主档</span></button>'
               : '<span class="dm-master-action-empty">—</span>';
-          return `<tr class="${row.compare==='matched'?'is-readonly':''}" data-master-id="${row.id}"><td>${escape(row.name)}</td><td>${escape(row.code)}</td><td>${escape(row.holding)}</td><td class="dm-master-source-cell">${sourceState(row.external)}</td><td class="dm-master-source-cell">${sourceState(row.master)}</td><td class="dm-master-action-cell">${action}</td><td>${row.compare==='matched'?'<span class="dm-master-readonly-note">—</span>':`<input class="ba-note-input dm-master-note" data-master-note="${row.id}" value="${escape(row.note)}" placeholder="填写备注"/>`}</td></tr>`;
-        }).join(''):'<tr class="dm-master-empty"><td colspan="7">暂无公司记录</td></tr>';
+          return `<tr class="${row.compare==='matched'?'is-readonly':''}" data-master-id="${row.id}"><td>${escape(row.name)}</td><td>${escape(row.relation)}</td><td>${escape(row.holding)}</td><td>${escape(row.capital)}</td><td>${escape(row.founded)}</td><td>${escape(row.industry)}</td><td>${escape(row.directors)}</td><td>${escape(row.supervisors)}</td><td>${escape(row.executives)}</td><td class="dm-master-source-cell">${sourceState(row.external)}</td><td class="dm-master-source-cell">${sourceState(row.master)}</td><td class="dm-master-action-cell">${action}</td><td>${row.compare==='matched'?'<span class="dm-master-readonly-note">—</span>':`<input class="ba-note-input dm-master-note" data-master-note="${row.id}" value="${escape(row.note)}" placeholder="填写备注"/>`}</td></tr>`;
+        }).join(''):'<tr class="dm-master-empty"><td colspan="13">暂无公司记录</td></tr>';
         window.renderAuditPager?.(pager,{total:result.length,page:state.page,pageSize:state.pageSize,onPage:page=>{state.page=page;render();},onPageSize:size=>{state.pageSize=size;state.page=1;render();}});
         const pending=document.getElementById('dmMasterPendingCount');if(pending)pending.textContent=rows.filter(row=>row.compare!=='matched'&&row.range==='pending').length;
         const matched=document.getElementById('dmMasterMatchedCount');if(matched)matched.textContent=rows.filter(row=>row.compare==='matched').length;
@@ -1399,7 +1410,7 @@
           refreshMasterFetchLabel();
         }
       });
-      document.getElementById('dmMasterExportBtn')?.addEventListener('click',()=>{if(activeMasterView()==='related')return;const header=['公司名称','统一社会信用代码','持股比例','天眼查清单','被审计单位主档','操作状态','备注'];const csv=[header,...filtered().map(row=>[row.name,row.code,row.holding,row.external?'已包含':'未包含',row.master?'已包含':'未包含',row.supplemented?'已补充至主档':compareLabels[row.compare],row.note])].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));link.download='分析范围清单核对结果.csv';link.click();URL.revokeObjectURL(link.href);});
+      document.getElementById('dmMasterExportBtn')?.addEventListener('click',()=>{if(activeMasterView()==='related')return;const header=['公司名称','与被审计单位关系','持股比例','注册资本','成立日期','行业','董事','监事','高管','天眼查清单','被审计单位主档','操作状态','备注'];const csv=[header,...filtered().map(row=>[row.name,row.relation,row.holding,row.capital,row.founded,row.industry,row.directors,row.supervisors,row.executives,row.external?'已包含':'未包含',row.master?'已包含':'未包含',row.supplemented?'已补充至主档':compareLabels[row.compare],row.note])].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));link.download='分析范围清单核对结果.csv';link.click();URL.revokeObjectURL(link.href);});
       render();
     };
 

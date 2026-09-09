@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="../assets/css/pages/routine.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260827-workingpaper-tools1"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260907-table-align3"/>
-  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260907-table-align3"/>
+  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260909-master-status1"/>
   <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260624-riskflow1"/>
   <link rel="stylesheet" href="../assets/css/pages/account-action-details.css?v=20260828-portrait-actions4"/>
 </head>
@@ -183,11 +183,11 @@
       <div class="portrait-meter"><i id="portraitSupplierBar" style="width:86%"></i></div>
       <div class="portrait-metric-foot"><span id="portraitSupplierLabel">前10大供应商集中度</span><strong>250,999K / <em id="portraitSupplierRatio">86%</em></strong></div>
     </div>
-    <div class="portrait-metric is-master"><div class="portrait-master-title"><span>主档信息完整度</span><b>5/5</b><small>已获取 5 项，共 5 项主档</small></div><div class="portrait-tags"><span class="is-ready">客户</span><span class="is-ready">供应商</span><span  class="is-ready">关联方</span><span class="is-ready">员工主档</span><span class="is-ready">工商信息</span></div></div>
+    <div class="portrait-metric is-master"><div class="portrait-master-title"><span>主档信息完整度</span><b>4/5</b><small>已获取 4 项，共 5 项主档</small></div><div class="portrait-tags"><span class="is-ready">客户</span><span class="is-ready">供应商</span><span class="is-ready">关联方</span><span class="is-ready">员工主档</span><span class="is-pending" id="portraitBusinessMasterTag">工商信息 · 待获取</span></div></div>
   </div>
 
   <div class="portrait-chart-grid">
-    <div class="card portrait-chart-card portrait-monthly-card"><div class="head"><div class="title">月度收支构成分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><select class="portrait-monthly-year-select" id="portraitMonthlyYearSelect" aria-label="选择分析年份"><option value="all" selected>2023-2025</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option></select><div class="portrait-legend"></div></div><div class="content"><div class="portrait-chart" id="portraitMonthlyChart"></div></div></div>
+    <div class="card portrait-chart-card portrait-monthly-card"><div class="head"><div class="title">月度收支构成分析</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><select class="portrait-monthly-year-select" id="portraitMonthlyYearSelect" aria-label="选择分析年份"><option value="all" selected>2023-2025</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option></select><button class="portrait-monthly-layout-toggle" id="portraitMonthlyLayoutToggle" type="button" aria-pressed="false" aria-label="切换为流入在上、流出在下" title="切换为流入在上、流出在下"><i aria-hidden="true"><span></span><span></span></i><b>上下视图</b></button><div class="portrait-legend"></div></div><div class="content"><div class="portrait-chart" id="portraitMonthlyChart"></div></div></div>
     <div class="card portrait-chart-card portrait-feature-card"><div class="head"><div class="title">前10大</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="portrait-feature-tools"><div class="portrait-segment" id="portraitBubbleTabs"><button class="is-active" data-view="customer" type="button">客户</button><button data-view="supplier" type="button">供应商</button><button data-view="nonbusiness" type="button">非客户非供应商</button><button data-view="related" type="button">关联方</button></div></div></div><div class="content"><div class="portrait-feature-ranking-grid" id="portraitFeatureBody"></div></div></div>
   </div>
 
@@ -204,12 +204,12 @@
       </div>
       <div class="portrait-table-viewbar">
         <div class="portrait-table-nav">
-          <div class="portrait-table-tabs" id="portraitTableTabs"><button class="is-active" data-view="summary" type="button">交易数据</button><button data-view="business" type="button">工商信息</button></div>
+          <div class="portrait-table-tabs" id="portraitTableTabs"><button class="is-active" data-view="summary" type="button">交易数据及工商信息</button><button data-view="business" type="button" hidden>工商信息</button></div>
           <div class="portrait-business-sync">
             <button class="portrait-business-refresh" id="portraitBusinessRefresh" type="button" aria-label="重新获取工商信息" title="重新获取工商信息">
               <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.34 5.66M20 5v6h-6"/></svg>
             </button>
-            <span id="portraitBusinessRefreshState">工商信息最新更新时间：<time id="portraitBusinessUpdatedAt">2026-08-26 09:30</time></span>
+            <span id="portraitBusinessRefreshState">尚未获取工商信息</span>
           </div>
         </div>
         <div class="portrait-table-actions"><button class="btn" id="portraitResetFilters" type="button">重置筛选</button><button class="btn" id="portraitColumnsBtn" type="button">自定义表头</button><button class="btn primary" id="portraitGenerateResult" type="button">生成分析结果</button><button class="btn primary" id="portraitExportBtn" type="button">生成流水</button></div>
@@ -881,11 +881,11 @@
 </section></div>
 
 
-<script src="../assets/js/config/fund-flow-tab-layout.js?v=20260907-scope-columns1"></script>
-<script defer src="../assets/js/core/shared.js?v=20260906-flow-zoom5"></script>
+<script src="../assets/js/config/fund-flow-tab-layout.js?v=20260908-reconcile-order1"></script>
+<script defer src="../assets/js/core/shared.js?v=20260909-filter-value1"></script>
 <script defer src="../assets/js/pages/account-action-details.js?v=20260828-portrait-actions4"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260508-fast2"></script>
-<script defer src="../assets/js/pages/portrait.js?v=20260907-table-align2"></script>
+<script defer src="../assets/js/pages/portrait.js?v=20260909-master-status1"></script>
 <script defer src="../assets/js/pages/routine.js?v=20260508-fast2"></script>
 </body>
 </html>

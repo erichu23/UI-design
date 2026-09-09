@@ -470,7 +470,11 @@ html.dm-embedded-module .data-management-page{
   min-width:1080px;
   table-layout:auto;
 }
-.data-management-page #dmMasterCheckTable{ min-width:860px; }
+.data-management-page #dmMasterCheckTable{
+  min-width:0;
+  table-layout:fixed;
+}
+.data-management-page .dm-master-view-pane[data-master-view-pane="audited"] .dm-master-table-wrap{ overflow-x:hidden; }
 .data-management-page .dm-master-table th,
 .data-management-page .dm-master-table td{
   padding:6px 8px !important;
@@ -1750,15 +1754,22 @@ body.dm-check-drawer-open{overflow:hidden;}
   text-align:left !important;
 }
 
-/* 上下两张范围表共用公司名称列宽；账号分组名称在合并区域左侧垂直居中。 */
-.data-management-page #pane-scope-control #dmMasterCheckTable th:first-child,
-.data-management-page #pane-scope-control #dmMasterCheckTable td:first-child,
+/* 账号范围表保留稳定的公司列；信息字段较多的主档表按容器自适应。 */
 .data-management-page #pane-scope-control #dmAccountScopeTable th:first-child,
 .data-management-page #pane-scope-control #dmAccountScopeTable td:first-child{
   box-sizing:border-box;
   width:220px !important;
   min-width:220px !important;
   max-width:220px !important;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:first-child,
+.data-management-page #pane-scope-control #dmMasterCheckTable td:first-child{
+  box-sizing:border-box;
+  width:12% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  white-space:normal;
+  overflow-wrap:anywhere;
 }
 .data-management-page #pane-scope-control #dmAccountScopeTable .dm-account-company-cell{
   padding-left:12px !important;
@@ -1801,6 +1812,56 @@ body.dm-check-drawer-open{overflow:hidden;}
 .data-management-page #pane-scope-control #dmAccountScopeTable th:nth-child(2),
 .data-management-page #pane-scope-control #dmAccountScopeTable td:nth-child(2){
   text-align:left !important;
+}
+
+/* 被审计单位主档的工商属性均为文本信息；来源标记、操作及备注保持原有居中规则。 */
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(n+4):nth-child(-n+9),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(n+4):nth-child(-n+9){
+  text-align:left !important;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(2),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(2){ width:8%; min-width:0; white-space:normal; }
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(3),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(3){ width:5%; min-width:0; }
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(4),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(4){ width:7%; min-width:0; }
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(5),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(5){ width:7%; min-width:0; }
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(6),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(6){ width:10%; min-width:0; white-space:normal; overflow-wrap:anywhere; }
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(n+7):nth-child(-n+9),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(n+7):nth-child(-n+9){ width:7%; min-width:0; white-space:normal; overflow-wrap:anywhere; }
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(10),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(10),
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(11),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(11){ width:6%; min-width:0; text-align:center !important; white-space:normal; }
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(12),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(12){ width:8%; min-width:0; text-align:center !important; }
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(13),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(13){ width:10%; min-width:0; text-align:center !important; }
+.data-management-page #pane-scope-control #dmMasterCheckTable th,
+.data-management-page #pane-scope-control #dmMasterCheckTable td{
+  padding-right:5px !important;
+  padding-left:5px !important;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable th{
+  white-space:normal;
+  line-height:1.25;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:not(.no-sort){
+  padding-right:31px !important;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable th.no-sort{
+  padding-right:5px !important;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:not(.no-sort) > .ba-th-tools{
+  right:3px;
+  width:26px;
+  gap:1px;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable .ba-th-title{
+  min-width:0;
+  gap:2px;
 }
 
 /* 两张范围表的备注输入框铺满单元格内容区。 */

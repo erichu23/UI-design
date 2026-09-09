@@ -8,7 +8,7 @@
       key: 'scope-control',
       label: '分析范围',
       before: 'account',
-      source: './data-management.html?embed=scope-control&v=20260907-scope-columns1',
+      source: './data-management.html?embed=scope-control&v=20260908-reconcile-order1',
       title: '分析范围'
     },
     {
