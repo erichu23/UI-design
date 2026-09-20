@@ -293,6 +293,7 @@ html.dm-embedded-module .data-management-page{
 .data-management-page .dm-master-view-tabs button:hover{ color:#2d5f9f; }
 .data-management-page .dm-master-view-tabs button.is-active{ color:#174f91; font-weight:700; }
 .data-management-page .dm-master-view-tabs button.is-active::after{ background:#2f6fed; }
+.data-management-page .dm-master-view-tabs button[hidden]{ display:none !important; }
 .data-management-page .dm-master-view-pane[hidden]{ display:none !important; }
 .data-management-page .dm-related-master-table{ min-width:1000px; }
 
@@ -474,7 +475,12 @@ html.dm-embedded-module .data-management-page{
   min-width:0;
   table-layout:fixed;
 }
-.data-management-page .dm-master-view-pane[data-master-view-pane="audited"] .dm-master-table-wrap{ overflow-x:hidden; }
+.data-management-page #dmRelatedMasterTable{
+  min-width:0;
+  table-layout:fixed;
+}
+.data-management-page .dm-master-view-pane[data-master-view-pane="audited"] .dm-master-table-wrap,
+.data-management-page .dm-master-view-pane[data-master-view-pane="related"] .dm-master-table-wrap{ overflow-x:hidden; }
 .data-management-page .dm-master-table th,
 .data-management-page .dm-master-table td{
   padding:6px 8px !important;
@@ -1805,10 +1811,8 @@ body.dm-check-drawer-open{overflow:hidden;}
 .data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(2),
 .data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(3),
 .data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(3),
-.data-management-page #pane-scope-control #dmRelatedMasterTable th:nth-child(2),
-.data-management-page #pane-scope-control #dmRelatedMasterTable td:nth-child(2),
-.data-management-page #pane-scope-control #dmRelatedMasterTable th:nth-child(3),
-.data-management-page #pane-scope-control #dmRelatedMasterTable td:nth-child(3),
+.data-management-page #pane-scope-control #dmRelatedMasterTable th:nth-child(n+2):nth-child(-n+9),
+.data-management-page #pane-scope-control #dmRelatedMasterTable td:nth-child(n+2):nth-child(-n+9),
 .data-management-page #pane-scope-control #dmAccountScopeTable th:nth-child(2),
 .data-management-page #pane-scope-control #dmAccountScopeTable td:nth-child(2){
   text-align:left !important;
@@ -1819,47 +1823,50 @@ body.dm-check-drawer-open{overflow:hidden;}
 .data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(n+4):nth-child(-n+9){
   text-align:left !important;
 }
-.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(2),
-.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(2){ width:8%; min-width:0; white-space:normal; }
-.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(3),
-.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(3){ width:5%; min-width:0; }
-.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(4),
-.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(4){ width:7%; min-width:0; }
-.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(5),
-.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(5){ width:7%; min-width:0; }
-.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(6),
-.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(6){ width:10%; min-width:0; white-space:normal; overflow-wrap:anywhere; }
-.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(n+7):nth-child(-n+9),
-.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(n+7):nth-child(-n+9){ width:7%; min-width:0; white-space:normal; overflow-wrap:anywhere; }
-.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(10),
-.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(10),
-.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(11),
-.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(11){ width:6%; min-width:0; text-align:center !important; white-space:normal; }
-.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(12),
-.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(12){ width:8%; min-width:0; text-align:center !important; }
-.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(13),
-.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(13){ width:10%; min-width:0; text-align:center !important; }
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) th:nth-child(2),
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) td:nth-child(2){ width:8%; min-width:0; white-space:normal; }
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) th:nth-child(3),
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) td:nth-child(3){ width:5%; min-width:0; }
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) th:nth-child(4),
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) td:nth-child(4){ width:7%; min-width:0; }
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) th:nth-child(5),
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) td:nth-child(5){ width:7%; min-width:0; }
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) th:nth-child(6),
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) td:nth-child(6){ width:10%; min-width:0; white-space:normal; overflow-wrap:anywhere; }
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) th:nth-child(n+7):nth-child(-n+9),
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) td:nth-child(n+7):nth-child(-n+9){ width:7%; min-width:0; white-space:normal; overflow-wrap:anywhere; }
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) th:nth-child(10),
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) td:nth-child(10),
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) th:nth-child(11),
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) td:nth-child(11){ width:6%; min-width:0; text-align:center !important; white-space:normal; }
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) th:nth-child(12),
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) td:nth-child(12){ width:8%; min-width:0; text-align:center !important; }
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) th:nth-child(13),
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) td:nth-child(13){ width:10%; min-width:0; text-align:center !important; }
 .data-management-page #pane-scope-control #dmMasterCheckTable th,
-.data-management-page #pane-scope-control #dmMasterCheckTable td{
+.data-management-page #pane-scope-control #dmMasterCheckTable td,
+.data-management-page #pane-scope-control #dmRelatedMasterTable th,
+.data-management-page #pane-scope-control #dmRelatedMasterTable td{
   padding-right:5px !important;
   padding-left:5px !important;
 }
-.data-management-page #pane-scope-control #dmMasterCheckTable th{
+.data-management-page #pane-scope-control #dmMasterCheckTable th,
+.data-management-page #pane-scope-control #dmRelatedMasterTable th{
   white-space:normal;
   line-height:1.25;
 }
-.data-management-page #pane-scope-control #dmMasterCheckTable th:not(.no-sort){
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) th:not(.no-sort){
   padding-right:31px !important;
 }
-.data-management-page #pane-scope-control #dmMasterCheckTable th.no-sort{
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) th.no-sort{
   padding-right:5px !important;
 }
-.data-management-page #pane-scope-control #dmMasterCheckTable th:not(.no-sort) > .ba-th-tools{
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) th:not(.no-sort) > .ba-th-tools{
   right:3px;
   width:26px;
   gap:1px;
 }
-.data-management-page #pane-scope-control #dmMasterCheckTable .ba-th-title{
+.data-management-page #pane-scope-control :is(#dmMasterCheckTable,#dmRelatedMasterTable) .ba-th-title{
   min-width:0;
   gap:2px;
 }
@@ -1873,4 +1880,114 @@ body.dm-check-drawer-open{overflow:hidden;}
   min-width:0 !important;
   max-width:none !important;
   margin:0 !important;
+}
+
+/* 被审计单位主档扩展字段：18 列保持在卡片内，短字段采用紧凑比例。 */
+.data-management-page #pane-scope-control #dmMasterCheckTable{
+  width:100% !important;
+  min-width:0 !important;
+  table-layout:fixed !important;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable th,
+.data-management-page #pane-scope-control #dmMasterCheckTable td{
+  min-width:0 !important;
+  padding-right:3px !important;
+  padding-left:3px !important;
+  font-size:10px !important;
+  vertical-align:middle !important;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable td{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  line-height:1.3;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:not(.no-sort){
+  height:48px;
+  padding-top:5px !important;
+  padding-right:22px !important;
+  padding-bottom:5px !important;
+  line-height:1.2;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:not(.no-sort) > .ba-th-tools{
+  right:2px;
+  width:20px;
+  gap:0;
+  transform:translateY(-50%) scale(.82);
+  transform-origin:right center;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable .dm-master-head-label{
+  display:inline-block;
+  min-width:0;
+  line-height:1.25;
+  text-align:inherit;
+  white-space:nowrap;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable .dm-master-cell-text{
+  display:block;
+  width:100%;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable tbody tr{height:36px;}
+.data-management-page #pane-scope-control #dmMasterCheckTable tbody td:not(:has(.dm-master-cell-text)){white-space:nowrap;}
+.data-management-page #pane-scope-control #dmMasterCheckTable .dm-master-action-cell{overflow:hidden;}
+.data-management-page #pane-scope-control #dmMasterCheckTable .dm-master-row-action{
+  box-sizing:border-box;
+  max-width:100%;
+  padding:0 4px;
+  gap:2px;
+  font-size:9.5px;
+  white-space:nowrap;
+}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(1),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(1){width:12.7% !important;white-space:nowrap;}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(2),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(2){width:8.5%;white-space:nowrap;}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(3),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(3){width:4%;}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(4),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(4){width:3.5%;text-align:center !important;}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(5),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(5){width:5%;}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(6),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(6){width:9.8%;}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(7),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(7){width:5.5%;white-space:normal;overflow-wrap:anywhere;}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(8),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(8),
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(9),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(9){width:4.2%;}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(10),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(10){width:4%;text-align:center !important;}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(11),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(11),
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(13),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(13){width:3.8%;white-space:normal;overflow-wrap:anywhere;}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(12),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(12),
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(14),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(14){width:4%;text-align:center !important;}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(15),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(15),
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(16),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(16){width:5%;text-align:center !important;white-space:normal;}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(17),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(17){width:7%;text-align:center !important;}
+.data-management-page #pane-scope-control #dmMasterCheckTable th:nth-child(18),
+.data-management-page #pane-scope-control #dmMasterCheckTable td:nth-child(18){width:9%;text-align:center !important;}
+.data-management-page #pane-scope-control #dmMasterCheckTable .dm-master-note{font-size:10px !important;}
+.data-management-page .dm-master-blacklist-cell{text-align:center !important;}
+.data-management-page .dm-master-blacklist-hit{
+  display:inline-flex;
+  width:14px;
+  height:14px;
+  align-items:center;
+  justify-content:center;
+  border:1px solid #d66b78;
+  border-radius:50%;
+  color:#c94f60;
+  background:#fff;
+  font:700 9px/1 Arial,sans-serif;
 }

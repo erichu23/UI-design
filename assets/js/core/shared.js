@@ -2838,13 +2838,14 @@
         if (skipHeaderLabels.has(label)) th.classList.add('no-sort');
         if (th.classList.contains('no-sort') || th.querySelector('.ba-th-tools') || th.colSpan > 1) return;
         const filterDisabled = th.classList.contains('no-filter');
+        const sortDisabled = th.classList.contains('no-sort-only');
         const tools = document.createElement('span');
         tools.className = 'ba-th-tools';
         tools.innerHTML = `
-          <span class="ba-sort-icons" aria-label="排序">
+          ${sortDisabled?'':`<span class="ba-sort-icons" aria-label="排序">
             <button type="button" class="ba-sort-up" title="升序"></button>
             <button type="button" class="ba-sort-down" title="降序"></button>
-          </span>
+          </span>`}
           ${filterDisabled?'':'<button type="button" class="ba-filter-btn" title="筛选"></button>'}
         `;
         if (table.classList.contains('bank-reconcile-table') && !th.querySelector('.ba-th-title')) {
@@ -2861,11 +2862,11 @@
           }
         }
         th.appendChild(tools);
-        tools.querySelector('.ba-sort-up').addEventListener('click', ev => {
+        tools.querySelector('.ba-sort-up')?.addEventListener('click', ev => {
           ev.stopPropagation();
           sortTableByColumn(table, index, 'asc', th);
         });
-        tools.querySelector('.ba-sort-down').addEventListener('click', ev => {
+        tools.querySelector('.ba-sort-down')?.addEventListener('click', ev => {
           ev.stopPropagation();
           sortTableByColumn(table, index, 'desc', th);
         });

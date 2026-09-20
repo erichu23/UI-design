@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260907-table-align3"/>
   <link rel="stylesheet" href="../assets/css/pages/data-upload.css?v=20260828-upload-status4"/>
   <link rel="stylesheet" href="../assets/css/pages/data-validation.css?v=20260827-pager-select1"/>
-  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260908-master-head-tools1"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260920-audited-master9"/>
   <title>数据上传及管理</title>
   <script>
     if (new URLSearchParams(location.search).get('embed')) {
@@ -667,7 +667,7 @@
         <div class="content">
           <div class="dm-master-view-tabs" id="dmMasterViewTabs" role="tablist" aria-label="主档核对类型">
             <button class="is-active" type="button" role="tab" aria-selected="true" data-master-view="audited">被审计单位主档信息</button>
-            <button type="button" role="tab" aria-selected="false" data-master-view="related">关联方主档信息</button>
+            <button type="button" role="tab" aria-selected="false" data-master-view="related" hidden>关联方主档信息</button>
           </div>
           <div class="dm-master-view-pane is-active" data-master-view-pane="audited">
             <div class="dm-master-scope-summary">
@@ -679,7 +679,7 @@
             <div class="dm-master-table-wrap tyc-sync-surface">
               <table class="table dm-master-table" id="dmMasterCheckTable">
                 <thead><tr>
-                  <th>公司名称</th><th>与被审计单位关系</th><th>持股比例</th><th>注册资本</th><th>成立日期</th><th>行业</th><th>董事</th><th>监事</th><th>高管</th><th>天眼查清单</th><th>被审计单位主档</th><th class="no-sort">操作</th><th class="no-sort">备注</th>
+                  <th class="no-sort-only">公司名称</th><th class="no-sort-only">投资方</th><th><span class="dm-master-head-label">持股<br>比例</span></th><th class="no-sort-only"><span class="dm-master-head-label">黑名<br>单</span></th><th><span class="dm-master-head-label">成立<br>日期</span></th><th class="no-sort-only">注册地址</th><th class="no-sort-only">行业</th><th>注册资本</th><th>实收资本</th><th><span class="dm-master-head-label">参保<br>人数</span></th><th class="no-sort-only">董事</th><th class="no-sort-only">监事</th><th class="no-sort-only">高管</th><th><span class="dm-master-head-label">诉讼<br>数量</span></th><th class="no-sort-only"><span class="dm-master-head-label">天眼查<br>清单</span></th><th class="no-sort-only"><span class="dm-master-head-label">被审计单位<br>主档</span></th><th class="no-sort">操作</th><th class="no-sort">备注</th>
                 </tr></thead>
                 <tbody id="dmMasterCheckBody"></tbody>
               </table>
@@ -696,7 +696,7 @@
             <div class="dm-master-table-wrap tyc-sync-surface">
               <table class="table dm-master-table dm-related-master-table" id="dmRelatedMasterTable">
                 <thead><tr>
-                  <th>关联方名称</th><th>统一社会信用代码</th><th>关联关系</th><th>持股比例</th><th>天眼查清单</th><th>关联方主档</th><th class="no-sort">操作</th><th class="no-sort">备注</th>
+                  <th>关联方名称</th><th>关联关系</th><th>持股比例</th><th>注册资本</th><th>成立日期</th><th>行业</th><th>董事</th><th>监事</th><th>高管</th><th>天眼查清单</th><th>关联方主档</th><th class="no-sort">操作</th><th class="no-sort">备注</th>
                 </tr></thead>
                 <tbody id="dmRelatedMasterBody"></tbody>
               </table>
@@ -738,7 +738,7 @@
     </div>
   </section>
 </div>
-<script defer src="../assets/js/core/shared.js?v=20260906-flow-zoom5"></script>
+<script defer src="../assets/js/core/shared.js?v=20260920-filter-only1"></script>
 <script defer src="../assets/js/pages/data-management-balance.js?v=20260906-flow-zoom5"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260811-data-management19"></script>
 <script>
@@ -1342,15 +1342,16 @@
         ['华东制造集团西安分公司','91610131MA6W2K9D5C','分支机构','—',false,true,'master-only']
       ].map((row,index)=>{
         const profiles=[
-          ['100,000万元','2001-06-18','通用设备制造业','张建国等5人','王静','赵凯等3人'],
-          ['30,000万元','2015-03-26','软件和信息技术服务业','李明等3人','周敏','陈浩等2人'],
-          ['20,000万元','2017-08-09','电子设备制造业','王磊等4人','孙洁','刘洋等3人'],
-          ['15,000万元','2012-11-16','专用设备制造业','陈伟等3人','徐婷','黄杰等2人'],
-          ['8,000万元','2019-05-21','商务服务业','赵峰等3人','吴倩','郑凯等2人'],
-          ['5,000万元','2020-09-14','供应链管理服务','周强等2人','林洁','许晨等2人']
+          ['100,000万元','86,000万元','2001-06-18','上海市浦东新区张江路88号','通用设备制造业','1,286人','张建国','王静','赵凯',12,false],
+          ['30,000万元','24,000万元','2015-03-26','上海市浦东新区祖冲之路118号','软件和信息技术服务业','368人','李明','周敏','陈浩',3,false],
+          ['20,000万元','18,000万元','2017-08-09','深圳市南山区科技园南区8号','电子设备制造业','542人','王磊','孙洁','刘洋',1,false],
+          ['15,000万元','12,500万元','2012-11-16','苏州市工业园区星湖街218号','专用设备制造业','296人','陈伟','徐婷','黄杰',0,true],
+          ['8,000万元','6,000万元','2019-05-21','北京市海淀区中关村南大街5号','商务服务业','86人','赵峰','吴倩','郑凯',5,false],
+          ['5,000万元','5,000万元','2020-09-14','重庆市高新区科学大道66号','供应链管理服务','124人','周强','林洁','许晨',2,false]
         ];
+        const investors=['华东实业控股有限公司','华东制造集团有限公司','华东制造集团有限公司','华东制造集团有限公司','上海产业投资有限公司','华东制造集团有限公司'];
         const profile=profiles[index%profiles.length];
-        return {id:index+1,name:row[0],code:row[1],relation:row[2],holding:row[3],capital:profile[0],founded:profile[1],industry:profile[2],directors:profile[3],supervisors:profile[4],executives:profile[5],external:row[4],master:row[5],compare:'',range:row[6]==='matched'?'include':'pending',note:'',supplemented:false};
+        return {id:index+1,name:row[0],code:row[1],investor:investors[index%investors.length],holding:row[3],capital:profile[0],paidCapital:profile[1],founded:profile[2],address:profile[3],industry:profile[4],insured:profile[5],directors:profile[6],supervisors:profile[7],executives:profile[8],lawsuitCount:profile[9],blacklisted:profile[10],external:row[4],master:row[5],compare:'',range:row[6]==='matched'?'include':'pending',note:'',supplemented:false};
       });
       const state={page:1,pageSize:10};
       const compareLabels={matched:'核对一致','external-only':'待补充至主档','source-gap':'来源待核实'};
@@ -1372,8 +1373,10 @@
             : row.compare==='external-only'
               ? '<button class="dm-master-row-action" type="button" data-master-action="supplement" title="补充至被审计单位主档"><i aria-hidden="true">＋</i><span>补充至主档</span></button>'
               : '<span class="dm-master-action-empty">—</span>';
-          return `<tr class="${row.compare==='matched'?'is-readonly':''}" data-master-id="${row.id}"><td>${escape(row.name)}</td><td>${escape(row.relation)}</td><td>${escape(row.holding)}</td><td>${escape(row.capital)}</td><td>${escape(row.founded)}</td><td>${escape(row.industry)}</td><td>${escape(row.directors)}</td><td>${escape(row.supervisors)}</td><td>${escape(row.executives)}</td><td class="dm-master-source-cell">${sourceState(row.external)}</td><td class="dm-master-source-cell">${sourceState(row.master)}</td><td class="dm-master-action-cell">${action}</td><td>${row.compare==='matched'?'<span class="dm-master-readonly-note">—</span>':`<input class="ba-note-input dm-master-note" data-master-note="${row.id}" value="${escape(row.note)}" placeholder="填写备注"/>`}</td></tr>`;
-        }).join(''):'<tr class="dm-master-empty"><td colspan="13">暂无公司记录</td></tr>';
+          const blacklist=row.blacklisted?'<span class="dm-master-blacklist-hit" role="img" aria-label="命中黑名单" title="命中黑名单">i</span>':'';
+          const textCell=value=>`<span class="dm-master-cell-text" title="${escape(value)}">${escape(value)}</span>`;
+          return `<tr class="${row.compare==='matched'?'is-readonly':''}" data-master-id="${row.id}"><td>${textCell(row.name)}</td><td>${textCell(row.investor)}</td><td>${escape(row.holding)}</td><td class="dm-master-blacklist-cell">${blacklist}</td><td>${escape(row.founded)}</td><td>${textCell(row.address)}</td><td>${textCell(row.industry)}</td><td>${escape(row.capital)}</td><td>${escape(row.paidCapital)}</td><td>${escape(row.insured)}</td><td>${textCell(row.directors)}</td><td>${textCell(row.supervisors)}</td><td>${textCell(row.executives)}</td><td>${escape(row.lawsuitCount)}</td><td class="dm-master-source-cell">${sourceState(row.external)}</td><td class="dm-master-source-cell">${sourceState(row.master)}</td><td class="dm-master-action-cell">${action}</td><td>${row.compare==='matched'?'<span class="dm-master-readonly-note">—</span>':`<input class="ba-note-input dm-master-note" data-master-note="${row.id}" value="${escape(row.note)}" placeholder="填写备注"/>`}</td></tr>`;
+        }).join(''):'<tr class="dm-master-empty"><td colspan="18">暂无公司记录</td></tr>';
         window.renderAuditPager?.(pager,{total:result.length,page:state.page,pageSize:state.pageSize,onPage:page=>{state.page=page;render();},onPageSize:size=>{state.pageSize=size;state.page=1;render();}});
         const pending=document.getElementById('dmMasterPendingCount');if(pending)pending.textContent=rows.filter(row=>row.compare!=='matched'&&row.range==='pending').length;
         const matched=document.getElementById('dmMasterMatchedCount');if(matched)matched.textContent=rows.filter(row=>row.compare==='matched').length;
@@ -1410,7 +1413,7 @@
           refreshMasterFetchLabel();
         }
       });
-      document.getElementById('dmMasterExportBtn')?.addEventListener('click',()=>{if(activeMasterView()==='related')return;const header=['公司名称','与被审计单位关系','持股比例','注册资本','成立日期','行业','董事','监事','高管','天眼查清单','被审计单位主档','操作状态','备注'];const csv=[header,...filtered().map(row=>[row.name,row.relation,row.holding,row.capital,row.founded,row.industry,row.directors,row.supervisors,row.executives,row.external?'已包含':'未包含',row.master?'已包含':'未包含',row.supplemented?'已补充至主档':compareLabels[row.compare],row.note])].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));link.download='分析范围清单核对结果.csv';link.click();URL.revokeObjectURL(link.href);});
+      document.getElementById('dmMasterExportBtn')?.addEventListener('click',()=>{if(activeMasterView()==='related')return;const header=['公司名称','投资方','持股比例','黑名单','成立日期','注册地址','行业','注册资本','实收资本','参保人数','董事','监事','高管','诉讼数量','天眼查清单','被审计单位主档','操作状态','备注'];const csv=[header,...filtered().map(row=>[row.name,row.investor,row.holding,row.blacklisted?'命中':'',row.founded,row.address,row.industry,row.capital,row.paidCapital,row.insured,row.directors,row.supervisors,row.executives,row.lawsuitCount,row.external?'已包含':'未包含',row.master?'已包含':'未包含',row.supplemented?'已补充至主档':compareLabels[row.compare],row.note])].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));link.download='分析范围清单核对结果.csv';link.click();URL.revokeObjectURL(link.href);});
       render();
     };
 
@@ -1418,6 +1421,14 @@
       const body=document.getElementById('dmRelatedMasterBody');
       const pager=document.getElementById('dmRelatedMasterPager');
       if(!body||!pager)return;
+      const relatedProfiles=[
+        ['12,000万元','2018-05-16','批发业','陈志远等3人','周敏','刘洋等2人'],
+        ['5,000万元','2020-09-08','商务服务业','王磊等2人','孙洁','赵凯'],
+        ['15,000万元','2012-11-16','专用设备制造业','陈伟等3人','徐婷','黄杰等2人'],
+        ['3,000万元','2019-04-22','企业管理咨询','李明等2人','吴倩','郑凯'],
+        ['30,000万元','2015-03-26','供应链管理服务','张建国等4人','王静','陈浩等2人'],
+        ['20,000万元','2017-08-09','软件和信息技术服务业','王磊等4人','孙洁','刘洋等3人']
+      ];
       const rows=[
         ['上海辰越贸易有限公司','91310115MA1K4N8R2Q','受同一最终控制方控制','100%',true,false],
         ['宁波弘泰企业管理合伙企业','91330206MA2J5W9C4A','关键管理人员控制','35%',true,false],
@@ -1431,7 +1442,7 @@
         ['上海华东工业服务有限公司','91310113MA1GM7K52P','同一控制下企业','100%',false,true],
         ['天津华东设备有限公司','91120116MA06F4T73L','联营企业','30%',false,true],
         ['华东制造集团西安分公司','91610131MA6W2K9D5C','同一控制下分支机构','—',false,true]
-      ].map((row,index)=>({id:index+1,name:row[0],code:row[1],relation:row[2],holding:row[3],external:row[4],master:row[5],supplemented:false,note:'',displayOrder:index}));
+      ].map((row,index)=>{const profile=relatedProfiles[index%relatedProfiles.length];return {id:index+1,name:row[0],relation:row[2],holding:row[3],capital:profile[0],founded:profile[1],industry:profile[2],directors:profile[3],supervisors:profile[4],executives:profile[5],external:row[4],master:row[5],supplemented:false,note:'',displayOrder:index};});
       const state={page:1,pageSize:10};
       const escape=value=>String(value??'').replace(/[&<>"]/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[character]));
       const compare=row=>row.external&&row.master?'matched':row.external&&!row.master?'external-only':'source-gap';
@@ -1452,8 +1463,8 @@
             : status==='external-only'
               ? '<button class="dm-master-row-action" type="button" data-related-action="supplement" title="补充至关联方主档"><i aria-hidden="true">＋</i><span>补充至主档</span></button>'
               : '<span class="dm-master-action-empty">—</span>';
-          return `<tr class="${status==='matched'?'is-readonly':''}" data-related-id="${row.id}"><td>${escape(row.name)}</td><td>${escape(row.code)}</td><td>${escape(row.relation)}</td><td>${escape(row.holding)}</td><td class="dm-master-source-cell">${sourceState(row.external)}</td><td class="dm-master-source-cell">${sourceState(row.master)}</td><td class="dm-master-action-cell">${action}</td><td>${status==='matched'&&!row.supplemented?'<span class="dm-master-readonly-note">—</span>':`<input class="ba-note-input dm-master-note" data-related-note="${row.id}" value="${escape(row.note)}" placeholder="填写备注"/>`}</td></tr>`;
-        }).join('');
+          return `<tr class="${status==='matched'?'is-readonly':''}" data-related-id="${row.id}"><td>${escape(row.name)}</td><td>${escape(row.relation)}</td><td>${escape(row.holding)}</td><td>${escape(row.capital)}</td><td>${escape(row.founded)}</td><td>${escape(row.industry)}</td><td>${escape(row.directors)}</td><td>${escape(row.supervisors)}</td><td>${escape(row.executives)}</td><td class="dm-master-source-cell">${sourceState(row.external)}</td><td class="dm-master-source-cell">${sourceState(row.master)}</td><td class="dm-master-action-cell">${action}</td><td>${status==='matched'&&!row.supplemented?'<span class="dm-master-readonly-note">—</span>':`<input class="ba-note-input dm-master-note" data-related-note="${row.id}" value="${escape(row.note)}" placeholder="填写备注"/>`}</td></tr>`;
+        }).join('')||'<tr class="dm-master-empty"><td colspan="13">暂无关联方记录</td></tr>';
         window.renderAuditPager?.(pager,{total:result.length,page:state.page,pageSize:state.pageSize,onPage:page=>{state.page=page;render();},onPageSize:size=>{state.pageSize=size;state.page=1;render();}});
         setMetric('dmRelatedExternalCount',rows.filter(row=>row.external).length);
         setMetric('dmRelatedMasterCount',rows.filter(row=>row.master).length);
@@ -1462,7 +1473,7 @@
       };
       body.addEventListener('input',event=>{const note=event.target.closest('[data-related-note]');if(!note)return;const row=rows.find(item=>item.id===Number(note.dataset.relatedNote));if(row)row.note=note.value;});
       body.addEventListener('click',event=>{const button=event.target.closest('[data-related-action]');if(!button)return;const row=rows.find(item=>item.id===Number(button.closest('tr')?.dataset.relatedId));if(!row)return;row.master=true;row.supplemented=true;showToast(`已将“${row.name}”补充至关联方主档`);render();});
-      document.getElementById('dmMasterExportBtn')?.addEventListener('click',()=>{if(activeMasterView()!=='related')return;const header=['关联方名称','统一社会信用代码','关联关系','持股比例','天眼查清单','关联方主档','操作状态','备注'];const csv=[header,...filtered().map(row=>[row.name,row.code,row.relation,row.holding,row.external?'已包含':'未包含',row.master?'已包含':'未包含',row.supplemented?'已补充至主档':compare(row)==='external-only'?'待补充至主档':'核对一致',row.note])].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));link.download='关联方主档核对结果.csv';link.click();URL.revokeObjectURL(link.href);});
+      document.getElementById('dmMasterExportBtn')?.addEventListener('click',()=>{if(activeMasterView()!=='related')return;const header=['关联方名称','关联关系','持股比例','注册资本','成立日期','行业','董事','监事','高管','天眼查清单','关联方主档','操作状态','备注'];const csv=[header,...filtered().map(row=>[row.name,row.relation,row.holding,row.capital,row.founded,row.industry,row.directors,row.supervisors,row.executives,row.external?'已包含':'未包含',row.master?'已包含':'未包含',row.supplemented?'已补充至主档':compare(row)==='external-only'?'待补充至主档':'核对一致',row.note])].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));link.download='关联方主档核对结果.csv';link.click();URL.revokeObjectURL(link.href);});
       render();
     };
 

@@ -987,20 +987,28 @@
     const chartAmount=value=>window.AuditUnit?.ready?window.AuditUnit.convert(value,'k'):Number(value||0);
     const chartUnit=window.AuditUnit?.ready?window.AuditUnit.label:'千元';
     const points=selectedYears.flatMap(year=>Array.from({length:12},(_,monthIndex)=>({year,monthIndex,label:selectedYears.length>1?`${String(year).slice(-2)}/${String(monthIndex+1).padStart(2,'0')}`:`${String(monthIndex+1).padStart(2,'0')}月`})));
-    const groups=[
-      {name:'客户流入',type:'客户',key:'inflow',stack:'inflow',color:'#356fce'},
-      {name:'供应商流入',type:'供应商',key:'inflow',stack:'inflow',color:'#79a7e2'},
-      {name:'其他流入',type:'其他',key:'inflow',stack:'inflow',color:'#c2d8f3'},
-      {name:'客户流出',type:'客户',key:'outflow',stack:'outflow',color:'#c74468'},
-      {name:'供应商流出',type:'供应商',key:'outflow',stack:'outflow',color:'#df88a0'},
-      {name:'其他流出',type:'其他',key:'outflow',stack:'outflow',color:'#f1c5d2'}
+    const monthlyCategory=row=>{
+      const roles=featureRoles(row);
+      const customer=roles.includes('客户'),supplier=roles.includes('供应商');
+      return customer&&supplier?'客商一体':customer?'客户':supplier?'供应商':'非客商';
+    };
+    const categories=[
+      {name:'客户',inflow:'#356fce',outflow:'#c74468'},
+      {name:'供应商',inflow:'#79a7e2',outflow:'#df88a0'},
+      {name:'客商一体',inflow:'#588dc6',outflow:'#d76b89'},
+      {name:'非客商',inflow:'#c2d8f3',outflow:'#f1c5d2'}
     ];
+    const rowsByCategory=Object.fromEntries(categories.map(category=>[category.name,[]]));
+    rows.forEach(row=>rowsByCategory[monthlyCategory(row)].push(row));
+    const groups=['inflow','outflow'].flatMap(key=>categories.map(category=>({
+      name:`${category.name}${key==='inflow'?'流入':'流出'}`,category:category.name,key,stack:key,color:category[key]
+    })));
     const splitLayout=monthlyLayout==='split';
     const series=groups.map(group=>({
       name:group.name,type:'bar',stack:group.stack,barMaxWidth:10,barGap:'20%',barCategoryGap:'34%',
-      itemStyle:{color:group.color,borderRadius:group.name.startsWith('其他')?(splitLayout&&group.key==='outflow'?[0,0,2,2]:[2,2,0,0]):0},
+      itemStyle:{color:group.color,borderRadius:group.category==='非客商'?(splitLayout&&group.key==='outflow'?[0,0,2,2]:[2,2,0,0]):0},
       emphasis:{focus:'series'},
-      data:points.map(point=>{const raw=+rows.filter(row=>row.type===group.type||(group.type==='其他'&&row.type!=='客户'&&row.type!=='供应商')).reduce((sum,row)=>sum+monthlyYearMetricValue(row,point.monthIndex,group.key,point.year),0).toFixed(1);const amount=chartAmount(raw);return {value:splitLayout&&group.key==='outflow'?-amount:amount,raw};})
+      data:points.map(point=>{const raw=+rowsByCategory[group.category].reduce((sum,row)=>sum+monthlyYearMetricValue(row,point.monthIndex,group.key,point.year),0).toFixed(1);const amount=chartAmount(raw);return {value:splitLayout&&group.key==='outflow'?-amount:amount,raw};})
     }));
     const categoryAxis={type:'category',data:points.map(point=>point.label),axisTick:{show:true,alignWithLabel:true,lineStyle:{color:'#cbd5e1'}},axisLine:{lineStyle:{color:'#cbd5e1'}},axisLabel:{fontSize:9,color:'#64748b',interval:selectedYears.length>1?2:0,hideOverlap:true}};
     const splitLimit=splitLayout?Math.max(1,...points.map((_,index)=>Math.max(series.filter(item=>item.stack==='inflow').reduce((sum,item)=>sum+Math.abs(Number(item.data[index]?.value)||0),0),series.filter(item=>item.stack==='outflow').reduce((sum,item)=>sum+Math.abs(Number(item.data[index]?.value)||0),0))))*1.08:null;
@@ -1008,8 +1016,8 @@
     return {
       animationDuration:420,
       tooltip:{trigger:'axis',appendToBody:true,confine:false,axisPointer:{type:'shadow'},extraCssText:'z-index:10050;box-shadow:0 6px 20px rgba(15,23,42,.14);',formatter:params=>{const list=Array.isArray(params)?params:[];const point=points[list[0]?.dataIndex||0];return `<b>${point?.year||''}年${String((point?.monthIndex||0)+1).padStart(2,'0')}月</b><br/>${list.map(item=>`${item.marker}${item.seriesName}：${fmtAmount(item.data?.raw||0)}`).join('<br/>')}`;}},
-      legend:{top:0,right:4,itemWidth:9,itemHeight:6,itemGap:8,textStyle:{fontSize:9,color:'#64748b'},selectedMode:false},
-      grid:{left:52,right:16,top:34,bottom:54},
+      legend:['inflow','outflow'].map((key,index)=>({data:groups.filter(group=>group.key===key).map(group=>group.name),top:index*16,right:4,itemWidth:9,itemHeight:6,itemGap:8,textStyle:{fontSize:9,color:'#64748b'},selectedMode:false})),
+      grid:{left:52,right:16,top:45,bottom:54},
       dataZoom:[
         {type:'inside',start:monthlyZoomStart,end:monthlyZoomEnd,filterMode:'filter',zoomOnMouseWheel:false,moveOnMouseWheel:true,moveOnMouseMove:true},
         {type:'slider',start:monthlyZoomStart,end:monthlyZoomEnd,filterMode:'filter',height:10,bottom:5,showDetail:false,showDataShadow:false,brushSelect:false,realtime:true,zoomLock:false,handleSize:'90%',moveHandleSize:0,borderColor:'transparent',backgroundColor:'#eef2f7',fillerColor:'rgba(47,111,237,.16)',handleStyle:{color:'#fff',borderColor:'#7fa8d8',borderWidth:1,shadowBlur:3,shadowColor:'rgba(50,87,128,.16)'}}
