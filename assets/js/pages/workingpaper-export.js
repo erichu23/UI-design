@@ -84,7 +84,8 @@
     clearTimeout(timer);
     timer=setTimeout(()=>toast.classList.remove('is-visible'),2200);
   };
-  const reportState={scope:'all',yearExpanded:false};
+  const reportYears=['2023','2024','2025'];
+  const reportState={scope:'all',expandedYears:new Set()};
   const reportData={
     scopes:{
       all:{label:'全量交易口径',note:'当前包含被审计单位之间的集团内往来；集团内关系依据被审计单位主档识别。',counterparties:300,abnormal:63,abnormalShare:21,categories:[['客户',108,36],['供应商',102,34],['其他',36,12],['个人',54,18]],concentration:{top5:{customer:[54,58,62],supplier:[49,52,55]},top10:{customer:[66,70,74],supplier:[60,64,67]},top20:{customer:[78.4,81.2,86],supplier:[74.1,76.5,79]}}},
@@ -193,16 +194,19 @@
     const head=document.getElementById('riskReportCounterpartyHead');
     const rows=document.getElementById('riskReportCounterpartyRows');
     const wrap=document.querySelector('#riskReportCounterpartyTable')?.closest('.risk-report-table-wrap');
-    wrap?.classList.toggle('is-year-expanded',reportState.yearExpanded);
+    const selectedYears=reportYears.filter(year=>reportState.expandedYears.has(year));
+    wrap?.classList.toggle('is-year-expanded',selectedYears.length>0);
     if(head){
-      const yearHeads=reportState.yearExpanded?['2023','2024','2025'].map(year=>`<th class="risk-report-year-head">${year}</th>`).join(''):'';
-      const yearSubs=reportState.yearExpanded?'<th class="num">交易金额</th><th class="num">交易金额</th><th class="num">交易金额</th>':'';
-      head.innerHTML=`<tr class="risk-report-year-group-head"><th rowspan="2">No.</th><th rowspan="2">对手方名称</th><th rowspan="2">对手方类型</th><th rowspan="2">收支重合关系</th><th class="risk-report-group-toggle-cell"><button type="button" class="risk-report-group-toggle" id="riskReportYearToggle" aria-expanded="${reportState.yearExpanded}"><span>合计</span><i aria-hidden="true">${reportState.yearExpanded?'«':'»'}</i></button></th>${yearHeads}<th rowspan="2">主要异常线索</th><th rowspan="2" class="num">异常交易占比</th><th rowspan="2">跨期状态</th><th rowspan="2">操作</th></tr><tr class="risk-report-year-sub-head"><th class="num">交易金额</th>${yearSubs}</tr>`;
+      const yearHeads=selectedYears.map(year=>`<th class="risk-report-year-head">${year}</th>`).join('');
+      const yearSubs=selectedYears.map(()=>'<th class="num">交易金额</th>').join('');
+      const controls=window.AuditYearExpansion?.controls({years:reportYears,selected:reportState.expandedYears,toggleId:'riskReportYearToggle',pickerId:'riskReportYearPicker'})||'<span>合计</span>';
+      head.innerHTML=`<tr class="risk-report-year-group-head"><th rowspan="2">No.</th><th rowspan="2">对手方名称</th><th rowspan="2">对手方类型</th><th rowspan="2">收支重合关系</th><th class="risk-report-group-toggle-cell">${controls}</th>${yearHeads}<th rowspan="2">主要异常线索</th><th rowspan="2" class="num">异常交易占比</th><th rowspan="2">跨期状态</th><th rowspan="2">操作</th></tr><tr class="risk-report-year-sub-head"><th class="num">交易金额</th>${yearSubs}</tr>`;
+      window.AuditYearExpansion?.bind({years:reportYears,getSelected:()=>reportState.expandedYears,onChange:selected=>{reportState.expandedYears=selected;renderCounterpartyTable();},toggleId:'riskReportYearToggle',pickerId:'riskReportYearPicker'});
     }
     if(rows){
       rows.innerHTML=reportData.counterparties.map((row,index)=>{
         const total=[row[3],row[4],row[5]].reduce((sum,value)=>sum+(Number(value)||0),0);
-        const yearCells=reportState.yearExpanded?`<td class="is-num risk-report-year-cell">${amountMarkup(row[3])}</td><td class="is-num risk-report-year-cell">${amountMarkup(row[4])}</td><td class="is-num risk-report-year-cell">${amountMarkup(row[5])}</td>`:'';
+        const yearCells=selectedYears.map(year=>`<td class="is-num risk-report-year-cell">${amountMarkup(row[3+reportYears.indexOf(year)])}</td>`).join('');
         return `<tr><td>${index+1}</td><td>${row[0]}</td><td class="${row[1]==='客户'?'is-customer':row[1]==='供应商'?'is-supplier':''}">${row[1]}</td><td>${row[2]}</td><td class="is-num risk-report-total-cell">${amountMarkup(total)}</td>${yearCells}<td class="risk-status">${row[6]}</td><td class="is-num">${row[7]}</td><td>${row[8]}</td><td><button class="risk-report-detail-link" type="button">查看明细</button></td></tr>`;
       }).join('');
     }
@@ -219,12 +223,6 @@
   };
   document.getElementById('riskReportScopeSwitch')?.addEventListener('click',event=>{const button=event.target.closest('[data-report-scope]');if(button)syncReportScope(button.dataset.reportScope);});
   document.querySelector('.risk-report-version-grid')?.addEventListener('click',event=>{const button=event.target.closest('[data-report-version]');if(button)syncReportScope(button.dataset.reportVersion);});
-  document.getElementById('riskReportCounterpartyTable')?.addEventListener('click',event=>{
-    if(!event.target.closest('#riskReportYearToggle'))return;
-    event.stopPropagation();
-    reportState.yearExpanded=!reportState.yearExpanded;
-    renderCounterpartyTable();
-  });
   document.getElementById('riskReportCounterpartyRows')?.addEventListener('click',event=>{if(event.target.closest('.risk-report-detail-link'))showToast('已打开该对手方的三年交易明细');});
   ['btnPreviewRiskReport','btnPreviewRiskReportBottom'].forEach(id=>document.getElementById(id)?.addEventListener('click',()=>showToast(`正在生成${reportData.scopes[reportState.scope].label}报告预览`)));
   ['btnExportRiskReport','btnExportRiskReportBottom'].forEach(id=>document.getElementById(id)?.addEventListener('click',()=>showToast(`${reportData.scopes[reportState.scope].label}风险评估报告已进入导出队列`)));

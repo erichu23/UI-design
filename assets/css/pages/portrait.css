@@ -1509,26 +1509,99 @@ body .tab-pane #portraitCounterpartyTable{
 }
 
 body #portraitCounterpartyTable col.portrait-name-col{ width:156px !important; }
-body #portraitCounterpartyTable col.portrait-small-col{ width:62px !important; }
-body #portraitCounterpartyTable col.portrait-dishonest-col{ width:72px !important; }
-body #portraitCounterpartyTable col.portrait-lawsuit-col{ width:58px !important; }
+body #portraitCounterpartyTable col.portrait-small-col{ width:46px !important; }
+body #portraitCounterpartyTable col.portrait-dishonest-col{ width:58px !important; }
+body #portraitCounterpartyTable col.portrait-lawsuit-col{ width:50px !important; }
 body #portraitCounterpartyTable col.portrait-monthly-col{ width:136px !important; }
-body #portraitCounterpartyTable col.portrait-type-col{ width:72px !important; }
+body #portraitCounterpartyTable col.portrait-type-col{ width:58px !important; }
 body #portraitCounterpartyTable col.portrait-industry-col{ width:120px !important; }
-body #portraitCounterpartyTable col.portrait-metric-col{ width:78px !important; }
+body #portraitCounterpartyTable col.portrait-metric-col{ width:52px !important; }
+body #portraitCounterpartyTable col.portrait-metric-compact-col{ width:46px !important; }
 body #portraitCounterpartyTable col.portrait-vat-total-col{ width:132px !important; }
-body #portraitCounterpartyTable col.portrait-year-metric-col{ width:66px !important; }
+body #portraitCounterpartyTable col.portrait-year-metric-col{ width:52px !important; }
+body #portraitCounterpartyTable col.portrait-year-metric-col.portrait-metric-compact-col{ width:46px !important; }
 body #portraitCounterpartyTable col.portrait-flex-col{ width:140px !important; }
 body #portraitCounterpartyTable col.portrait-operation-col{ width:112px !important; }
 
 body #portraitCounterpartyTable .portrait-year-detail-head,
 body #portraitCounterpartyTable .portrait-year-detail-cell{
   box-sizing:border-box !important;
-  width:66px !important;
-  min-width:62px !important;
-  max-width:72px !important;
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
   padding-left:3px !important;
   padding-right:3px !important;
+}
+
+body #pane-biz #portraitCounterpartyTable .portrait-metric-direction-head th{
+  height:25px !important;
+  min-height:25px !important;
+  padding:3px 2px !important;
+  border-top-color:#d9e4f0 !important;
+  background:#f3f7fc !important;
+  color:#405875 !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+  line-height:17px !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+}
+
+body #pane-biz #portraitCounterpartyTable .portrait-metric-symbol-head th{
+  box-sizing:border-box !important;
+  height:25px !important;
+  min-height:25px !important;
+  padding:3px 2px !important;
+  background:#f8fbff !important;
+  color:#536a86 !important;
+  font-size:11px !important;
+  font-weight:750 !important;
+  line-height:17px !important;
+  text-align:center !important;
+}
+
+body #pane-biz #portraitCounterpartyTable .portrait-metric-symbol > span{
+  position:absolute !important;
+  left:calc(50% - 15.5px) !important;
+  top:50% !important;
+  display:block !important;
+  min-width:9px !important;
+  transform:translate(-50%,-50%) !important;
+  color:#425c7b !important;
+  font-family:Arial,var(--platform-font-family,sans-serif) !important;
+  font-size:12px !important;
+  font-weight:750 !important;
+  text-align:center !important;
+}
+
+body #pane-biz #portraitCounterpartyTable .portrait-metric-symbol .ba-th-tools{
+  display:inline-flex !important;
+  right:auto !important;
+  left:calc(50% - 8px) !important;
+  top:50% !important;
+  bottom:auto !important;
+  transform:translateY(-50%) !important;
+  width:28px !important;
+  height:16px !important;
+  gap:3px !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+body #pane-biz #portraitCounterpartyTable .portrait-metric-direction + .portrait-metric-direction,
+body #pane-biz #portraitCounterpartyTable .portrait-year-head + .portrait-year-head{
+  border-left-color:#cbd9e8 !important;
+}
+
+body #pane-biz #portraitCounterpartyTable .portrait-metric-symbol-head th.is-group-start:not(:first-child){
+  border-left-color:#cbd9e8 !important;
+}
+
+body #pane-biz #portraitCounterpartyTable tbody td.audit-period-metric{
+  padding-left:2px !important;
+  padding-right:2px !important;
+  font-size:9.5px !important;
+  font-variant-numeric:tabular-nums;
 }
 
 body #pane-biz #portraitCounterpartyTable tbody td.audit-period-metric{
@@ -1568,11 +1641,11 @@ body #portraitCounterpartyTable th.portrait-fixed-col{
 }
 body #portraitCounterpartyTable .portrait-fixed-col-1{ left:0 !important; }
 body #portraitCounterpartyTable .portrait-fixed-col-2{ left:156px !important; }
-body #portraitCounterpartyTable .portrait-fixed-col-3{ left:218px !important; }
-body #portraitCounterpartyTable .portrait-fixed-col-4{ left:290px !important; }
-body #portraitCounterpartyTable .portrait-fixed-col-5{ left:348px !important; }
-body #portraitCounterpartyTable .portrait-fixed-col-6{ left:484px !important; }
-body .portrait-table-wrap.is-business-view #portraitCounterpartyTable .portrait-fixed-col-6{ left:420px !important; }
+body #portraitCounterpartyTable .portrait-fixed-col-3{ left:202px !important; }
+body #portraitCounterpartyTable .portrait-fixed-col-4{ left:260px !important; }
+body #portraitCounterpartyTable .portrait-fixed-col-5{ left:310px !important; }
+body #portraitCounterpartyTable .portrait-fixed-col-6{ left:446px !important; }
+body .portrait-table-wrap.is-business-view #portraitCounterpartyTable .portrait-fixed-col-6{ left:368px !important; }
 body #portraitCounterpartyTable .portrait-fixed-col-6{
   box-shadow:6px 0 9px -9px rgba(39,63,91,.55) !important;
 }
@@ -1983,12 +2056,18 @@ body #pane-biz #portraitCounterpartyTable th.portrait-fixed-col-1{
 }
 
 body #pane-biz #portraitCounterpartyTable th.portrait-fixed-col-2{
-  padding-right:18px !important;
+  padding-right:15px !important;
 }
 
 body #pane-biz #portraitCounterpartyTable th.portrait-fixed-col-2 .ba-th-tools{
-  right:3px !important;
-  width:12px !important;
+  right:2px !important;
+  width:11px !important;
+}
+
+body #pane-biz #portraitCounterpartyTable .portrait-blacklist-head-label{
+  display:inline-block;
+  line-height:1.12;
+  white-space:normal !important;
 }
 
 body #pane-biz #portraitCounterpartyTable th.portrait-compact-risk-head{
@@ -2009,6 +2088,13 @@ body #pane-biz #portraitCounterpartyTable th.portrait-dishonest-head{
   padding-right:18px !important;
 }
 
+body #pane-biz #portraitCounterpartyTable th.portrait-dishonest-head > span:first-child{
+  display:inline-block;
+  min-width:30px;
+  white-space:nowrap !important;
+  line-height:1.15;
+}
+
 body #pane-biz #portraitCounterpartyTable th.portrait-filter-only > .ba-th-tools{
   right:2px !important;
   width:14px !important;
@@ -2018,6 +2104,11 @@ body #pane-biz #portraitCounterpartyTable th.portrait-filter-only > .ba-th-tools
 
 body #pane-biz #portraitCounterpartyTable th.portrait-filter-only .ba-sort-icons{
   display:none !important;
+}
+
+body #pane-biz #portraitCounterpartyTable th.portrait-type-filter-head{
+  padding-right:18px !important;
+  white-space:normal !important;
 }
 
 body #pane-biz #portraitCounterpartyTable td.portrait-business-pending{
@@ -2071,7 +2162,7 @@ body #pane-biz .portrait-detail-inline-state{
 }
 
 body #pane-biz .portrait-risk-inline-state{
-  width:130px;
+  width:108px;
 }
 
 body #pane-biz .portrait-detail-inline-state{
@@ -2317,7 +2408,20 @@ body #pane-biz .portrait-table-wrap:not(.is-business-view) #portraitCounterparty
   table-layout:auto !important;
 }
 body #pane-biz #portraitCounterpartyTable col.portrait-detail-col{ width:1px !important; }
-body #pane-biz #portraitCounterpartyTable col.portrait-remark-col{ width:128px !important; }
+body #pane-biz #portraitCounterpartyTable col.portrait-detail-col[data-detail-key="businessStatus"]{ width:54px !important; }
+body #pane-biz #portraitCounterpartyTable col.portrait-detail-col[data-detail-key="founded"]{ width:78px !important; }
+body #pane-biz #portraitCounterpartyTable col.portrait-detail-col[data-detail-key="businessTerm"]{ width:56px !important; }
+body #pane-biz #portraitCounterpartyTable col.portrait-detail-col[data-detail-key="operatingDays"]{ width:60px !important; }
+body #pane-biz #portraitCounterpartyTable col.portrait-detail-col[data-detail-key="registeredCapital"]{ width:64px !important; }
+body #pane-biz #portraitCounterpartyTable col.portrait-detail-col[data-detail-key="capitalCurrency"]{ width:68px !important; }
+body #pane-biz #portraitCounterpartyTable col.portrait-detail-col[data-detail-key="businessScope"]{ width:100px !important; }
+body #pane-biz #portraitCounterpartyTable col.portrait-detail-col[data-detail-key="personnelScale"]{ width:64px !important; }
+body #pane-biz #portraitCounterpartyTable col.portrait-detail-col[data-detail-key="insuredCount"]{ width:60px !important; }
+body #pane-biz #portraitCounterpartyTable col.portrait-detail-col[data-detail-key="companyType"]{ width:82px !important; }
+body #pane-biz #portraitCounterpartyTable col.portrait-detail-col[data-detail-key="registeredAddress"]{ width:88px !important; }
+body #pane-biz #portraitCounterpartyTable col.portrait-detail-col[data-detail-key="businessContact"]{ width:86px !important; }
+body #pane-biz #portraitCounterpartyTable col.portrait-detail-col[data-detail-key="keyPersonnel"]{ width:86px !important; }
+body #pane-biz #portraitCounterpartyTable col.portrait-remark-col{ width:94px !important; }
 
 body #pane-biz #portraitCounterpartyTable th.portrait-detail-head,
 body #pane-biz #portraitCounterpartyTable td.portrait-detail-cell{
@@ -2327,7 +2431,7 @@ body #pane-biz #portraitCounterpartyTable td.portrait-detail-cell{
 }
 body #pane-biz #portraitCounterpartyTable th.portrait-detail-head{
   padding-right:34px !important;
-  white-space:nowrap !important;
+  white-space:normal !important;
   line-height:1.18 !important;
 }
 body #pane-biz #portraitCounterpartyTable th.portrait-detail-head.portrait-filter-only{
@@ -2336,8 +2440,39 @@ body #pane-biz #portraitCounterpartyTable th.portrait-detail-head.portrait-filte
 body #pane-biz #portraitCounterpartyTable th.portrait-detail-head > .ba-th-tools{
   right:4px !important;
 }
+body #pane-biz #portraitCounterpartyTable .portrait-detail-head-label{
+  display:inline-block;
+  white-space:nowrap !important;
+  line-height:1.15;
+}
 body #pane-biz #portraitCounterpartyTable td.portrait-detail-cell{
   overflow:visible !important;
   text-overflow:clip !important;
   white-space:nowrap !important;
+}
+
+body #pane-biz #portraitCounterpartyTable :is(th,td)[data-detail-key="businessStatus"]{ width:54px !important; min-width:54px !important; max-width:54px !important; }
+body #pane-biz #portraitCounterpartyTable :is(th,td)[data-detail-key="founded"]{ width:78px !important; min-width:78px !important; max-width:78px !important; }
+body #pane-biz #portraitCounterpartyTable :is(th,td)[data-detail-key="businessTerm"]{ width:56px !important; min-width:56px !important; max-width:56px !important; }
+body #pane-biz #portraitCounterpartyTable :is(th,td)[data-detail-key="operatingDays"]{ width:60px !important; min-width:60px !important; max-width:60px !important; }
+body #pane-biz #portraitCounterpartyTable :is(th,td)[data-detail-key="registeredCapital"]{ width:64px !important; min-width:64px !important; max-width:64px !important; }
+body #pane-biz #portraitCounterpartyTable :is(th,td)[data-detail-key="capitalCurrency"]{ width:68px !important; min-width:68px !important; max-width:68px !important; }
+body #pane-biz #portraitCounterpartyTable :is(th,td)[data-detail-key="businessScope"]{ width:100px !important; min-width:100px !important; max-width:100px !important; }
+body #pane-biz #portraitCounterpartyTable :is(th,td)[data-detail-key="personnelScale"]{ width:64px !important; min-width:64px !important; max-width:64px !important; }
+body #pane-biz #portraitCounterpartyTable :is(th,td)[data-detail-key="insuredCount"]{ width:60px !important; min-width:60px !important; max-width:60px !important; }
+body #pane-biz #portraitCounterpartyTable :is(th,td)[data-detail-key="companyType"]{ width:82px !important; min-width:82px !important; max-width:82px !important; }
+body #pane-biz #portraitCounterpartyTable :is(th,td)[data-detail-key="registeredAddress"]{ width:88px !important; min-width:88px !important; max-width:88px !important; }
+body #pane-biz #portraitCounterpartyTable :is(th,td)[data-detail-key="businessContact"]{ width:86px !important; min-width:86px !important; max-width:86px !important; }
+body #pane-biz #portraitCounterpartyTable :is(th,td)[data-detail-key="keyPersonnel"]{ width:86px !important; min-width:86px !important; max-width:86px !important; }
+
+body #pane-biz #portraitCounterpartyTable td:is([data-detail-key="businessScope"],[data-detail-key="companyType"],[data-detail-key="registeredAddress"],[data-detail-key="businessContact"],[data-detail-key="keyPersonnel"]){
+  overflow-wrap:anywhere !important;
+  white-space:normal !important;
+  line-height:1.25;
+}
+
+body #pane-biz #portraitCounterpartyTable .portrait-remark-head,
+body #pane-biz #portraitCounterpartyTable .portrait-remark-cell{
+  width:94px !important;
+  min-width:94px !important;
 }

@@ -8,13 +8,14 @@
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/></noscript>
   <script defer src="../assets/vendor/echarts/echarts.min.js?v=5.6.0-local"></script>
   <link rel="stylesheet" href="../assets/css/base.css?v=20260827-tyc-sync1"/>
+  <link rel="stylesheet" href="../assets/css/components/year-expansion.css?v=20260920-3"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260811-data-management19"/>
   <link rel="stylesheet" href="../assets/css/pages/account.css?v=20260811-data-management19"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260827-pager-select1"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260907-table-align3"/>
   <link rel="stylesheet" href="../assets/css/pages/data-upload.css?v=20260828-upload-status4"/>
   <link rel="stylesheet" href="../assets/css/pages/data-validation.css?v=20260827-pager-select1"/>
-  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260920-audited-master9"/>
+  <link rel="stylesheet" href="../assets/css/pages/data-management.css?v=20260921-reconcile-switch5"/>
   <title>数据上传及管理</title>
   <script>
     if (new URLSearchParams(location.search).get('embed')) {
@@ -636,17 +637,17 @@
       </div>
       </div>
       </div>
-      <div class="dm-reconcile-cards" id="dmReconcileCards">
+      <div class="dm-reconcile-cards" id="dmReconcileCards" aria-hidden="true">
       <div class="card">
-      <div class="head"><div class="title">总账核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="dm-reconcile-actions"><button class="btn" type="button" data-reconcile-edit="general">编辑</button><button class="btn" type="button" onclick="window.openBankColumnChooser?.(this,this.closest('.card').querySelector('table'))">自定义表头</button><button class="btn primary" type="button" data-reconcile-import="general">导入</button><input type="file" data-reconcile-import-file="general" accept=".xlsx,.xls,.csv" hidden><button class="btn primary" type="button" data-reconcile-export="general">导出结果</button></div></div>
-      <div class="content"><div style="overflow:auto"><table class="table bank-reconcile-table">
-      <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">资金流水数据</th><th colspan="4">科目余额表-总账数据</th><th colspan="4">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" data-default-hidden="true">更新人</th><th rowspan="2" data-default-hidden="true">更新时间</th></tr><tr><th><span>期初金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>期初差异</span><em>a1-a2</em></th><th><span>借方差异</span><em>b1-b2</em></th><th><span>贷方差异</span><em>c1-c2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
+      <div class="head"><div class="title">总额账表核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="dm-reconcile-actions"><button class="btn" type="button" data-reconcile-edit="general">编辑</button><button class="btn" type="button" onclick="window.openBankColumnChooser?.(this,this.closest('.card').querySelector('table'))">自定义表头</button><button class="btn primary" type="button" data-reconcile-import="general">导入</button><input type="file" data-reconcile-import-file="general" accept=".xlsx,.xls,.csv" hidden><button class="btn primary" type="button" data-reconcile-export="general">导出结果</button></div></div>
+      <div class="content"><div class="dm-reconcile-procedure-note"><strong>核查程序说明1：</strong><span>下表将发行人科目余额表中货币资金-银行存款的发生额及余额，与已导入Audit Compass的该公司银行流水汇总数据进行核对，以验证银行存款账面记录的完整性，识别是否存在未入账的资金往来。</span></div><div style="overflow:auto"><table class="table bank-reconcile-table">
+      <thead><tr><th rowspan="2">公司名称</th><th rowspan="2" class="reconcile-year-head"><span>对账</span><span>年份</span></th><th rowspan="2">原币</th><th colspan="4">资金流水数据</th><th colspan="4">科目余额表-总账数据</th><th colspan="4">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" data-default-hidden="true">更新人</th><th rowspan="2" data-default-hidden="true">更新时间</th></tr><tr><th><span>期初金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>期初差异</span><em>a1-a2</em></th><th><span>借方差异</span><em>b1-b2</em></th><th><span>贷方差异</span><em>c1-c2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
       <tbody id="generalLedgerReconcileBody"><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2025</td><td>RMB</td><td>1,218,000</td><td class="amount-in">243,344K</td><td class="amount-out">221,614K</td><td>1,239,730</td><td>1,218,000</td><td>221,614</td><td>243,344</td><td>1,239,730</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>华东制造集团有限公司</td><td>发行人</td><td>2025</td><td>RMB</td><td>1,896,000</td><td class="amount-in">282,511K</td><td class="amount-out">261,319K</td><td>1,917,192</td><td>1,896,000</td><td>261,319</td><td>282,511</td><td>1,917,192</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
       </table></div><div class="pagination reconcile-pagination" id="generalLedgerReconcilePager"></div></div></div>
       <div class="card">
-      <div class="head"><div class="title">分账号核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="dm-reconcile-actions"><button class="btn" type="button" data-reconcile-edit="account">编辑</button><button class="btn" type="button" onclick="window.openBankColumnChooser?.(this,this.closest('.card').querySelector('table'))">自定义表头</button><button class="btn primary" type="button" data-reconcile-import="account">导入</button><input type="file" data-reconcile-import-file="account" accept=".xlsx,.xls,.csv" hidden><button class="btn primary" type="button" data-reconcile-export="account">导出结果</button></div></div>
-      <div class="content"><div style="overflow:auto"><table class="table bank-reconcile-table">
-      <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">银行账号</th><th rowspan="2">开户银行</th><th rowspan="2">期间</th><th rowspan="2">币种</th><th colspan="4">资金流水数据</th><th colspan="4">科目余额表-分账号数据</th><th colspan="4">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" data-default-hidden="true">更新人</th><th rowspan="2" data-default-hidden="true">更新时间</th></tr><tr><th><span>期初金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>期初差异</span><em>a1-a2</em></th><th><span>借方差异</span><em>b1-b2</em></th><th><span>贷方差异</span><em>c1-c2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
+      <div class="head"><div class="title">分账号账表核对</div><div class="head-inline bank-help-actions"><button class="btn account-help-btn bank-help-logic" type="button"><i class="fa-regular fa-lightbulb"></i>业务逻辑</button><button class="btn account-help-btn bank-help-tips" type="button"><i class="fa-regular fa-circle-question"></i>操作提示</button></div><div class="dm-reconcile-actions"><button class="btn" type="button" data-reconcile-edit="account">编辑</button><button class="btn" type="button" onclick="window.openBankColumnChooser?.(this,this.closest('.card').querySelector('table'))">自定义表头</button><button class="btn primary" type="button" data-reconcile-import="account">导入</button><input type="file" data-reconcile-import-file="account" accept=".xlsx,.xls,.csv" hidden><button class="btn primary" type="button" data-reconcile-export="account">导出结果</button></div></div>
+      <div class="content"><div class="dm-reconcile-procedure-note"><strong>核查程序说明2：</strong><span>下表将发行人的货币资金-银行存款按银行账号的科目余额或明细账，与已导入Audit Compass的流水按账号进行核对，以验证银行存款账面记录的完整性，识别是否存在未入账的资金往来。</span></div><div style="overflow:auto"><table class="table bank-reconcile-table">
+      <thead><tr><th rowspan="2">公司名称</th><th rowspan="2">银行账号</th><th rowspan="2">开户银行</th><th rowspan="2" class="reconcile-year-head"><span>对账</span><span>年份</span></th><th rowspan="2">原币</th><th colspan="4">资金流水数据</th><th colspan="4">科目余额表-分账号数据</th><th colspan="4">差异对比</th><th rowspan="2" class="no-sort">差异说明</th><th rowspan="2" data-default-hidden="true">更新人</th><th rowspan="2" data-default-hidden="true">更新时间</th></tr><tr><th><span>期初金额</span><em>a1</em></th><th><span>流入金额</span><em>b1</em></th><th><span>流出金额</span><em>c1</em></th><th><span>期末金额</span><em>d1</em></th><th><span>账面期初金额</span><em>a2</em></th><th><span>账面流出金额</span><em>b2</em></th><th><span>账面流入金额</span><em>c2</em></th><th><span>账面期末金额</span><em>d2</em></th><th><span>期初差异</span><em>a1-a2</em></th><th><span>借方差异</span><em>b1-b2</em></th><th><span>贷方差异</span><em>c1-c2</em></th><th><span>期末差异</span><em>d1-d2</em></th></tr></thead>
       <tbody id="accountReconcileBody"><tr><td>华东制造集团有限公司</td><td>发行人</td><td>1001***0821</td><td>工行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>1,128,000</td><td class="amount-in">140,680K</td><td class="amount-out">128,640K</td><td>1,140,040</td><td>1,128,000</td><td>128,640</td><td>140,680</td><td>1,140,040</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr><tr><td>上海星河科技有限公司</td><td>发行人</td><td>1002***4186</td><td>建行上海分行</td><td>银行流水</td><td>2025</td><td>RMB</td><td>915,000</td><td class="amount-in">112,430K</td><td class="amount-out">103,260K</td><td>924,170</td><td>915,000</td><td>103,260</td><td>112,430</td><td>924,170</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input class="ba-note-input" value="核对一致"/></td><td></td></tr></tbody>
       </table></div><div class="pagination reconcile-pagination" id="accountReconcilePager"></div></div></div>
       </div>
@@ -734,18 +735,52 @@
           <div class="pagination dm-master-pagination" id="dmAccountScopePager"></div>
         </div>
       </div>
+      <div class="dm-reconcile-module" id="dmReconcileModule">
+        <div class="dm-reconcile-switchbar">
+          <div class="dm-reconcile-switch-copy">
+            <strong>账表核对</strong>
+            <span>开启后展示总额账表核对与分账号账表核对</span>
+          </div>
+          <button class="dm-reconcile-switch" id="dmReconcileToggle" type="button" role="switch" aria-checked="false" aria-controls="dmReconcileCards" aria-expanded="false">
+            <span class="dm-reconcile-switch-state" id="dmReconcileToggleState">未开启</span>
+            <span class="dm-reconcile-switch-track" aria-hidden="true"><span></span></span>
+          </button>
+        </div>
+        <div class="dm-reconcile-mount" id="dmReconcileMount"></div>
+      </div>
       </div>
     </div>
   </section>
 </div>
-<script defer src="../assets/js/core/shared.js?v=20260920-filter-only1"></script>
-<script defer src="../assets/js/pages/data-management-balance.js?v=20260906-flow-zoom5"></script>
+<script defer src="../assets/js/core/shared.js?v=20260921-reconcile-switch3"></script>
+<script defer src="../assets/js/pages/data-management-balance.js?v=20260920-account-years3"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260811-data-management19"></script>
 <script>
   (function(){
+    const reconciliationModule = document.getElementById('dmReconcileModule');
+    const reconciliationMount = document.getElementById('dmReconcileMount');
     const reconciliationCards = document.getElementById('dmReconcileCards');
-    const scopePaneContent = document.querySelector('#pane-scope-control .dm-pane-content');
-    if (reconciliationCards && scopePaneContent) scopePaneContent.appendChild(reconciliationCards);
+    const reconciliationToggle = document.getElementById('dmReconcileToggle');
+    const reconciliationToggleState = document.getElementById('dmReconcileToggleState');
+    if (reconciliationCards && reconciliationMount) reconciliationMount.appendChild(reconciliationCards);
+
+    function syncReconciliationVisibility(enabled){
+      if (!reconciliationToggle || !reconciliationCards) return;
+      reconciliationCards.setAttribute('aria-hidden', String(!enabled));
+      reconciliationToggle.setAttribute('aria-checked', String(enabled));
+      reconciliationToggle.setAttribute('aria-expanded', String(enabled));
+      reconciliationModule?.classList.toggle('is-enabled', enabled);
+      if (reconciliationToggleState) reconciliationToggleState.textContent = enabled ? '已开启' : '未开启';
+    }
+
+    if (reconciliationToggle) {
+      reconciliationToggle.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        syncReconciliationVisibility(reconciliationToggle.getAttribute('aria-checked') !== 'true');
+      });
+      syncReconciliationVisibility(false);
+    }
 
     const managementRoot = document.querySelector('.data-management-page');
     const managementTabbar = document.getElementById('dataManagementTabs');

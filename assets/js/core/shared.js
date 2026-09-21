@@ -185,7 +185,7 @@
     const TAB_INTROS = {
       account:"本页展示资金余额变动趋势和原资金总览，帮助用户了解银行账户规模、月度流入流出及流水校验情况。",
       verify:"本页集中展示数据问题、余额连续性和缺失账号校验，帮助用户完成银行流水完整性检查。",
-      "scope-control":"本页统一维护分析范围，并提供总账核对和分账号核对，确认纳入分析的数据与账面记录一致。",
+      "scope-control":"本页统一维护分析范围，并提供总额账表核对和分账号账表核对，确认纳入分析的数据与账面记录一致。",
       biz:"本页从余额、流入流出趋势、交易结构及对手方结构等维度展示流水画像，页面金额统一折算为人民币。",
       relation:"本页展示和分析：(1)关联方主档中的对手方，和(2)于“经营实质>流入流出构成”中手工标记为关联方的对手方的交易，旨在帮助用户全面了解被审计单位与关联方的资金往来，协助用户进行关联方披露。如用户暂未上传关联方主档或未手工打标，则本页展示内容为空。",
       "personal—transaction":"本页展示员工及其他个人对手方交易，支持查看个人交易规模、频次和明细。",
@@ -1120,7 +1120,7 @@
       };
       const importHeaderAliases = {
         company:['公司名称','被审计单位公司'], account:['银行账号','本方账号'], bank:['开户银行','银行名称'],
-        year:['期间','年度'], currency:['币种'], bookOpen:['账面期初金额'], bookOut:['账面流出金额'],
+        year:['对账年份','期间','年度'], currency:['币种'], bookOpen:['账面期初金额'], bookOut:['账面流出金额'],
         bookIn:['账面流入金额'], bookFinal:['账面期末金额'], note:['差异说明','备注']
       };
       const normalizeNumber = value => Number(String(value ?? '').replace(/[,%\s]/g,'')) || 0;
@@ -1165,12 +1165,13 @@
       ];
       const renderRow = (row,key,editing) => {
         const prefix = key==='account'
-          ? [row.company,row.account,row.bank,row.year,row.currency]
-          : [row.company,row.year,row.currency];
+          ? [row.company,row.account,row.bank]
+          : [row.company];
+        const yearCell=`<td class="reconcile-year-cell" data-audit-unit-ignore>${auditFiscalYearLabel(row.year)}</td>`;
         const bankCells = row.bankValues.map((value,index)=>`<td class="${index===1?'amount-in':index===2?'amount-out':''}">${fmt(value)}</td>`).join('');
         const bookCells = row.bookValues.map((value,index)=>`<td class="reconcile-book-cell">${editing?`<input class="reconcile-book-input" data-book-index="${index}" inputmode="decimal" value="${value}"/>`:fmt(value)}</td>`).join('');
         const diffCells = differences(row).map(value=>`<td class="reconcile-diff-cell ${value?'has-difference':''}">${value?fmt(value):'0'}</td>`).join('');
-        return `<tr>${prefix.map(value=>`<td>${value}</td>`).join('')}${bankCells}${bookCells}${diffCells}<td><input class="ba-note-input reconcile-note-input" value="${row.note}"/></td><td>${row.updater}</td><td>${row.updateTime}</td></tr>`;
+        return `<tr>${prefix.map(value=>`<td>${value}</td>`).join('')}${yearCell}<td>${row.currency}</td>${bankCells}${bookCells}${diffCells}<td><input class="ba-note-input reconcile-note-input" value="${row.note}"/></td><td>${row.updater}</td><td>${row.updateTime}</td></tr>`;
       };
       const render = key => {
         const state = pagers[key];
@@ -1219,7 +1220,7 @@
           event.currentTarget.textContent=state.editing?'保存':'编辑';
           event.currentTarget.classList.toggle('primary',state.editing);
           render(key);
-          if(isSaving)showReconcileSaveToast(`${key==='account'?'分账号核对':'总账核对'}数据保存成功`);
+          if(isSaving)showReconcileSaveToast(`${key==='account'?'分账号账表核对':'总额账表核对'}数据保存成功`);
         });
         const importButton = document.querySelector(`[data-reconcile-import="${key}"]`);
         const importInput = document.querySelector(`[data-reconcile-import-file="${key}"]`);
@@ -1233,7 +1234,7 @@
             const count=importRows(await readImportMatrix(file),state,key);
             if(!count)throw new Error('EMPTY_TEMPLATE');
             render(key);
-            showReconcileSaveToast(`${key==='account'?'分账号核对':'总账核对'}模板导入成功，共 ${count} 条`);
+            showReconcileSaveToast(`${key==='account'?'分账号账表核对':'总额账表核对'}模板导入成功，共 ${count} 条`);
           }catch(error){
             showReconcileSaveToast(error?.message==='EXCEL_PARSER_UNAVAILABLE'?'当前环境暂不支持解析 Excel，请使用 CSV 模板导入':'模板内容未识别，请检查表头和数据后重试');
           }finally{
@@ -1244,12 +1245,12 @@
         });
         document.querySelector(`[data-reconcile-export="${key}"]`)?.addEventListener('click',()=>{
           const header=key==='account'
-            ? ['公司名称','银行账号','开户银行','期间','币种','期初金额','流入金额','流出金额','期末金额','账面期初金额','账面流出金额','账面流入金额','账面期末金额','期初差异','借方差异','贷方差异','期末差异','差异说明','更新人','更新时间']
-            : ['公司名称','期间','币种','期初金额','流入金额','流出金额','期末金额','账面期初金额','账面流出金额','账面流入金额','账面期末金额','期初差异','借方差异','贷方差异','期末差异','差异说明','更新人','更新时间'];
+            ? ['公司名称','银行账号','开户银行','对账年份','币种','期初金额','流入金额','流出金额','期末金额','账面期初金额','账面流出金额','账面流入金额','账面期末金额','期初差异','借方差异','贷方差异','期末差异','差异说明','更新人','更新时间']
+            : ['公司名称','对账年份','币种','期初金额','流入金额','流出金额','期末金额','账面期初金额','账面流出金额','账面流入金额','账面期末金额','期初差异','借方差异','贷方差异','期末差异','差异说明','更新人','更新时间'];
           const csv=[header,...state.rows.map(row=>rowValues(row,key))].map(line=>line.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');
           const link=document.createElement('a');
           link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));
-          link.download=`${key==='account'?'分账号核对':'总账核对'}结果.csv`;
+          link.download=`${key==='account'?'分账号账表核对':'总额账表核对'}结果.csv`;
           link.click();
           URL.revokeObjectURL(link.href);
         });
@@ -1385,10 +1386,11 @@
       const state = {
         page:1,
         pageSize:20,
-        yearExpanded:true,
+        expandedYears:new Set(years),
         scopeView:'included',
         visibleMetrics:new Set(metricOptions.filter(item=>!item.defaultHidden).map(item=>item.key))
       };
+      const expandedYears = () => years.filter(year=>state.expandedYears.has(year));
       const format = value => Number(value).toLocaleString('zh-CN');
       const scopedRow = row => {
         if (state.scopeView === 'included') return row;
@@ -1427,7 +1429,7 @@
       };
       const formatRatio = (value,total,isTotal=false) => isTotal ? '100.00' : (total ? value / total * 100 : 0).toFixed(2);
       const yearCells = (row,isTotal,totals) => {
-        if (!state.yearExpanded) return '';
+        if (!state.expandedYears.size) return '';
         const inflow = splitYears(row.inflow);
         const outflow = splitYears(row.outflow);
         const txCount = splitYears(row.txCount);
@@ -1439,7 +1441,7 @@
         const totalInflowTxCount = splitYears(totals.inflowTxCount);
         const totalOutflowTxCount = splitYears(totals.outflowTxCount);
         const annualOptions = metricOptions.filter(item=>item.annual && state.visibleMetrics.has(item.key));
-        return years.map((year,index)=>annualOptions.map(item=>{
+        return expandedYears().map(year=>{const index=years.indexOf(year);return annualOptions.map(item=>{
           const totalValue = inflow[index] + outflow[index];
           const allTotalValue = totalInflow[index] + totalOutflow[index];
           if (item.key === 'inflow') return `<td class="account-year-metric flow-in is-num">${format(inflow[index])}</td>`;
@@ -1451,7 +1453,7 @@
           if (item.key === 'total') return `<td class="account-year-metric is-num"><b>${format(totalValue)}</b></td>`;
           if (item.key === 'ratio') return `<td class="account-year-metric is-num" data-audit-unit-ignore>${formatRatio(totalValue,allTotalValue,isTotal)}</td>`;
           return `<td class="account-year-metric is-num" data-audit-unit-ignore>${isTotal?`<strong>${format(totalTxCount[index])}</strong>`:format(txCount[index])}</td>`;
-        }).join('')).join('');
+        }).join('');}).join('');
       };
       const flowYear = 2025;
       const miniBars = row => {
@@ -1525,7 +1527,7 @@
         const actionWidth = 64;
         const visibleOptions = metricOptions.filter(item=>state.visibleMetrics.has(item.key));
         const annualOptions = visibleOptions.filter(item=>item.annual);
-        const allMetricOptions = [...visibleOptions,...(state.yearExpanded ? years.flatMap(()=>annualOptions) : [])];
+        const allMetricOptions = [...visibleOptions,...expandedYears().flatMap(()=>annualOptions)];
         const metricCount = Math.max(1,allMetricOptions.length);
         const availableWidth = Math.max(0,(wrap.clientWidth || 1120)-companyWidth-monthlyWidth-actionWidth);
         const sharedWidth = Math.floor(availableWidth/metricCount);
@@ -1541,7 +1543,7 @@
         table.style.width = `${tableWidth}px`;
         table.style.minWidth = `${tableWidth}px`;
         const metricCols = options => options.map(item=>`<col class="account-metric-compact-col${item.annual?'':' account-count-label-col'}">`).join('');
-        const annualCols = state.yearExpanded ? years.map(()=>metricCols(annualOptions)).join('') : '';
+        const annualCols = expandedYears().map(()=>metricCols(annualOptions)).join('');
         colgroup.innerHTML = `<col class="account-company-flex-col"><col class="account-monthly-fixed-col">${metricCols(visibleOptions)}${annualCols}<col class="account-action-fixed-col">`;
       };
       if (window.ResizeObserver) {
@@ -1554,9 +1556,9 @@
         table._accountColumnResizeObserver = columnResizeObserver;
       }
       const renderHead = () => {
-        const icon = state.yearExpanded ? '«' : '»';
         const visibleOptions = metricOptions.filter(item=>state.visibleMetrics.has(item.key));
         const annualOptions = visibleOptions.filter(item=>item.annual);
+        const activeYears = expandedYears();
         const groupHeads = options => {
           const groups = [];
           options.forEach(item=>{
@@ -1567,21 +1569,19 @@
           return groups.map(group=>`<th colspan="${group.count}" class="account-metric-direction no-sort no-filter">${group.label}</th>`).join('');
         };
         const metricSymbols = options => options.map(item=>`<th class="account-metric-symbol no-filter${item.annual?'':' account-count-metric'}" data-account-metric="${item.key}" title="${item.label}"><span>${item.symbol}</span></th>`).join('');
-        const yearHeads = state.yearExpanded && annualOptions.length ? years.map(year=>`<th colspan="${annualOptions.length}" class="account-year-head no-sort">${auditFiscalYearLabel(year)}</th>`).join('') : '';
+        const yearHeads = activeYears.length && annualOptions.length ? activeYears.map(year=>`<th colspan="${annualOptions.length}" class="account-year-head no-sort">${auditFiscalYearLabel(year)}</th>`).join('') : '';
         const totalDirections = groupHeads(visibleOptions);
-        const yearDirections = state.yearExpanded ? years.map(()=>groupHeads(annualOptions)).join('') : '';
+        const yearDirections = activeYears.map(()=>groupHeads(annualOptions)).join('');
         const totalSymbols = metricSymbols(visibleOptions);
-        const yearSymbols = state.yearExpanded ? years.map(()=>metricSymbols(annualOptions)).join('') : '';
-        head.innerHTML = `<tr class="account-year-group-head"><th rowspan="3" class="no-filter">被审计单位公司</th><th rowspan="3" class="monthly-flow-head no-sort no-filter">${monthlyFlowExpandButton()}</th><th colspan="${visibleOptions.length}" class="account-group-toggle-cell no-sort"><div class="account-group-head-controls"><button class="account-group-toggle" id="accountYearToggle" type="button" title="展开或收起年度金额"><span>合计</span><i>${icon}</i></button></div></th>${yearHeads}<th rowspan="3" class="no-sort account-action-sticky">操作</th></tr><tr class="account-direction-head">${totalDirections}${yearDirections}</tr><tr class="account-metric-symbol-head">${totalSymbols}${yearSymbols}</tr>`;
+        const yearSymbols = activeYears.map(()=>metricSymbols(annualOptions)).join('');
+        const yearControls = window.AuditYearExpansion?.controls({years,selected:state.expandedYears,toggleId:'accountYearToggle',pickerId:'accountYearPicker'}) || '<span>合计</span>';
+        head.innerHTML = `<tr class="account-year-group-head"><th rowspan="3" class="no-filter">被审计单位公司</th><th rowspan="3" class="monthly-flow-head no-sort no-filter">${monthlyFlowExpandButton()}</th><th colspan="${visibleOptions.length}" class="account-group-toggle-cell no-sort">${yearControls}</th>${yearHeads}<th rowspan="3" class="no-sort account-action-sticky">操作</th></tr><tr class="account-direction-head">${totalDirections}${yearDirections}</tr><tr class="account-metric-symbol-head">${totalSymbols}${yearSymbols}</tr>`;
         document.querySelectorAll('#accountScopeTabs [data-account-scope]').forEach(button=>{
           const active = button.dataset.accountScope === state.scopeView;
           button.classList.toggle('is-active',active);
           button.setAttribute('aria-selected',String(active));
         });
-        document.getElementById('accountYearToggle')?.addEventListener('click',()=>{
-          state.yearExpanded = !state.yearExpanded;
-          render();
-        });
+        window.AuditYearExpansion?.bind({years,getSelected:()=>state.expandedYears,onChange:selected=>{state.expandedYears=selected;render();},toggleId:'accountYearToggle',pickerId:'accountYearPicker'});
       };
       const render = () => {
         const viewRows = scopedRows();
@@ -1593,7 +1593,7 @@
         const end = start + state.pageSize;
         syncAccountColumns();
         renderHead();
-        wrap.classList.toggle('is-year-expanded',state.yearExpanded);
+        wrap.classList.toggle('is-year-expanded',state.expandedYears.size>0);
         const sumYearCells = yearCells(totals,true,totals);
         const metricCells = (row,isTotal=false) => metricOptions.filter(item=>state.visibleMetrics.has(item.key)).map(item=>{
           if (item.key === 'inflow') return `<td class="account-total-metric flow-in is-num">${isTotal?'<strong>':''}${format(row.inflow)}${isTotal?'</strong>':''}</td>`;
@@ -2422,6 +2422,7 @@
   function getHeaderLabel(th) {
     if (th.classList.contains('check-col')) return '校验情况';
     if (th.classList.contains('monthly-flow-head')) return '月度流入/流出';
+    if (th.dataset.columnLabel) return th.dataset.columnLabel;
     const clone = th.cloneNode(true);
     clone.querySelectorAll('.ba-th-tools,button,svg,.check-window,.check-nav').forEach(el => el.remove());
     const text = (clone.textContent || '').replace(/\s+/g, ' ').trim();

@@ -118,11 +118,152 @@ html.dm-embedded-module .data-management-page{
   margin:0 !important;
 }
 
+.data-management-page .dm-reconcile-module{
+  display:grid;
+  align-content:start;
+  min-width:0;
+}
+
+.data-management-page .dm-reconcile-switchbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  min-height:48px;
+  margin:0 0 12px;
+  padding:7px 14px 7px 16px;
+  border:1px solid #d5e4f5;
+  border-radius:6px;
+  background:#f4f8fe;
+  box-shadow:0 2px 8px rgba(48,91,143,.055);
+  transition:border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+}
+
+.data-management-page .dm-reconcile-switch-copy{
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+  min-width:0;
+}
+
+.data-management-page .dm-reconcile-switch-copy strong{
+  flex:none;
+  color:#263d5d;
+  font-size:12.5px;
+  font-weight:700;
+}
+
+.data-management-page .dm-reconcile-switch-copy span{
+  overflow:hidden;
+  color:#7a8ca3;
+  font-size:10.5px;
+  line-height:18px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.data-management-page .dm-reconcile-switch{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  flex:none;
+  padding:3px 0;
+  border:0;
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  cursor:pointer;
+  user-select:none;
+}
+
+.data-management-page .dm-reconcile-switch-state{
+  min-width:36px;
+  color:#8493a7;
+  font-size:10.5px;
+  font-weight:600;
+  text-align:right;
+  transition:color .18s ease;
+}
+
+.data-management-page .dm-reconcile-switch-track{
+  position:relative;
+  display:block;
+  width:34px;
+  height:18px;
+  border:1px solid #c4cfdd;
+  border-radius:9px;
+  background:#dfe5ec;
+  transition:border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+}
+
+.data-management-page .dm-reconcile-switch-track > span{
+  position:absolute;
+  top:2px;
+  left:2px;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 1px 3px rgba(26,46,72,.24);
+  transition:transform .18s ease;
+}
+
+.data-management-page .dm-reconcile-switch[aria-checked="true"] .dm-reconcile-switch-track{
+  border-color:#3b82f6;
+  background:#3b82f6;
+  box-shadow:0 0 0 3px rgba(59,130,246,.10);
+}
+
+.data-management-page .dm-reconcile-switch[aria-checked="true"] .dm-reconcile-switch-track > span{
+  transform:translateX(16px);
+}
+
+.data-management-page .dm-reconcile-switch:focus-visible{
+  outline:2px solid rgba(37,99,235,.34);
+  outline-offset:2px;
+  border-radius:4px;
+}
+
+.data-management-page .dm-reconcile-module.is-enabled .dm-reconcile-switch-state{
+  color:#2563eb;
+}
+
+.data-management-page .dm-reconcile-module.is-enabled .dm-reconcile-switchbar{
+  border-color:#b9d3f2;
+  background:#edf5ff;
+  box-shadow:0 3px 10px rgba(59,130,246,.08);
+}
+
 .data-management-page .dm-reconcile-cards{
   display:grid;
   align-content:start;
   gap:0;
   min-width:0;
+  max-height:0;
+  overflow:hidden;
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+}
+
+.data-management-page .dm-reconcile-module.is-enabled .dm-reconcile-cards{
+  max-height:none;
+  overflow:visible;
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+}
+
+@media (max-width:760px){
+  .data-management-page .dm-reconcile-switchbar{
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .data-management-page .dm-reconcile-switch-copy{
+    display:grid;
+    gap:1px;
+  }
 }
 
 .data-management-page .dm-reconcile-actions{
@@ -142,9 +283,40 @@ html.dm-embedded-module .data-management-page{
   color:#fff;
 }
 
+.data-management-page .dm-reconcile-procedure-note{
+  display:flex;
+  align-items:flex-start;
+  gap:3px;
+  min-width:0;
+  padding:0 0 9px;
+  color:#66788e;
+  font-size:10.5px;
+  line-height:18px;
+}
+
+.data-management-page .dm-reconcile-procedure-note strong{
+  flex:0 0 auto;
+  color:#315f98;
+  font-weight:700;
+}
+
+.data-management-page .dm-reconcile-procedure-note span{
+  min-width:0;
+}
+
 .data-management-page .bank-reconcile-table .reconcile-book-cell{
   width:82px;
   min-width:82px;
+}
+
+.data-management-page .bank-reconcile-table .reconcile-year-head .ba-th-title > span{
+  display:block !important;
+  line-height:13px;
+}
+
+.data-management-page .bank-reconcile-table .reconcile-year-cell{
+  text-align:center !important;
+  white-space:nowrap;
 }
 
 .data-management-page .reconcile-book-input{
@@ -1991,3 +2163,172 @@ body.dm-check-drawer-open{overflow:hidden;}
   background:#fff;
   font:700 9px/1 Arial,sans-serif;
 }
+
+/* 数据校验账号总览：按年度自定义展开。 */
+.data-management-page #checkScope #tblAccountSummary .account-group-head-controls{
+  gap:6px !important;
+  white-space:nowrap;
+}
+.data-management-page #checkScope #tblAccountSummary .account-total-head-label{
+  color:#243b59;
+  font-size:11px;
+  font-weight:750;
+}
+.data-management-page #checkScope #tblAccountSummary .dm-account-year-picker{
+  display:inline-flex !important;
+  width:auto !important;
+  min-width:0 !important;
+  height:22px !important;
+  min-height:22px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:4px !important;
+  padding:0 6px !important;
+  border:1px solid #cddbea !important;
+  border-radius:5px !important;
+  color:#3f5877 !important;
+  background:#fff !important;
+  box-shadow:0 1px 2px rgba(30,64,108,.04) !important;
+  font-size:9.5px !important;
+  font-weight:650 !important;
+  line-height:20px !important;
+}
+.data-management-page #checkScope #tblAccountSummary .dm-account-year-picker:hover,
+.data-management-page #checkScope #tblAccountSummary .dm-account-year-picker[aria-expanded="true"]{
+  border-color:#84a9da !important;
+  color:#1e5ca8 !important;
+  background:#f7faff !important;
+}
+.data-management-page #checkScope #tblAccountSummary .dm-account-year-picker b{
+  display:inline-flex;
+  min-width:14px;
+  height:14px;
+  align-items:center;
+  justify-content:center;
+  border-radius:7px;
+  color:#2563b8;
+  background:#eaf2ff;
+  font-size:9px;
+  line-height:14px;
+}
+.data-management-page #checkScope #tblAccountSummary .dm-account-year-picker i{
+  width:5px;
+  height:5px;
+  margin:-2px 1px 0 2px;
+  border-right:1.5px solid currentColor;
+  border-bottom:1.5px solid currentColor;
+  transform:rotate(45deg);
+}
+.dm-account-year-picker-menu{
+  position:fixed;
+  z-index:12080;
+  box-sizing:border-box;
+  width:224px;
+  padding:10px;
+  border:1px solid #d7e1ed;
+  border-radius:7px;
+  background:#fff;
+  box-shadow:0 12px 30px rgba(29,52,83,.17),0 2px 7px rgba(29,52,83,.08);
+  color:#334155;
+  font-family:var(--platform-font-family,"PingFang SC","Microsoft YaHei",sans-serif);
+}
+.dm-account-year-picker-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:8px;
+  padding:1px 2px 9px;
+  border-bottom:1px solid #edf1f6;
+}
+.dm-account-year-picker-head div{display:grid;gap:2px;min-width:0;}
+.dm-account-year-picker-head b{color:#263b55;font-size:11.5px;line-height:16px;}
+.dm-account-year-picker-head span{color:#8a98aa;font-size:9.5px;line-height:14px;}
+.dm-account-year-picker-head em{
+  min-width:28px;
+  padding:2px 5px;
+  border-radius:4px;
+  color:#2a65ad;
+  background:#edf4ff;
+  font-size:9.5px;
+  font-style:normal;
+  font-weight:700;
+  text-align:center;
+}
+.dm-account-year-picker-options{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:5px;
+  padding:9px 0 7px;
+}
+.dm-account-year-picker-options label{display:block;min-width:0;cursor:pointer;}
+.dm-account-year-picker-options input{position:absolute;opacity:0;pointer-events:none;}
+.dm-account-year-picker-options label > span{
+  display:flex;
+  height:27px;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  border:1px solid #dfe7f0;
+  border-radius:5px;
+  color:#5c6f86;
+  background:#fbfcfe;
+  font-size:10px;
+  font-weight:600;
+  white-space:nowrap;
+}
+.dm-account-year-picker-options label > span i{
+  position:relative;
+  box-sizing:border-box;
+  width:12px;
+  height:12px;
+  border:1px solid #bac7d6;
+  border-radius:3px;
+  background:#fff;
+}
+.dm-account-year-picker-options input:checked + span{
+  border-color:#8fb2df;
+  color:#245d9f;
+  background:#f1f6ff;
+}
+.dm-account-year-picker-options input:checked + span i{border-color:#3f78bd;background:#3f78bd;}
+.dm-account-year-picker-options input:checked + span i::after{
+  content:"";
+  position:absolute;
+  left:3px;
+  top:1px;
+  width:3px;
+  height:6px;
+  border-right:1.5px solid #fff;
+  border-bottom:1.5px solid #fff;
+  transform:rotate(42deg);
+}
+.dm-account-year-picker-shortcuts{display:flex;gap:10px;padding:0 2px 8px;}
+.dm-account-year-picker-shortcuts button{
+  padding:0;
+  border:0;
+  color:#5277a5;
+  background:transparent;
+  font-size:9.5px;
+  cursor:pointer;
+}
+.dm-account-year-picker-shortcuts button:hover{color:#1f5fae;text-decoration:underline;}
+.dm-account-year-picker-foot{
+  display:flex;
+  justify-content:flex-end;
+  gap:6px;
+  padding-top:8px;
+  border-top:1px solid #edf1f6;
+}
+.dm-account-year-picker-foot button{
+  height:25px;
+  padding:0 10px;
+  border:1px solid #d8e1eb;
+  border-radius:5px;
+  color:#5a6a7d;
+  background:#fff;
+  font-size:10px;
+  font-weight:600;
+  cursor:pointer;
+}
+.dm-account-year-picker-foot button.is-primary{border-color:#2f6fcb;color:#fff;background:#2f6fcb;}
+.dm-account-year-picker-foot button.is-primary:hover{border-color:#245dac;background:#245dac;}

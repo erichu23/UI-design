@@ -53,9 +53,9 @@
   addGeneratedRows(sourceCustomerNames,'客户',0);
   addGeneratedRows(sourceSupplierNames,'供应商',45);
   addGeneratedRows(sourceOtherNames,'其他',90);
-  const charts={}; let mode='inflow',featureView='customer',monthlyYear='all',monthlyLayout='combined',monthlyZoomStart=0,monthlyZoomEnd=100,sortKey='',sortDir=1,page=1,pageSize=20,tableView='summary',yearExpanded=true,counterpartyFilter='all',portraitKpisHidden=false,businessInfoReady=false,businessInfoLoading=false;
-  let relationMode='total',relationFilter='related',relationPage=1,relationPageSize=20,relationTableView='summary',relationYearExpanded=false,relationSortKey='',relationSortDir=1,relationKpisHidden=false;
-  let personalMode='total',personalFilter='all',personalPage=1,personalPageSize=20,personalTableView='summary',personalYearExpanded=false,personalSortKey='',personalSortDir=1,personalKpisHidden=false;
+  const charts={}; let mode='inflow',featureView='customer',monthlyYear='all',monthlyLayout='combined',monthlyZoomStart=0,monthlyZoomEnd=100,sortKey='',sortDir=1,page=1,pageSize=20,tableView='summary',expandedYears=new Set([2023,2024,2025]),counterpartyFilter='all',portraitKpisHidden=false,businessInfoReady=false,businessInfoLoading=false;
+  let relationMode='total',relationFilter='related',relationPage=1,relationPageSize=20,relationTableView='summary',relationExpandedYears=new Set(),relationSortKey='',relationSortDir=1,relationKpisHidden=false;
+  let personalMode='total',personalFilter='all',personalPage=1,personalPageSize=20,personalTableView='summary',personalExpandedYears=new Set(),personalSortKey='',personalSortDir=1,personalKpisHidden=false;
   const fmt=v=>v?Number(v).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';
   const fmtK=v=>v?`${fmt(v)}K`:'—';
   const fmtAmount=v=>v?(window.AuditUnit?.formatFromK?.(v)??fmtK(v)):'—';
@@ -142,14 +142,14 @@
   const years=[2023,2024,2025];
   const yearRatios={2023:.27,2024:.33,2025:.40};
   const portraitMetricDefs=[
-    {key:'inflow',label:'流入金额'},
-    {key:'inflowRatio',label:'流入金额占比',defaultHidden:true},
-    {key:'inflowCount',label:'流入笔数',defaultHidden:true},
-    {key:'outflow',label:'流出金额'},
-    {key:'outflowRatio',label:'流出金额占比',defaultHidden:true},
-    {key:'outflowCount',label:'流出笔数',defaultHidden:true},
-    {key:'total',label:'交易总额'},
-    {key:'count',label:'交易笔数',defaultHidden:true}
+    {key:'inflow',label:'流入金额',group:'inflow',groupLabel:'流入',symbol:'¥'},
+    {key:'inflowRatio',label:'流入金额占比',group:'inflow',groupLabel:'流入',symbol:'%',defaultHidden:true},
+    {key:'inflowCount',label:'流入笔数',group:'inflow',groupLabel:'流入',symbol:'#',defaultHidden:true},
+    {key:'outflow',label:'流出金额',group:'outflow',groupLabel:'流出',symbol:'¥'},
+    {key:'outflowRatio',label:'流出金额占比',group:'outflow',groupLabel:'流出',symbol:'%',defaultHidden:true},
+    {key:'outflowCount',label:'流出笔数',group:'outflow',groupLabel:'流出',symbol:'#',defaultHidden:true},
+    {key:'total',label:'交易总额',group:'total',groupLabel:'交易总额',symbol:'¥'},
+    {key:'count',label:'交易笔数',group:'total',groupLabel:'交易总额',symbol:'#',defaultHidden:true}
   ];
   const businessStatus=['存续','存续','存续','存续','迁出','存续','存续','存续','存续','存续'];
   const capitalCurrency=['RMB','RMB','RMB','RMB','RMB','RMB','RMB','RMB','USD','RMB'];
@@ -177,7 +177,7 @@
     const inflowRatio=(inflow/Math.max(1,totals?.inflow||0)*100).toFixed(2);
     const outflowRatio=(outflow/Math.max(1,totals?.outflow||0)*100).toFixed(2);
     const periodClass=year?' portrait-year-detail-cell':'';
-    return `<td class="is-num audit-period-metric is-inflow${periodClass}" data-audit-amount-k="${inflow}">${fmtAmount(inflow)}</td><td class="is-num audit-period-metric${periodClass}" data-audit-unit-ignore>${inflowRatio}%</td><td class="is-num audit-period-metric${periodClass}" data-audit-unit-ignore>${inflowCount}</td><td class="is-num audit-period-metric is-outflow${periodClass}" data-audit-amount-k="${outflow}">${fmtAmount(outflow)}</td><td class="is-num audit-period-metric${periodClass}" data-audit-unit-ignore>${outflowRatio}%</td><td class="is-num audit-period-metric${periodClass}" data-audit-unit-ignore>${outflowCount}</td><td class="is-num audit-period-metric is-transaction-total${periodClass}" data-audit-amount-k="${inflow+outflow}">${fmtAmount(inflow+outflow)}</td><td class="is-num audit-period-metric${periodClass}" data-audit-unit-ignore>${count}</td>`;
+    return `<td class="is-num audit-period-metric is-inflow${periodClass}" data-audit-amount-k="${inflow}">${fmtAmount(inflow)}</td><td class="is-num audit-period-metric${periodClass}" data-audit-unit-ignore>${inflowRatio}</td><td class="is-num audit-period-metric${periodClass}" data-audit-unit-ignore>${inflowCount}</td><td class="is-num audit-period-metric is-outflow${periodClass}" data-audit-amount-k="${outflow}">${fmtAmount(outflow)}</td><td class="is-num audit-period-metric${periodClass}" data-audit-unit-ignore>${outflowRatio}</td><td class="is-num audit-period-metric${periodClass}" data-audit-unit-ignore>${outflowCount}</td><td class="is-num audit-period-metric is-transaction-total${periodClass}" data-audit-amount-k="${inflow+outflow}">${fmtAmount(inflow+outflow)}</td><td class="is-num audit-period-metric${periodClass}" data-audit-unit-ignore>${count}</td>`;
   };
   const metricLabel=key=>key==='inflow'?'流入金额':key==='outflow'?'流出金额':'交易总额';
   const relationTypeName=key=>(relationDefs.find(x=>x.key===key)||relationDefs[0]).label;
@@ -261,8 +261,8 @@
     {key:'founded',label:'成立日期',source:'business',field:'founded'},
     {key:'businessStart',label:'经营开始时间',source:'business',field:'start',defaultHidden:true},
     {key:'businessEnd',label:'经营结束时间',source:'business',field:'end',defaultHidden:true},
-    {key:'businessTerm',label:'营业期限',source:'business',field:'term'},
-    {key:'operatingDays',label:'经营天数',source:'business',field:'operatingDays',numeric:true},
+    {key:'businessTerm',label:'营业期限',source:'business',field:'term',defaultHidden:true},
+    {key:'operatingDays',label:'经营天数',source:'business',field:'operatingDays',numeric:true,defaultHidden:true},
     {key:'registeredCapital',label:'注册资本',source:'business',field:'capital',numeric:true},
     {key:'capitalCurrency',label:'注册资本币种',source:'business',field:'currency'},
     {key:'industry',label:'行业',source:'business',field:'industry'},
@@ -272,7 +272,7 @@
     {key:'legalPersonType',label:'法人类型',source:'business',field:'legalPersonType',defaultHidden:true},
     {key:'companyType',label:'公司类型',source:'business',field:'companyType'},
     {key:'registeredAddress',label:'注册地址',source:'business',field:'address'},
-    {key:'businessContact',label:'企业联系方式',source:'business',field:'contact'},
+    {key:'businessContact',label:'企业联系方式',source:'business',field:'contact',defaultHidden:true},
     {key:'directors',label:'董事',source:'business',field:'directors'},
     {key:'supervisors',label:'监事',source:'business',field:'supervisors'},
     {key:'executives',label:'高管',source:'business',field:'executives'},
@@ -292,10 +292,27 @@
     'businessStatus','businessTerm','capitalCurrency','industry','businessScope','personnelScale','companyType',
     'registeredAddress','businessContact','directors','supervisors','executives','shareholders','keyPersonnel'
   ]);
+  const portraitTwoLineDetailHeaders=new Map([
+    ['businessStatus',['经营','状态']],
+    ['founded',['成立','日期']],
+    ['businessTerm',['营业','期限']],
+    ['operatingDays',['经营','天数']],
+    ['registeredCapital',['注册','资本']],
+    ['capitalCurrency',['注册资本','币种']],
+    ['businessScope',['经营','范围']],
+    ['personnelScale',['人员','规模']],
+    ['insuredCount',['参保','人数']],
+    ['companyType',['公司','类型']],
+    ['registeredAddress',['注册','地址']],
+    ['businessContact',['企业联系','方式']],
+    ['keyPersonnel',['主要','人员']]
+  ]);
   const portraitTransactionDetailHeaders=()=>portraitTransactionDetailDefs.map(def=>{
     const filterOnly=portraitFilterOnlyDetailKeys.has(def.key);
     const classes=['portrait-detail-head',def.source==='business'?'portrait-business-data-head':'',filterOnly?'portrait-filter-only':'',def.noFilter?'no-filter':''].filter(Boolean).join(' ');
-    return `<th rowspan="2" class="${classes}" data-detail-key="${def.key}" ${filterOnly?'':`data-sort="${def.key}"`} ${def.defaultHidden?'data-default-hidden="true"':''}>${def.label}</th>`;
+    const headerLines=portraitTwoLineDetailHeaders.get(def.key);
+    const headerLabel=headerLines?`<span class="portrait-detail-head-label">${headerLines[0]}<br>${headerLines[1]}</span>`:def.label;
+    return `<th rowspan="3" class="${classes}" data-detail-key="${def.key}" ${filterOnly?'':`data-sort="${def.key}"`} ${def.defaultHidden?'data-default-hidden="true"':''}>${headerLabel}</th>`;
   }).join('');
   const portraitTransactionDetailCells=row=>{
     return portraitTransactionDetailDefs.map(def=>{
@@ -313,6 +330,14 @@
     if(businessInfoReady&&!businessInfoLoading)return;
     const firstRow=body.rows[0];
     if(!firstRow)return;
+    const riskState=firstRow.querySelector('.portrait-risk-inline-state');
+    const riskStart=firstRow.querySelector('td.portrait-dishonest-cell');
+    const riskEnd=firstRow.querySelector('td.portrait-lawsuit-cell');
+    if(riskState&&riskStart&&riskEnd){
+      const startRect=riskStart.getBoundingClientRect();
+      const endRect=riskEnd.getBoundingClientRect();
+      riskState.style.width=`${Math.max(startRect.width,endRect.right-startRect.left)}px`;
+    }
     const visibleCells=[...firstRow.querySelectorAll('td.portrait-detail-cell.portrait-business-data-cell')]
       .filter(cell=>getComputedStyle(cell).display!=='none'&&cell.getBoundingClientRect().width>0);
     const anchor=visibleCells[0];
@@ -578,16 +603,25 @@
   function renderTableHead(){
     const head=document.getElementById('portraitCounterpartyHead');
     if(!head)return;
-    const icon=yearExpanded?'«':'»';
-    const metricHeaders=portraitMetricDefs.map(metric=>`<th data-sort="${metric.key}" ${metric.defaultHidden?'data-default-hidden="true"':''}>${metric.label}</th>`).join('');
-    const yearHeads=yearExpanded?years.map(y=>`<th colspan="${portraitMetricDefs.length}" class="portrait-year-head">${window.auditFiscalYearLabel?.(y)||y}</th>`).join(''):'';
-    const yearSubs=yearExpanded?years.map(()=>portraitMetricDefs.map(metric=>`<th class="audit-period-metric portrait-year-detail-head no-sort" ${metric.defaultHidden?'data-default-hidden="true"':''}>${metric.label}</th>`).join('')).join(''):'';
+    const activeYears=years.filter(year=>expandedYears.has(year));
+    const metricGroups=portraitMetricDefs.reduce((groups,metric)=>{
+      const current=groups[groups.length-1];
+      if(current?.key===metric.group)current.count+=1;
+      else groups.push({key:metric.group,label:metric.groupLabel,count:1});
+      return groups;
+    },[]);
+    const metricDirections=()=>metricGroups.map(group=>`<th colspan="${group.count}" class="portrait-metric-direction no-sort no-filter">${group.label}</th>`).join('');
+    const metricSymbols=annual=>portraitMetricDefs.map((metric,index)=>`<th class="portrait-metric-symbol ${index===0||portraitMetricDefs[index-1].group!==metric.group?'is-group-start ':''}${annual?'audit-period-metric portrait-year-detail-head':''}" data-ba-column-group="portrait-${metric.key}" data-column-label="${metric.label}" ${annual?'':`data-sort="${metric.key}"`} ${metric.defaultHidden?'data-default-hidden="true"':''} title="${metric.label}"><span>${metric.symbol}</span></th>`).join('');
+    const yearHeads=activeYears.map(y=>`<th colspan="${portraitMetricDefs.length}" class="portrait-year-head">${window.auditFiscalYearLabel?.(y)||y}</th>`).join('');
+    const yearDirections=activeYears.map(()=>metricDirections()).join('');
+    const yearSymbols=activeYears.map(()=>metricSymbols(true)).join('');
+    const yearControls=window.AuditYearExpansion?.controls({years,selected:expandedYears,toggleId:'portraitYearToggle',pickerId:'portraitYearPicker'})||'<span>合计</span>';
     if(tableView==='business'){
-      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-1">对手方名称</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-2 no-filter" data-sort="blacklist">黑名单</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-3 portrait-compact-risk-head portrait-dishonest-head portrait-filter-only"><span>失信被<br>执行人</span></th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-4 portrait-compact-risk-head" data-sort="lawsuitCount"><span>诉讼<br>数量</span></th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-5"><span class="portrait-type-head-label">对手方<br>类型</span></th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-6">行业</th><th colspan="${portraitMetricDefs.length}" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="portraitYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2">经营状态</th><th rowspan="2">成立日期</th><th rowspan="2">经营开始时间</th><th rowspan="2">经营结束时间</th><th rowspan="2">营业期限</th><th rowspan="2">注册资本</th><th rowspan="2">币种</th><th rowspan="2">经营范围</th><th rowspan="2">注册地址</th><th rowspan="2">企业联系方式</th><th rowspan="2">董监高</th></tr><tr class="portrait-year-sub-head">${metricHeaders}${yearSubs}</tr>`;
+      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-1">对手方名称</th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-2 portrait-blacklist-head no-filter" data-sort="blacklist"><span class="portrait-blacklist-head-label">黑<br>名单</span></th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-3 portrait-compact-risk-head portrait-dishonest-head portrait-filter-only"><span>失信被<br>执行人</span></th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-4 portrait-compact-risk-head" data-sort="lawsuitCount"><span>诉讼<br>数量</span></th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-5 portrait-type-filter-head portrait-filter-only no-sort-only"><span class="portrait-type-head-label">对手方<br>类型</span></th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-6">行业</th><th colspan="${portraitMetricDefs.length}" class="portrait-group-toggle-cell">${yearControls}</th>${yearHeads}<th rowspan="3">经营状态</th><th rowspan="3">成立日期</th><th rowspan="3">经营开始时间</th><th rowspan="3">经营结束时间</th><th rowspan="3">营业期限</th><th rowspan="3">注册资本</th><th rowspan="3">币种</th><th rowspan="3">经营范围</th><th rowspan="3">注册地址</th><th rowspan="3">企业联系方式</th><th rowspan="3">董监高</th></tr><tr class="portrait-metric-direction-head">${metricDirections()}${yearDirections}</tr><tr class="portrait-metric-symbol-head">${metricSymbols(false)}${yearSymbols}</tr>`;
     }else{
-      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-1" data-sort="name">对手方名称</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-2 no-filter" data-sort="blacklist">黑名单</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-3 portrait-compact-risk-head portrait-dishonest-head portrait-business-data-head portrait-filter-only"><span>失信被<br>执行人</span></th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-4 portrait-compact-risk-head portrait-business-data-head" data-sort="lawsuitCount"><span>诉讼<br>数量</span></th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-5">月度分布</th><th rowspan="2" class="portrait-fixed-col portrait-fixed-col-6" data-sort="type"><span class="portrait-type-head-label">对手方<br>类型</span></th><th colspan="${portraitMetricDefs.length}" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="portraitYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}${portraitTransactionDetailHeaders()}<th rowspan="2" class="portrait-remark-head">备注说明</th><th rowspan="2" class="no-sort portrait-operation-head portrait-operation-sticky">操作</th></tr><tr class="portrait-year-sub-head">${metricHeaders}${yearSubs}</tr>`;
+      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-1" data-sort="name">对手方名称</th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-2 portrait-blacklist-head no-filter" data-sort="blacklist"><span class="portrait-blacklist-head-label">黑<br>名单</span></th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-3 portrait-compact-risk-head portrait-dishonest-head portrait-business-data-head portrait-filter-only"><span>失信被<br>执行人</span></th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-4 portrait-compact-risk-head portrait-business-data-head" data-sort="lawsuitCount"><span>诉讼<br>数量</span></th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-5">月度分布</th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-6 portrait-type-filter-head portrait-filter-only no-sort-only"><span class="portrait-type-head-label">对手方<br>类型</span></th><th colspan="${portraitMetricDefs.length}" class="portrait-group-toggle-cell">${yearControls}</th>${yearHeads}${portraitTransactionDetailHeaders()}<th rowspan="3" class="portrait-remark-head"><span class="portrait-detail-head-label">备注<br>说明</span></th><th rowspan="3" class="no-sort portrait-operation-head portrait-operation-sticky">操作</th></tr><tr class="portrait-metric-direction-head">${metricDirections()}${yearDirections}</tr><tr class="portrait-metric-symbol-head">${metricSymbols(false)}${yearSymbols}</tr>`;
     }
-    document.getElementById('portraitYearToggle')?.addEventListener('click',()=>{yearExpanded=!yearExpanded;renderTable();});
+    window.AuditYearExpansion?.bind({years,getSelected:()=>expandedYears,onChange:selected=>{expandedYears=selected;renderTable();},toggleId:'portraitYearToggle',pickerId:'portraitYearPicker'});
   }
   function rowSortValue(row,key){
     if(key==='total')return row.inflow+row.outflow;
@@ -652,8 +686,8 @@
     const leading=tableView==='business'
       ? '<col class="portrait-name-col"><col class="portrait-small-col"><col class="portrait-dishonest-col"><col class="portrait-lawsuit-col"><col class="portrait-type-col"><col class="portrait-industry-col">'
       : '<col class="portrait-name-col"><col class="portrait-small-col"><col class="portrait-dishonest-col"><col class="portrait-lawsuit-col"><col class="portrait-monthly-col"><col class="portrait-type-col">';
-    const metric='<col class="portrait-metric-col">'.repeat(portraitMetricDefs.length);
-    const yearMetric=yearExpanded?'<col class="portrait-year-metric-col">'.repeat(years.length*portraitMetricDefs.length):'';
+    const metric=portraitMetricDefs.map(item=>`<col class="portrait-metric-col portrait-metric-${item.symbol==='¥'?'amount':'compact'}-col">`).join('');
+    const yearMetric=years.filter(year=>expandedYears.has(year)).map(()=>portraitMetricDefs.map(item=>`<col class="portrait-year-metric-col portrait-metric-${item.symbol==='¥'?'amount':'compact'}-col">`).join('')).join('');
     const trailing=tableView==='business'
       ? '<col class="portrait-flex-col">'.repeat(11)
       : portraitTransactionDetailDefs.map(def=>`<col class="portrait-detail-col" data-detail-key="${def.key}">`).join('')+'<col class="portrait-flex-col portrait-remark-col"><col class="portrait-operation-col">';
@@ -671,12 +705,12 @@
     const body=document.getElementById('portraitCounterpartyBody');
     if(!body)return;
     const tableWrap=document.getElementById('portraitCounterpartyTable')?.closest('.portrait-table-wrap');
-    tableWrap?.classList.toggle('is-year-expanded',yearExpanded);
+    tableWrap?.classList.toggle('is-year-expanded',expandedYears.size>0);
     tableWrap?.classList.toggle('is-business-view',tableView==='business');
     syncPortraitColumns();
     renderTableHead();
     body.innerHTML=view.map((r,i)=>{
-      const yearsCells=yearExpanded?years.map(y=>groupCells(r,y,annualTotals[y])).join(''):'';
+      const yearsCells=years.filter(year=>expandedYears.has(year)).map(y=>groupCells(r,y,annualTotals[y])).join('');
       const shownType=displayType(r),shownTypeClass=typeClass(shownType);
       if(tableView==='business'){
         const bi=businessInfo(r);
@@ -771,15 +805,16 @@
   function renderRelationHead(){
     const head=document.getElementById('relationCounterpartyHead');
     if(!head)return;
-    const icon=relationYearExpanded?'«':'»';
-    const yearHeads=relationYearExpanded?years.map(y=>`<th colspan="6" class="portrait-year-head">${window.auditFiscalYearLabel?.(y)||y}</th>`).join(''):'';
-    const yearSubs=relationYearExpanded?years.map(()=>`<th class="audit-period-metric">流入金额</th><th class="audit-period-metric">销项税价合计</th><th class="audit-period-metric">流出金额</th><th class="audit-period-metric">进项税价合计</th><th class="audit-period-metric">交易总额</th><th class="audit-period-metric">交易笔数</th>`).join(''):'';
+    const activeYears=years.filter(year=>relationExpandedYears.has(year));
+    const yearHeads=activeYears.map(y=>`<th colspan="6" class="portrait-year-head">${window.auditFiscalYearLabel?.(y)||y}</th>`).join('');
+    const yearSubs=activeYears.map(()=>`<th class="audit-period-metric">流入金额</th><th class="audit-period-metric">销项税价合计</th><th class="audit-period-metric">流出金额</th><th class="audit-period-metric">进项税价合计</th><th class="audit-period-metric">交易总额</th><th class="audit-period-metric">交易笔数</th>`).join('');
+    const controls=window.AuditYearExpansion?.controls({years,selected:relationExpandedYears,toggleId:'relationYearToggle',pickerId:'relationYearPicker'})||'<span>合计</span>';
     if(relationTableView==='business'){
-      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" data-sort="name">对手方名称</th><th rowspan="2" data-sort="blacklist">黑名单</th><th rowspan="2" data-sort="type">对手方类型</th><th rowspan="2" data-sort="industry">行业</th><th colspan="6" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="relationYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2">经营状态</th><th rowspan="2">成立日期</th><th rowspan="2">经营开始时间</th><th rowspan="2">经营结束时间</th><th rowspan="2">营业期限</th><th rowspan="2">注册资本</th><th rowspan="2">币种</th><th rowspan="2">经营范围</th><th rowspan="2">注册地址</th><th rowspan="2">企业联系方式</th><th rowspan="2">董监高</th></tr><tr class="portrait-year-sub-head"><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="total">交易总额</th><th data-sort="count">交易笔数</th>${yearSubs}</tr>`;
+      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" data-sort="name">对手方名称</th><th rowspan="2" data-sort="blacklist">黑名单</th><th rowspan="2" data-sort="type">对手方类型</th><th rowspan="2" data-sort="industry">行业</th><th colspan="6" class="portrait-group-toggle-cell">${controls}</th>${yearHeads}<th rowspan="2">经营状态</th><th rowspan="2">成立日期</th><th rowspan="2">经营开始时间</th><th rowspan="2">经营结束时间</th><th rowspan="2">营业期限</th><th rowspan="2">注册资本</th><th rowspan="2">币种</th><th rowspan="2">经营范围</th><th rowspan="2">注册地址</th><th rowspan="2">企业联系方式</th><th rowspan="2">董监高</th></tr><tr class="portrait-year-sub-head"><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="total">交易总额</th><th data-sort="count">交易笔数</th>${yearSubs}</tr>`;
     }else{
-      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" data-sort="name">对手方名称</th><th rowspan="2" data-sort="blacklist">黑名单</th><th rowspan="2" class="no-sort">月度分布</th><th rowspan="2" data-sort="type">对手方类型</th><th colspan="6" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="relationYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2" data-sort="sameRatio">同进同出比例（%）</th><th rowspan="2" data-sort="industry">行业</th><th rowspan="2" data-sort="duration">经营时长</th><th rowspan="2">董监高</th></tr><tr class="portrait-year-sub-head"><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="total">交易总额</th><th data-sort="count">交易笔数</th>${yearSubs}</tr>`;
+      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" data-sort="name">对手方名称</th><th rowspan="2" data-sort="blacklist">黑名单</th><th rowspan="2" class="no-sort">月度分布</th><th rowspan="2" data-sort="type">对手方类型</th><th colspan="6" class="portrait-group-toggle-cell">${controls}</th>${yearHeads}<th rowspan="2" data-sort="sameRatio">同进同出比例（%）</th><th rowspan="2" data-sort="industry">行业</th><th rowspan="2" data-sort="duration">经营时长</th><th rowspan="2">董监高</th></tr><tr class="portrait-year-sub-head"><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="total">交易总额</th><th data-sort="count">交易笔数</th>${yearSubs}</tr>`;
     }
-    document.getElementById('relationYearToggle')?.addEventListener('click',()=>{relationYearExpanded=!relationYearExpanded;renderRelationTable();});
+    window.AuditYearExpansion?.bind({years,getSelected:()=>relationExpandedYears,onChange:selected=>{relationExpandedYears=selected;renderRelationTable();},toggleId:'relationYearToggle',pickerId:'relationYearPicker'});
   }
   function renderRelationTable(){
     renderRelationCards();
@@ -788,10 +823,10 @@
     const list=relationRowsForCurrent(),total=list.length,pages=Math.max(1,Math.ceil(total/relationPageSize));
     if(relationPage>pages)relationPage=pages;
     const start=(relationPage-1)*relationPageSize,view=list.slice(start,start+relationPageSize);
-    document.querySelector('.relation-table-wrap')?.classList.toggle('is-year-expanded',relationYearExpanded);
+    document.querySelector('.relation-table-wrap')?.classList.toggle('is-year-expanded',relationExpandedYears.size>0);
     renderRelationHead();
     body.innerHTML=view.map((r,i)=>{
-      const yearsCells=relationYearExpanded?years.map(y=>groupCells(r,y)).join(''):'';
+      const yearsCells=years.filter(year=>relationExpandedYears.has(year)).map(y=>groupCells(r,y)).join('');
       const shownType=relationDisplayType(r),shownTypeClass=typeClass(shownType);
       if(relationTableView==='business'){
         const bi=businessInfo(r);
@@ -886,15 +921,16 @@
   function renderPersonalHead(){
     const head=document.getElementById('personalCounterpartyHead');
     if(!head)return;
-    const icon=personalYearExpanded?'«':'»';
-    const yearHeads=personalYearExpanded?years.map(y=>`<th colspan="6" class="portrait-year-head">${window.auditFiscalYearLabel?.(y)||y}</th>`).join(''):'';
-    const yearSubs=personalYearExpanded?years.map(()=>`<th class="audit-period-metric">流入金额</th><th class="audit-period-metric">销项税价合计</th><th class="audit-period-metric">流出金额</th><th class="audit-period-metric">进项税价合计</th><th class="audit-period-metric">交易总额</th><th class="audit-period-metric">交易笔数</th>`).join(''):'';
+    const activeYears=years.filter(year=>personalExpandedYears.has(year));
+    const yearHeads=activeYears.map(y=>`<th colspan="6" class="portrait-year-head">${window.auditFiscalYearLabel?.(y)||y}</th>`).join('');
+    const yearSubs=activeYears.map(()=>`<th class="audit-period-metric">流入金额</th><th class="audit-period-metric">销项税价合计</th><th class="audit-period-metric">流出金额</th><th class="audit-period-metric">进项税价合计</th><th class="audit-period-metric">交易总额</th><th class="audit-period-metric">交易笔数</th>`).join('');
+    const controls=window.AuditYearExpansion?.controls({years,selected:personalExpandedYears,toggleId:'personalYearToggle',pickerId:'personalYearPicker'})||'<span>合计</span>';
     if(personalTableView==='business'){
-      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" data-sort="name">个人名称</th><th rowspan="2" data-sort="type">人员类型</th><th rowspan="2" data-sort="industry">关系说明</th><th colspan="6" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="personalYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2">状态</th><th rowspan="2">首次交易日期</th><th rowspan="2">最近交易日期</th><th rowspan="2">交易期间</th><th rowspan="2">备注说明</th></tr><tr class="portrait-year-sub-head"><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="total">交易总额</th><th data-sort="count">交易笔数</th>${yearSubs}</tr>`;
+      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" data-sort="name">个人名称</th><th rowspan="2" data-sort="type">人员类型</th><th rowspan="2" data-sort="industry">关系说明</th><th colspan="6" class="portrait-group-toggle-cell">${controls}</th>${yearHeads}<th rowspan="2">状态</th><th rowspan="2">首次交易日期</th><th rowspan="2">最近交易日期</th><th rowspan="2">交易期间</th><th rowspan="2">备注说明</th></tr><tr class="portrait-year-sub-head"><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="total">交易总额</th><th data-sort="count">交易笔数</th>${yearSubs}</tr>`;
     }else{
-      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" data-sort="name">个人名称</th><th rowspan="2" class="no-sort">月度分布</th><th rowspan="2" data-sort="type">人员类型</th><th colspan="6" class="portrait-group-toggle-cell"><button class="portrait-group-toggle" id="personalYearToggle" type="button"><span>合计</span><i>${icon}</i></button></th>${yearHeads}<th rowspan="2" data-sort="sameRatio">同进同出比例（%）</th><th rowspan="2" data-sort="industry">关系说明</th><th rowspan="2" data-sort="duration">交易期间</th><th rowspan="2">备注说明</th></tr><tr class="portrait-year-sub-head"><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="total">交易总额</th><th data-sort="count">交易笔数</th>${yearSubs}</tr>`;
+      head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="2" data-sort="name">个人名称</th><th rowspan="2" class="no-sort">月度分布</th><th rowspan="2" data-sort="type">人员类型</th><th colspan="6" class="portrait-group-toggle-cell">${controls}</th>${yearHeads}<th rowspan="2" data-sort="sameRatio">同进同出比例（%）</th><th rowspan="2" data-sort="industry">关系说明</th><th rowspan="2" data-sort="duration">交易期间</th><th rowspan="2">备注说明</th></tr><tr class="portrait-year-sub-head"><th data-sort="inflow">流入金额</th><th data-sort="salesVat">销项税价合计</th><th data-sort="outflow">流出金额</th><th data-sort="purchaseVat">进项税价合计</th><th data-sort="total">交易总额</th><th data-sort="count">交易笔数</th>${yearSubs}</tr>`;
     }
-    document.getElementById('personalYearToggle')?.addEventListener('click',()=>{personalYearExpanded=!personalYearExpanded;renderPersonalTable();});
+    window.AuditYearExpansion?.bind({years,getSelected:()=>personalExpandedYears,onChange:selected=>{personalExpandedYears=selected;renderPersonalTable();},toggleId:'personalYearToggle',pickerId:'personalYearPicker'});
   }
   function renderPersonalTable(){
     renderPersonalCards();
@@ -903,10 +939,10 @@
     const list=personalRowsForCurrent(),total=list.length,pages=Math.max(1,Math.ceil(total/personalPageSize));
     if(personalPage>pages)personalPage=pages;
     const start=(personalPage-1)*personalPageSize,view=list.slice(start,start+personalPageSize);
-    document.querySelector('.personal-table-wrap')?.classList.toggle('is-year-expanded',personalYearExpanded);
+    document.querySelector('.personal-table-wrap')?.classList.toggle('is-year-expanded',personalExpandedYears.size>0);
     renderPersonalHead();
     body.innerHTML=view.map((r,i)=>{
-      const yearsCells=personalYearExpanded?years.map(y=>groupCells(r,y)).join(''):'';
+      const yearsCells=years.filter(year=>personalExpandedYears.has(year)).map(y=>groupCells(r,y)).join('');
       const shownType=personalType(r);
       if(personalTableView==='business'){
         const bi=businessInfo(r);

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <script defer src="../assets/vendor/echarts/echarts.min.js?v=5.6.0-local"></script>
   <link rel="stylesheet" href="../assets/css/base.css?v=20260827-pager-select1"/>
+  <link rel="stylesheet" href="../assets/css/components/year-expansion.css?v=20260920-3"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis.css?v=20260622-tab-rebuild7"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260827-filter-popover1"/>
   <link rel="stylesheet" href="../assets/css/pages/vat-analysis.css?v=20260807-vat-note-modal1"/>
@@ -611,7 +612,8 @@
     </div>
   </div>
 
-  <script defer src="../assets/js/core/shared.js?v=20260827-filter-popover1"></script>
+  <script defer src="../assets/js/core/year-expansion.js?v=20260920-1"></script>
+  <script defer src="../assets/js/core/shared.js?v=20260920-year-selection1"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function(){
       document.querySelectorAll('#vatMissingBuyerSellerTable .group-row .expand-btn').forEach(function(btn){
@@ -772,8 +774,8 @@
         };
       });
       const vatStructureState = {
-        business:{ mode:'compare', filter:'all', yearExpanded:false, page:1, pageSize:20 },
-        related:{ mode:'compare', filter:'related', yearExpanded:false, page:1, pageSize:20 }
+        business:{ mode:'compare', filter:'all', expandedYears:new Set(), page:1, pageSize:20 },
+        related:{ mode:'compare', filter:'related', expandedYears:new Set(), page:1, pageSize:20 }
       };
       const vatStaticTableState = {
         overview:{ page:1, pageSize:20 },
@@ -1002,20 +1004,18 @@
         const body = document.getElementById(prefix + 'StructureBody');
         const pager = document.getElementById(prefix + 'StructurePager');
         if (head && body) {
-          const expanded = vatStructureState[scope].yearExpanded;
-          const icon = expanded ? '«' : '»';
+          const selectedYears = vatYears.filter(function(year){ return vatStructureState[scope].expandedYears.has(year); });
+          const expanded = selectedYears.length > 0;
           const cols = vatTableColumns(mode);
           const colSpan = cols.length;
-          const metricColumnCount = colSpan * (expanded ? 4 : 1);
+          const metricColumnCount = colSpan * (1 + selectedYears.length);
           const table = document.getElementById(prefix + 'StructureTable');
           syncVatStructureColgroup(table, metricColumnCount);
-          const yearHeads = expanded ? vatYears.map(function(year){ return '<th colspan="' + colSpan + '" class="vat-year-head">' + (window.auditFiscalYearLabel ? window.auditFiscalYearLabel(year) : year) + '</th>'; }).join('') : '';
-          const yearSubs = expanded ? vatYears.flatMap(function(){ return cols; }) : [];
-          head.innerHTML = '<tr class="portrait-year-group-head"><th rowspan="2" class="vat-structure-sticky-1" data-fixed-column="true" data-sort="name">对手方名称</th><th rowspan="2" class="vat-structure-sticky-2" data-fixed-column="true" data-sort="blacklist">黑名单</th><th rowspan="2" class="vat-structure-sticky-3" data-fixed-column="true" data-sort="type">对手方类型</th><th colspan="' + colSpan + '" class="vat-year-head"><button class="vat-year-toggle" id="' + prefix + 'YearToggle" type="button"><span>合计</span><i>' + icon + '</i></button></th>' + yearHeads + '</tr><tr class="portrait-year-sub-head">' + cols.concat(yearSubs).map(function(label){ return '<th>' + label + '</th>'; }).join('') + '</tr>';
-          document.getElementById(prefix + 'YearToggle')?.addEventListener('click', function(){
-            vatStructureState[scope].yearExpanded = !vatStructureState[scope].yearExpanded;
-            renderVatStructure(scope);
-          });
+          const yearHeads = selectedYears.map(function(year){ return '<th colspan="' + colSpan + '" class="vat-year-head">' + (window.auditFiscalYearLabel ? window.auditFiscalYearLabel(year) : year) + '</th>'; }).join('');
+          const yearSubs = selectedYears.flatMap(function(){ return cols; });
+          const controls = window.AuditYearExpansion ? window.AuditYearExpansion.controls({ years:vatYears, selected:vatStructureState[scope].expandedYears, toggleId:prefix + 'YearToggle', pickerId:prefix + 'YearPicker' }) : '<span>合计</span>';
+          head.innerHTML = '<tr class="portrait-year-group-head"><th rowspan="2" class="vat-structure-sticky-1" data-fixed-column="true" data-sort="name">对手方名称</th><th rowspan="2" class="vat-structure-sticky-2" data-fixed-column="true" data-sort="blacklist">黑名单</th><th rowspan="2" class="vat-structure-sticky-3" data-fixed-column="true" data-sort="type">对手方类型</th><th colspan="' + colSpan + '" class="vat-year-head">' + controls + '</th>' + yearHeads + '</tr><tr class="portrait-year-sub-head">' + cols.concat(yearSubs).map(function(label){ return '<th>' + label + '</th>'; }).join('') + '</tr>';
+          window.AuditYearExpansion?.bind({ years:vatYears, getSelected:function(){ return vatStructureState[scope].expandedYears; }, onChange:function(selected){ vatStructureState[scope].expandedYears=selected; renderVatStructure(scope); }, toggleId:prefix + 'YearToggle', pickerId:prefix + 'YearPicker' });
           const tableTotal = vatTableDenominator(rows, mode);
           const sortedRows = rows.slice().sort(function(a,b){ return vatMetricValue(b, mode) - vatMetricValue(a, mode); });
           const totalPages = Math.max(1, Math.ceil(sortedRows.length / vatStructureState[scope].pageSize));
@@ -1025,7 +1025,7 @@
           body.innerHTML = pageRows.map(function(row){
             const totalRow = { monthly:{ total:[{ sales:vatTotal(row, 'sales'), purchase:vatTotal(row, 'purchase') }] } };
             const totalCells = vatMetricCells(totalRow, 'total', tableTotal, mode);
-            const yearCells = expanded ? vatYears.map(function(year){ return vatMetricCells(row, year, tableTotal, mode); }).join('') : '';
+            const yearCells = selectedYears.map(function(year){ return vatMetricCells(row, year, tableTotal, mode); }).join('');
             const displayType = scope === 'related' ? row.category : row.type;
             return '<tr><td class="vat-structure-sticky-1">' + row.name + '</td><td class="counterparty-blacklist-cell vat-structure-sticky-2">-</td><td class="vat-structure-sticky-3 portrait-type-cell vat-type-cell ' + vatTypeClass(displayType) + '">' + displayType + '</td>' + totalCells + yearCells + '</tr>';
           }).join('');

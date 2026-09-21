@@ -78,10 +78,11 @@
   const state={
     page:1,
     pageSize:20,
-    yearExpanded:true,
+    expandedYears:new Set(years),
     scopeView:'included',
     visibleMetrics:new Set(metricOptions.filter(item=>!item.defaultHidden).map(item=>item.key))
   };
+  const expandedYears=()=>years.filter(year=>state.expandedYears.has(year));
   const scopedRows=()=>rows.map((row,index)=>{
     const excluded=state.scopeView==='excluded';
     const inflow=excluded?scopeExcluded(row[3],index):row[3];
@@ -120,7 +121,7 @@
     table.style.setProperty('--account-count-width','78px');
     const metricCols=options=>options.map(item=>`<col class="account-metric-compact-col${item.annual?'':' account-count-label-col'}">`).join('');
     colgroup.innerHTML='<col class="account-company-col"><col class="account-number-col"><col class="account-bank-col"><col class="account-monthly-col">'+
-      metricCols(visibleOptions)+(state.yearExpanded?years.map(()=>metricCols(annualOptions)).join(''):'')+
+      metricCols(visibleOptions)+expandedYears().map(()=>metricCols(annualOptions)).join('')+
       '<col class="account-action-col"><col class="account-flex-col">';
   };
   const splitYears=value=>{
@@ -130,7 +131,7 @@
   };
   const formatRatio=(value,total,isTotal=false)=>isTotal?'100.00':(total?value/total*100:0).toFixed(2);
   const yearCells=(row,isTotal,totals)=>{
-    if(!state.yearExpanded)return '';
+    if(!state.expandedYears.size)return '';
     const inflow=splitYears(row.inflow);
     const outflow=splitYears(row.outflow);
     const inflowTxCount=splitYears(row.inflowTxCount);
@@ -139,7 +140,7 @@
     const totalInflow=splitYears(totals.inflow);
     const totalOutflow=splitYears(totals.outflow);
     const annualOptions=metricOptions.filter(item=>item.annual&&state.visibleMetrics.has(item.key));
-    return years.map((year,index)=>annualOptions.map(item=>{
+    return expandedYears().map(year=>{const index=years.indexOf(year);return annualOptions.map(item=>{
       const totalValue=inflow[index]+outflow[index];
       const allTotalValue=totalInflow[index]+totalOutflow[index];
       if(item.key==='inflow')return `<td class="account-year-metric flow-in is-num">${format(inflow[index])}</td>`;
@@ -151,12 +152,61 @@
       if(item.key==='total')return `<td class="account-year-metric is-num"><b>${format(totalValue)}</b></td>`;
       if(item.key==='totalRatio')return `<td class="account-year-metric is-num" data-audit-unit-ignore>${formatRatio(totalValue,allTotalValue,isTotal)}</td>`;
       return `<td class="account-year-metric is-num" data-audit-unit-ignore>${format(txCount[index])}</td>`;
-    }).join('')).join('');
+    }).join('');}).join('');
+  };
+  let yearPickerMenu=null;
+  const closeYearPicker=()=>{
+    if(!yearPickerMenu)return;
+    yearPickerMenu._cleanup?.();
+    yearPickerMenu.remove();
+    yearPickerMenu=null;
+    document.getElementById('validationAccountYearPicker')?.setAttribute('aria-expanded','false');
+  };
+  const openYearPicker=button=>{
+    const wasOpen=Boolean(yearPickerMenu);
+    closeYearPicker();
+    if(wasOpen)return;
+    const selected=new Set(state.expandedYears);
+    const menu=document.createElement('div');
+    menu.className='dm-account-year-picker-menu';
+    menu.setAttribute('role','dialog');
+    menu.setAttribute('aria-label','选择展开年度');
+    menu.innerHTML=`<div class="dm-account-year-picker-head"><div><b>选择展开年份</b><span>勾选需要查看的年度明细</span></div><em>已选${selected.size}项</em></div><div class="dm-account-year-picker-options">${years.map(year=>`<label><input type="checkbox" value="${year}" ${selected.has(year)?'checked':''}><span><i></i>${year}年</span></label>`).join('')}</div><div class="dm-account-year-picker-shortcuts"><button type="button" data-year-action="all">全部展开</button><button type="button" data-year-action="none">全部收起</button></div><div class="dm-account-year-picker-foot"><button type="button" data-year-action="cancel">取消</button><button type="button" class="is-primary" data-year-action="apply">应用</button></div>`;
+    document.body.appendChild(menu);
+    yearPickerMenu=menu;
+    button.setAttribute('aria-expanded','true');
+    const updateCount=()=>{const count=menu.querySelectorAll('input:checked').length;menu.querySelector('.dm-account-year-picker-head em').textContent=`已选${count}项`;};
+    menu.addEventListener('change',updateCount);
+    menu.addEventListener('click',event=>{
+      event.stopPropagation();
+      const action=event.target.closest('[data-year-action]')?.dataset.yearAction;
+      if(!action)return;
+      if(action==='all'){menu.querySelectorAll('input').forEach(input=>{input.checked=true;});updateCount();return;}
+      if(action==='none'){menu.querySelectorAll('input').forEach(input=>{input.checked=false;});updateCount();return;}
+      if(action==='cancel'){closeYearPicker();return;}
+      state.expandedYears=new Set([...menu.querySelectorAll('input:checked')].map(input=>Number(input.value)));
+      closeYearPicker();
+      render();
+    });
+    const place=()=>{
+      if(!menu.isConnected)return;
+      const rect=button.getBoundingClientRect();
+      const width=224;
+      menu.style.left=`${Math.max(8,Math.min(window.innerWidth-width-8,rect.left+rect.width/2-width/2))}px`;
+      menu.style.top=`${Math.min(window.innerHeight-menu.offsetHeight-8,rect.bottom+6)}px`;
+    };
+    const onOutside=event=>{if(!menu.contains(event.target)&&event.target!==button)closeYearPicker();};
+    const onKey=event=>{if(event.key==='Escape')closeYearPicker();};
+    menu._cleanup=()=>{document.removeEventListener('click',onOutside);document.removeEventListener('keydown',onKey);window.removeEventListener('resize',place);window.removeEventListener('scroll',place,true);};
+    requestAnimationFrame(()=>{place();document.addEventListener('click',onOutside);document.addEventListener('keydown',onKey);window.addEventListener('resize',place);window.addEventListener('scroll',place,true);});
   };
   const renderHead=()=>{
-    const icon=state.yearExpanded?'«':'»';
     const visibleOptions=metricOptions.filter(item=>state.visibleMetrics.has(item.key));
     const annualOptions=visibleOptions.filter(item=>item.annual);
+    const activeYears=expandedYears();
+    const expandIcon=state.expandedYears.size?'«':'»';
+    const yearSelectionLabel=activeYears.length===years.length?'全部年份':activeYears.length===1?`${activeYears[0]}年`:activeYears.length?activeYears.join('、'):'选择年份';
+    const yearSelectionTitle=activeYears.length?`已展开：${activeYears.map(year=>`${year}年`).join('、')}`:'当前未展开年度明细';
     const groupHeads=options=>{
       const groups=[];
       options.forEach(item=>{
@@ -167,17 +217,15 @@
       return groups.map(group=>`<th colspan="${group.count}" class="account-metric-direction no-sort no-filter">${group.label}</th>`).join('');
     };
     const metricSymbols=options=>options.map(item=>`<th class="account-metric-symbol no-filter${item.annual?'':' account-count-metric'}" data-account-metric="${item.key}" title="${item.label}"><span>${item.symbol}</span></th>`).join('');
-    const yearHeads=state.yearExpanded&&annualOptions.length?years.map(year=>`<th colspan="${annualOptions.length}" class="account-year-head no-sort">${window.auditFiscalYearLabel?.(year)||year}</th>`).join(''):'';
+    const yearHeads=activeYears.length&&annualOptions.length?activeYears.map(year=>`<th colspan="${annualOptions.length}" class="account-year-head no-sort">${window.auditFiscalYearLabel?.(year)||year}</th>`).join(''):'';
     const totalDirections=groupHeads(visibleOptions);
-    const yearDirections=state.yearExpanded?years.map(()=>groupHeads(annualOptions)).join(''):'';
+    const yearDirections=activeYears.map(()=>groupHeads(annualOptions)).join('');
     const totalSymbols=metricSymbols(visibleOptions);
-    const yearSymbols=state.yearExpanded?years.map(()=>metricSymbols(annualOptions)).join(''):'';
+    const yearSymbols=activeYears.map(()=>metricSymbols(annualOptions)).join('');
     const monthlyFlowTitle=window.auditMonthlyFlowExpandButton?.()||'<span class="monthly-flow-head-label"><span>月度流入/流出</span><button class="monthly-flow-expand-btn" type="button" data-monthly-flow-expand aria-label="放大查看月度流入流出" title="放大查看月度流入流出"><span class="monthly-flow-expand-icon" aria-hidden="true"></span></button></span>';
-    head.innerHTML=`<tr class="account-year-group-head"><th rowspan="3" class="no-filter dm-account-fixed-col dm-account-fixed-1">被审计单位公司</th><th rowspan="3" class="no-filter dm-account-fixed-col dm-account-fixed-2">本方账号</th><th rowspan="3" class="no-filter dm-account-fixed-col dm-account-fixed-3">银行名称</th><th rowspan="3" class="monthly-flow-head no-sort dm-account-fixed-col dm-account-fixed-4">${monthlyFlowTitle}</th><th colspan="${visibleOptions.length}" class="account-group-toggle-cell no-sort"><div class="account-group-head-controls"><button class="account-group-toggle" id="validationAccountYearToggle" type="button" title="展开或收起年度数据"><span>合计</span><i>${icon}</i></button></div></th>${yearHeads}<th rowspan="3" class="no-sort account-action-sticky">操作</th><th rowspan="3" class="check-col no-sort"><div class="check-head"><button class="arrow-btn" id="btnToggleCheck" data-local-bound="1" type="button" title="展开或收起三年校验月份"><svg aria-hidden="true" viewBox="0 0 16 16"><path d="M6.2 3.5l5 4.5-5 4.5V3.5z"></path></svg></button><span>校验情况</span><span class="check-nav" aria-label="切换校验月份"><button class="check-nav-btn" id="checkScrollPrev" type="button" title="向前查看月份">‹</button><button class="check-nav-btn" id="checkScrollNext" type="button" title="向后查看月份">›</button></span></div><div class="check-window check-window-head"><div class="y-labels">${years.map(year=>`<span class="y y-${year}">${year}</span>`).join(yearSeparator)}</div></div></th></tr><tr class="account-direction-head">${totalDirections}${yearDirections}</tr><tr class="account-metric-symbol-head">${totalSymbols}${yearSymbols}</tr>`;
-    document.getElementById('validationAccountYearToggle')?.addEventListener('click',()=>{
-      state.yearExpanded=!state.yearExpanded;
-      render();
-    });
+    head.innerHTML=`<tr class="account-year-group-head"><th rowspan="3" class="no-filter dm-account-fixed-col dm-account-fixed-1">被审计单位公司</th><th rowspan="3" class="no-filter dm-account-fixed-col dm-account-fixed-2">本方账号</th><th rowspan="3" class="no-filter dm-account-fixed-col dm-account-fixed-3">银行名称</th><th rowspan="3" class="monthly-flow-head no-sort dm-account-fixed-col dm-account-fixed-4">${monthlyFlowTitle}</th><th colspan="${visibleOptions.length}" class="account-group-toggle-cell no-sort"><div class="account-group-head-controls"><button class="account-group-toggle" id="validationAccountYearToggle" type="button" title="${state.expandedYears.size?'一键收起年度明细':'一键展开全部年度'}"><span>合计</span><i>${expandIcon}</i></button><button class="dm-account-year-picker" id="validationAccountYearPicker" type="button" aria-haspopup="dialog" aria-expanded="false" title="${yearSelectionTitle}"><span>${yearSelectionLabel}</span><i aria-hidden="true"></i></button></div></th>${yearHeads}<th rowspan="3" class="no-sort account-action-sticky">操作</th><th rowspan="3" class="check-col no-sort"><div class="check-head"><button class="arrow-btn" id="btnToggleCheck" data-local-bound="1" type="button" title="展开或收起三年校验月份"><svg aria-hidden="true" viewBox="0 0 16 16"><path d="M6.2 3.5l5 4.5-5 4.5V3.5z"></path></svg></button><span>校验情况</span><span class="check-nav" aria-label="切换校验月份"><button class="check-nav-btn" id="checkScrollPrev" type="button" title="向前查看月份">‹</button><button class="check-nav-btn" id="checkScrollNext" type="button" title="向后查看月份">›</button></span></div><div class="check-window check-window-head"><div class="y-labels">${years.map(year=>`<span class="y y-${year}">${year}</span>`).join(yearSeparator)}</div></div></th></tr><tr class="account-direction-head">${totalDirections}${yearDirections}</tr><tr class="account-metric-symbol-head">${totalSymbols}${yearSymbols}</tr>`;
+    document.getElementById('validationAccountYearToggle')?.addEventListener('click',()=>{closeYearPicker();state.expandedYears=state.expandedYears.size?new Set():new Set(years);render();});
+    document.getElementById('validationAccountYearPicker')?.addEventListener('click',event=>{event.stopPropagation();openYearPicker(event.currentTarget);});
   };
   const bindCheckControls=()=>{
     const scope=document.getElementById('checkScope');
@@ -655,7 +703,7 @@
     const visible=viewRows.slice(start,start+state.pageSize);
     syncAccountColumns();
     renderHead();
-    wrap.classList.toggle('is-year-expanded',state.yearExpanded);
+    wrap.classList.toggle('is-year-expanded',state.expandedYears.size>0);
     const metricCells=(row,isTotal=false)=>metricOptions.filter(item=>state.visibleMetrics.has(item.key)).map(item=>{
       const strong=value=>isTotal?`<strong>${value}</strong>`:value;
       if(item.key==='inflow')return `<td class="account-total-metric flow-in is-num">${strong(format(row.inflow))}</td>`;

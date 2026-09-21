@@ -1,0 +1,49 @@
+.audit-year-controls{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:0;white-space:nowrap}
+.audit-year-toggle,.audit-year-picker{font:inherit}
+.audit-year-controls .audit-year-toggle{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:4px !important;
+  width:auto !important;
+  min-width:0 !important;
+  height:auto !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  outline:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#263b55 !important;
+  font-size:inherit !important;
+  font-weight:700 !important;
+  line-height:1.2 !important;
+  cursor:pointer;
+}
+.audit-year-controls .audit-year-toggle i{
+  display:inline !important;
+  width:auto !important;
+  height:auto !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#68809b !important;
+  font-size:10px !important;
+  font-style:normal;
+  line-height:1 !important;
+}
+.audit-year-controls .audit-year-toggle:hover{border:0 !important;background:transparent !important;box-shadow:none !important;color:#1f5fae !important}
+.audit-year-controls .audit-year-toggle:hover i{border:0 !important;background:transparent !important;color:#1f5fae !important}
+.audit-year-picker{display:inline-flex !important;align-items:center !important;justify-content:center !important;gap:4px !important;width:auto !important;min-width:0 !important;max-width:none !important;height:22px !important;min-height:22px !important;padding:0 6px !important;border:1px solid #cddbea !important;border-radius:5px !important;background:#fff !important;box-shadow:0 1px 2px rgba(30,64,108,.04) !important;color:#3f5877 !important;font-size:9.5px !important;font-weight:650 !important;line-height:20px !important;cursor:pointer}
+.audit-year-picker span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.audit-year-picker i{width:5px;height:5px;flex:0 0 auto;margin:-2px 1px 0 2px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg)}
+.audit-year-picker:hover,.audit-year-picker[aria-expanded="true"]{border-color:#84a9da !important;background:#f7faff !important;color:#1e5ca8 !important}
+.audit-year-picker-menu{position:fixed;z-index:12080;box-sizing:border-box;width:224px;padding:10px;border:1px solid #d7e1ed;border-radius:7px;background:#fff;box-shadow:0 12px 30px rgba(29,52,83,.17),0 2px 7px rgba(29,52,83,.08);color:#334155;font-family:var(--platform-font-family,"PingFang SC","Microsoft YaHei",sans-serif)}
+.audit-year-picker-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:1px 2px 9px;border-bottom:1px solid #edf1f6}
+.audit-year-picker-head div{display:grid;gap:2px;min-width:0}.audit-year-picker-head b{color:#263b55;font-size:11.5px;line-height:16px}.audit-year-picker-head span{color:#8a98aa;font-size:9.5px;line-height:14px}.audit-year-picker-head em{min-width:28px;padding:2px 5px;border-radius:4px;background:#edf4ff;color:#2a65ad;font-size:9.5px;font-style:normal;font-weight:700;text-align:center}
+.audit-year-picker-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:9px 0 7px}.audit-year-picker-options label{display:block;min-width:0;cursor:pointer}.audit-year-picker-options input{position:absolute;opacity:0;pointer-events:none}.audit-year-picker-options label>span{display:flex;height:27px;align-items:center;justify-content:center;gap:4px;border:1px solid #dfe7f0;border-radius:5px;background:#fbfcfe;color:#5c6f86;font-size:10px;font-weight:600;white-space:nowrap}.audit-year-picker-options label>span i{position:relative;box-sizing:border-box;width:12px;height:12px;border:1px solid #bac7d6;border-radius:3px;background:#fff}.audit-year-picker-options input:checked+span{border-color:#8fb2df;background:#f1f6ff;color:#245d9f}.audit-year-picker-options input:checked+span i{border-color:#3f78bd;background:#3f78bd}.audit-year-picker-options input:checked+span i:after{content:"";position:absolute;left:3px;top:1px;width:3px;height:6px;border-right:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(42deg)}
+.audit-year-picker-shortcuts{display:flex;gap:10px;padding:0 2px 8px}.audit-year-picker-shortcuts button{padding:0;border:0;background:transparent;color:#5277a5;font-size:9.5px;cursor:pointer}.audit-year-picker-shortcuts button:hover{color:#1f5fae;text-decoration:underline}
+.audit-year-picker-foot{display:flex;justify-content:flex-end;gap:6px;padding-top:8px;border-top:1px solid #edf1f6}.audit-year-picker-foot button{height:25px;padding:0 10px;border:1px solid #d8e1eb;border-radius:5px;background:#fff;color:#5a6a7d;font-size:10px;font-weight:600;cursor:pointer}.audit-year-picker-foot button.is-primary{border-color:#2f6fcb;background:#2f6fcb;color:#fff}.audit-year-picker-foot button.is-primary:hover{border-color:#245dac;background:#245dac}
