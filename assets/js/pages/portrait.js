@@ -351,6 +351,14 @@
     state.style.width=`${Math.max(startRect.width,endRect.right-startRect.left)}px`;
     anchor.appendChild(state);
   }
+  function syncBusinessDetailStateWhenVisible(){
+    const pane=document.getElementById('pane-biz');
+    if(!pane||pane.classList.contains('hide')||pane.getClientRects().length===0)return;
+    window.requestAnimationFrame(()=>{
+      syncBusinessDetailState();
+      window.requestAnimationFrame(syncBusinessDetailState);
+    });
+  }
   const portraitActionIcon=type=>{
     const paths={
       tianyancha:'<path d="M12 2.5 19 5v5.4c0 4.6-2.8 8.7-7 10.6-4.2-1.9-7-6-7-10.6V5Z"/><text x="12" y="14.9" text-anchor="middle">天</text>',
@@ -1252,5 +1260,5 @@
     }));
   });
   window.addEventListener('audit-unit-ready',()=>{renderTable();renderFeatureTable();renderRelationAll();renderPersonalAll();charts.monthly?.setOption(monthlyOption(),true);charts.monthly?.resize();});
-  document.addEventListener('DOMContentLoaded',()=>{renderTable();bind();bindBusinessRefresh();bindSynchronizedAnalysisCards();document.getElementById('portraitResetFilters')?.addEventListener('click',resetPortraitFilters);document.getElementById('portraitGenerateResult')?.addEventListener('click',generatePortraitResult);document.getElementById('portraitMonthlyYearSelect')?.addEventListener('change',event=>{monthlyYear=event.target.value==='all'?'all':Number(event.target.value)||2025;charts.monthly?.setOption(monthlyOption(),true);charts.monthly?.resize();});document.getElementById('portraitMonthlyLayoutToggle')?.addEventListener('click',event=>{monthlyLayout=monthlyLayout==='combined'?'split':'combined';const button=event.currentTarget,isSplit=monthlyLayout==='split';button.classList.toggle('is-active',isSplit);button.setAttribute('aria-pressed',String(isSplit));button.querySelector('b').textContent=isSplit?'横向视图':'上下视图';button.setAttribute('aria-label',isSplit?'切换为横向视图':'切换为流入在上、流出在下');button.title=button.getAttribute('aria-label');charts.monthly?.setOption(monthlyOption(),true);charts.monthly?.resize();});document.getElementById('portraitExportBtn')?.addEventListener('click',exportPortraitCurrent,true);renderFeatureTable();renderRelationAll();renderPersonalAll();setTimeout(renderCharts,80);});
+  document.addEventListener('DOMContentLoaded',()=>{renderTable();bind();bindBusinessRefresh();bindSynchronizedAnalysisCards();window.addEventListener('bank-analysis:tab-change',syncBusinessDetailStateWhenVisible);syncBusinessDetailStateWhenVisible();document.getElementById('portraitResetFilters')?.addEventListener('click',resetPortraitFilters);document.getElementById('portraitGenerateResult')?.addEventListener('click',generatePortraitResult);document.getElementById('portraitMonthlyYearSelect')?.addEventListener('change',event=>{monthlyYear=event.target.value==='all'?'all':Number(event.target.value)||2025;charts.monthly?.setOption(monthlyOption(),true);charts.monthly?.resize();});document.getElementById('portraitMonthlyLayoutToggle')?.addEventListener('click',event=>{monthlyLayout=monthlyLayout==='combined'?'split':'combined';const button=event.currentTarget,isSplit=monthlyLayout==='split';button.classList.toggle('is-active',isSplit);button.setAttribute('aria-pressed',String(isSplit));button.querySelector('b').textContent=isSplit?'横向视图':'上下视图';button.setAttribute('aria-label',isSplit?'切换为横向视图':'切换为流入在上、流出在下');button.title=button.getAttribute('aria-label');charts.monthly?.setOption(monthlyOption(),true);charts.monthly?.resize();});document.getElementById('portraitExportBtn')?.addEventListener('click',exportPortraitCurrent,true);renderFeatureTable();renderRelationAll();renderPersonalAll();setTimeout(renderCharts,80);});
 })();

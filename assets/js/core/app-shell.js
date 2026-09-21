@@ -168,7 +168,7 @@ function initCollapsedSidebarFlyout(){
 const APP_FRAME_STATE_KEY = 'auditCompass.currentFrameState';
 const DEFAULT_PROJECT = 'Test2';
 const DEFAULT_BOOK = '20251022';
-const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260921-counterparty-metrics4';
+const BANK_ANALYSIS_SRC = './fragments/bank-analysis.html?v=20260921-business-gate1';
 const DATA_MANAGEMENT_SRC = './fragments/data-management.html?v=20260921-reconcile-switch5';
 const DATA_SUMMARY_SRC = './fragments/data-summary.html?v=20260920-year-selection1';
 const WORKINGPAPER_EXPORT_SRC = './fragments/workingpaper-export.html?v=20260920-year-selection1';
