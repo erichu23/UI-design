@@ -8,9 +8,14 @@ summary before the existing workspace. Set its `data-enabled` attribute to
 no original routine calculations or result data are modified.
 
 Selections and exclusion reasons are stored in sessionStorage, separately from
-existing routine parameters, keyed by the page project heading. Unconfirmed
-edits do not change the applied workspace. An excluded routine requires a
-nonblank reason. All routines can be excluded if every reason is provided.
+existing routine parameters, keyed by the page project heading. The workspace
+is available immediately with all routines. Exclusions take effect only after
+a nonblank reason is provided and the scope is applied. Missing reasons are
+shown as pending and the routine stays visible, including after applying.
+Reselecting a routine or clearing its reason restores it immediately. Other
+unapplied exclusions keep the previous scope. All routines can be excluded if
+every reason is provided. The summary can always be manually collapsed; applying
+the scope does not collapse it automatically.
 
 The module wraps `selectCheck` and `getVisibleCheckGroups` to limit navigation
 and displayed routine columns to the applied scope. Removing the script tag

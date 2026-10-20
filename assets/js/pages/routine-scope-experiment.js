@@ -6,7 +6,7 @@
 
   const css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = new URL('../../css/pages/routine-scope-experiment.css?v=20261020-1', document.currentScript.src).href;
+  css.href = new URL('../../css/pages/routine-scope-experiment.css?v=20261020-2', document.currentScript.src).href;
   document.head.appendChild(css);
   const ids = Object.keys(checkMeta);
   const storageKey = 'auditCompass.routineScopeExperiment.v1:' + (document.querySelector('.header-title')?.textContent.trim() || location.pathname);
@@ -22,7 +22,7 @@
     });
     if (saved?.applied && ids.every(id => {
       const row = saved.applied[id];
-      return row && typeof row.include === 'boolean' && typeof row.reason === 'string' && (row.include || row.reason.trim());
+      return row && typeof row.include === 'boolean' && typeof row.reason === 'string';
     })) applied = copy(saved.applied);
   } catch (error) { /* Session storage is optional. */ }
 
@@ -32,13 +32,13 @@
   panel.setAttribute('aria-labelledby', 'routineScopeTitle');
   panel.innerHTML = `
     <div class="rs-head">
-      <div class="rs-heading"><span class="rs-step">1</span><h2 id="routineScopeTitle">核查范围</h2><span id="rsCounts"></span></div>
-      <div class="rs-actions"><span id="rsStatus" role="status"></span><button type="button" id="rsFold" aria-expanded="true" aria-controls="rsBody">收起</button></div>
+      <div class="rs-heading"><h2 id="routineScopeTitle">核查范围</h2><span id="rsCounts"></span></div>
+      <div class="rs-actions"><span id="rsStatus" role="status"></span><button class="card-fold-btn cfo-dash-toggle" type="button" id="rsFold" aria-label="收起核查范围" title="收起核查范围" aria-expanded="true" aria-controls="rsBody"></button></div>
     </div>
     <div id="rsBody">
       <div class="rs-toolbar"><label class="rs-all"><input type="checkbox" id="rsAll">全部核查</label><label class="rs-search"><span aria-hidden="true">⌕</span><input id="rsSearch" type="search" placeholder="搜索核查程序" aria-label="搜索核查程序"></label><label class="rs-only"><input id="rsOnlyExcluded" type="checkbox">仅看不核查项</label></div>
       <div class="rs-scroll"><table class="rs-table"><thead><tr><th class="rs-number">编号</th><th>核查程序</th><th class="rs-category">类别</th><th class="rs-choice">本次核查</th><th class="rs-reason-col">不核查原因</th></tr></thead><tbody>${ids.map(id => `<tr data-routine="${escape(id)}"><td>${escape(id)}</td><td class="rs-name">${escape(checkMeta[id].title.replace(id, '').trim())}</td><td class="rs-category">${escape(getGroupLabel(id))}</td><td class="rs-choice"><label><input type="checkbox" data-include="${escape(id)}" aria-label="核查 ${escape(checkMeta[id].title)}"><span data-choice-label></span></label></td><td><input type="text" data-reason="${escape(id)}" maxlength="500" aria-label="${escape(checkMeta[id].title)}不核查原因" placeholder="请填写不核查的原因" aria-required="false"></td></tr>`).join('')}</tbody></table><div class="rs-no-match" hidden>暂无匹配的核查程序</div></div>
-      <div class="rs-footer"><span id="rsMessage" role="status">不核查的程序需填写原因</span><button type="button" id="rsConfirm">确认核查范围</button></div>
+      <div class="rs-footer"><span id="rsMessage" role="status">未填写不核查原因的程序仍保留在下方</span><button type="button" id="rsConfirm">应用核查范围</button></div>
     </div>`;
   workspace.before(panel);
   const empty = document.createElement('div');
@@ -48,7 +48,16 @@
   workspace.after(empty);
   const $ = id => panel.querySelector('#' + id);
   const rows = Array.from(panel.querySelectorAll('[data-routine]'));
-  let collapsed = Boolean(applied);
+  let collapsed = false;
+  let visibilityKey = '';
+
+  function needsReason(row) { return !row.include && !row.reason.trim(); }
+  function isIncluded(id) {
+    // Incomplete exclusions and reselected routines remain available immediately.
+    if (draft[id].include || needsReason(draft[id])) return true;
+    const saved = applied?.[id];
+    return !saved || saved.include || needsReason(saved);
+  }
 
   function persist() {
     try { sessionStorage.setItem(storageKey, JSON.stringify({draft, applied})); } catch (error) {}
@@ -66,21 +75,25 @@
   }
   function updateSummary() {
     const count = ids.filter(id => draft[id].include).length;
-    $('rsCounts').textContent = `${ids.length} 项程序 · 核查 ${count} 项 · 不核查 ${ids.length - count} 项`;
+    const pending = ids.filter(id => needsReason(draft[id])).length;
+    $('rsCounts').textContent = `${ids.length} 项程序 · 核查 ${count} 项 · 不核查 ${ids.length - count - pending} 项${pending ? ` · 待补原因 ${pending} 项` : ''}`;
     $('rsAll').checked = count === ids.length;
     $('rsAll').indeterminate = count > 0 && count < ids.length;
-    $('rsStatus').textContent = isDirty() ? (applied ? '有未确认的修改' : '待确认') : '已确认';
+    $('rsStatus').textContent = isDirty() ? (!applied && count === ids.length ? '默认全部核查' : '有未应用的修改') : (pending ? '已应用，待补原因项仍保留' : '已应用');
     $('rsStatus').classList.toggle('is-confirmed', !isDirty());
     $('rsConfirm').disabled = !isDirty();
     $('rsBody').hidden = collapsed;
-    $('rsFold').textContent = collapsed ? '展开' : '收起';
+    $('rsFold').classList.toggle('is-collapsed', collapsed);
+    $('rsFold').setAttribute('aria-label', collapsed ? '展开核查范围' : '收起核查范围');
+    $('rsFold').title = collapsed ? '展开核查范围' : '收起核查范围';
     $('rsFold').setAttribute('aria-expanded', String(!collapsed));
-    $('rsFold').disabled = !applied;
+    $('rsMessage').textContent = pending ? `${pending} 项待补不核查原因，仍在下方显示` : '未填写不核查原因的程序仍保留在下方';
   }
   function updateRow(row) {
     const value = draft[row.dataset.routine];
     row.querySelector('[data-include]').checked = value.include;
-    row.querySelector('[data-choice-label]').textContent = value.include ? '核查' : '不核查';
+    row.querySelector('[data-choice-label]').textContent = value.include ? '核查' : needsReason(value) ? '待补原因' : '不核查';
+    row.classList.toggle('is-pending', needsReason(value));
     row.classList.toggle('is-excluded', !value.include);
     const input = row.querySelector('[data-reason]');
     input.value = value.reason;
@@ -90,18 +103,21 @@
     input.setAttribute('aria-invalid', 'false');
   }
   function applyScope() {
-    const selected = new Set(ids.filter(id => applied?.[id].include));
-    workspace.classList.toggle('rs-gated', !applied || !selected.size);
-    empty.hidden = !applied || selected.size > 0;
+    const selected = new Set(ids.filter(isIncluded));
+    workspace.classList.toggle('rs-gated', !selected.size);
+    empty.hidden = selected.size > 0;
     document.querySelectorAll('#checkList .check-item[data-id]').forEach(item => {
-      item.classList.toggle('rs-excluded', Boolean(applied) && !selected.has(item.dataset.id));
+      item.classList.toggle('rs-excluded', !selected.has(item.dataset.id));
     });
     document.querySelectorAll('#checkList .check-group').forEach(group => {
       const visible = Array.from(group.querySelectorAll('.check-item[data-id]')).some(item => selected.has(item.dataset.id));
-      group.classList.toggle('rs-excluded', Boolean(applied) && !visible);
+      group.classList.toggle('rs-excluded', !visible);
     });
     const count = document.querySelector('.sidebar-count');
-    if (count && applied) count.textContent = `本次核查 ${selected.size} 项`;
+    if (count) count.textContent = `本次展示 ${selected.size} 项`;
+    const nextKey = Array.from(selected).join(',');
+    if (nextKey === visibilityKey) return;
+    visibilityKey = nextKey;
     if (applied) Object.keys(checkColumnFilters).forEach(id => {
       if (!selected.has(id)) delete checkColumnFilters[id];
     });
@@ -112,26 +128,24 @@
   // Existing result rendering and routine calculations stay in the original page.
   const originalSelect = window.selectCheck;
   window.selectCheck = function (id) {
-    if (!applied?.[id]?.include) return;
+    if (!isIncluded(id)) return;
     return originalSelect(id);
   };
   const originalVisibleGroups = window.getVisibleCheckGroups;
   window.getVisibleCheckGroups = function () {
     const groups = originalVisibleGroups();
-    if (!applied) return groups;
-    return groups.map(group => ({...group, checks:group.checks.filter(check => applied[check.id]?.include)})).filter(group => group.checks.length);
+    return groups.map(group => ({...group, checks:group.checks.filter(check => isIncluded(check.id))})).filter(group => group.checks.length);
   };
   const originalGroupHeader = window.renderCheckGroupHeader;
   window.renderCheckGroupHeader = function (group) {
-    return originalGroupHeader(applied ? {...group, checks:group.checks.filter(check => applied[check.id]?.include)} : group);
+    return originalGroupHeader({...group, checks:group.checks.filter(check => isIncluded(check.id))});
   };
   const originalGroupControls = window.renderCheckGroupDisplayControls;
   window.renderCheckGroupDisplayControls = function () {
     originalGroupControls();
-    if (!applied) return;
     document.querySelectorAll('#checkGroupDisplay .check-display-option').forEach((option, index) => {
       const group = CHECK_COLUMNS[index];
-      const count = group.checks.filter(check => applied[check.id]?.include).length;
+      const count = group.checks.filter(check => isIncluded(check.id)).length;
       option.hidden = !count;
       option.querySelector('em').textContent = count;
     });
@@ -148,6 +162,7 @@
     }
     filterRows();
     updateSummary();
+    applyScope();
     persist();
   });
   panel.addEventListener('input', event => {
@@ -155,28 +170,18 @@
     if (id) {
       draft[id].reason = event.target.value;
       event.target.setAttribute('aria-invalid', 'false');
+      const row = event.target.closest('tr');
+      row.querySelector('[data-choice-label]').textContent = needsReason(draft[id]) ? '待补原因' : '不核查';
+      row.classList.toggle('is-pending', needsReason(draft[id]));
       updateSummary();
+      applyScope();
       persist();
     }
     if (event.target === $('rsSearch')) filterRows();
   });
   $('rsFold').addEventListener('click', () => { collapsed = !collapsed; updateSummary(); window.dispatchEvent(new Event('resize')); });
   $('rsConfirm').addEventListener('click', () => {
-    const missing = ids.filter(id => !draft[id].include && !draft[id].reason.trim());
-    if (missing.length) {
-      $('rsOnlyExcluded').checked = true;
-      $('rsSearch').value = '';
-      filterRows();
-      missing.forEach(id => panel.querySelector(`[data-reason="${id}"]`).setAttribute('aria-invalid', 'true'));
-      $('rsMessage').textContent = `还有 ${missing.length} 项未填写不核查原因`;
-      $('rsMessage').classList.add('is-error');
-      panel.querySelector(`[data-reason="${missing[0]}"]`).focus();
-      return;
-    }
     applied = copy(draft);
-    collapsed = true;
-    $('rsMessage').textContent = '不核查的程序需填写原因';
-    $('rsMessage').classList.remove('is-error');
     persist();
     applyScope();
     updateSummary();
