@@ -5749,6 +5749,9 @@ function getRiskExportTxSheet(checks) {
 
 function downloadRiskExportWorkbook(tables, checks) {
   const sheets = [];
+  if (typeof window.getRiskScopeExportSheet === 'function') {
+    sheets.push(window.getRiskScopeExportSheet());
+  }
   if (tables.includes('cp')) {
     const cpSheet = getRiskExportCpSheet(checks);
     sheets.push(riskExportSheet('对手方汇总', cpSheet.headers, cpSheet.rows));
@@ -7577,6 +7580,6 @@ window.addEventListener('audit-unit-ready', renderCfoDashboard);
 
 </script>
 <!-- Experiment switch: set data-enabled="false" to restore the original workflow. -->
-<script src="../assets/js/pages/routine-scope-experiment.js?v=20261020-2" data-enabled="true"></script>
+<script src="../assets/js/pages/routine-scope-experiment.js?v=20261020-10" data-enabled="true"></script>
 </body>
 </html>
