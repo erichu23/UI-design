@@ -18,8 +18,8 @@
   <link rel="stylesheet" href="../assets/css/pages/biz.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/routine.css?v=20260507-routine"/>
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20260827-workingpaper-tools1"/>
-  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20260907-table-align3"/>
-  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20260921-business-gate1"/>
+  <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20261020-counterparty-scope2"/>
+  <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20261026-direction-tabs4"/>
   <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260624-riskflow1"/>
   <link rel="stylesheet" href="../assets/css/pages/account-action-details.css?v=20260828-portrait-actions4"/>
 </head>
@@ -94,6 +94,17 @@
 <input id="beginDate" type="date"/>
 <span class="range-sep">至</span>
 <input id="endDate" type="date"/>
+<span class="biz-counterparty-scope" id="bizCounterpartyScopeField" hidden>
+<label for="bizCounterpartyScope">对手方筛选类型：</label>
+<span class="select-wrap">
+<select class="select" id="bizCounterpartyScope" title="不包含被审计单位主档信息的公司">
+<option value="audited" selected>不包含被审计单位主档信息的公司</option>
+<option value="controlled">不包含关联方主档信息中的“被审计单位及其控股子公司”</option>
+<option value="related">不包含关联方主档信息中所有关联方</option>
+</select>
+<i class="chev"><svg viewbox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"></path></svg></i>
+</span>
+</span>
 <button class="query" id="btnQueryBiz">查询</button>
 <button class="reset" id="btnResetBiz">重置</button>
 </div>
@@ -199,6 +210,12 @@
       <div class="portrait-table-count bank-head-meta-hidden" id="portraitTableCount"></div>
     </div>
     <div class="content">
+      <div class="portrait-flow-tabs" id="portraitFlowTabs" role="tablist" aria-label="对手方汇总清单收支视角">
+        <button class="is-active" type="button" role="tab" id="portraitFlowTotal" aria-selected="true" aria-controls="portraitFlowPanel" data-flow="total">交易总额</button>
+        <button type="button" role="tab" id="portraitFlowInflow" aria-selected="false" aria-controls="portraitFlowPanel" tabindex="-1" data-flow="inflow">流入方</button>
+        <button type="button" role="tab" id="portraitFlowOutflow" aria-selected="false" aria-controls="portraitFlowPanel" tabindex="-1" data-flow="outflow">流出方</button>
+      </div>
+      <div id="portraitFlowPanel" role="tabpanel" aria-labelledby="portraitFlowTotal">
       <div class="portrait-filter-strip" id="portraitFilterStrip">
         <div class="portrait-counterparty-filters" id="portraitCounterpartyFilters"></div>
         <button class="portrait-kpi-toggle" id="portraitKpiToggle" type="button" aria-label="隐藏KPI卡片" title="隐藏KPI卡片"><span></span></button>
@@ -218,6 +235,7 @@
       <div class="counterparty-blacklist-note portrait-blacklist-row">当前工作簿下总计有3个对手方存在配合造假行为，请关注！（AQPP-Audit提供的全量配合造假清单见<a href="javascript:void(0)">第三方配合造假名单.xlsx</a>）</div>
       <div class="portrait-table-wrap tyc-sync-surface"><table class="table" id="portraitCounterpartyTable"><thead id="portraitCounterpartyHead"></thead><tbody id="portraitCounterpartyBody"></tbody></table></div>
       <div class="pagination portrait-pagination" id="portraitPager"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -655,7 +673,7 @@
 </section>
 <!-- ===================== 资金流水核查底稿导出 ===================== -->
 <section class="tab-pane hide" id="pane-transaction">
-<iframe class="risk-reference-frame" src="./fund-flow-check.html?v=20260827-filter-popover1" title="高风险核查"></iframe>
+<iframe class="risk-reference-frame" src="./fund-flow-check.html?v=20261020-routine-scope10" title="高风险核查"></iframe>
 <div class="risk-page" hidden>
   <aside class="risk-sidebar" id="riskSidebar"><div class="risk-sidebar-head"><div><b>核查程序</b><span id="riskProcedureCount">29 项</span></div><button id="riskSidebarToggle" type="button" title="收起核查程序">‹</button></div><div class="risk-procedure-list" id="riskProcedureList"></div><button class="risk-add-btn" id="riskAddProcedure" type="button">+ 新增核查程序</button></aside>
   <div class="risk-main">
@@ -887,7 +905,8 @@
 <script defer src="../assets/js/core/shared.js?v=20260921-business-gate1"></script>
 <script defer src="../assets/js/pages/account-action-details.js?v=20260828-portrait-actions4"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260508-fast2"></script>
-<script defer src="../assets/js/pages/portrait.js?v=20260921-business-gate1"></script>
+<script defer src="../assets/js/config/business-counterparty-scope.js?v=20261020-1"></script>
+<script defer src="../assets/js/pages/portrait.js?v=20261026-direction-tabs1"></script>
 <script defer src="../assets/js/pages/routine.js?v=20260508-fast2"></script>
 </body>
 </html>

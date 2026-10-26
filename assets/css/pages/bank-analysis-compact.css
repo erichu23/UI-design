@@ -4880,3 +4880,41 @@ body #tblAccountSummary.table td.actions,
 body #tblAccountSummary.table .account-action-sticky{
   text-align:center !important;
 }
+
+/* Keep the business filters and query/reset controls on a single row. */
+body .tab-container .biz-filter-bar .filter-area:has(#bizCounterpartyScopeField:not([hidden])){
+  flex-wrap:nowrap !important;
+  gap:4px !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  scrollbar-width:thin;
+}
+body .tab-container .biz-filter-bar .filter-area:has(#bizCounterpartyScopeField:not([hidden])) > .select-wrap{
+  flex:0 1 124px !important;
+  min-width:88px !important;
+}
+body .tab-container .biz-filter-bar .filter-area:has(#bizCounterpartyScopeField:not([hidden])) > input[type="date"]{
+  flex:0 1 124px !important;
+  min-width:112px !important;
+}
+body #bizCounterpartyScopeField[hidden]{ display:none !important; }
+body #bizCounterpartyScopeField{
+  display:flex;
+  align-items:center;
+  flex:1 1 350px;
+  gap:4px;
+  min-width:250px;
+}
+body #bizCounterpartyScopeField > label{ flex:0 0 auto; white-space:nowrap; }
+body .tab-container .biz-filter-bar #bizCounterpartyScopeField .select-wrap{
+  flex:1 1 240px !important;
+  min-width:0 !important;
+  max-width:100% !important;
+}
+body #bizCounterpartyScope{
+  width:100% !important;
+  min-width:0 !important;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}

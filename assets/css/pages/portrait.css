@@ -2476,3 +2476,60 @@ body #pane-biz #portraitCounterpartyTable .portrait-remark-cell{
   width:94px !important;
   min-width:94px !important;
 }
+
+/* Keep this view switch distinct from the page-wide white-button reset. */
+body #pane-biz #portraitFlowTabs{
+  display:flex;
+  align-items:stretch;
+  gap:0;
+  width:306px;
+  max-width:100%;
+  box-sizing:border-box;
+  padding:3px;
+  margin:0 0 10px;
+  border:1px solid #c3d2e8;
+  border-radius:7px;
+  background:#e9eff8;
+}
+body #pane-biz #portraitFlowTabs > button{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:1 1 0;
+  min-width:0;
+  min-height:30px;
+  height:30px;
+  line-height:28px;
+  padding:0 12px;
+  box-sizing:border-box;
+  margin:0;
+  border:0 !important;
+  border-radius:4px;
+  background:transparent !important;
+  color:#526580 !important;
+  box-shadow:none !important;
+  font:inherit;
+  font-size:13px;
+  font-weight:600;
+  white-space:nowrap;
+  cursor:pointer;
+}
+body #pane-biz #portraitFlowTabs > button:not(.is-active):hover{
+  background:#dce7f7 !important;
+  color:#1d4ed8 !important;
+}
+body #pane-biz #portraitFlowTabs > button.is-active{
+  background:#2563eb !important;
+  box-shadow:0 1px 3px rgba(29,78,216,.25) !important;
+  color:#fff !important;
+  font-weight:700;
+}
+body #pane-biz #portraitFlowTabs > button:focus-visible{
+  outline:2px solid #1d4db0;
+  outline-offset:2px;
+}
+@media(max-width:480px){
+  body #pane-biz #portraitFlowTabs{width:100%;}
+  body #pane-biz #portraitFlowTabs > button{padding:0 8px;}
+}
