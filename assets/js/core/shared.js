@@ -1985,6 +1985,11 @@
     }
   ];
 
+  [...CHECK_STANDARD_ROWS, ...THIRD_PARTY_ROWS].forEach(row => {
+    const standard = window.RoutineStandards?.get(String(row.code).replace(/^i-/, ""));
+    if (standard) row.procedure = standard.procedure;
+  });
+
   function nowText() {
     const d = new Date();
     const pad = n => String(n).padStart(2, "0");

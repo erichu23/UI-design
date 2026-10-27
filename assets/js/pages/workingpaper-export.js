@@ -43,7 +43,8 @@
   activateTab(panes.some(pane=>pane.dataset.exportPane===embeddedExportTab)?embeddedExportTab:'risk-report');
 
   const routineStateKey='auditCompass.specialTransactionRoutineState';
-  const formatRoutineCriteria=filters=>{
+  const formatRoutineCriteria=(filters,id)=>{
+    if(window.RoutineStandards)return window.RoutineStandards.formatCriteria(id,filters);
     if(!filters?.length)return '无需额外筛选';
     return filters.map(filter=>{
       const raw=filter.value;
@@ -64,9 +65,10 @@
     rows.forEach(row=>{
       const id=String(row.cells[1]?.textContent||'').trim().replace(/^i-/,'');
       const routine=routines.get(id);
-      if(!routine)return;
-      if(routine.filters?.length){
-        row.cells[2].textContent=formatRoutineCriteria(routine.filters);
+      const standard=window.RoutineStandards?.get(id);
+      if(standard)row.cells[0].textContent=standard.procedure;
+      if(standard||routine?.filters?.length){
+        row.cells[2].textContent=formatRoutineCriteria(routine?.filters,id);
         row.cells[2].classList.add('wp-synced-criteria');
         row.cells[2].title='参数与特殊交易识别保持一致，本页只读';
       }
