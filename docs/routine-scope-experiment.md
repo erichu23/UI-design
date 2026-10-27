@@ -14,8 +14,8 @@ for this experiment and the working-paper export page. It contains the 24
 standards already present in that working paper. The experiment removes the
 extra 4.5-4.9 entries from navigation, result columns and export choices.
 The special-transaction page additionally excludes 5.1/5.2 and the now-empty
-其他异常 group, leaving 22 supported items. This display-specific exclusion does
-not delete those definitions from the independent working-paper export catalog.
+其他异常 group, leaving 22 supported items. Working-paper tables follow the same
+22-item demo result set; the legacy catalog definitions themselves are retained.
 Procedures use the complete working-paper text, not sidebar abbreviations.
 The wording is aligned to the supplied reference screenshots and the user's
 complete 2.1.3 sentence. Shared descriptions also feed the legacy embedded
@@ -23,13 +23,32 @@ working-paper renderer. Updating descriptions never rewrites saved thresholds.
 
 The working paper defines 4.3 as natural persons and 4.4 as individual businesses
 or sole proprietorships. Do not carry the old registered-capital hit into 4.4.
-The experiment aligns these two sample-data hit mappings with the entity-type
-field. Other detection calculations are unchanged. Existing prototype result
-statuses and missing-master dependencies are not fabricated as completed.
+The experiment uses `routine-demo-data.js` for a deterministic fixture of 144
+counterparties and 1,653 transactions in 2024/2025. All 22 supported routines have
+matching examples under the default conditions, with normal records as controls.
+Counterparty totals and hit lists are derived from transaction records; settings,
+both result tables and working-paper tables share these aggregates. User criteria
+are evaluated against the fixture, so restrictive filters may legitimately yield
+zero. Manual exclusions and restores never change the underlying transactions.
+
+Default amount thresholds are CNY 50,000 for single transactions, personal
+accounts, year-end transactions, non-customer/supplier transactions and reversed
+customer/supplier flows; CNY 1,000,000 for annual inflow/outflow; and CNY 100,000
+for overlapping receipts/payments and infrequent counterparties. These are demo
+defaults, not an audit conclusion. Saved custom amounts are retained. Legacy
+empty amounts receive defaults once; subsequent intentional blanks are preserved
+using the parameter snapshot's `amountDefaultsVersion` marker. A versioned result
+snapshot keeps the export tables aligned without replacing backend field names.
 
 Criteria formatting uses current routine parameters when available and the
 working-paper criterion otherwise. Both pages use the same formatter, including
-zero values and empty/unrestricted parameters. The export page remains read-only.
+zero values and empty/unrestricted parameters. Editable working-paper criteria,
+viewing settings and result filters use `RoutineDemoData.readParameters` /
+`saveParameters`. A storage notification synchronizes open documents and frames;
+a same-document event refreshes working-paper tables immediately. Changes
+re-evaluate the same transaction fixture, preserve manual exclusions, and refresh
+the shared result snapshot. Invalid dates, negative amounts, percentages above
+100 and reversed transaction-count ranges cannot be saved.
 
 ## Viewing State
 
@@ -40,6 +59,20 @@ choices do not silently become new viewing preferences. Current v3 sessions
 restore normally. Draft and saved preferences are kept separately.
 
 Step 1 contains identifier, full procedure, criteria, 是否查看 and 不查看原因.
+The three result columns after criteria are 识别对手方数, 识别交易总额 and
+识别交易笔数, right-aligned with the page's amount unit (no separate unit caption).
+The settings table fits the available width with percentage-based columns;
+procedure text wraps in settings, while results/sidebar titles retain ellipsis.
+The settings grid has
+matching vertical separators in its sticky header and body.
+Counterparty mode counts the retained matching counterparty records and their
+retained matching transaction rows; transaction mode uses the currently filtered
+transaction rows and distinct counterparty IDs. Amounts are summed from those
+transaction records in integer cents before formatting, never from demo badges
+or estimated transaction counts. Returning to settings, changing conditions,
+or exporting settings refreshes the results. Hover text identifies the scope.
+The settings export includes these result fields. Settings headers are labels
+only, with no sort/filter controls; rows keep their natural routine-ID order.
 Parameterized criteria are editable inline using the existing routine metadata.
 Changes persist to the shared parameter snapshot and synchronize the results
 editor, sidebar criteria and working-paper export. Rules without configurable
@@ -48,11 +81,11 @@ Reasons are disabled while checked and enabled when unchecked. No separate
 card-title bar, bulk-view control or saved-status text is displayed. Viewed and
 not-viewed counts appear at the bottom left; the Next button remains at the
 bottom right. Validation/storage errors appear only when needed.
-Column sorting/filtering reuses existing popovers with isolated state.
+Sorting/filtering in the step-2 result tables remains unchanged.
 
 Entering step 2, by Next or the step button, requires a nonblank reason for every
-unchecked standard. Missing/whitespace-only reasons open a modal, reveal filtered
-invalid rows and focus the first missing reason when dismissed. Invalid drafts
+unchecked standard. Missing/whitespace-only reasons open a modal and focus the
+first missing reason when dismissed. Invalid drafts
 never replace saved preferences. Returning to step 1 permits restoring any item.
 
 Step 2 retains all supported standards in the sidebar. Unchecked items and their
@@ -69,16 +102,21 @@ available. Individual result filters for newly hidden standards are cleared so
 invisible filters do not constrain the remaining rows.
 
 Selecting a routine puts its currently checked hits first in both result tables,
-before pagination. Existing column sorting is retained within the hit/non-hit
-partitions. Manually cleared hits are treated as non-hits, using the same helper
+before pagination, without hiding other results. Remaining rows are ordered by
+retained hit count descending, with the existing column sort as the tie-breaker.
+Existing column sorting is retained within the active-hit partition.
+Manually cleared hits are treated as non-hits, using the same helper
 as the table checkmarks. Routine switches reset both tables to page 1. The same
 order is used by filtered-row helpers and enlarged table views.
 
 The mark-status column summarizes all viewed routines for the row, not only the
 currently selected routine or independent legacy row-status flags. It shows
-已命中 when any checked hit remains without a manual removal, or 部分排除 when
-any displayed mark has been removed. Rows with no hits use a dash, not a third
-named status. Filters, sorting and exports use the same result. 部分排除 refers
+已命中 N when no hit has been removed, 部分排除 R/T when some have been removed,
+or 已排除 T/T when all hits have been removed. T is the original hit count in
+the viewed routines, R the removed count, and N the retained count. Only a hit
+actually present on that row can be counted as removed; a counterparty-wide
+removal does not create a hit on unrelated transaction rows. Rows with no hits
+use a dash. Filters, sorting and exports use the same result. 部分排除 refers
 only to manual mark-clear records; it is not an audit conclusion that a record
 is safe. Changing the active routine does not change the row's aggregate state.
 Both the existing routine checkmark cells and the 已命中/部分排除 status buttons

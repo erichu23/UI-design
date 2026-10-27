@@ -1989,6 +1989,55 @@
     const standard = window.RoutineStandards?.get(String(row.code).replace(/^i-/, ""));
     if (standard) row.procedure = standard.procedure;
   });
+  function syncRoutineDemoStandards() {
+    const demo = window.RoutineDemoData;
+    if (!demo) return;
+    const results = new Map(demo.readSummary().map(row => [row.id, row]));
+    [CHECK_STANDARD_ROWS, THIRD_PARTY_ROWS].forEach(rows => {
+      rows.splice(0, rows.length, ...rows.filter(row => results.has(String(row.code).replace(/^i-/, ""))));
+      rows.forEach(row => {
+        const id = String(row.code).replace(/^i-/, "");
+        const result = results.get(id);
+        row.criteria = window.RoutineStandards.formatCriteria(id, demo.readParameters()[id]?.filters);
+        row.cp = result.counterparties;
+        row.amt = result.amount / 1000;
+        row.cnt = result.transactions;
+        row.status = "已完成";
+      });
+    });
+  }
+  function refreshSharedRoutineTables() {
+    renderCheckStandardTable();
+    renderThirdPartyTable();
+    window.AuditUnit?.scan?.(document);
+  }
+  window.addEventListener("storage", event => {
+    if (![window.RoutineDemoData?.resultKey, window.RoutineDemoData?.stateKey].includes(event.key)) return;
+    refreshSharedRoutineTables();
+  });
+  window.addEventListener("routine-parameters-changed", refreshSharedRoutineTables);
+  function routineCriteriaControls(code, fallback) {
+    const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
+    const demo=window.RoutineDemoData, id=String(code).replace(/^i-/, "");
+    const filters=demo?.readParameters()[id]?.filters;
+    if(!filters?.length)return escapeHtml(fallback);
+    return `<div class="wp-routine-criteria">${filters.map(filter=>`<label><span>${escapeHtml(filter.label)}</span><input class="inp-reason" data-wp-routine="${escapeHtml(id)}" data-wp-criterion="${escapeHtml(filter.key)}" type="${filter.type==='number'?'number':'text'}" ${filter.type==='number'?`min="0" step="any" ${filter.unit==='%'?'max="100"':''}`:'maxlength="500"'} value="${escapeHtml(String(filter.defaultVal??''))}" placeholder="${filter.type==='date'?'MM/DD 或 YYYY-MM-DD':'不筛选'}" aria-label="${escapeHtml(id+' '+filter.label)}"><span>${escapeHtml(filter.unit||'')}</span></label>`).join('')}</div>`;
+  }
+  document.addEventListener("change", event=>{
+    const input=event.target.closest?.('[data-wp-criterion]');
+    if(!input)return;
+    input.setCustomValidity('');
+    if(!input.checkValidity()){input.reportValidity();return;}
+    try {
+      window.RoutineDemoData.saveParameters([{id:input.dataset.wpRoutine,filters:[{key:input.dataset.wpCriterion,value:input.value}]}]);
+    } catch(error) {
+      input.setCustomValidity(error.message||'保存失败，请重试');
+      input.reportValidity();
+    }
+  });
+  document.addEventListener("input",event=>{
+    if(event.target.matches?.('[data-wp-criterion]'))event.target.setCustomValidity('');
+  });
 
   function nowText() {
     const d = new Date();
@@ -2099,6 +2148,7 @@
   }
 
   function renderCheckStandardTable() {
+    syncRoutineDemoStandards();
     const tbody = $("#rngTbody");
     if (!tbody) return;
     const hideAction = tbody.closest("table")?.classList.contains("wp-no-action-column");
@@ -2135,7 +2185,7 @@
       <tr>
         <td>${procedure}</td>
         <td>${row.code}</td>
-        <td style="color:#4f83cc;">${row.criteria}</td>
+        <td style="color:#4f83cc;">${routineCriteriaControls(row.code,row.criteria)}</td>
         <td>${row.status ? `<span class="st-done">${row.status}</span>` : `<span class="st-empty">-</span>`}</td>
         <td class="num">${row.cp !== "" ? fmt(row.cp) : ""}</td>
         <td class="num">${row.amt !== "" ? fmt(row.amt) : ""}</td>
@@ -2154,6 +2204,7 @@
   }
 
   function renderThirdPartyTable() {
+    syncRoutineDemoStandards();
     const tbody = $("#fraudTbody");
     if (!tbody) return;
 
@@ -2161,7 +2212,7 @@
       <tr>
         <td>${row.procedure}</td>
         <td>${row.code}</td>
-        <td style="color:#4f83cc;">${row.criteria}</td>
+        <td style="color:#4f83cc;">${routineCriteriaControls(row.code,row.criteria)}</td>
         <td><span class="st-done">${row.status}</span></td>
         <td class="num">${fmt(row.cp)}</td>
         <td class="num">${fmt(row.amt)}</td>

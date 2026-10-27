@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const catalog = read('assets/js/config/routine-standards.js');
 const shared = read('assets/js/core/shared.js');
-const context = {window:{}};
+const context = {window:{addEventListener:()=>{}},document:{addEventListener:()=>{}}};
 vm.createContext(context);
 vm.runInContext(catalog, context);
 const originalRows = vm.runInContext(shared.slice(shared.indexOf('  const CHECK_STANDARD_ROWS = ['), shared.indexOf('  function nowText()', shared.indexOf('  const CHECK_STANDARD_ROWS = ['))) + '\n[...CHECK_STANDARD_ROWS,...THIRD_PARTY_ROWS]', context);
@@ -43,6 +43,7 @@ assert.equal(context.window.RoutineStandards.get('2.2.3').procedure, context.win
     await page.goto('https://routine-view.test/fixture');
     await page.addStyleTag({content:read('assets/css/pages/risk-reference-override.css')});
     await page.addScriptTag({content:catalog});
+    await page.addScriptTag({content:read('assets/js/config/routine-demo-data.js')});
     await page.addScriptTag({content:main});
     await page.evaluate(() => new Promise(resolve => {
       const script = document.createElement('script');
@@ -56,6 +57,59 @@ assert.equal(context.window.RoutineStandards.get('2.2.3').procedure, context.win
     const first = page.locator('[data-decision="1.1"]');
     const reason = page.locator('[data-reason="1.1"]');
     assert.equal(await page.locator('#routineScope [data-decision]').count(), 22);
+    assert.equal(await page.locator('#checkList .has-filter, #checkList .filter-dot').count(),0);
+    assert.equal(await page.locator('#checkList .check-item.active').evaluate(item=>getComputedStyle(item).borderLeftColor!=='rgba(0, 0, 0, 0)'),true);
+    assert.equal(await page.locator('#checkList .check-item:not(.active)').first().evaluate(item=>getComputedStyle(item).borderLeftColor),'rgba(0, 0, 0, 0)');
+    assert.deepEqual(await page.locator('#routineScope thead th').evaluateAll(cells=>cells.map(cell=>cell.dataset.column)),
+      ['id','name','criteria','identifiedCounterparties','identifiedAmount','identifiedTransactions','decision','reason']);
+    assert.equal(await page.locator('#routineScope thead button, #routineScope thead [data-sort], #routineScope thead [data-filter]').count(),0);
+    assert.equal(await page.locator('#routineScope tbody tr').first().locator('td').count(),8);
+    assert.equal(await page.locator('#routineScope tbody td').first().evaluate(cell=>getComputedStyle(cell).borderRightWidth),'1px');
+    assert.equal(await page.locator('#routineScope thead th').first().evaluate(cell=>getComputedStyle(cell).borderRightWidth),'1px');
+    const settingsResultCheck = await page.evaluate(() => {
+      const id='3.2';
+      const counterparties=new Set(getRiskFilteredRows('cp').filter(row=>isCheckHitForRow(row,id,'cp')).map(row=>row.id));
+      const flows=txData.filter(row=>counterparties.has(row.cpId)&&isCheckHitForRow(row,id,'tx'));
+      const row=document.querySelector(`#routineScope [data-routine="${id}"]`);
+      return {
+        counterparties:Number(row.querySelector('[data-result="identifiedCounterparties"]').textContent.replaceAll(',',''))===counterparties.size,
+        transactions:Number(row.querySelector('[data-result="identifiedTransactions"]').textContent.replaceAll(',',''))===flows.length,
+        amount:row.querySelector('[data-result="identifiedAmount"]').textContent===fmtAmtFromYuan(flows.reduce((sum,flow)=>sum+flow.amount,0)),
+        rightAligned:getComputedStyle(row.querySelector('[data-result="identifiedTransactions"]')).textAlign==='right'
+      };
+    });
+    assert(Object.values(settingsResultCheck).every(Boolean),'settings aggregates use matching records and right-aligned numeric cells');
+    assert.equal(await page.locator('#routineScope .rs-result-unit').count(),0);
+    assert.equal(await page.locator('[data-routine="2.1.3"] .rs-name').evaluate(cell=>getComputedStyle(cell).whiteSpace),'normal');
+    for (const width of [1440,1280,1024,390]) {
+      await page.setViewportSize({width,height:960});
+      const sizing=await page.locator('#routineScope .rs-scroll').evaluate(element=>({scroll:element.scrollWidth,client:element.clientWidth}));
+      assert(sizing.scroll<=sizing.client+1,`settings should fit at ${width}px: ${JSON.stringify(sizing)}`);
+    }
+    await page.setViewportSize({width:1440,height:960});
+    const unitFollowsTop = await page.evaluate(()=>{
+      const id='3.2';
+      const counterparties=new Set(getRiskFilteredRows('cp').filter(row=>isCheckHitForRow(row,id,'cp')).map(row=>row.id));
+      const amount=txData.filter(row=>counterparties.has(row.cpId)&&isCheckHitForRow(row,id,'tx')).reduce((sum,row)=>sum+row.amount,0);
+      const format=value=>Number(value).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});
+      window.AuditUnit={ready:true,label:'百万元',unit:'m',decimals:2,convert:value=>Number(value)/1e6,
+        formatFromYuan:value=>format(Number(value)/1e6),formatFromWan:value=>format(Number(value)/100)};
+      window.dispatchEvent(new CustomEvent('audit-unit-ready'));
+      const converted=document.querySelector('[data-routine="3.2"] [data-result="identifiedAmount"]').textContent===format(amount/1e6);
+      const noExtraUnit=!document.querySelector('#routineScope .rs-result-unit');
+      delete window.AuditUnit;
+      window.dispatchEvent(new CustomEvent('audit-unit-ready'));
+      return converted&&noExtraUnit;
+    });
+    assert(unitFollowsTop,'result amounts follow the global unit without a separate unit label');
+    if(process.argv.includes('--layout-only')){
+      await page.screenshot({path:'/private/tmp/routine-view-layout-desktop.png'});
+      await page.setViewportSize({width:390,height:844});
+      await page.screenshot({path:'/private/tmp/routine-view-layout-mobile.png'});
+      assert.deepEqual(errors,[]);
+      console.log('PASS: eight columns, result totals, vertical separators, wrapping and no horizontal overflow at 1440/1280/1024/390px, and global amount-unit formatting.');
+      return;
+    }
     assert.equal(await page.locator('#routineScope [data-decision]:checked').count(), 22);
     assert.equal(await page.locator('#checkList [data-view-routine]').count(), 22);
     assert.equal(await page.locator('#checkList .badge-new').count(), 0);
@@ -178,17 +232,21 @@ assert.equal(context.window.RoutineStandards.get('2.2.3').procedure, context.win
             if (!hit) sawOther = true;
             return !hit || !sawOther;
           }));
+          const otherRows=data.filter(row=>!isCheckHitForRow(row,id,kind));
+          const count=row=>Number(kind==='tx'?getTxColumnValue(row,'hitCount'):getCpColumnValue(row,'hitCount'));
+          checks.push(otherRows.every((row,index)=>!index||count(otherRows[index-1])>=count(row)));
+          checks.push(data.length===(kind==='tx'?txData:cpData).length);
           const actual = Array.from(document.querySelectorAll(`#${kind}Body tr`), row => row.id.replace(`${kind}-row-`, ''));
           checks.push(JSON.stringify(actual) === JSON.stringify(data.slice(0, actual.length).map(row => kind === 'tx' ? row.txId : row.id)));
         }
       }
       selectCheck('3.2');
-      const sample = [{id:'s1',hits:['期末集中'],outflow:10},{id:'s2',hits:[],outflow:1000},{id:'s3',hits:['期末集中'],outflow:20},{id:'s4',hits:['期末集中'],outflow:2000}];
+      const sample = [{id:'s1',hits:['期末集中'],outflow:10},{id:'s2',hits:['累计大额','摘要异常'],outflow:1000},{id:'s3',hits:['期末集中'],outflow:20},{id:'s4',hits:['期末集中'],outflow:2000}];
       manualClears['s4_3.2'] = {reason:'已核实'};
-      checks.push(sortData(sample, 'outflow', 'desc').map(row=>row.id).join() === 's3,s1,s4,s2');
+      checks.push(sortData(sample, 'outflow', 'desc').map(row=>row.id).join() === 's3,s1,s2,s4');
       checks.push(sortData(sample, 'outflow', 'asc').map(row=>row.id).join() === 's1,s3,s2,s4');
       const transactions = sample.map(row=>({cpId:row.id,flags:row.hits,amount:row.outflow,dir:'流出'}));
-      checks.push(sortData(transactions, 'outflowAmt', 'desc').map(row=>row.cpId).join() === 's3,s1,s4,s2');
+      checks.push(sortData(transactions, 'outflowAmt', 'desc').map(row=>row.cpId).join() === 's3,s1,s2,s4');
       checks.push(sample.map(row=>row.id).join() === 's1,s2,s3,s4');
       delete manualClears['s4_3.2'];
       selectCheck('1.2');
@@ -200,24 +258,34 @@ assert.equal(context.window.RoutineStandards.get('2.2.3').procedure, context.win
       const hit = cpData.find(row => isCheckHitForRow(row, activeCheck, 'cp'));
       const empty = cpData.find(row => !getHitCheckIds(row.hits).size);
       const tx = txData.find(row => row.cpId === hit.id && getTxCheckIds(row.flags).has(activeCheck));
-      const checks = [getCpColumnValue(hit,'markStatus')==='已命中', getCpColumnValue(empty,'markStatus')==='—',
-        getTxColumnValue(tx,'flag')==='已命中',riskExportMarkStatus(hit,'cp')==='已命中'];
+      const cpTotal=Number(getCpColumnValue(hit,'hitCount')),txTotal=Number(getTxColumnValue(tx,'hitCount'));
+      const cpMarked=`已命中 ${cpTotal}`,txMarked=`已命中 ${txTotal}`;
+      const cpRemoved=`${cpTotal>1?'部分排除':'已排除'} 1/${cpTotal}`;
+      const txRemoved=`${txTotal>1?'部分排除':'已排除'} 1/${txTotal}`;
+      const checks = [getCpColumnValue(hit,'markStatus')===cpMarked, getCpColumnValue(empty,'markStatus')==='—',
+        getTxColumnValue(tx,'flag')===txMarked,riskExportMarkStatus(hit,'cp')===cpMarked];
       const key = `${hit.id}_${activeCheck}`;
       const oldRemark = hit.remark;
       manualClears[key] = {reason:'已取得支持材料',time:'测试'};
       renderCpTable();renderTxTable();
-      checks.push(getCpColumnValue(hit,'markStatus')==='部分排除',getTxColumnValue(tx,'flag')==='部分排除',
-        riskExportMarkStatus(hit,'cp')==='部分排除',getSortValue(hit,'markStatus')===1);
+      checks.push(getCpColumnValue(hit,'markStatus')===cpRemoved,getTxColumnValue(tx,'flag')===txRemoved,
+        riskExportMarkStatus(hit,'cp')===cpRemoved,getSortValue(hit,'markStatus')===1);
       const cell = document.querySelector(`#cp-row-${hit.id} .rs-mark-result`);
-      if(cell)checks.push(cell.textContent==='部分排除' && cell.title.includes('已取得支持材料'));
+      if(cell)checks.push(cell.textContent===cpRemoved && cell.title.includes('已取得支持材料'));
       selectCheck('2.1.1');
-      checks.push(getCpColumnValue(hit,'markStatus')==='部分排除',getTxColumnValue(tx,'flag')==='部分排除');
+      checks.push(getCpColumnValue(hit,'markStatus')===cpRemoved,getTxColumnValue(tx,'flag')===txRemoved);
       selectCheck('3.2');
       delete manualClears[key];
       renderCpTable();renderTxTable();
-      checks.push(getCpColumnValue(hit,'markStatus')==='已命中',hit.remark===oldRemark);
+      checks.push(getCpColumnValue(hit,'markStatus')===cpMarked,hit.remark===oldRemark);
       checks.push(Array.from(document.querySelectorAll('#cpBody .mark-status, #txBody .mark-status')).every(badge=>
-        ['已命中','部分排除','—'].includes(badge.textContent) && !badge.hasAttribute('onclick')));
+        /^(已命中 \d+|(?:部分排除|已排除) \d+\/\d+|—)$/.test(badge.textContent) && !badge.hasAttribute('onclick')));
+      const single={id:'mark-single',hits:['期末集中']};
+      checks.push(getCpColumnValue(single,'markStatus')==='已命中 1');
+      manualClears['mark-single_3.2']={reason:'已核实'};
+      checks.push(getCpColumnValue(single,'markStatus')==='已排除 1/1',riskExportMarkStatus(single,'cp')==='已排除 1/1');
+      checks.push(getTxColumnValue({cpId:'mark-single',flags:[]},'flag')==='—');
+      delete manualClears['mark-single_3.2'];
       selectCheck('1.2');
       return checks;
     });
@@ -303,6 +371,12 @@ assert.equal(context.window.RoutineStandards.get('2.2.3').procedure, context.win
     assert.equal(await page.locator('[data-reason="1.2"]').inputValue(), '已在其他底稿中单独查看');
     await page.screenshot({path:'/private/tmp/routine-view-step2.png'});
     await page.locator('.rs-steps [data-step="1"]').click();
+    await page.evaluate(()=>switchTab('tx'));
+    await page.locator('.rs-steps [data-step="2"]').click();
+    await page.locator('.rs-steps [data-step="1"]').click();
+    assert.equal(await page.locator('[data-routine="3.2"] [data-result="identifiedTransactions"]').innerText(),
+      await page.evaluate(()=>getRiskFilteredRows('tx').filter(row=>isCheckHitForRow(row,'3.2','tx')).length.toLocaleString('zh-CN')));
+    await page.evaluate(()=>switchTab('cp'));
     for (const input of await page.locator('[data-decision]').all()) await input.check();
     assert.equal(await page.locator('#routineScope [data-decision]:checked').count(), 22);
     await page.locator('#rsConfirm').click();

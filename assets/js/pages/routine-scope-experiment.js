@@ -3,46 +3,56 @@
   if (document.currentScript?.dataset.enabled !== 'true') return;
   const workspace = document.querySelector('.main-layout');
   const standards = window.RoutineStandards;
-  if (!workspace || typeof checkMeta === 'undefined' || !standards) return;
+  const demoProvider = window.RoutineDemoData;
+  if (!workspace || typeof checkMeta === 'undefined' || !standards || !demoProvider) return;
   const css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = new URL('../../css/pages/routine-scope-experiment.css?v=20261027-19', document.currentScript.src).href;
+  css.href = new URL('../../css/pages/routine-scope-experiment.css?v=20261027-26', document.currentScript.src).href;
   document.head.appendChild(css);
   const removedRoutineIds = new Set(['5.1', '5.2']);
   const ids = standards.rows.map(row => row.id).filter(id => checkMeta[id] && !removedRoutineIds.has(id));
   const allowedIds = new Set(ids);
   const criteriaFor = id => standards.formatCriteria(id, checkMeta[id].filters);
+  function loadSharedParameters() {
+    const parameters=demoProvider.readParameters();
+    ids.forEach(id=>{checkMeta[id].filters=parameters[id].filters;});
+  }
+  loadSharedParameters();
+  try {
+    const savedResults=JSON.parse(localStorage.getItem(demoProvider.resultKey)||'null');
+    if(savedResults?.version===demoProvider.version)Object.assign(manualClears,savedResults.clears||{});
+  }catch(error){}
+  window.persistRiskRoutineState = function () {
+    try { demoProvider.saveParameters(ids.map(id=>({id,filters:checkMeta[id].filters}))); }
+    catch(error) { /* Keep the page usable if browser storage is unavailable. */ }
+  };
   ids.forEach(id => { checkMeta[id].title = `${id} ${standards.get(id).procedure}`; });
   CHECK_COLUMNS.forEach(group => { group.checks = group.checks.filter(check => allowedIds.has(check.id)); });
   CHECK_COLUMNS.splice(0, CHECK_COLUMNS.length, ...CHECK_COLUMNS.filter(group => group.checks.length));
   ALL_CHECK_IDS.splice(0, ALL_CHECK_IDS.length, ...CHECK_COLUMNS.flatMap(group => group.checks.map(check => check.id)));
   riskExportSelectedChecks = new Set(Array.from(riskExportSelectedChecks).filter(id => allowedIds.has(id)));
   Object.keys(checkMeta).forEach(id => { if (!allowedIds.has(id)) delete checkMeta[id]; });
-  // The workbook splits natural persons (4.3) and sole proprietors (4.4).
-  // Never reuse the old registered-capital hit under the new 4.4 label.
   const obsoleteHits = new Set(['个人/个体户', '注册资本不匹配', '经营范围不匹配', '地址接近', '工商信息相同', '曾配合舞弊', '合规性差']);
   [HIT_TO_CHECK_ID, TX_FLAG_TO_CHECK_ID].forEach(mapping => {
-    obsoleteHits.forEach(hit => delete mapping[hit]);
-    Object.keys(mapping).forEach(hit => { if (!allowedIds.has(mapping[hit])) delete mapping[hit]; });
-    mapping['个人主体'] = '4.3';
-    mapping['个体工商户/个人独资企业'] = '4.4';
+    Object.keys(mapping).forEach(hit => { if (obsoleteHits.has(hit) || !allowedIds.has(mapping[hit])) delete mapping[hit]; });
+    ids.forEach(id => { mapping[demoProvider.labels[id]] = id; });
   });
-  const entityHits = row => {
-    const type = row.companyType || row.legalType || row.executives;
-    return type === '个人' ? ['个人主体'] : ['个体工商户', '个人独资企业'].includes(type) ? ['个体工商户/个人独资企业'] : [];
-  };
-  const entityById = new Map(cpData.map(row => [row.id, row]));
-  cpData.forEach(row => { row.hits = [...(row.hits || []).filter(hit => !obsoleteHits.has(hit)), ...entityHits(row)]; });
-  txData.forEach(row => { row.flags = [...(row.flags || []).filter(hit => !obsoleteHits.has(hit)), ...entityHits(entityById.get(row.cpId) || {})]; });
-  const entityGroup = HIT_GROUP_DEFS.find(group => group.key === 'bizinfo');
-  if (entityGroup) entityGroup.items = ['经营时间短', '社保人数少', '个人主体', '个体工商户/个人独资企业'];
-  HIT_GROUP_DEFS.splice(0, HIT_GROUP_DEFS.length, ...HIT_GROUP_DEFS.filter(group => CHECK_COLUMNS.some(column => column.groupKey === group.key)));
-  ['4.3', '4.4'].forEach(id => {
-    const counterparties = cpData.filter(row => getHitCheckIds(row.hits).has(id)).length;
-    const transactions = txData.filter(row => getTxCheckIds(row.flags).has(id)).length;
-    checkMeta[id].badge = `已命中 ${transactions} 条`;
-    checkMeta[id].count = `${counterparties} 个对手方 / ${transactions} 条流水`;
-  });
+  HIT_GROUP_DEFS.splice(0, HIT_GROUP_DEFS.length, ...CHECK_COLUMNS.map(group => ({
+    key:group.groupKey, label:group.label, color:group.groupKey === 'bizinfo' ? 'hit-warn' : 'hit',
+    items:group.checks.map(check => demoProvider.labels[check.id])
+  })));
+  const demoData = demoProvider.create({parameters:checkMeta, unitAccounts:auditUnitAccounts});
+  cpData.splice(0, cpData.length, ...demoData.counterparties);
+  txData.splice(0, txData.length, ...demoData.transactions);
+  const demoParameterKey = () => JSON.stringify(ids.map(id => [id, checkMeta[id].filters]));
+  let demoSignature = demoParameterKey(), demoRevision = 0;
+  function updateDemoIdentification() {
+    const signature = demoParameterKey();
+    if (signature === demoSignature) return;
+    demoProvider.evaluate(demoData, checkMeta);
+    demoSignature = signature;
+    demoRevision += 1;
+  }
   const transactionHitCounts = new Map(ids.map(id => [id, 0]));
   txData.forEach(row => getTxCheckIds(row.flags).forEach(id => {
     if (transactionHitCounts.has(id)) transactionHitCounts.set(id, transactionHitCounts.get(id) + 1);
@@ -50,10 +60,8 @@
   document.querySelectorAll('#checkList .check-item[data-id]').forEach(item => {
     const id = item.dataset.id;
     if (!allowedIds.has(id)) { item.remove(); return; }
-    if (id === '3.6' || id === '3.7') {
-      item.classList.remove('has-filter');
-      item.querySelector('.filter-dot')?.remove();
-    }
+    item.classList.remove('has-filter');
+    item.querySelectorAll('.filter-dot').forEach(dot=>dot.remove());
     const name = item.querySelector('.check-item-name');
     name.textContent = checkMeta[id].title;
     name.title = checkMeta[id].title;
@@ -112,6 +120,8 @@
     input.setAttribute('aria-invalid', String(!input.validity.valid));
     if (!input.validity.valid) return;
     filter.defaultVal = input.value === '' ? null : filter.type === 'number' ? Number(input.value) : input.value;
+    updateDemoIdentification();
+    syncSidebarStatistics();
     persistRiskRoutineState();
     const description = document.querySelector(`#checkList .check-item[data-id="${id}"] .check-item-desc`);
     description.textContent = criteriaFor(id);
@@ -143,26 +153,41 @@
     try { sessionStorage.setItem(storageKey, JSON.stringify({draft, applied:hasSaved ? applied : null, savedAt})); return true; }
     catch (error) { return false; }
   }
+  const routineResults = new Map(ids.map(id => [id, {counterparties:new Set(), amount:0, transactions:0}]));
+  const resultKeys = {identifiedCounterparties:'counterparties', identifiedAmount:'amount', identifiedTransactions:'transactions'};
+  const resultValue = (id, key) => key === 'identifiedCounterparties' ? routineResults.get(id).counterparties.size : routineResults.get(id)[resultKeys[key]];
+  function routineResultCells(id) {
+    const result = routineResults.get(id);
+    return `<td class="rs-result" data-result="identifiedCounterparties">${result.counterparties.size.toLocaleString('zh-CN')}</td><td class="rs-result" data-result="identifiedAmount" data-audit-unit-ignore>${fmtAmtFromYuan(result.amount)}</td><td class="rs-result" data-result="identifiedTransactions">${result.transactions.toLocaleString('zh-CN')}</td>`;
+  }
   const columns = [
     {key:'id', label:'编号', cls:'rs-number'},
-    {key:'name', label:'核查程序', cls:''},
+    {key:'name', label:'核查程序', cls:'rs-procedure-col'},
     {key:'criteria', label:'筛选条件', cls:'rs-criteria-col'},
+    {key:'identifiedCounterparties', label:'识别对手方数', cls:'rs-result-col', numeric:true},
+    {key:'identifiedAmount', label:'识别交易总额', cls:'rs-result-col rs-result-amount-col', numeric:true},
+    {key:'identifiedTransactions', label:'识别交易笔数', cls:'rs-result-col', numeric:true},
     {key:'decision', label:'是否查看', cls:'rs-choice'},
     {key:'reason', label:'不查看原因', cls:'rs-reason-col'}
   ];
-  const columnFilters = Object.create(null);
-  const sort = {key:'id', direction:'asc'};
-  riskColumnFilterUiState.routineScope = Object.create(null);
   function columnValue(id, key) {
     if (key === 'id') return id;
     if (key === 'name') return checkMeta[id].title.replace(id, '').trim();
     if (key === 'criteria') return criteriaFor(id);
+    if (resultKeys[key]) {
+      const value = resultValue(id, key);
+      if (key === 'identifiedAmount') {
+        const unit = getCfoAuditUnit();
+        return String(Number((unit ? unit.convert(value, 'yuan') : value / 10000).toFixed(unit?.decimals ?? 2)));
+      }
+      return String(value);
+    }
     if (key === 'decision') return labels[draft[id].decision];
     if (key === 'reason') return draft[id].decision !== 'skip' ? '\u2014' : draft[id].reason.trim() || '待补充';
     return checkMeta[id].badge || '已命中 0 条';
   }
   function columnHeading(col) {
-    return `<span>${col.label}</span>`;
+    return `<span>${col.numeric ? `识别<br>${col.label.slice(2)}` : col.label}</span>`;
   }
 
   document.body.classList.add('routine-scope-experiment');
@@ -177,7 +202,7 @@
   panel.setAttribute('aria-label', '识别结果查看设置');
   panel.innerHTML = `
     <div id="rsBody">
-      <div class="rs-scroll"><table class="rs-table"><thead><tr>${columns.map(col => `<th class="${col.cls}" data-column="${col.key}" aria-sort="none"><div class="rs-th-content">${columnHeading(col)}<span class="rs-th-tools"><button class="th-sort-icons rs-head-sort" data-sort="${col.key}" type="button" title="${col.label}排序" aria-label="${col.label}排序"><span class="th-sort-arrow" aria-hidden="true">▲</span><span class="th-sort-arrow" aria-hidden="true">▼</span></button><button class="th-filter-icon rs-head-filter" data-filter="${col.key}" type="button" title="筛选${col.label}" aria-label="筛选${col.label}"></button></span></div></th>`).join('')}</tr></thead><tbody>${ids.map(id => `<tr data-routine="${escape(id)}"><td>${escape(id)}</td><td class="rs-name" title="${escape(getGroupLabel(id))}">${escape(columnValue(id, 'name'))}</td><td class="rs-criteria">${escape(criteriaFor(id))}</td><td class="rs-choice"><input type="checkbox" checked data-decision="${escape(id)}" aria-label="查看${escape(checkMeta[id].title)}"></td><td><div class="rs-reason-field"><input type="text" data-reason="${escape(id)}" maxlength="500" aria-label="${escape(checkMeta[id].title)}不查看原因"><span data-reason-status>待补充</span></div></td></tr>`).join('')}</tbody></table><div class="rs-no-match" hidden>暂无匹配的核查程序</div></div>
+      <div class="rs-scroll"><table class="rs-table"><thead><tr>${columns.map(col => `<th class="${col.cls}" data-column="${col.key}"><div class="rs-th-content">${columnHeading(col)}</div></th>`).join('')}</tr></thead><tbody>${ids.map(id => `<tr data-routine="${escape(id)}"><td>${escape(id)}</td><td class="rs-name" title="${escape(getGroupLabel(id))}">${escape(columnValue(id, 'name'))}</td><td class="rs-criteria">${escape(criteriaFor(id))}</td>${routineResultCells(id)}<td class="rs-choice"><input type="checkbox" checked data-decision="${escape(id)}" aria-label="查看${escape(checkMeta[id].title)}"></td><td><div class="rs-reason-field"><input type="text" data-reason="${escape(id)}" maxlength="500" aria-label="${escape(checkMeta[id].title)}不查看原因"><span data-reason-status>待补充</span></div></td></tr>`).join('')}</tbody></table><div class="rs-no-match" hidden>暂无匹配的核查程序</div></div>
       <div class="rs-footer"><div class="rs-footer-summary"><span id="rsCounts" role="status"></span><span id="rsMessage" role="status"></span></div><button type="button" id="rsConfirm">下一步：识别结果</button></div>
     </div>`;
   workspace.before(steps, panel);
@@ -246,23 +271,14 @@
     input.focus();
   }
 
-  function matches(id) { return Object.entries(columnFilters).every(([key, allowed]) => allowed.has(columnValue(id, key))); }
   function filterRows() {
-    rows.forEach(row => { row.hidden = !matches(row.dataset.routine); });
+    rows.forEach(row => { row.hidden = false; });
     const ordered = rows.slice().sort((a, b) => {
       const left = a.dataset.routine, right = b.dataset.routine;
-      const value = sort.key ? columnValue(left, sort.key).localeCompare(columnValue(right, sort.key), 'zh-CN', {numeric:true}) : 0;
-      return value ? value * (sort.direction === 'desc' ? -1 : 1) : left.localeCompare(right, 'zh-CN', {numeric:true});
+      return left.localeCompare(right, 'zh-CN', {numeric:true});
     });
     const body = panel.querySelector('tbody');
     ordered.forEach(row => body.appendChild(row));
-    panel.querySelectorAll('[data-column]').forEach(th => {
-      const key = th.dataset.column;
-      th.setAttribute('aria-sort', sort.key === key ? (sort.direction === 'asc' ? 'ascending' : 'descending') : 'none');
-      th.classList.toggle('sort-asc', sort.key === key && sort.direction === 'asc');
-      th.classList.toggle('sort-desc', sort.key === key && sort.direction === 'desc');
-      th.querySelector('[data-filter]').classList.toggle('is-active', Boolean(columnFilters[key]));
-    });
     panel.querySelector('.rs-no-match').hidden = rows.some(row => !row.hidden);
   }
   function updateSummary() {
@@ -305,7 +321,7 @@
     });
     const count = document.querySelector('.sidebar-count');
     if (count) count.textContent = `查看 ${selected.size} / ${ids.length} 项`;
-    const nextKey = Array.from(selected).join(',');
+    const nextKey = `${Array.from(selected).join(',')}:${demoRevision}`;
     if (nextKey !== visibilityKey && currentStep === 2) {
       visibilityKey = nextKey;
       Object.keys(checkColumnFilters).forEach(id => { if (!selected.has(id)) delete checkColumnFilters[id]; });
@@ -338,7 +354,6 @@
     if (next === 2) {
       const invalidCondition = panel.querySelector('[data-criteria-key]:invalid');
       if (invalidCondition) {
-        Object.keys(columnFilters).forEach(key => delete columnFilters[key]);
         filterRows();
         invalidCondition.scrollIntoView({block:'nearest'});
         invalidCondition.focus();
@@ -349,8 +364,6 @@
       if (missing.length) {
         validationAttempted = true;
         if (currentStep !== 1) goToStep(1);
-        Object.keys(columnFilters).forEach(key => delete columnFilters[key]);
-        riskColumnFilterUiState.routineScope = Object.create(null);
         filterRows();
         rows.forEach(updateRow);
         updateSummary();
@@ -368,6 +381,7 @@
       storageAvailable = persist();
     }
     currentStep = next;
+    updateDemoIdentification();
     document.body.dataset.routineStep = String(next);
     panel.hidden = next !== 1;
     steps.querySelectorAll('[data-step]').forEach(button => {
@@ -377,6 +391,7 @@
     });
     applyScope();
     updateSummary();
+    if (next === 1) refreshRoutineResults();
     steps.querySelector(`[data-step="${next}"]`).focus();
     window.dispatchEvent(new Event('resize'));
   }
@@ -385,16 +400,51 @@
   function rowMarkSummary(row, kind, scope = ids.filter(isIncluded)) {
     const cpId = kind === 'tx' ? row.cpId : row.id;
     const hitIds = kind === 'tx' ? getTxCheckIds(row.flags) : getHitCheckIds(row.hits);
-    const removed = scope.filter(id => manualClears[`${cpId}_${id}`]);
+    const removed = scope.filter(id => hitIds.has(id) && manualClears[`${cpId}_${id}`]);
     const hits = scope.filter(id => hitIds.has(id) && !manualClears[`${cpId}_${id}`]);
     return {cpId, hits, removed};
   }
+  function renderSettingResultCells() {
+    const label = activeTab === 'tx' ? '流水明细当前筛选范围' : '对手方汇总当前筛选范围；交易数据按对应对手方的保留命中流水统计';
+    rows.forEach(row => {
+      const id = row.dataset.routine;
+      row.querySelectorAll('[data-result]').forEach(cell => {
+        const key = cell.dataset.result, value = resultValue(id, key);
+        cell.textContent = key === 'identifiedAmount' ? fmtAmtFromYuan(value) : value.toLocaleString('zh-CN');
+        cell.title = key === 'identifiedAmount' ? `${label}；原始金额：${value.toLocaleString('zh-CN')} 元` : `${label}；${value.toLocaleString('zh-CN')}`;
+      });
+    });
+  }
+  function refreshRoutineResults() {
+    routineResults.forEach(result => { result.counterparties.clear(); result.amount = 0; result.transactions = 0; });
+    const counterpartyMode = activeTab !== 'tx';
+    if (counterpartyMode) getRiskFilteredRows('cp').forEach(row => {
+      rowMarkSummary(row, 'cp', ids).hits.forEach(id => routineResults.get(id).counterparties.add(row.id));
+    });
+    const source = counterpartyMode ? txData : getRiskFilteredRows('tx');
+    source.forEach(row => {
+      rowMarkSummary(row, 'tx', ids).hits.forEach(id => {
+        const result = routineResults.get(id);
+        if (counterpartyMode && !result.counterparties.has(row.cpId)) return;
+        if (!counterpartyMode) result.counterparties.add(row.cpId);
+        result.amount += Math.round((Number(row.amount) || 0) * 100);
+        result.transactions += 1;
+      });
+    });
+    routineResults.forEach(result => { result.amount /= 100; });
+    renderSettingResultCells();
+    try {
+      localStorage.setItem(demoProvider.resultKey, JSON.stringify({version:demoProvider.version,clears:manualClears,
+        rows:ids.map(id => { const result=routineResults.get(id); return {id,counterparties:result.counterparties.size,amount:result.amount,transactions:result.transactions}; })}));
+    } catch (error) { /* The demo still works without cross-page storage. */ }
+  }
   function routineMarkResult(row, kind, scope) {
     const {cpId, hits, removed} = rowMarkSummary(row, kind, scope);
-    if (removed.length) return {label:'部分排除', className:'mark-cleared', rank:1, isRemoved:true,
+    const total=hits.length+removed.length;
+    if (removed.length) return {label:`${hits.length ? '部分排除' : '已排除'} ${removed.length}/${total}`, className:'mark-cleared', rank:1, isRemoved:true,
       checkId:removed.includes(activeCheck) ? activeCheck : removed[0],
-      title:`已手工去除 ${removed.length} 项标记，仍命中 ${hits.length} 项。\n${removed.map(id => `${checkMeta[id].title}；原因：${manualClears[`${cpId}_${id}`].reason || '未填写'}`).join('\n')}`};
-    if (hits.length) return {label:'已命中', className:'mark-flagged', rank:2, isRemoved:false,
+      title:`原始命中 ${total} 项，已排除 ${removed.length} 项，保留 ${hits.length} 项。\n${removed.map(id => `${checkMeta[id].title}；原因：${manualClears[`${cpId}_${id}`].reason || '未填写'}`).join('\n')}`};
+    if (hits.length) return {label:`已命中 ${hits.length}`, className:'mark-flagged', rank:2, isRemoved:false,
       checkId:hits.includes(activeCheck) ? activeCheck : hits[0],
       title:`当前行命中 ${hits.length} 项核查程序，尚无手工去除标记`};
     return {label:'—', className:'mark-none', rank:0, title:'当前行无命中标记'};
@@ -424,6 +474,7 @@
     }
     document.querySelector('.sidebar-count').title = `下方条数按${label}当前筛选结果统计，包含全部分页，不含已去除标记`;
     persistRiskRoutineState();
+    refreshRoutineResults();
   }
   const originalCpColumnValue = window.getCpColumnValue;
   window.getCpColumnValue = (row, column) => column === 'markStatus' ? routineMarkResult(row, 'cp').label
@@ -493,7 +544,7 @@
       old.replaceWith(badge);
     });
     document.querySelectorAll('#cpTable th[data-col="markStatus"], #txTable th[data-col="flag"]').forEach(header => {
-      header.title = '汇总当前行已查看程序的标记：有命中为已命中，有手工去除为部分排除；不代表审计结论';
+      header.title = '当前查看程序：已命中显示有效命中数；部分排除/已排除显示排除数/原始命中总数；不代表审计结论';
     });
     document.querySelectorAll('#cpTable th[data-col="hitCount"], #txTable th[data-col="hitCount"]').forEach(header => {
       header.title = '当前选择查看的核查程序中，保留的有效对勾数；不含已去除标记，包含折叠分类中的命中';
@@ -535,12 +586,14 @@
   window.sortData = function (data, column, direction) {
     const sorted = originalSortData(data, column, direction);
     if (!isIncluded(activeCheck)) return sorted;
-    // Partition before pagination; preserve the existing sort within each group.
+    // Prioritize the active routine, then rank remaining rows by retained hits.
     const hits = [], others = [];
     sorted.forEach(row => {
       const kind = Array.isArray(row.flags) ? 'tx' : 'cp';
       (isCheckHitForRow(row, activeCheck, kind) ? hits : others).push(row);
     });
+    const hitCounts=new Map(others.map(row=>[row,rowMarkSummary(row,Array.isArray(row.flags)?'tx':'cp').hits.length]));
+    others.sort((left,right)=>hitCounts.get(right)-hitCounts.get(left));
     return hits.concat(others);
   };
   const originalFilterPanel = window.renderFilterPanel;
@@ -590,6 +643,7 @@
     const invalid = document.querySelector('#filterConditions input:invalid');
     if (invalid) { invalid.reportValidity(); return; }
     updateActiveRoutineFilterState();
+    updateDemoIdentification();
     refreshFilteredResults();
     showToast('success', '已应用筛选条件');
   };
@@ -621,11 +675,13 @@
 
   // Viewing preferences do not suppress automatic detection or export choices.
   window.getRiskScopeExportSheet = function () {
+    refreshRoutineResults();
     const time = !hasSaved ? '尚未保存' : Number.isNaN(Date.parse(savedAt)) ? '未记录' : new Date(savedAt).toLocaleString('zh-CN', {timeZone:'Asia/Shanghai'});
-    return riskExportSheet('查看设置', ['编号', '核查程序', '筛选条件', '是否查看', '不查看原因', '设置完整性', '结果展示', '保存时间'], ids.map(id => {
+    return riskExportSheet('查看设置', ['编号', '核查程序', '筛选条件', '识别对手方数', '识别交易总额（元）', '识别交易笔数', '是否查看', '不查看原因', '设置完整性', '结果展示', '保存时间'], ids.map(id => {
       const row = applied[id];
       const completeness = needsReason(row) ? '待补不查看原因' : '已填写';
-      return [id, checkMeta[id].title, criteriaFor(id), labels[row.decision], row.decision === 'skip' ? row.reason : '', completeness, isIncluded(id) ? '展示' : '不展示（仍自动识别）', time];
+      const result = routineResults.get(id);
+      return [id, checkMeta[id].title, criteriaFor(id), result.counterparties.size, result.amount, result.transactions, labels[row.decision], row.decision === 'skip' ? row.reason : '', completeness, isIncluded(id) ? '展示' : '不展示（仍自动识别）', time];
     }));
   };
 
@@ -637,6 +693,7 @@
   panel.addEventListener('change', event => {
     if (event.target.dataset.criteriaKey) {
       updateCriteria(event.target);
+      refreshRoutineResults();
       filterRows();
       return;
     }
@@ -656,30 +713,6 @@
       updateSummary();
     }
   });
-  panel.addEventListener('click', event => {
-    const sorter = event.target.closest('[data-sort]');
-    if (sorter) {
-      const key = sorter.dataset.sort;
-      if (sort.key !== key) { sort.key = key; sort.direction = 'asc'; }
-      else if (sort.direction === 'asc') sort.direction = 'desc';
-      else { sort.key = ''; sort.direction = ''; }
-      filterRows();
-      return;
-    }
-    const filter = event.target.closest('[data-filter]');
-    if (filter) {
-      const key = filter.dataset.filter;
-      const values = Array.from(new Set(ids.map(id => columnValue(id, key))));
-      openRiskColumnFilter({event, kind:'routineScope', col:key, title:columns.find(col => col.key === key).label, values, numeric:false,
-        onApply:allowed => {
-          if (allowed === null) delete columnFilters[key];
-          else columnFilters[key] = new Set(allowed);
-          filterRows();
-        }
-      });
-      return;
-    }
-  });
   steps.addEventListener('click', event => {
     const button = event.target.closest('[data-step]');
     if (button && Number(button.dataset.step) !== currentStep) goToStep(Number(button.dataset.step));
@@ -691,5 +724,22 @@
   filterRows();
   applyScope();
   syncSidebarStatistics();
+  refreshRoutineResults();
+  window.addEventListener('audit-unit-ready', () => {
+    renderSettingResultCells();
+    filterRows();
+  });
+  window.addEventListener('storage', event => {
+    if(event.key!==demoProvider.stateKey)return;
+    loadSharedParameters();
+    updateDemoIdentification();
+    rows.forEach(syncCriteriaRow);
+    ids.forEach(id=>{
+      const description=document.querySelector(`#checkList .check-item[data-id="${id}"] .check-item-desc`);
+      if(description){description.textContent=criteriaFor(id);description.title=criteriaFor(id);}
+    });
+    renderFilterPanel(activeCheck,checkMeta[activeCheck]);
+    refreshFilteredResults();
+  });
   updateSummary();
 })();

@@ -62,21 +62,30 @@
     const rows=Array.from(document.querySelectorAll('#rngTbody tr, #fraudTbody tr'));
     if(!rows.length)return;
     const routines=loadRoutineState();
+    const results=new Map((window.RoutineDemoData?.readSummary()||[]).map(row=>[row.id,row]));
     rows.forEach(row=>{
       const id=String(row.cells[1]?.textContent||'').trim().replace(/^i-/,'');
       const routine=routines.get(id);
       const standard=window.RoutineStandards?.get(id);
       if(standard)row.cells[0].textContent=standard.procedure;
       if(standard||routine?.filters?.length){
-        row.cells[2].textContent=formatRoutineCriteria(routine?.filters,id);
         row.cells[2].classList.add('wp-synced-criteria');
-        row.cells[2].title='参数与特殊交易识别保持一致，本页只读';
+        row.cells[2].title='参数与特殊交易识别同步，修改后自动更新识别结果';
+      }
+      const result=results.get(id);
+      if(result){
+        row.cells[3].textContent='已完成';
+        row.cells[4].textContent=result.counterparties.toLocaleString('zh-CN');
+        row.cells[5].setAttribute('data-audit-unit-ignore','');
+        row.cells[5].innerHTML=`<span data-audit-amount-k="${result.amount/1000}">${window.AuditUnit?.formatFromYuan?.(result.amount)??(result.amount/1000).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})}</span>`;
+        row.cells[6].textContent=result.transactions.toLocaleString('zh-CN');
       }
     });
   };
   window.requestAnimationFrame(syncRoutineParameters);
   document.getElementById('directTestSwitch')?.addEventListener('change',()=>window.requestAnimationFrame(syncRoutineParameters));
-  window.addEventListener('storage',event=>{if(event.key===routineStateKey)syncRoutineParameters();});
+  window.addEventListener('storage',event=>{if(event.key===routineStateKey||event.key===window.RoutineDemoData?.resultKey)syncRoutineParameters();});
+  window.addEventListener('routine-parameters-changed',syncRoutineParameters);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncRoutineParameters();});
 
   const showToast=message=>{

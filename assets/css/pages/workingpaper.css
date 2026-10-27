@@ -491,6 +491,19 @@
 }
 
 /* 输入框 */
+.wp-routine-criteria{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;white-space:normal;}
+.wp-routine-criteria label{display:inline-flex;align-items:center;flex-wrap:wrap;gap:3px;line-height:1.5;max-width:100%;}
+body #rngTbody .wp-routine-criteria .inp-reason,
+body #fraudTbody .wp-routine-criteria .inp-reason{flex:0 0 auto;width:96px;min-width:0;max-width:100%;height:24px;min-height:24px;padding:2px 5px;box-sizing:border-box;font-variant-numeric:tabular-nums;}
+body #rngTbody .wp-routine-criteria [data-wp-criterion="daysRange"],
+body #rngTbody .wp-routine-criteria [data-wp-criterion="overlapRatio"],
+body #rngTbody .wp-routine-criteria [data-wp-criterion="txCountMin"],
+body #rngTbody .wp-routine-criteria [data-wp-criterion="txCountMax"],
+body #fraudTbody .wp-routine-criteria .inp-reason{width:54px;}
+body #rngTbody .wp-routine-criteria [data-wp-criterion="bsDate"]{width:104px;}
+body #rngTbody .wp-routine-criteria [data-wp-criterion="cashKeywords"],
+body #rngTbody .wp-routine-criteria [data-wp-criterion="abnormalKeywords"]{width:140px;}
+.wp-routine-criteria input:invalid{border-color:#d14343;}
 .inp-reason{
   width:100%;
   border:1px solid #d9e2ec;
