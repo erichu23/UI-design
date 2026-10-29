@@ -7,7 +7,7 @@
   if (!workspace || typeof checkMeta === 'undefined' || !standards || !demoProvider) return;
   const css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = new URL('../../css/pages/routine-scope-experiment.css?v=20261027-26', document.currentScript.src).href;
+  css.href = new URL('../../css/pages/routine-scope-experiment.css?v=20261029-distribution14', document.currentScript.src).href;
   document.head.appendChild(css);
   const removedRoutineIds = new Set(['5.1', '5.2']);
   const ids = standards.rows.map(row => row.id).filter(id => checkMeta[id] && !removedRoutineIds.has(id));
@@ -80,7 +80,8 @@
     badge.textContent = `${count} 条`;
     checkMeta[id].badge = `已命中 ${count} 条`;
   });
-  document.querySelector('.sidebar-label').textContent = '核查程序';
+  document.getElementById('sidebarToggle').title='收起/展开识别项目列表';
+  document.querySelectorAll('#checkList .check-group, #checkList .check-group-outer').forEach(group=>group.classList.remove('collapsed'));
   document.querySelectorAll('#checkList .check-group').forEach(group => {
     if (!group.querySelector('.check-item[data-id]')) group.remove();
   });
@@ -106,6 +107,18 @@
       const filter = checkMeta[id].filters.find(item => item.key === input.dataset.criteriaKey);
       if (input !== document.activeElement) input.value = filter.defaultVal ?? '';
     });
+    if(window.RoutineDistribution?.supports(id)&&!cell.querySelector('[data-overview-distribution]')){
+      const layout=document.createElement('div'),fields=document.createElement('div');
+      layout.className='rs-criteria-layout';fields.className='rs-criteria-fields';
+      while(cell.firstChild)fields.append(cell.firstChild);
+      const button=distributionTrigger.cloneNode(true);
+      button.removeAttribute('id');button.className='rs-overview-distribution';
+      button.dataset.overviewDistribution=id;button.hidden=false;
+      button.setAttribute('aria-expanded','false');
+      button.setAttribute('aria-label',`${id} 分布参考`);
+      button.title=`点击查看 ${id} 的范围分布统计`;
+      layout.append(fields,button);cell.append(layout);
+    }
   }
   function updateCriteria(input) {
     const id = input.dataset.criteriaRoutine;
@@ -144,11 +157,11 @@
     draft = saved?.draft ? normalizeScope(saved.draft) : copy(applied);
     savedAt = typeof saved?.savedAt === 'string' ? saved.savedAt : '';
   } catch (error) { /* The experiment remains usable without storage. */ }
+  ids.forEach(id=>{if(needsReason(applied[id]))applied[id]={decision:'run',reason:''};});
+  draft=copy(applied);
 
   function needsReason(row) { return row.decision === 'skip' && !row.reason.trim(); }
-  function missingReasonIds(scope) { return ids.filter(id => needsReason(scope[id])); }
   function isIncluded(id) { return allowedIds.has(id) && (applied[id].decision !== 'skip' || needsReason(applied[id])); }
-  function changedIds() { return ids.filter(id => draft[id].decision !== applied[id].decision || draft[id].reason !== applied[id].reason); }
   function persist() {
     try { sessionStorage.setItem(storageKey, JSON.stringify({draft, applied:hasSaved ? applied : null, savedAt})); return true; }
     catch (error) { return false; }
@@ -162,13 +175,11 @@
   }
   const columns = [
     {key:'id', label:'编号', cls:'rs-number'},
-    {key:'name', label:'核查程序', cls:'rs-procedure-col'},
+    {key:'name', label:'识别项目', cls:'rs-procedure-col'},
     {key:'criteria', label:'筛选条件', cls:'rs-criteria-col'},
     {key:'identifiedCounterparties', label:'识别对手方数', cls:'rs-result-col', numeric:true},
     {key:'identifiedAmount', label:'识别交易总额', cls:'rs-result-col rs-result-amount-col', numeric:true},
-    {key:'identifiedTransactions', label:'识别交易笔数', cls:'rs-result-col', numeric:true},
-    {key:'decision', label:'是否查看', cls:'rs-choice'},
-    {key:'reason', label:'不查看原因', cls:'rs-reason-col'}
+    {key:'identifiedTransactions', label:'识别交易笔数', cls:'rs-result-col', numeric:true}
   ];
   function columnValue(id, key) {
     if (key === 'id') return id;
@@ -196,27 +207,235 @@
   const steps = document.createElement('nav');
   steps.className = 'rs-steps';
   steps.setAttribute('aria-label', '特殊交易识别流程');
-  steps.innerHTML = `<ol><li><button type="button" data-step="1" aria-current="step" aria-controls="routineScope"><span class="rs-step-number">1</span>查看设置</button></li><li class="rs-step-connector" aria-hidden="true"></li><li><button type="button" data-step="2" aria-controls="${workspace.id}"><span class="rs-step-number">2</span>识别结果</button></li></ol>`;
+  steps.innerHTML = `<ol><li><button type="button" data-step="1" aria-current="step" aria-controls="${workspace.id}"><span class="rs-step-number">1</span>识别结果</button></li><li class="rs-step-connector" aria-hidden="true"></li><li><button type="button" data-step="2" aria-controls="routineScope"><span class="rs-step-number">2</span>识别概览</button></li></ol>`;
   const panel = document.createElement('section');
   panel.id = 'routineScope';
-  panel.setAttribute('aria-label', '识别结果查看设置');
+  panel.setAttribute('aria-label', '特殊交易识别概览');
   panel.innerHTML = `
     <div id="rsBody">
-      <div class="rs-scroll"><table class="rs-table"><thead><tr>${columns.map(col => `<th class="${col.cls}" data-column="${col.key}"><div class="rs-th-content">${columnHeading(col)}</div></th>`).join('')}</tr></thead><tbody>${ids.map(id => `<tr data-routine="${escape(id)}"><td>${escape(id)}</td><td class="rs-name" title="${escape(getGroupLabel(id))}">${escape(columnValue(id, 'name'))}</td><td class="rs-criteria">${escape(criteriaFor(id))}</td>${routineResultCells(id)}<td class="rs-choice"><input type="checkbox" checked data-decision="${escape(id)}" aria-label="查看${escape(checkMeta[id].title)}"></td><td><div class="rs-reason-field"><input type="text" data-reason="${escape(id)}" maxlength="500" aria-label="${escape(checkMeta[id].title)}不查看原因"><span data-reason-status>待补充</span></div></td></tr>`).join('')}</tbody></table><div class="rs-no-match" hidden>暂无匹配的核查程序</div></div>
-      <div class="rs-footer"><div class="rs-footer-summary"><span id="rsCounts" role="status"></span><span id="rsMessage" role="status"></span></div><button type="button" id="rsConfirm">下一步：识别结果</button></div>
+      <div class="rs-scroll"><table class="rs-table"><thead><tr>${columns.map(col => `<th class="${col.cls}" data-column="${col.key}"><div class="rs-th-content">${columnHeading(col)}</div></th>`).join('')}</tr></thead><tbody>${ids.map(id => `<tr data-routine="${escape(id)}"><td>${escape(id)}</td><td class="rs-name" title="${escape(getGroupLabel(id))}">${escape(columnValue(id, 'name'))}</td><td class="rs-criteria">${escape(criteriaFor(id))}</td>${routineResultCells(id)}</tr>`).join('')}</tbody></table><div class="rs-no-match" hidden>暂无匹配的核查程序</div></div>
+      <div class="rs-footer"><div class="rs-footer-summary"><span id="rsCounts" role="status"></span><span id="rsMessage" role="status"></span></div><button type="button" id="rsConfirm">返回识别结果</button></div>
     </div>`;
   workspace.before(steps, panel);
   const empty = document.createElement('div');
   empty.className = 'rs-workspace-empty';
   empty.hidden = true;
-  empty.innerHTML = '<p>当前未选择查看项目</p><p>可返回查看设置重新选择</p><button type="button">导出查看设置</button>';
-  workspace.after(empty);
+  empty.innerHTML = '<p>当前未选择查看项目</p><button type="button">导出查看设置</button>';
+  workspace.append(empty);
+  panel.hidden=true;
   const $ = id => panel.querySelector('#' + id);
   const rows = Array.from(panel.querySelectorAll('[data-routine]'));
   let currentStep = 1;
-  let validationAttempted = false;
   let visibilityKey = '';
   let storageAvailable = true;
+  const countExplanation=document.createElement('section');
+  countExplanation.id='rsTabCountExplanation';
+  countExplanation.className='rs-count-explanation';
+  countExplanation.hidden=true;
+  countExplanation.setAttribute('role','dialog');
+  countExplanation.setAttribute('aria-label','统计口径说明');
+  countExplanation.innerHTML='<div><strong>统计口径</strong><button type="button" aria-label="关闭统计口径说明">关闭</button></div><p></p>';
+  document.body.append(countExplanation);
+  let countHelpButton=null;
+  function closeCountExplanation(restoreFocus=false) {
+    countExplanation.hidden=true;
+    countHelpButton?.setAttribute('aria-expanded','false');
+    if(restoreFocus)countHelpButton?.focus();
+  }
+  function positionCountExplanation() {
+    if(countExplanation.hidden||!countHelpButton)return;
+    const rect=countHelpButton.getBoundingClientRect(),box=countExplanation.getBoundingClientRect();
+    countExplanation.style.left=Math.max(12,Math.min(rect.left,window.innerWidth-box.width-12))+'px';
+    countExplanation.style.top=(rect.bottom+6+box.height<=window.innerHeight-12?rect.bottom+6:Math.max(12,rect.top-box.height-6))+'px';
+  }
+  countExplanation.querySelector('button').addEventListener('click',()=>closeCountExplanation(true));
+  document.addEventListener('pointerdown',event=>{
+    if(!countExplanation.hidden&&!countExplanation.contains(event.target)&&!countHelpButton?.contains(event.target))closeCountExplanation();
+  });
+  document.addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&!countExplanation.hidden){event.preventDefault();closeCountExplanation(true);}
+  });
+  window.addEventListener('resize',positionCountExplanation);
+  document.addEventListener('scroll',event=>{
+    if(!countExplanation.hidden&&!countExplanation.contains(event.target))closeCountExplanation();
+  },true);
+  const distribution=document.createElement('section');
+  distribution.id='routineDistribution';
+  distribution.setAttribute('data-audit-unit-ignore','');
+  distribution.hidden=true;
+  distribution.setAttribute('aria-label','范围分布概览');
+  distribution.setAttribute('role','dialog');
+  distribution.tabIndex=-1;
+  distribution.innerHTML='<div class="rs-distribution-head"><strong></strong><button type="button" aria-label="关闭分布参考">关闭</button></div><div id="rsDistributionBody"></div>';
+  document.body.append(distribution);
+  const distributionTrigger=document.createElement('button');
+  distributionTrigger.type='button';
+  distributionTrigger.id='routineDistributionTrigger';
+  distributionTrigger.innerHTML='<svg class="rs-distribution-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v16h16M8 16v-4M12 16V7M16 16v-7"/></svg><span>分布参考</span><svg class="rs-distribution-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>';
+  distributionTrigger.title='点击查看当前识别项目的范围分布统计';
+  distributionTrigger.setAttribute('aria-haspopup','dialog');
+  distributionTrigger.setAttribute('aria-controls','routineDistribution');
+  distributionTrigger.setAttribute('aria-expanded','false');
+  document.getElementById('filterConditions').after(distributionTrigger);
+  let distributionOpen=false,distributionAnchor=distributionTrigger,distributionRoutineId=activeCheck;
+  function closeDistribution(restoreFocus=false) {
+    distributionOpen=false;
+    distribution.hidden=true;
+    distributionAnchor.setAttribute('aria-expanded','false');
+    if(restoreFocus&&!distributionAnchor.hidden&&distributionAnchor.isConnected)distributionAnchor.focus();
+  }
+  function positionDistribution() {
+    if(distribution.hidden)return;
+    const rect=distributionAnchor.getBoundingClientRect(),width=distribution.getBoundingClientRect().width;
+    distribution.style.left=Math.max(12,Math.min(rect.left,window.innerWidth-width-12))+'px';
+    const height=distribution.getBoundingClientRect().height;
+    const top=rect.bottom+6+height<=window.innerHeight-12?rect.bottom+6:Math.max(12,rect.top-height-6);
+    distribution.style.top=top+'px';
+  }
+  function toggleDistribution(anchor,id) {
+    const wasOpen=distributionOpen&&distributionAnchor===anchor;
+    closeDistribution();
+    distributionAnchor=anchor;distributionRoutineId=id;
+    distributionOpen=!wasOpen;
+    renderDistribution();
+    if(distributionOpen)distribution.focus({preventScroll:true});
+  }
+  distributionTrigger.addEventListener('click',()=>toggleDistribution(distributionTrigger,activeCheck));
+  panel.addEventListener('click',event=>{
+    const button=event.target.closest('[data-overview-distribution]');
+    if(button)toggleDistribution(button,button.dataset.overviewDistribution);
+  });
+  distribution.querySelector('button').addEventListener('click',()=>closeDistribution(true));
+  document.addEventListener('pointerdown',event=>{
+    if(distributionOpen&&!distribution.contains(event.target)&&!distributionAnchor.contains(event.target))closeDistribution();
+  });
+  document.addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&distributionOpen){event.preventDefault();closeDistribution(true);}
+  });
+  window.addEventListener('resize',positionDistribution);
+  document.addEventListener('scroll',event=>{
+    if(distributionOpen&&!distribution.contains(event.target)){
+      const rect=distributionAnchor.getBoundingClientRect();
+      if(rect.bottom<0||rect.top>window.innerHeight)closeDistribution();
+      else positionDistribution();
+    }
+  },true);
+  function renderDistribution() {
+    const provider=window.RoutineDistribution;
+    distributionTrigger.hidden=!(provider?.supports(activeCheck)&&isIncluded(activeCheck)&&currentStep===1);
+    const overview=distributionAnchor!==distributionTrigger,id=distributionRoutineId;
+    if(!provider?.supports(id)||currentStep!==(overview?2:1)||!overview&&(id!==activeCheck||!isIncluded(id))){closeDistribution();return;}
+    distribution.dataset.routine=id;
+    distributionAnchor.setAttribute('aria-expanded',String(distributionOpen));
+    distribution.hidden=!distributionOpen;
+    if(!distributionOpen)return;
+    const source=getRiskFilteredRows(activeTab);
+    const scope=activeTab==='tx'?{txIds:new Set(source.map(row=>row.txId))}:{cpIds:new Set(source.map(row=>row.id))};
+    const result=provider.build(id,cpData,txData,manualClears,scope);
+    distribution.hidden=false;
+    distribution.querySelector('strong').textContent=`${result.title}${result.cumulative?'（累计门槛）':''}`;
+    distribution.querySelector('strong').title='当前表格筛选范围内、应用本项目阈值前的分布；不含已手工排除的本项目记录。金额按交易绝对金额合计。';
+    const body=distribution.querySelector('#rsDistributionBody');
+    const amountLabel=getCfoAuditUnit()?.label||'万元';
+    const rangeTitle=id==='3.7'?'比例为较小收付金额 / 较大收付金额；以上含边界，各累计门槛可重叠，不可相加。':id==='4.2'?'小于10；10至不足50；50至100（含100）；大于100。':id==='4.1'?'按365天折算一年；区间含下界、不含上界。':'M表示百万元；区间含下界、不含上界。';
+    body.innerHTML=`<table class="rs-distribution-table"><thead><tr><th title="${escape(rangeTitle)}">范围${result.cumulative?'（累计）':''}</th>${result.counterparties?'<th>对手方数量</th>':''}<th>金额（${escape(amountLabel)}）</th><th>笔数</th><th title="本档金额 / 当前项目基础范围的交易金额">金额占比</th></tr></thead><tbody>${result.groups.map(group=>`<tr><td title="${escape(rangeTitle)}">${escape(group.label)}</td>${result.counterparties?`<td>${group.count.toLocaleString('zh-CN')}个</td>`:''}<td title="${group.amount.toLocaleString('zh-CN')} 元">${fmtAmtFromYuan(group.amount)}</td><td>${group.transactions.toLocaleString('zh-CN')}笔</td><td>${(group.ratio*100).toLocaleString('zh-CN',{maximumFractionDigits:1})}%</td></tr>`).join('')}</tbody></table>`;
+    positionDistribution();
+  }
+  const checkList=document.getElementById('checkList');
+  const viewTabs=document.createElement('div');
+  viewTabs.className='rs-view-tabs';
+  viewTabs.setAttribute('role','tablist');
+  viewTabs.setAttribute('aria-label','识别项目查看状态');
+  viewTabs.innerHTML='<button id="rsViewingTab" type="button" role="tab" data-view-tab="viewing" aria-controls="group-outer-checks" aria-selected="true">正在查看 <span data-viewing-count>22</span></button><button id="rsHiddenTab" type="button" role="tab" data-view-tab="hidden" aria-controls="rsHiddenRoutines" aria-selected="false" tabindex="-1">已隐藏 <span data-hidden-tab-count>0</span></button>';
+  document.querySelector('.sidebar-header').replaceChildren(viewTabs);
+  let sidebarView='viewing';
+  const hiddenRoutines=document.createElement('section');
+  hiddenRoutines.id='rsHiddenRoutines';
+  hiddenRoutines.className='rs-hidden-routines';
+  hiddenRoutines.setAttribute('role','tabpanel');
+  hiddenRoutines.setAttribute('aria-labelledby','rsHiddenTab');
+  hiddenRoutines.innerHTML='<div class="rs-hidden-actions"><button type="button" data-restore-all><i class="fas fa-undo" aria-hidden="true"></i>全部恢复查看</button></div><div class="rs-hidden-list"></div><p class="rs-hidden-empty">暂无已隐藏项目</p>';
+  checkList.append(hiddenRoutines);
+  const visibleRoutines=document.getElementById('group-outer-checks');
+  visibleRoutines.setAttribute('role','tabpanel');
+  visibleRoutines.setAttribute('aria-labelledby','rsViewingTab');
+  function setSidebarView(view) {
+    const changed=sidebarView!==view;
+    sidebarView=view;
+    visibleRoutines.hidden=view!=='viewing';
+    hiddenRoutines.hidden=view!=='hidden';
+    viewTabs.querySelectorAll('[data-view-tab]').forEach(button=>{
+      const active=button.dataset.viewTab===view;
+      button.setAttribute('aria-selected',String(active));
+      button.tabIndex=active?0:-1;
+    });
+    if(changed)checkList.scrollTop=0;
+  }
+  viewTabs.addEventListener('click',event=>{
+    const button=event.target.closest('[data-view-tab]');
+    if(button)setSidebarView(button.dataset.viewTab);
+  });
+  viewTabs.addEventListener('keydown',event=>{
+    if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+    event.preventDefault();
+    const next=event.key==='Home'?'viewing':event.key==='End'?'hidden':sidebarView==='viewing'?'hidden':'viewing';
+    setSidebarView(next);
+    viewTabs.querySelector(`[data-view-tab="${next}"]`).focus();
+  });
+  const visibilityToast=document.createElement('div');
+  visibilityToast.className='rs-visibility-toast';
+  visibilityToast.hidden=true;
+  visibilityToast.innerHTML='<span role="status"></span><button type="button">撤销</button>';
+  document.body.append(visibilityToast);
+  let undoRoutineId='',undoTimer;
+  visibilityToast.querySelector('button').addEventListener('click',()=>restoreRoutine(undoRoutineId));
+  hiddenRoutines.addEventListener('click',event=>{
+    if(event.target.closest('[data-restore-all]')){
+      const hiddenIds=ids.filter(id=>!isIncluded(id));
+      if(!hiddenIds.length)return;
+      hiddenIds.forEach(id=>{draft[id]={...applied[id],decision:'run'};});
+      setSidebarView('viewing');
+      restoreRoutine(hiddenIds[0]);
+      clearTimeout(undoTimer);visibilityToast.hidden=true;undoRoutineId='';
+      showToast('success',`已恢复查看 ${hiddenIds.length} 个识别项目`);
+      return;
+    }
+    const button=event.target.closest('[data-restore-routine]');
+    if(button)restoreRoutine(button.dataset.restoreRoutine);
+  });
+  function restoreRoutine(id) {
+    if(!allowedIds.has(id))return;
+    draft[id]={...applied[id],decision:'run'};
+    setSidebarView('viewing');
+    saveViewingChoices();
+    if(currentStep===1){
+      selectCheck(id);
+      const item=checkList.querySelector(`.check-item[data-id="${id}"]`);
+      item.scrollIntoView({block:'nearest'});
+      item.querySelector('[data-view-routine]').focus({preventScroll:true});
+    }
+    if(undoRoutineId===id){clearTimeout(undoTimer);visibilityToast.hidden=true;undoRoutineId='';}
+  }
+  function offerUndo(id) {
+    clearTimeout(undoTimer);
+    undoRoutineId=id;
+    visibilityToast.querySelector('span').textContent=`已隐藏 ${id} 识别项目`;
+    visibilityToast.hidden=false;
+    undoTimer=setTimeout(()=>{visibilityToast.hidden=true;undoRoutineId='';},8000);
+  }
+  function renderHiddenRoutines() {
+    const hiddenIds=ids.filter(id=>!isIncluded(id));
+    viewTabs.querySelector('[data-viewing-count]').textContent=ids.length-hiddenIds.length;
+    viewTabs.querySelector('[data-hidden-tab-count]').textContent=hiddenIds.length;
+    hiddenRoutines.querySelector('.rs-hidden-empty').hidden=hiddenIds.length>0;
+    hiddenRoutines.querySelector('.rs-hidden-actions').hidden=!hiddenIds.length;
+    hiddenRoutines.querySelector('.rs-hidden-list').innerHTML=hiddenIds.map(id=>`<div class="rs-hidden-item"><div class="rs-hidden-copy"><span title="${escape(checkMeta[id].title)}">${escape(checkMeta[id].title)}</span><small title="${escape(applied[id].reason)}">不查看原因：${escape(applied[id].reason)}</small></div><button type="button" data-restore-routine="${escape(id)}" aria-label="恢复查看${escape(checkMeta[id].title)}">恢复查看</button></div>`).join('');
+    if(hiddenIds.length===ids.length)sidebarView='hidden';
+    setSidebarView(sidebarView);
+    checkList.querySelectorAll('.check-group').forEach(group=>{
+      group.hidden=!Array.from(group.querySelectorAll('.check-item[data-id]')).some(item=>isIncluded(item.dataset.id));
+    });
+  }
 
   function bindSidebarViewing() {
     document.querySelectorAll('#checkList .check-item[data-id]').forEach(item => {
@@ -229,9 +448,20 @@
       checkbox.addEventListener('change', event => {
         event.stopPropagation();
         if (!checkbox.checked) requestHideRoutine(item.dataset.id);
+        else {
+          restoreRoutine(item.dataset.id);
+        }
       });
       item.prepend(checkbox);
     });
+  }
+  function saveViewingChoices() {
+    applied=copy(draft);
+    hasSaved=true;
+    savedAt=new Date().toISOString();
+    storageAvailable=persist();
+    applyScope();
+    updateSummary();
   }
   function requestHideRoutine(id) {
     if (document.getElementById('rsHideRoutineDialog')) return;
@@ -239,7 +469,7 @@
     dialog.id = 'rsHideRoutineDialog';
     dialog.className = 'clear-modal rs-reason-dialog rs-hide-dialog';
     dialog.setAttribute('aria-labelledby', 'rsHideRoutineTitle');
-    dialog.innerHTML = `<h4 id="rsHideRoutineTitle">填写不查看原因</h4><p>${escape(checkMeta[id].title)}</p><label for="rsHideRoutineReason">不查看原因</label><textarea id="rsHideRoutineReason" maxlength="500" placeholder="请填写具体原因" aria-describedby="rsHideRoutineError" required></textarea><span id="rsHideRoutineError" role="status"></span><div class="clear-btns"><button type="button" data-cancel>取消</button><button class="primary" type="button" data-confirm>确认不查看</button></div>`;
+    dialog.innerHTML = `<h4 id="rsHideRoutineTitle">隐藏此识别项目</h4><p>${escape(checkMeta[id].title)}</p><label for="rsHideRoutineReason">不查看原因</label><textarea id="rsHideRoutineReason" maxlength="500" placeholder="请填写具体原因" aria-describedby="rsHideRoutineError" required></textarea><span id="rsHideRoutineError" role="status"></span><div class="clear-btns"><button type="button" data-cancel>取消</button><button class="primary" type="button" data-confirm>确认隐藏</button></div>`;
     const input = dialog.querySelector('textarea');
     input.value = draft[id].reason;
     dialog.querySelector('[data-cancel]').addEventListener('click', () => { applyScope(); dialog.close(); });
@@ -251,19 +481,15 @@
         return;
       }
       draft[id] = {decision:'skip', reason:input.value.trim()};
-      applied = copy(draft);
-      hasSaved = true;
-      savedAt = new Date().toISOString();
-      storageAvailable = persist();
-      applyScope();
-      updateSummary();
+      saveViewingChoices();
+      offerUndo(id);
       dialog.close();
     });
     dialog.addEventListener('close', () => {
       dialog.remove();
       applyScope();
       updateSummary();
-      const focusTarget = document.querySelector(`#checkList .check-item[data-id="${activeCheck}"] [data-view-routine]:not(:disabled)`);
+      const focusTarget = isIncluded(id)?document.querySelector(`#checkList .check-item[data-id="${id}"] [data-view-routine]`):viewTabs.querySelector('[data-view-tab="hidden"]');
       (focusTarget || steps.querySelector('[data-step="1"]')).focus();
     });
     document.body.appendChild(dialog);
@@ -282,47 +508,37 @@
     panel.querySelector('.rs-no-match').hidden = rows.some(row => !row.hidden);
   }
   function updateSummary() {
-    const pendingReasons = ids.filter(id => needsReason(draft[id])).length;
     const counts = Object.fromEntries(Object.keys(labels).map(key => [key, ids.filter(id => draft[id].decision === key).length]));
     $('rsCounts').textContent = `查看 ${counts.run} 项 · 不查看 ${counts.skip} 项`;
-    $('rsMessage').textContent = [pendingReasons ? `请补充 ${pendingReasons} 项不查看原因后进入下一步` : '', storageAvailable ? '' : '当前浏览器无法保留会话记录'].filter(Boolean).join(' · ');
+    $('rsMessage').textContent = storageAvailable ? '' : '当前浏览器无法保留会话记录';
     $('rsMessage').hidden = !$('rsMessage').textContent;
-    $('rsMessage').classList.toggle('is-error', validationAttempted && pendingReasons > 0);
   }
   function updateRow(row) {
     const id = row.dataset.routine;
-    const value = draft[id];
     row.querySelector('.rs-name').title = columnValue(id, 'name');
-    row.querySelector('[data-decision]').checked = value.decision === 'run';
     syncCriteriaRow(row);
-    row.classList.toggle('is-pending', needsReason(value));
-    const input = row.querySelector('[data-reason]');
-    input.value = value.decision === 'skip' ? value.reason : '';
-    input.disabled = value.decision !== 'skip';
-    input.placeholder = value.decision === 'skip' ? '请填写具体原因' : '\u2014';
-    input.setAttribute('aria-required', String(value.decision === 'skip'));
-    input.setAttribute('aria-invalid', String(validationAttempted && needsReason(value)));
-    input.setAttribute('aria-describedby', 'rsMessage');
-    row.querySelector('[data-reason-status]').hidden = !needsReason(value);
   }
   function applyScope() {
     const selected = new Set(ids.filter(isIncluded));
-    workspace.classList.toggle('rs-gated', currentStep !== 2 || !selected.size);
-    empty.hidden = currentStep !== 2 || selected.size > 0;
+    workspace.classList.toggle('rs-gated', currentStep !== 1);
+    workspace.classList.toggle('rs-all-hidden', !selected.size);
+    empty.hidden = currentStep !== 1 || selected.size > 0;
     document.querySelectorAll('#checkList .check-item[data-id]').forEach(item => {
       const included = selected.has(item.dataset.id);
       item.classList.toggle('rs-not-viewed', !included);
+      item.hidden=!included;
       item.classList.toggle('active', included && item.dataset.id === activeCheck);
-      item.setAttribute('aria-disabled', String(!included));
+      item.removeAttribute('aria-disabled');
       const checkbox = item.querySelector('[data-view-routine]');
       checkbox.checked = included;
-      checkbox.disabled = !included;
-      checkbox.title = included ? '取消查看时需填写原因' : '未选择查看，可返回查看设置重新勾选';
+      checkbox.disabled = false;
+      checkbox.setAttribute('aria-label', `${included?'取消查看':'恢复查看'}${checkMeta[item.dataset.id].title}`);
+      checkbox.title = included ? '取消查看时需填写原因' : `重新勾选恢复查看；不查看原因：${applied[item.dataset.id].reason}`;
+      item.title = included ? '' : `不查看原因：${applied[item.dataset.id].reason}`;
     });
-    const count = document.querySelector('.sidebar-count');
-    if (count) count.textContent = `查看 ${selected.size} / ${ids.length} 项`;
+    renderHiddenRoutines();
     const nextKey = `${Array.from(selected).join(',')}:${demoRevision}`;
-    if (nextKey !== visibilityKey && currentStep === 2) {
+    if (nextKey !== visibilityKey && currentStep === 1) {
       visibilityKey = nextKey;
       Object.keys(checkColumnFilters).forEach(id => { if (!selected.has(id)) delete checkColumnFilters[id]; });
       selectedCheckIds = new Set(selected);
@@ -331,27 +547,12 @@
       window.dispatchEvent(new Event('resize'));
     }
     rows.forEach(updateRow);
-  }
-  function showMissingReasonDialog(missing, input) {
-    if (document.getElementById('rsMissingReasonDialog')) return;
-    const dialog = document.createElement('dialog');
-    dialog.id = 'rsMissingReasonDialog';
-    dialog.className = 'clear-modal rs-reason-dialog';
-    dialog.setAttribute('aria-labelledby', 'rsReasonDialogTitle');
-    dialog.setAttribute('aria-describedby', 'rsReasonDialogMessage');
-    dialog.innerHTML = `<h4 id="rsReasonDialogTitle">请补充不查看原因</h4><p id="rsReasonDialogMessage">还有 ${missing.length} 项不查看原因未填写，暂时无法查看识别结果。</p><div class="clear-sub">首个待补项：${escape(checkMeta[missing[0]].title)}</div><div class="clear-btns"><button class="primary" type="button" autofocus>返回填写</button></div>`;
-    dialog.querySelector('button').addEventListener('click', () => dialog.close());
-    dialog.addEventListener('close', () => {
-      dialog.remove();
-      input.scrollIntoView({block:'nearest'});
-      input.focus({preventScroll:true});
-    });
-    document.body.appendChild(dialog);
-    dialog.showModal();
+    renderDistribution();
   }
   function goToStep(next) {
+    closeCountExplanation();
     closeRiskColumnFilterPopovers();
-    if (next === 2) {
+    if (next === 1 && currentStep === 2) {
       const invalidCondition = panel.querySelector('[data-criteria-key]:invalid');
       if (invalidCondition) {
         filterRows();
@@ -360,30 +561,11 @@
         invalidCondition.reportValidity();
         return false;
       }
-      const missing = missingReasonIds(draft);
-      if (missing.length) {
-        validationAttempted = true;
-        if (currentStep !== 1) goToStep(1);
-        filterRows();
-        rows.forEach(updateRow);
-        updateSummary();
-        const input = panel.querySelector(`[data-reason="${missing[0]}"]`);
-        input.scrollIntoView({block:'nearest'});
-        showMissingReasonDialog(missing, input);
-        return false;
-      }
-      validationAttempted = false;
-    }
-    if (next === 2 && (!hasSaved || changedIds().length)) {
-      applied = copy(draft);
-      hasSaved = true;
-      savedAt = new Date().toISOString();
-      storageAvailable = persist();
     }
     currentStep = next;
     updateDemoIdentification();
     document.body.dataset.routineStep = String(next);
-    panel.hidden = next !== 1;
+    panel.hidden = next !== 2;
     steps.querySelectorAll('[data-step]').forEach(button => {
       const active = Number(button.dataset.step) === next;
       if (active) button.setAttribute('aria-current', 'step');
@@ -391,7 +573,7 @@
     });
     applyScope();
     updateSummary();
-    if (next === 1) refreshRoutineResults();
+    if (next === 2) refreshRoutineResults();
     steps.querySelector(`[data-step="${next}"]`).focus();
     window.dispatchEvent(new Event('resize'));
   }
@@ -446,7 +628,7 @@
       title:`原始命中 ${total} 项，已排除 ${removed.length} 项，保留 ${hits.length} 项。\n${removed.map(id => `${checkMeta[id].title}；原因：${manualClears[`${cpId}_${id}`].reason || '未填写'}`).join('\n')}`};
     if (hits.length) return {label:`已命中 ${hits.length}`, className:'mark-flagged', rank:2, isRemoved:false,
       checkId:hits.includes(activeCheck) ? activeCheck : hits[0],
-      title:`当前行命中 ${hits.length} 项核查程序，尚无手工去除标记`};
+      title:`当前行命中 ${hits.length} 项识别项目，尚无手工去除标记`};
     return {label:'—', className:'mark-none', rank:0, title:'当前行无命中标记'};
   }
   function syncSidebarStatistics(kind = activeTab) {
@@ -472,9 +654,10 @@
       badge.textContent = checkMeta[activeCheck].badge;
       badge.title = checkMeta[activeCheck].count;
     }
-    document.querySelector('.sidebar-count').title = `下方条数按${label}当前筛选结果统计，包含全部分页，不含已去除标记`;
+    viewTabs.title = `下方条数按${label}当前筛选结果统计，包含全部分页，不含已去除标记`;
     persistRiskRoutineState();
     refreshRoutineResults();
+    renderDistribution();
   }
   const originalCpColumnValue = window.getCpColumnValue;
   window.getCpColumnValue = (row, column) => column === 'markStatus' ? routineMarkResult(row, 'cp').label
@@ -517,6 +700,49 @@
     else selectCheck(checkId);
   };
   function syncRoutineMarkCells(kind) {
+    const total=getRiskFilteredRows(kind).length;
+    const tabCount=document.getElementById(`tc-${kind}`);
+    const entity=kind==='tx'?'笔流水':'个对手方';
+    const tabLabel=kind==='tx'?'流水明细':'对手方汇总';
+    const description=`当前${tabLabel}表筛选后共 ${total.toLocaleString('zh-CN')} ${entity}，包含全部分页；不是当前识别项目的命中数量。`;
+    tabCount.textContent=`${total.toLocaleString('zh-CN')}${kind==='tx'?'笔':'个'}`;
+    tabCount.classList.add('rs-tab-total');
+    tabCount.title=description;
+    tabCount.setAttribute('aria-label',description);
+    const tab=document.getElementById(`tab-${kind}`);
+    tab.removeAttribute('title');
+    if(!tab.querySelector('.rs-result-tab-icon')){
+      const icon=document.createElement('span');
+      icon.className='rs-result-tab-icon';icon.setAttribute('aria-hidden','true');
+      const paths=kind==='cp'?'<circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6M21 20v-2a6 6 0 0 0-4-5.65"/>':'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>';
+      icon.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+      tab.prepend(icon);
+    }
+    let help=tab.querySelector('.rs-tab-count-help');
+    if(!help){
+      help=document.createElement('button');
+      help.type='button';help.className='rs-tab-count-help';
+      help.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg>';
+      help.setAttribute('aria-label',`${tabLabel}数量的统计口径说明`);
+      help.setAttribute('aria-controls','rsTabCountExplanation');
+      help.setAttribute('aria-haspopup','dialog');
+      help.setAttribute('aria-expanded','false');
+      help.title='点击查看统计口径';
+      help.addEventListener('click',event=>{
+        event.stopPropagation();
+        const wasOpen=countHelpButton===help&&!countExplanation.hidden;
+        closeCountExplanation();
+        countHelpButton=help;
+        if(wasOpen)return;
+        countExplanation.querySelector('strong').textContent=`${tabLabel}数量`;
+        countExplanation.querySelector('p').textContent=help.dataset.explanation;
+        help.setAttribute('aria-expanded','true');countExplanation.hidden=false;
+        positionCountExplanation();
+      });
+      tabCount.after(help);
+    }
+    help.dataset.explanation=description;
+    if(countHelpButton===help&&!countExplanation.hidden)countExplanation.querySelector('p').textContent=description;
     const source = kind === 'tx' ? txData : cpData;
     const byId = new Map(source.map(row => [kind === 'tx' ? row.txId : row.id, row]));
     document.querySelectorAll(`#${kind}Body tr`).forEach(element => {
@@ -547,7 +773,7 @@
       header.title = '当前查看程序：已命中显示有效命中数；部分排除/已排除显示排除数/原始命中总数；不代表审计结论';
     });
     document.querySelectorAll('#cpTable th[data-col="hitCount"], #txTable th[data-col="hitCount"]').forEach(header => {
-      header.title = '当前选择查看的核查程序中，保留的有效对勾数；不含已去除标记，包含折叠分类中的命中';
+      header.title = '当前选择查看的识别项目中，保留的有效对勾数；不含已去除标记，包含折叠分类中的命中';
     });
     if (kind === activeTab) syncSidebarStatistics(kind);
   }
@@ -677,7 +903,7 @@
   window.getRiskScopeExportSheet = function () {
     refreshRoutineResults();
     const time = !hasSaved ? '尚未保存' : Number.isNaN(Date.parse(savedAt)) ? '未记录' : new Date(savedAt).toLocaleString('zh-CN', {timeZone:'Asia/Shanghai'});
-    return riskExportSheet('查看设置', ['编号', '核查程序', '筛选条件', '识别对手方数', '识别交易总额（元）', '识别交易笔数', '是否查看', '不查看原因', '设置完整性', '结果展示', '保存时间'], ids.map(id => {
+    return riskExportSheet('查看设置', ['编号', '识别项目', '筛选条件', '识别对手方数', '识别交易总额（元）', '识别交易笔数', '是否查看', '不查看原因', '设置完整性', '结果展示', '保存时间'], ids.map(id => {
       const row = applied[id];
       const completeness = needsReason(row) ? '待补不查看原因' : '已填写';
       const result = routineResults.get(id);
@@ -685,11 +911,6 @@
     }));
   };
 
-  function draftChanged() {
-    filterRows();
-    storageAvailable = persist();
-    updateSummary();
-  }
   panel.addEventListener('change', event => {
     if (event.target.dataset.criteriaKey) {
       updateCriteria(event.target);
@@ -697,28 +918,16 @@
       filterRows();
       return;
     }
-    const id = event.target.dataset.decision;
-    if (id) { draft[id].decision = event.target.checked ? 'run' : 'skip'; updateRow(event.target.closest('tr')); }
-    draftChanged();
   });
   panel.addEventListener('input', event => {
     if (event.target.dataset.criteriaKey) { updateCriteria(event.target); return; }
-    const id = event.target.dataset.reason;
-    if (id) {
-      draft[id].reason = event.target.value;
-      event.target.closest('tr').classList.toggle('is-pending', needsReason(draft[id]));
-      event.target.closest('tr').querySelector('[data-reason-status]').hidden = !needsReason(draft[id]);
-      event.target.setAttribute('aria-invalid', String(validationAttempted && needsReason(draft[id])));
-      storageAvailable = persist();
-      updateSummary();
-    }
   });
   steps.addEventListener('click', event => {
     const button = event.target.closest('[data-step]');
     if (button && Number(button.dataset.step) !== currentStep) goToStep(Number(button.dataset.step));
   });
   empty.querySelector('button').addEventListener('click', () => downloadRiskExportWorkbook([], []));
-  $('rsConfirm').addEventListener('click', () => goToStep(2));
+  $('rsConfirm').addEventListener('click', () => goToStep(1));
   bindSidebarViewing();
   rows.forEach(updateRow);
   filterRows();
@@ -728,6 +937,7 @@
   window.addEventListener('audit-unit-ready', () => {
     renderSettingResultCells();
     filterRows();
+    renderDistribution();
   });
   window.addEventListener('storage', event => {
     if(event.key!==demoProvider.stateKey)return;

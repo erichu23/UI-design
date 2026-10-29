@@ -25,12 +25,14 @@ const read=file=>fs.readFileSync(path.join(root,file),'utf8');
     await special.goto('https://routine-sync.test/fragments/fund-flow-check.html',{waitUntil:'domcontentloaded'});
     await special.addScriptTag({content:read('assets/js/config/routine-standards.js')});
     await special.addScriptTag({content:read('assets/js/config/routine-demo-data.js')});
+    await special.addScriptTag({content:read('assets/js/config/routine-distribution.js')});
     const main=Array.from(read('fragments/fund-flow-check.html').matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)).find(match=>match[1].includes('const checkMeta ='))[1];
     await special.addScriptTag({content:main});
     await special.evaluate(()=>new Promise(resolve=>{
       const script=document.createElement('script');script.dataset.enabled='true';script.src='/assets/js/pages/routine-scope-experiment.js';script.onload=resolve;document.body.appendChild(script);
     }));
-    await special.waitForSelector('#routineScope');
+    await special.waitForSelector('.main-layout');
+    await special.locator('.rs-steps [data-step="2"]').click();
     await paper.goto('https://routine-sync.test/fragments/workingpaper-export.html?embed=workingpaper',{waitUntil:'domcontentloaded'});
     const setupPaper=async()=>{
       for(const file of ['assets/css/base.css','assets/css/pages/workingpaper.css','assets/css/pages/workingpaper-export.css'])await paper.addStyleTag({content:read(file)});

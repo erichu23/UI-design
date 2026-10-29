@@ -3,7 +3,7 @@
 Branch: `codex/routine-scope-experiment`.
 
 The opt-in script at the end of `fragments/fund-flow-check.html` adds two steps:
-查看设置 and 识别结果. Set `data-enabled="false"` to restore the original workflow
+识别结果 and 识别概览. Set `data-enabled="false"` to restore the original workflow
 on reload. Its CSS, sidebar checkboxes and metadata adaptations are scoped to
 the opt-in module. There is no backend execution control in the viewing UI.
 
@@ -52,13 +52,30 @@ the shared result snapshot. Invalid dates, negative amounts, percentages above
 
 ## Viewing State
 
+Only routines 1.1, 3.6, 3.7, 4.1 and 4.2 show a 分布参考 button immediately after
+the result-header filters. Its read-only table opens in a nonmodal popover and
+the same five rows in 识别概览 have matching buttons after their condition fields.
+Overview buttons use the row's ID without changing the active result routine.
+Both locations share statistics, units, icons and one anchored popover. Its table
+never consumes result-table layout height. Clicking outside, Escape, changing
+routine or opening the overview closes it. Escape restores focus to its trigger.
+The viewport-clamped popover fits narrow screens without horizontal scrolling.
+It opts out of automatic text-unit parsing to preserve fixed M range labels.
+Amounts follow the shared unit. Statistics are calculated before the routine's
+threshold, within the current result-table scope, excluding manual removals.
+For 1.1 the metric is a single corporate transaction; 3.6 uses counterparty
+total transaction amount; 3.7 uses min(inflow,outflow)/max(inflow,outflow).
+The 3.7 thresholds are cumulative, so their amounts and shares are not additive.
+The range display never edits parameters, filters rows or modifies recognition.
+
 Internal legacy `run`/`skip` decision values mean view/hide, never execute/skip.
 Every standard is checked by default on first entry. The v3 session key is
 separate from the older execution-arrangement experiment; old skipped execution
 choices do not silently become new viewing preferences. Current v3 sessions
 restore normally. Draft and saved preferences are kept separately.
 
-Step 1 contains identifier, full procedure, criteria, 是否查看 and 不查看原因.
+Step 1 opens the results immediately. Step 2 contains identifier, full procedure
+and criteria, without 是否查看 / 不查看原因 columns.
 The three result columns after criteria are 识别对手方数, 识别交易总额 and
 识别交易笔数, right-aligned with the page's amount unit (no separate unit caption).
 The settings table fits the available width with percentage-based columns;
@@ -76,29 +93,32 @@ only, with no sort/filter controls; rows keep their natural routine-ID order.
 Parameterized criteria are editable inline using the existing routine metadata.
 Changes persist to the shared parameter snapshot and synchronize the results
 editor, sidebar criteria and working-paper export. Rules without configurable
-parameters retain their static text. Invalid numeric/date values block Next.
-Reasons are disabled while checked and enabled when unchecked. No separate
+parameters retain their static text. Invalid numeric/date values block returning
+to the results. No separate
 card-title bar, bulk-view control or saved-status text is displayed. Viewed and
-not-viewed counts appear at the bottom left; the Next button remains at the
+not-viewed counts appear at the bottom left; 返回识别结果 remains at the
 bottom right. Validation/storage errors appear only when needed.
-Sorting/filtering in the step-2 result tables remains unchanged.
+Sorting/filtering in the result tables remains unchanged.
 
-Entering step 2, by Next or the step button, requires a nonblank reason for every
-unchecked standard. Missing/whitespace-only reasons open a modal and focus the
-first missing reason when dismissed. Invalid drafts
-never replace saved preferences. Returning to step 1 permits restoring any item.
-
-Step 2 retains all supported standards in the sidebar. Unchecked items and their
-checkboxes are disabled and grey; they cannot be selected and have no result
-columns. Selected items have a checkbox before the procedure text. Unchecking
-one opens a required-reason dialog. Cancel or Escape restores its checkbox;
-confirm synchronizes step 1, the sidebar, visible columns and the saved session.
-Hidden items can be restored in step 1. The former 显示核查标准 checkbox strip is
-removed; result groups derive from the saved viewing choices instead.
+The results sidebar header contains two compact tabs, 正在查看 and 已隐藏,
+with counts. There is no separate 识别项目 title or duplicated total. The normal
+list is fully expanded, without the legacy category/核查标准 fold controls.
+Unchecking an item opens 隐藏此识别项目 with a required reason. Cancel or Escape
+restores the checkbox without changing saved state; confirmation removes the
+item from the normal list and saves its reason. A timed 撤销 action restores the
+last hidden item. The 已隐藏 section shows each hidden procedure, its reason
+and 恢复查看; restoring switches to 正在查看 and selects that item in the results.
+An unobtrusive 全部恢复查看 command restores hidden items in one saved update.
+The viewing controls remain real multi-select checkboxes with compact 14px
+circles, hover titles and keyboard focus indicators, not radio buttons.
+Reasons remain in the session and export record. Incomplete legacy drafts are
+discarded, while valid applied viewing preferences are retained. The former
+显示核查标准 checkbox strip is removed.
 
 If the active item is hidden, another viewed item becomes active. If none remain,
-the results workspace gives an empty state, with the step navigation still
-available. Individual result filters for newly hidden standards are cleared so
+the right result area gives an empty state. The sidebar remains available and
+automatically selects 已隐藏, allowing recovery even when all items are hidden.
+Individual result filters for newly hidden standards are cleared so
 invisible filters do not constrain the remaining rows.
 
 Selecting a routine puts its currently checked hits first in both result tables,

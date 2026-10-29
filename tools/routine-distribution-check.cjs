@@ -1,0 +1,36 @@
+const fs=require('node:fs');
+const vm=require('node:vm');
+const path=require('node:path');
+const assert=require('node:assert/strict');
+const context={window:{}};
+vm.createContext(context);
+vm.runInContext(fs.readFileSync(path.join(__dirname,'../assets/js/config/routine-distribution.js'),'utf8'),context);
+const provider=context.window.RoutineDistribution;
+const amounts=[1,999999.99,1000000,5000000,10000000,20000000];
+const counterparties=amounts.map((_,i)=>({id:`cp${i}`,type:'企业账户',cpType:'其他',kind:'other',operatingDays:[100,365,729,730,1095,1600][i],insuredCount:[9,10,49,50,100,101][i]}));
+const transactions=amounts.map((amount,i)=>({txId:`tx${i}`,cpId:`cp${i}`,amount,dir:'流入'}));
+const build=(id,clears={},scope={})=>provider.build(id,counterparties,transactions,clears,scope);
+assert.equal(provider.supports('2.1.1'),false);
+assert.equal(build('2.1.1'),null);
+assert.deepEqual(Array.from(build('1.1').groups,g=>g.transactions),[2,1,1,1,1]);
+assert.deepEqual(Array.from(build('3.6').groups,g=>g.count),[3,1,1,1]);
+assert.deepEqual(Array.from(build('4.1').groups,g=>g.count),[1,2,1,2]);
+assert.deepEqual(Array.from(build('4.2').groups,g=>g.count),[1,2,2,1]);
+for(const id of ['1.1','3.6','4.1','4.2']){
+  const result=build(id);
+  assert.equal(result.groups.reduce((sum,g)=>sum+g.transactions,0),6);
+  assert(Math.abs(result.groups.reduce((sum,g)=>sum+g.ratio,0)-1)<1e-12);
+  assert.equal(result.groups.reduce((sum,g)=>sum+Math.round(g.amount*100),0),Math.round(result.totalAmount*100));
+}
+assert.equal(build('1.1',{'cp0_1.1':{reason:'已排除'}}).groups[0].transactions,1);
+assert.equal(build('1.1',{}, {cpIds:new Set(['cp0'])}).groups.reduce((n,g)=>n+g.transactions,0),1);
+assert.equal(build('1.1',{}, {txIds:new Set(['tx2'])}).groups[1].transactions,1);
+const paired=Array.from({length:3},(_,i)=>[{txId:`in${i}`,cpId:`cp${i}`,amount:[10,50,80][i],dir:'流入'},{txId:`out${i}`,cpId:`cp${i}`,amount:100,dir:'流出'}]).flat();
+const overlap=provider.build('3.7',counterparties,paired);
+assert.equal(overlap.cumulative,true);
+assert.deepEqual(Array.from(overlap.groups,g=>g.count),[1,2,2,1]);
+assert.equal(overlap.totalAmount,440);
+assert.equal(overlap.groups[3].amount,180);
+const personal=[{...counterparties[0],type:'个人账户'}];
+assert.equal(provider.build('1.1',personal,transactions).totalAmount,0);
+console.log('PASS: five routine-specific distributions, exact interval boundaries, cumulative ratios, cents/percent totals, company scope, manual exclusions and row scopes.');
