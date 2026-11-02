@@ -17,30 +17,7 @@
   const WORKBOOKS_KEY = 'auditCompass.projectWorkbooks';
   const MATERIALITY_KEY = 'auditCompass.workingpaperMateriality';
   const MATERIALITY_BY_BOOK_KEY = 'auditCompass.workingpaperMaterialityByWorkbook';
-  const defaultWorkbooks = [{
-    name:'20251022',
-    files:2,
-    updated:'2026-04-08',
-    period:'2026-04-01 - 2026-05-29',
-    remark:'',
-    analysisStart:'2026-04-01',
-    analysisEnd:'2026-05-29',
-    reportStart:'2026-04-01',
-    reportEnd:'2026-05-29',
-    ipo:false,
-    pie:false,
-    capitalMarket:'',
-    fiscalYearEnd:'12-31',
-    materiality:1000000
-  }];
-  const loadWorkbooks = () => {
-    try {
-      const saved = JSON.parse(localStorage.getItem(WORKBOOKS_KEY) || 'null');
-      return Array.isArray(saved) && saved.length ? saved : defaultWorkbooks.slice();
-    } catch (error) {
-      return defaultWorkbooks.slice();
-    }
-  };
+  const loadWorkbooks = () => window.ProjectWorkbooks.read();
   let workbooks = loadWorkbooks();
   let editingWorkbookName = null;
 

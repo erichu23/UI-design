@@ -15,14 +15,14 @@
       key: 'risk-report-export',
       label: '综合分析报告导出',
       after: 'statement',
-      source: './workingpaper-export.html?embed=risk-report&v=20261102-export-distribution1',
+      source: './workingpaper-export.html?embed=risk-report&v=20261102-workbook-context1',
       title: '综合分析报告导出'
     },
     {
       key: 'workingpaper-export',
       label: '资金流水核查底稿导出',
       after: 'risk-report-export',
-      source: './workingpaper-export.html?embed=workingpaper&v=20261102-export-distribution1',
+      source: './workingpaper-export.html?embed=workingpaper&v=20261102-workbook-context1',
       title: '资金流水核查底稿导出'
     }
   ];

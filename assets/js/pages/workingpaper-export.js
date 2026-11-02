@@ -174,8 +174,9 @@
     const wp=window.WP||{};let book={};
     try{
       const selected=localStorage.getItem('auditCompass.currentWorkbook');
-      const workbooks=JSON.parse(localStorage.getItem('auditCompass.projectWorkbooks')||'[]');
-      book=(selected?workbooks.find(row=>row.name===selected):workbooks.find(row=>row.name===wp.book))||{};
+      const workbooks=window.ProjectWorkbooks?.read()||JSON.parse(localStorage.getItem('auditCompass.projectWorkbooks')||'[]');
+      const hasProjectData=Array.isArray(wp.transactions)||wp.dataPeriod||wp.dataStart||wp.analysisStart||wp.financialPeriods;
+      book=(selected?workbooks.find(row=>row.name===selected):workbooks.find(row=>row.name===wp.book)||(!hasProjectData?workbooks[0]:null))||{};
     }catch(error){}
     const entities=[...new Set((wp.accounts||[]).map(account=>account.org).filter(Boolean))];
     const data=!book.name||book.name===wp.book?wp:{};
