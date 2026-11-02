@@ -52,12 +52,15 @@ the shared result snapshot. Invalid dates, negative amounts, percentages above
 
 ## Viewing State
 
-Only routines 1.1, 3.6, 3.7, 4.1 and 4.2 show a 分布参考 button immediately after
-the result-header filters. Its read-only table opens in a nonmodal popover and
-the same five rows in 识别概览 have matching buttons after their condition fields.
+Only routines 1.1, 3.6, 3.7, 4.1 and 4.2 show an always-visible read-only range
+summary below the result-header filters. Unframed columns show range, labeled
+amount/unit, transaction count, share and (where applicable) counterparties.
+The result page has no distribution button or table; columns wrap on narrow
+containers without horizontal scrolling. The same five rows in 识别概览 retain
+分布参考 buttons after their condition fields, opening a nonmodal table popover.
 Overview buttons use the row's ID without changing the active result routine.
-Both locations share statistics, units, icons and one anchored popover. Its table
-never consumes result-table layout height. Clicking outside, Escape, changing
+Both locations share statistics and units. The overview popover never consumes
+table-row layout height. Clicking outside, Escape, changing
 routine or opening the overview closes it. Escape restores focus to its trigger.
 The viewport-clamped popover fits narrow screens without horizontal scrolling.
 It opts out of automatic text-unit parsing to preserve fixed M range labels.
@@ -102,7 +105,15 @@ Sorting/filtering in the result tables remains unchanged.
 
 The results sidebar header contains two compact tabs, 正在查看 and 已隐藏,
 with counts. There is no separate 识别项目 title or duplicated total. The normal
-list is fully expanded, without the legacy category/核查标准 fold controls.
+list retains the four routine categories, fully expanded by default with
+individual accessible expand/collapse controls, without
+the redundant outer 核查标准 fold control. Group checkboxes support checked and
+partial selection. Unchecking a group opens one required-reason dialog and
+temporarily greys its routine list while the modal is open. Cancel/Escape
+removes that pending appearance and restores selection without saving.
+Confirmation applies that reason only to currently viewed members, preserving older hidden
+members' reasons. Cancel leaves all choices unchanged; bulk undo restores the
+affected members. Checking a partially viewed group restores all its members.
 Unchecking an item opens 隐藏此识别项目 with a required reason. Cancel or Escape
 restores the checkbox without changing saved state; confirmation removes the
 item from the normal list and saves its reason. A timed 撤销 action restores the

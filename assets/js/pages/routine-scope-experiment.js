@@ -7,12 +7,14 @@
   if (!workspace || typeof checkMeta === 'undefined' || !standards || !demoProvider) return;
   const css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = new URL('../../css/pages/routine-scope-experiment.css?v=20261029-distribution14', document.currentScript.src).href;
+  css.href = new URL('../../css/pages/routine-scope-experiment.css?v=20261102-overview-status2', document.currentScript.src).href;
   document.head.appendChild(css);
   const removedRoutineIds = new Set(['5.1', '5.2']);
   const ids = standards.rows.map(row => row.id).filter(id => checkMeta[id] && !removedRoutineIds.has(id));
   const allowedIds = new Set(ids);
   const criteriaFor = id => standards.formatCriteria(id, checkMeta[id].filters);
+  const originalGroupLabel=window.getGroupLabel;
+  window.getGroupLabel=id=>standards.getGroup(id)?.label||originalGroupLabel(id);
   function loadSharedParameters() {
     const parameters=demoProvider.readParameters();
     ids.forEach(id=>{checkMeta[id].filters=parameters[id].filters;});
@@ -27,9 +29,14 @@
     catch(error) { /* Keep the page usable if browser storage is unavailable. */ }
   };
   ids.forEach(id => { checkMeta[id].title = `${id} ${standards.get(id).procedure}`; });
-  CHECK_COLUMNS.forEach(group => { group.checks = group.checks.filter(check => allowedIds.has(check.id)); });
+  const checksById=new Map(CHECK_COLUMNS.flatMap(group=>group.checks).map(check=>[check.id,check]));
+  CHECK_COLUMNS.forEach(group => { group.checks = (standards.groups.find(item=>item.key===group.groupKey)?.ids||[]).filter(id=>allowedIds.has(id)).map(id=>checksById.get(id)).filter(Boolean); });
   CHECK_COLUMNS.splice(0, CHECK_COLUMNS.length, ...CHECK_COLUMNS.filter(group => group.checks.length));
   ALL_CHECK_IDS.splice(0, ALL_CHECK_IDS.length, ...CHECK_COLUMNS.flatMap(group => group.checks.map(check => check.id)));
+  window.getDefaultExpandedGroups=()=>Object.fromEntries(CHECK_COLUMNS.map(group=>[group.groupKey,true]));
+  window.getDefaultVisibleCheckGroups=()=>new Set(CHECK_COLUMNS.map(group=>group.groupKey));
+  resetCheckGroupExpanded(activeCheck);
+  selectedCheckGroupKeys=getDefaultVisibleCheckGroups(activeCheck);
   riskExportSelectedChecks = new Set(Array.from(riskExportSelectedChecks).filter(id => allowedIds.has(id)));
   Object.keys(checkMeta).forEach(id => { if (!allowedIds.has(id)) delete checkMeta[id]; });
   const obsoleteHits = new Set(['个人/个体户', '注册资本不匹配', '经营范围不匹配', '地址接近', '工商信息相同', '曾配合舞弊', '合规性差']);
@@ -84,6 +91,10 @@
   document.querySelectorAll('#checkList .check-group, #checkList .check-group-outer').forEach(group=>group.classList.remove('collapsed'));
   document.querySelectorAll('#checkList .check-group').forEach(group => {
     if (!group.querySelector('.check-item[data-id]')) group.remove();
+  });
+  standards.groups.forEach(group=>{
+    const body=document.querySelector(`#group-${group.number} .check-group-body`);
+    if(body)group.ids.forEach(id=>{const item=document.querySelector(`#checkList .check-item[data-id="${id}"]`);if(item)body.append(item);});
   });
   persistRiskRoutineState();
   // Legacy decision keys now describe visibility only, never execution.
@@ -171,12 +182,13 @@
   const resultValue = (id, key) => key === 'identifiedCounterparties' ? routineResults.get(id).counterparties.size : routineResults.get(id)[resultKeys[key]];
   function routineResultCells(id) {
     const result = routineResults.get(id);
-    return `<td class="rs-result" data-result="identifiedCounterparties">${result.counterparties.size.toLocaleString('zh-CN')}</td><td class="rs-result" data-result="identifiedAmount" data-audit-unit-ignore>${fmtAmtFromYuan(result.amount)}</td><td class="rs-result" data-result="identifiedTransactions">${result.transactions.toLocaleString('zh-CN')}</td>`;
+    return `<td class="rs-execution-status" title="系统已自动执行；是否查看仅控制结果展示"><span class="rs-execution-badge">已完成</span></td><td class="rs-result" data-result="identifiedCounterparties">${result.counterparties.size.toLocaleString('zh-CN')}</td><td class="rs-result" data-result="identifiedAmount" data-audit-unit-ignore>${fmtAmtFromYuan(result.amount)}</td><td class="rs-result" data-result="identifiedTransactions">${result.transactions.toLocaleString('zh-CN')}</td>`;
   }
   const columns = [
     {key:'id', label:'编号', cls:'rs-number'},
     {key:'name', label:'识别项目', cls:'rs-procedure-col'},
     {key:'criteria', label:'筛选条件', cls:'rs-criteria-col'},
+    {key:'executionStatus', label:'执行状态', cls:'rs-execution-col'},
     {key:'identifiedCounterparties', label:'识别对手方数', cls:'rs-result-col', numeric:true},
     {key:'identifiedAmount', label:'识别交易总额', cls:'rs-result-col rs-result-amount-col', numeric:true},
     {key:'identifiedTransactions', label:'识别交易笔数', cls:'rs-result-col', numeric:true}
@@ -185,6 +197,7 @@
     if (key === 'id') return id;
     if (key === 'name') return checkMeta[id].title.replace(id, '').trim();
     if (key === 'criteria') return criteriaFor(id);
+    if (key === 'executionStatus') return '已完成';
     if (resultKeys[key]) {
       const value = resultValue(id, key);
       if (key === 'identifiedAmount') {
@@ -228,37 +241,6 @@
   let currentStep = 1;
   let visibilityKey = '';
   let storageAvailable = true;
-  const countExplanation=document.createElement('section');
-  countExplanation.id='rsTabCountExplanation';
-  countExplanation.className='rs-count-explanation';
-  countExplanation.hidden=true;
-  countExplanation.setAttribute('role','dialog');
-  countExplanation.setAttribute('aria-label','统计口径说明');
-  countExplanation.innerHTML='<div><strong>统计口径</strong><button type="button" aria-label="关闭统计口径说明">关闭</button></div><p></p>';
-  document.body.append(countExplanation);
-  let countHelpButton=null;
-  function closeCountExplanation(restoreFocus=false) {
-    countExplanation.hidden=true;
-    countHelpButton?.setAttribute('aria-expanded','false');
-    if(restoreFocus)countHelpButton?.focus();
-  }
-  function positionCountExplanation() {
-    if(countExplanation.hidden||!countHelpButton)return;
-    const rect=countHelpButton.getBoundingClientRect(),box=countExplanation.getBoundingClientRect();
-    countExplanation.style.left=Math.max(12,Math.min(rect.left,window.innerWidth-box.width-12))+'px';
-    countExplanation.style.top=(rect.bottom+6+box.height<=window.innerHeight-12?rect.bottom+6:Math.max(12,rect.top-box.height-6))+'px';
-  }
-  countExplanation.querySelector('button').addEventListener('click',()=>closeCountExplanation(true));
-  document.addEventListener('pointerdown',event=>{
-    if(!countExplanation.hidden&&!countExplanation.contains(event.target)&&!countHelpButton?.contains(event.target))closeCountExplanation();
-  });
-  document.addEventListener('keydown',event=>{
-    if(event.key==='Escape'&&!countExplanation.hidden){event.preventDefault();closeCountExplanation(true);}
-  });
-  window.addEventListener('resize',positionCountExplanation);
-  document.addEventListener('scroll',event=>{
-    if(!countExplanation.hidden&&!countExplanation.contains(event.target))closeCountExplanation();
-  },true);
   const distribution=document.createElement('section');
   distribution.id='routineDistribution';
   distribution.setAttribute('data-audit-unit-ignore','');
@@ -276,7 +258,13 @@
   distributionTrigger.setAttribute('aria-haspopup','dialog');
   distributionTrigger.setAttribute('aria-controls','routineDistribution');
   distributionTrigger.setAttribute('aria-expanded','false');
-  document.getElementById('filterConditions').after(distributionTrigger);
+  distributionTrigger.hidden=true;
+  const distributionSummary=document.createElement('section');
+  distributionSummary.id='routineDistributionSummary';
+  distributionSummary.setAttribute('aria-label','范围分布摘要');
+  distributionSummary.setAttribute('data-audit-unit-ignore','');
+  distributionSummary.hidden=true;
+  document.querySelector('.check-context-bar').after(distributionSummary);
   let distributionOpen=false,distributionAnchor=distributionTrigger,distributionRoutineId=activeCheck;
   function closeDistribution(restoreFocus=false) {
     distributionOpen=false;
@@ -322,7 +310,22 @@
   },true);
   function renderDistribution() {
     const provider=window.RoutineDistribution;
-    distributionTrigger.hidden=!(provider?.supports(activeCheck)&&isIncluded(activeCheck)&&currentStep===1);
+    const showSummary=provider?.supports(activeCheck)&&isIncluded(activeCheck)&&currentStep===1;
+    distributionSummary.hidden=!showSummary;
+    if(showSummary){
+      const source=getRiskFilteredRows(activeTab);
+      const scope=activeTab==='tx'?{txIds:new Set(source.map(row=>row.txId))}:{cpIds:new Set(source.map(row=>row.id))};
+      const stats=provider.build(activeCheck,cpData,txData,manualClears,scope);
+      const unit=getCfoAuditUnit()?.label||'万元';
+      distributionSummary.dataset.routine=activeCheck;
+      distributionSummary.setAttribute('aria-label',stats.title);
+      distributionSummary.innerHTML=`<div class="rs-inline-distribution" style="--range-count:${stats.groups.length}">${stats.groups.map(group=>{
+        const ratio=(group.ratio*100).toLocaleString('zh-CN',{maximumFractionDigits:1})+'%';
+        const label=group.label+(stats.cumulative&&group.min>=20?'（累计）':'');
+        return `<div class="rs-inline-range"><div class="rs-inline-range-label"><span>${escape(label)}</span>${stats.counterparties?`<small>对手方 ${group.count.toLocaleString('zh-CN')}个</small>`:''}</div><div class="rs-inline-metrics"><span class="rs-inline-money">金额 <strong>${escape(fmtAmtFromYuan(group.amount))}</strong>${escape(unit)}</span><span>${group.transactions.toLocaleString('zh-CN')}笔</span><span>占比 <b>${ratio}</b></span></div></div>`;
+      }).join('')}</div>`;
+      distributionSummary.title='按当前表格筛选范围统计，未套用本项目阈值；占比为本档金额占基础范围交易金额。累计门槛之间可能重叠，不可相加。';
+    }
     const overview=distributionAnchor!==distributionTrigger,id=distributionRoutineId;
     if(!provider?.supports(id)||currentStep!==(overview?2:1)||!overview&&(id!==activeCheck||!isIncluded(id))){closeDistribution();return;}
     distribution.dataset.routine=id;
@@ -387,8 +390,13 @@
   visibilityToast.hidden=true;
   visibilityToast.innerHTML='<span role="status"></span><button type="button">撤销</button>';
   document.body.append(visibilityToast);
-  let undoRoutineId='',undoTimer;
-  visibilityToast.querySelector('button').addEventListener('click',()=>restoreRoutine(undoRoutineId));
+  let undoRoutineIds=[],undoTimer;
+  visibilityToast.querySelector('button').addEventListener('click',()=>{
+    const targets=undoRoutineIds.slice();
+    targets.forEach(id=>{draft[id]={...applied[id],decision:'run'};});
+    if(targets.length)restoreRoutine(targets[0]);
+    clearTimeout(undoTimer);visibilityToast.hidden=true;undoRoutineIds=[];
+  });
   hiddenRoutines.addEventListener('click',event=>{
     if(event.target.closest('[data-restore-all]')){
       const hiddenIds=ids.filter(id=>!isIncluded(id));
@@ -396,7 +404,7 @@
       hiddenIds.forEach(id=>{draft[id]={...applied[id],decision:'run'};});
       setSidebarView('viewing');
       restoreRoutine(hiddenIds[0]);
-      clearTimeout(undoTimer);visibilityToast.hidden=true;undoRoutineId='';
+      clearTimeout(undoTimer);visibilityToast.hidden=true;undoRoutineIds=[];
       showToast('success',`已恢复查看 ${hiddenIds.length} 个识别项目`);
       return;
     }
@@ -414,14 +422,15 @@
       item.scrollIntoView({block:'nearest'});
       item.querySelector('[data-view-routine]').focus({preventScroll:true});
     }
-    if(undoRoutineId===id){clearTimeout(undoTimer);visibilityToast.hidden=true;undoRoutineId='';}
+    undoRoutineIds=undoRoutineIds.filter(value=>value!==id);
+    if(!undoRoutineIds.length){clearTimeout(undoTimer);visibilityToast.hidden=true;}
   }
   function offerUndo(id) {
     clearTimeout(undoTimer);
-    undoRoutineId=id;
-    visibilityToast.querySelector('span').textContent=`已隐藏 ${id} 识别项目`;
+    undoRoutineIds=Array.isArray(id)?id.slice():[id];
+    visibilityToast.querySelector('span').textContent=undoRoutineIds.length>1?`已隐藏 ${undoRoutineIds.length} 个识别项目`:`已隐藏 ${undoRoutineIds[0]} 识别项目`;
     visibilityToast.hidden=false;
-    undoTimer=setTimeout(()=>{visibilityToast.hidden=true;undoRoutineId='';},8000);
+    undoTimer=setTimeout(()=>{visibilityToast.hidden=true;undoRoutineIds=[];},8000);
   }
   function renderHiddenRoutines() {
     const hiddenIds=ids.filter(id=>!isIncluded(id));
@@ -433,11 +442,50 @@
     if(hiddenIds.length===ids.length)sidebarView='hidden';
     setSidebarView(sidebarView);
     checkList.querySelectorAll('.check-group').forEach(group=>{
-      group.hidden=!Array.from(group.querySelectorAll('.check-item[data-id]')).some(item=>isIncluded(item.dataset.id));
+      const groupIds=Array.from(group.querySelectorAll('.check-item[data-id]'),item=>item.dataset.id);
+      const viewed=groupIds.filter(isIncluded).length;
+      group.hidden=!viewed;
+      const checkbox=group.querySelector('[data-view-group]');
+      if(checkbox){checkbox.checked=viewed===groupIds.length;checkbox.indeterminate=viewed>0&&viewed<groupIds.length;}
+      const count=group.querySelector('.rs-group-view-count');
+      if(count)count.textContent=`${viewed}/${groupIds.length}`;
     });
   }
 
   function bindSidebarViewing() {
+    checkList.querySelectorAll('.check-group').forEach(group=>{
+      const header=group.querySelector('.check-group-title');
+      const groupIds=Array.from(group.querySelectorAll('.check-item[data-id]'),item=>item.dataset.id);
+      if(!header||!groupIds.length)return;
+      const label=getGroupLabel(groupIds[0]);
+      header.removeAttribute('onclick');
+      Array.from(header.childNodes).filter(node=>node.nodeType===Node.TEXT_NODE).forEach(node=>node.remove());
+      const text=document.createElement('span');text.className='rs-group-label';text.textContent=groupIds[0].split('.')[0]+'. '+label;text.title=text.textContent;
+      const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.className='rs-sidebar-check rs-group-check';checkbox.dataset.viewGroup=group.id;
+      checkbox.setAttribute('aria-label',`整组查看：${label}`);checkbox.title='整组切换查看状态，隐藏时需填写原因';
+      const count=document.createElement('span');count.className='rs-group-view-count';
+      header.prepend(checkbox,text);header.append(count);
+      const body=group.querySelector('.check-group-body');body.id=group.id+'-routines';
+      const fold=document.createElement('button');fold.type='button';fold.className='rs-group-fold';
+      fold.setAttribute('aria-controls',body.id);fold.setAttribute('aria-expanded','true');
+      fold.setAttribute('aria-label',`收起${label}`);fold.title='收起';
+      fold.innerHTML='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>';
+      fold.addEventListener('click',event=>{
+        event.stopPropagation();
+        const collapsed=group.classList.toggle('collapsed');
+        fold.setAttribute('aria-expanded',String(!collapsed));
+        fold.setAttribute('aria-label',`${collapsed?'展开':'收起'}${label}`);fold.title=collapsed?'展开':'收起';
+      });
+      header.append(fold);
+      checkbox.addEventListener('change',event=>{
+        event.stopPropagation();
+        if(!checkbox.checked)requestHideRoutine(groupIds[0],groupIds);
+        else{
+          groupIds.forEach(id=>{draft[id]={...applied[id],decision:'run'};});
+          restoreRoutine(groupIds[0]);
+        }
+      });
+    });
     document.querySelectorAll('#checkList .check-item[data-id]').forEach(item => {
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
@@ -463,15 +511,21 @@
     applyScope();
     updateSummary();
   }
-  function requestHideRoutine(id) {
+  function requestHideRoutine(id,groupIds=null) {
     if (document.getElementById('rsHideRoutineDialog')) return;
+    const targets=groupIds?groupIds.filter(isIncluded):[id];
+    if(!targets.length)return;
+    const heading=groupIds?'隐藏此分组':'隐藏此识别项目';
+    const description=groupIds?`${getGroupLabel(id)}（${targets.length} 个识别项目）`:checkMeta[id].title;
+    const pendingGroup=groupIds?checkList.querySelector(`.check-item[data-id="${id}"]`)?.closest('.check-group'):null;
+    if(pendingGroup){pendingGroup.classList.add('rs-group-pending');pendingGroup.setAttribute('aria-busy','true');}
     const dialog = document.createElement('dialog');
     dialog.id = 'rsHideRoutineDialog';
     dialog.className = 'clear-modal rs-reason-dialog rs-hide-dialog';
     dialog.setAttribute('aria-labelledby', 'rsHideRoutineTitle');
-    dialog.innerHTML = `<h4 id="rsHideRoutineTitle">隐藏此识别项目</h4><p>${escape(checkMeta[id].title)}</p><label for="rsHideRoutineReason">不查看原因</label><textarea id="rsHideRoutineReason" maxlength="500" placeholder="请填写具体原因" aria-describedby="rsHideRoutineError" required></textarea><span id="rsHideRoutineError" role="status"></span><div class="clear-btns"><button type="button" data-cancel>取消</button><button class="primary" type="button" data-confirm>确认隐藏</button></div>`;
+    dialog.innerHTML = `<h4 id="rsHideRoutineTitle">${heading}</h4><p>${escape(description)}</p><label for="rsHideRoutineReason">不查看原因</label><textarea id="rsHideRoutineReason" maxlength="500" placeholder="请填写具体原因" aria-describedby="rsHideRoutineError" required></textarea><span id="rsHideRoutineError" role="status"></span><div class="clear-btns"><button type="button" data-cancel>取消</button><button class="primary" type="button" data-confirm>确认隐藏</button></div>`;
     const input = dialog.querySelector('textarea');
-    input.value = draft[id].reason;
+    input.value = groupIds?'':draft[id].reason;
     dialog.querySelector('[data-cancel]').addEventListener('click', () => { applyScope(); dialog.close(); });
     dialog.querySelector('[data-confirm]').addEventListener('click', () => {
       if (!input.value.trim()) {
@@ -480,16 +534,17 @@
         input.focus();
         return;
       }
-      draft[id] = {decision:'skip', reason:input.value.trim()};
+      targets.forEach(target=>{draft[target]={decision:'skip',reason:input.value.trim()};});
       saveViewingChoices();
-      offerUndo(id);
+      offerUndo(targets);
       dialog.close();
     });
     dialog.addEventListener('close', () => {
+      if(pendingGroup){pendingGroup.classList.remove('rs-group-pending');pendingGroup.removeAttribute('aria-busy');}
       dialog.remove();
       applyScope();
       updateSummary();
-      const focusTarget = isIncluded(id)?document.querySelector(`#checkList .check-item[data-id="${id}"] [data-view-routine]`):viewTabs.querySelector('[data-view-tab="hidden"]');
+      const focusTarget = pendingGroup&&!pendingGroup.hidden?pendingGroup.querySelector('[data-view-group]'):isIncluded(id)?document.querySelector(`#checkList .check-item[data-id="${id}"] [data-view-routine]`):viewTabs.querySelector('[data-view-tab="hidden"]');
       (focusTarget || steps.querySelector('[data-step="1"]')).focus();
     });
     document.body.appendChild(dialog);
@@ -501,10 +556,21 @@
     rows.forEach(row => { row.hidden = false; });
     const ordered = rows.slice().sort((a, b) => {
       const left = a.dataset.routine, right = b.dataset.routine;
-      return left.localeCompare(right, 'zh-CN', {numeric:true});
+      return standards.compare(left,right);
     });
     const body = panel.querySelector('tbody');
-    ordered.forEach(row => body.appendChild(row));
+    body.querySelectorAll('.rs-overview-group').forEach(row=>row.remove());
+    let previousGroup='';
+    ordered.forEach(row=>{
+      const group=standards.getGroup(row.dataset.routine);
+      if(group&&group.key!==previousGroup){
+        const heading=document.createElement('tr'),cell=document.createElement('td');
+        heading.className='rs-overview-group';heading.dataset.overviewGroup=group.key;
+        cell.colSpan=columns.length;cell.textContent=group.number+'. '+group.label;
+        heading.append(cell);body.append(heading);previousGroup=group.key;
+      }
+      body.append(row);
+    });
     panel.querySelector('.rs-no-match').hidden = rows.some(row => !row.hidden);
   }
   function updateSummary() {
@@ -550,7 +616,6 @@
     renderDistribution();
   }
   function goToStep(next) {
-    closeCountExplanation();
     closeRiskColumnFilterPopovers();
     if (next === 1 && currentStep === 2) {
       const invalidCondition = panel.querySelector('[data-criteria-key]:invalid');
@@ -700,15 +765,10 @@
     else selectCheck(checkId);
   };
   function syncRoutineMarkCells(kind) {
-    const total=getRiskFilteredRows(kind).length;
     const tabCount=document.getElementById(`tc-${kind}`);
-    const entity=kind==='tx'?'笔流水':'个对手方';
-    const tabLabel=kind==='tx'?'流水明细':'对手方汇总';
-    const description=`当前${tabLabel}表筛选后共 ${total.toLocaleString('zh-CN')} ${entity}，包含全部分页；不是当前识别项目的命中数量。`;
-    tabCount.textContent=`${total.toLocaleString('zh-CN')}${kind==='tx'?'笔':'个'}`;
-    tabCount.classList.add('rs-tab-total');
-    tabCount.title=description;
-    tabCount.setAttribute('aria-label',description);
+    tabCount.hidden=true;
+    tabCount.removeAttribute('title');
+    tabCount.removeAttribute('aria-label');
     const tab=document.getElementById(`tab-${kind}`);
     tab.removeAttribute('title');
     if(!tab.querySelector('.rs-result-tab-icon')){
@@ -718,31 +778,6 @@
       icon.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
       tab.prepend(icon);
     }
-    let help=tab.querySelector('.rs-tab-count-help');
-    if(!help){
-      help=document.createElement('button');
-      help.type='button';help.className='rs-tab-count-help';
-      help.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg>';
-      help.setAttribute('aria-label',`${tabLabel}数量的统计口径说明`);
-      help.setAttribute('aria-controls','rsTabCountExplanation');
-      help.setAttribute('aria-haspopup','dialog');
-      help.setAttribute('aria-expanded','false');
-      help.title='点击查看统计口径';
-      help.addEventListener('click',event=>{
-        event.stopPropagation();
-        const wasOpen=countHelpButton===help&&!countExplanation.hidden;
-        closeCountExplanation();
-        countHelpButton=help;
-        if(wasOpen)return;
-        countExplanation.querySelector('strong').textContent=`${tabLabel}数量`;
-        countExplanation.querySelector('p').textContent=help.dataset.explanation;
-        help.setAttribute('aria-expanded','true');countExplanation.hidden=false;
-        positionCountExplanation();
-      });
-      tabCount.after(help);
-    }
-    help.dataset.explanation=description;
-    if(countHelpButton===help&&!countExplanation.hidden)countExplanation.querySelector('p').textContent=description;
     const source = kind === 'tx' ? txData : cpData;
     const byId = new Map(source.map(row => [kind === 'tx' ? row.txId : row.id, row]));
     document.querySelectorAll(`#${kind}Body tr`).forEach(element => {
@@ -860,6 +895,9 @@
     }
   }
   const filterButton = document.getElementById('btnRun');
+  const analysisButton=document.querySelector('.check-context-header .btn-export');
+  analysisButton.textContent='生成分析结果';
+  analysisButton.setAttribute('aria-label','生成分析结果');
   filterButton.textContent = '筛选';
   filterButton.title = '应用当前筛选条件';
   filterButton.setAttribute('aria-label', '应用当前筛选条件');
@@ -884,6 +922,8 @@
     if (group) {
       group.classList.remove('collapsed');
       group.querySelector('.check-group-body').style.maxHeight = 'none';
+      const fold=group.querySelector('.rs-group-fold');
+      if(fold){fold.setAttribute('aria-expanded','true');fold.setAttribute('aria-label',`收起${getGroupLabel(id)}`);fold.title='收起';}
     }
     rows.forEach(updateRow);
     return result;
@@ -903,11 +943,11 @@
   window.getRiskScopeExportSheet = function () {
     refreshRoutineResults();
     const time = !hasSaved ? '尚未保存' : Number.isNaN(Date.parse(savedAt)) ? '未记录' : new Date(savedAt).toLocaleString('zh-CN', {timeZone:'Asia/Shanghai'});
-    return riskExportSheet('查看设置', ['编号', '识别项目', '筛选条件', '识别对手方数', '识别交易总额（元）', '识别交易笔数', '是否查看', '不查看原因', '设置完整性', '结果展示', '保存时间'], ids.map(id => {
+    return riskExportSheet('查看设置', ['编号', '识别项目', '筛选条件', '执行状态', '识别对手方数', '识别交易总额（元）', '识别交易笔数', '是否查看', '不查看原因', '设置完整性', '结果展示', '保存时间'], ids.map(id => {
       const row = applied[id];
       const completeness = needsReason(row) ? '待补不查看原因' : '已填写';
       const result = routineResults.get(id);
-      return [id, checkMeta[id].title, criteriaFor(id), result.counterparties.size, result.amount, result.transactions, labels[row.decision], row.decision === 'skip' ? row.reason : '', completeness, isIncluded(id) ? '展示' : '不展示（仍自动识别）', time];
+      return [id, checkMeta[id].title, criteriaFor(id), columnValue(id,'executionStatus'), result.counterparties.size, result.amount, result.transactions, labels[row.decision], row.decision === 'skip' ? row.reason : '', completeness, isIncluded(id) ? '展示' : '不展示（仍自动识别）', time];
     }));
   };
 

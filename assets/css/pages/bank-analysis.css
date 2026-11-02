@@ -455,6 +455,7 @@ body{
 }
 
 .tab-container:has(.tab[data-top="scope-control"].active) .biz-filter-bar,
+.tab-container:has(.tab[data-top="transaction"].active) .biz-filter-bar,
 .tab-container:has(.tab[data-top="risk-report-export"].active) .biz-filter-bar,
 .tab-container:has(.tab[data-top="workingpaper-export"].active) .biz-filter-bar{
   display:none !important;

@@ -521,6 +521,7 @@
     const workbook = workbooks.find(item => item.name === book);
     try {
       localStorage.setItem('auditCompass.currentWorkbook', book);
+      localStorage.setItem(WORKBOOKS_KEY, JSON.stringify(workbooks));
       const materialityByBook = JSON.parse(localStorage.getItem(MATERIALITY_BY_BOOK_KEY) || '{}');
       const value = workbook?.materiality ?? materialityByBook[book];
       if (value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value))) {

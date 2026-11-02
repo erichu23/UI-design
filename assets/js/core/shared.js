@@ -2160,6 +2160,7 @@
     };
     const rowCode = row => String(row.code || "").replace(/^i-/, "");
     const compareCode = (left, right) => {
+      if(window.RoutineStandards?.compare)return window.RoutineStandards.compare(rowCode(left),rowCode(right));
       const a = rowCode(left).split(".").map(Number);
       const b = rowCode(right).split(".").map(Number);
       for (let index = 0; index < Math.max(a.length, b.length); index += 1) {
@@ -2171,7 +2172,7 @@
     const rows = [...CHECK_STANDARD_ROWS].sort(compareCode);
     let previousGroup = "";
     tbody.innerHTML = rows.map(row => {
-      const group = rowCode(row).split(".")[0];
+      const group = window.RoutineStandards?.getGroup(rowCode(row))?.number || rowCode(row).split(".")[0];
       const columnCount = hideAction ? 8 : 9;
       const groupCells = `<td><strong>${groupLabels[group] || "其他核查标准"}</strong></td>${Array.from({ length: columnCount - 1 }, () => '<td aria-hidden="true"></td>').join("")}`;
       const groupRow = group !== previousGroup

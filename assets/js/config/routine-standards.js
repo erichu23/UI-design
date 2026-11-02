@@ -1,5 +1,15 @@
 (function () {
   'use strict';
+  const groups=[
+    {key:'quantitative',number:'1',label:'定量考虑因素',ids:['1.1','1.2']},
+    {key:'qualitative',number:'2',label:'定性考虑因素',ids:['2.1.1','2.1.2','2.2.1']},
+    {key:'abnormal',number:'3',label:'重点关注异常情况',ids:['3.1','3.2','2.2.2','2.1.3','2.2.3','2.2.4','3.3','3.4','3.5','3.6','3.7','3.8','3.9']},
+    {key:'bizinfo',number:'4',label:'可能配合财务舞弊的第三方',ids:['4.1','4.2','4.3','4.4']},
+    {key:'other',number:'5',label:'其他异常',ids:['5.1','5.2']}
+  ].map(group=>Object.freeze({...group,ids:Object.freeze(group.ids)}));
+  const order=new Map(groups.flatMap(group=>group.ids).map((id,index)=>[id,index]));
+  const getGroup=id=>groups.find(group=>group.ids.includes(id));
+  const compare=(left,right)=>(order.get(left)??Infinity)-(order.get(right)??Infinity)||left.localeCompare(right,'zh-CN',{numeric:true});
   const rows = [
     ['1.1', '法人账户单笔[X]元及以上的交易的银行流水', '单笔[50,000]元以上'],
     ['1.2', '法人账户累计流入或流出达到[X]元的交易的银行流水', '年度资金流入总额或流出总额 [1,000,000]万元及以上'],
@@ -25,7 +35,7 @@
     ['4.4', '为个人或个体工商户', '个体工商户、个人独资企业'],
     ['5.1', '存在银行流水但未匹配到增值税发票', '按当前资金与票流匹配口径识别'],
     ['5.2', '存在增值税发票但未匹配到银行流水', '按当前资金与票流匹配口径识别']
-  ].map(([id, procedure, criteria]) => Object.freeze({id, procedure, criteria}));
+  ].map(([id, procedure, criteria]) => Object.freeze({id, procedure, criteria,groupKey:getGroup(id)?.key})).sort((a,b)=>compare(a.id,b.id));
   const index = new Map(rows.map(row => [row.id, row]));
   function formatCriteria(id, filters) {
     if (!filters?.length) return index.get(id)?.criteria || '无需额外筛选';
@@ -35,5 +45,5 @@
       return `${filter.label} ${empty ? filter.placeholder || '不筛选' : raw}${empty ? '' : filter.unit || ''}`.trim();
     }).join('；');
   }
-  window.RoutineStandards = Object.freeze({rows:Object.freeze(rows), get:id => index.get(id), formatCriteria});
+  window.RoutineStandards = Object.freeze({rows:Object.freeze(rows),groups:Object.freeze(groups),getGroup,compare,get:id => index.get(id), formatCriteria});
 })();

@@ -72,16 +72,86 @@
         row.cells[2].classList.add('wp-synced-criteria');
         row.cells[2].title='参数与特殊交易识别同步，修改后自动更新识别结果';
       }
+      if(window.RoutineDistribution?.supports(id)&&!row.cells[2].querySelector('[data-wp-distribution]')){
+        const button=document.createElement('button');
+        button.type='button';
+        button.className='wp-distribution-trigger';
+        button.dataset.wpDistribution=id;
+        button.setAttribute('aria-label',`${id} 分布参考`);
+        button.setAttribute('aria-haspopup','dialog');
+        button.setAttribute('aria-controls','wpRoutineDistribution');
+        button.setAttribute('aria-expanded','false');
+        button.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v16h16M8 16v-4M12 16V7M16 16v-7"/></svg><span>分布参考</span>';
+        row.cells[2].append(button);
+      }
       const result=results.get(id);
       if(result){
-        row.cells[3].textContent='已完成';
+        row.cells[3].innerHTML='<span class="wp-execution-badge">已完成</span>';
         row.cells[4].textContent=result.counterparties.toLocaleString('zh-CN');
         row.cells[5].setAttribute('data-audit-unit-ignore','');
         row.cells[5].innerHTML=`<span data-audit-amount-k="${result.amount/1000}">${window.AuditUnit?.formatFromYuan?.(result.amount)??(result.amount/1000).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})}</span>`;
         row.cells[6].textContent=result.transactions.toLocaleString('zh-CN');
       }
     });
+    if(distributionAnchor&&!distributionAnchor.isConnected)closeDistribution();
+    else if(distributionAnchor)renderDistribution();
   };
+  const distribution=document.createElement('section');
+  distribution.id='wpRoutineDistribution';
+  distribution.hidden=true;
+  distribution.setAttribute('role','dialog');
+  distribution.setAttribute('aria-labelledby','wpDistributionTitle');
+  distribution.setAttribute('data-audit-unit-ignore','');
+  distribution.innerHTML='<div class="wp-distribution-head"><strong id="wpDistributionTitle"></strong><button type="button" aria-label="关闭分布参考">关闭</button></div><div class="wp-distribution-body"></div>';
+  document.body.append(distribution);
+  let distributionAnchor=null;
+  function closeDistribution(restoreFocus=false){
+    const anchor=distributionAnchor;
+    anchor?.setAttribute('aria-expanded','false');
+    distributionAnchor=null;
+    distribution.hidden=true;
+    if(restoreFocus)anchor?.focus();
+  }
+  function positionDistribution(){
+    if(!distributionAnchor)return;
+    const rect=distributionAnchor.getBoundingClientRect();
+    if(rect.bottom<0||rect.top>innerHeight){closeDistribution();return;}
+    const width=distribution.offsetWidth,height=distribution.offsetHeight;
+    distribution.style.left=`${Math.max(8,Math.min(rect.left,innerWidth-width-8))}px`;
+    distribution.style.top=`${Math.max(8,Math.min(rect.bottom+6,innerHeight-height-8))}px`;
+  }
+  function renderDistribution(){
+    if(!distributionAnchor)return;
+    const demo=window.RoutineDemoData;
+    if(!demo)return;
+    const id=distributionAnchor.dataset.wpDistribution;
+    const data=demo.create({parameters:demo.readParameters()});
+    let clears={};
+    try{const saved=JSON.parse(localStorage.getItem(demo.resultKey)||'null');if(saved?.version===demo.version)clears=saved.clears||{};}catch(error){}
+    const stats=window.RoutineDistribution.build(id,data.counterparties,data.transactions,clears);
+    const unit=window.AuditUnit?.label||'千元';
+    const format=amount=>window.AuditUnit?.formatFromYuan?.(amount)??(amount/1000).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});
+    distribution.querySelector('strong').textContent=`${stats.title}${stats.cumulative?'（累计门槛）':''}`;
+    distribution.querySelector('.wp-distribution-body').innerHTML=`<table><thead><tr><th>范围${stats.cumulative?'（累计）':''}</th>${stats.counterparties?'<th>对手方数量</th>':''}<th>金额（${unit}）</th><th>笔数</th><th>金额占比</th></tr></thead><tbody>${stats.groups.map(group=>`<tr><td>${group.label}</td>${stats.counterparties?`<td>${group.count.toLocaleString('zh-CN')}个</td>`:''}<td>${format(group.amount)}</td><td>${group.transactions.toLocaleString('zh-CN')}笔</td><td>${(group.ratio*100).toLocaleString('zh-CN',{maximumFractionDigits:1})}%</td></tr>`).join('')}</tbody></table><p>按本项目阈值筛选前的基础范围统计，不含已手工排除的记录；占比为本档交易金额占基础范围交易金额。${stats.cumulative?'累计门槛可重叠，不可相加。':id==='1.1'||id==='3.6'?'M表示百万元。':''}</p>`;
+    distribution.hidden=false;
+    positionDistribution();
+  }
+  document.addEventListener('click',event=>{
+    const button=event.target.closest('[data-wp-distribution]');
+    if(!button)return;
+    if(distributionAnchor===button){closeDistribution();return;}
+    closeDistribution();
+    distributionAnchor=button;
+    button.setAttribute('aria-expanded','true');
+    renderDistribution();
+  });
+  distribution.querySelector('button').addEventListener('click',()=>closeDistribution(true));
+  document.addEventListener('pointerdown',event=>{if(distributionAnchor&&!distribution.contains(event.target)&&!distributionAnchor.contains(event.target))closeDistribution();});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&distributionAnchor){event.preventDefault();closeDistribution(true);}});
+  document.addEventListener('scroll',positionDistribution,true);
+  window.addEventListener('resize',positionDistribution);
+  tabs.forEach(tab=>tab.addEventListener('click',()=>closeDistribution()));
+  window.addEventListener('audit-unit-ready',()=>{syncRoutineParameters();});
   window.requestAnimationFrame(syncRoutineParameters);
   document.getElementById('directTestSwitch')?.addEventListener('change',()=>window.requestAnimationFrame(syncRoutineParameters));
   window.addEventListener('storage',event=>{if(event.key===routineStateKey||event.key===window.RoutineDemoData?.resultKey)syncRoutineParameters();});
@@ -95,153 +165,116 @@
     clearTimeout(timer);
     timer=setTimeout(()=>toast.classList.remove('is-visible'),2200);
   };
-  const reportYears=['2023','2024','2025'];
-  const reportState={scope:'all',expandedYears:new Set()};
-  const reportData={
-    scopes:{
-      all:{label:'全量交易口径',note:'当前包含被审计单位之间的集团内往来；集团内关系依据被审计单位主档识别。',counterparties:300,abnormal:63,abnormalShare:21,categories:[['客户',108,36],['供应商',102,34],['其他',36,12],['个人',54,18]],concentration:{top5:{customer:[54,58,62],supplier:[49,52,55]},top10:{customer:[66,70,74],supplier:[60,64,67]},top20:{customer:[78.4,81.2,86],supplier:[74.1,76.5,79]}}},
-      external:{label:'外部交易口径',note:'当前已剔除被审计单位之间的全部资金及票据往来；百分比以外部交易金额或外部对手方数量为分母。',counterparties:264,abnormal:52,abnormalShare:19.7,categories:[['客户',102,38.6],['供应商',93,35.2],['其他',27,10.2],['个人',42,15.9]],concentration:{top5:{customer:[51,54,58],supplier:[46,49,51]},top10:{customer:[62,66,70],supplier:[57,60,63]},top20:{customer:[74,78,82],supplier:[69,72,75]}}}
-    },
-    matrix:{
-      '2023':{amount:421600,count:2864,ratio:15.2,entities:24,values:[[0,48,31,22],[36,0,18,27],[25,14,0,33],[19,24,29,0]]},
-      '2024':{amount:486900,count:3198,ratio:16.8,entities:26,values:[[0,55,38,29],[44,0,23,31],[32,19,0,41],[24,28,36,0]]},
-      '2025':{amount:557600,count:3562,ratio:17.4,entities:28,values:[[0,68,45,34],[52,0,29,38],[41,24,0,51],[29,35,44,0]]},
-      all:{amount:1466100,count:9624,ratio:16.5,entities:28,values:[[0,171,114,85],[132,0,70,96],[98,57,0,125],[72,87,109,0]]}
-    },
-    matrixEntities:['华东制造','上海星河','深圳启明','广州远航'],
-    reasons:[['同期交易量偏离20%以上',61,100,27800],['大额低频交易',13,21,138600],['大额非关联方交易',20,33,84700],['资金票流不匹配',95,100,199400],['经营时间短于1年',58,86,27600],['社保人数少于50人',12,18,139800],['实收资本与注册资本不一致',19,29,85300]],
-    counterparties:[
-      ['华辰智能装备有限公司','客户','客户兼供应商',84200,106500,138800,'收支重合、金额快速上升','32.4%','连续三年'],
-      ['锦汇贸易有限公司','供应商','关联方收支重合',73500,88200,96700,'资金票流不匹配','28.7%','连续三年'],
-      ['上海沐景科技有限公司','客户','—',28600,49200,81500,'大额低频、期末集中','24.5%','风险上升'],
-      ['张明远（个人）','个人','个人收支重合',19200,31800,59600,'个人经营性交易','21.8%','连续两年'],
-      ['鸿达投资管理有限公司','其他','—',0,26400,52100,'主档信息不一致','19.6%','本期新增'],
-      ['远洋国际贸易有限公司','供应商','客户兼供应商',44500,38600,48700,'沉寂后重新交易','17.9%','历史复发']
-    ]
-  };
-  const amountMarkup=value=>`<span data-audit-amount-k="${value}">${Number(value).toLocaleString('zh-CN')}</span>`;
-  const refreshAmountUnits=root=>window.AuditUnit?.scan?.(root||document);
-  const metricUnit=()=>window.AuditUnit?.unit||localStorage.getItem('auditCompass.amountUnit')||'m';
-  const metricUnitShort=()=>({yuan:'元',k:'K',w:'W',m:'M',b:'B'})[metricUnit()]||'M';
-  const metricAmountValue=value=>{
-    const converted=window.AuditUnit?.convert?window.AuditUnit.convert(value,'k'):Number(value)*1000/({yuan:1,k:1000,w:10000,m:1000000,b:100000000}[metricUnit()]||1000000);
-    const storedDecimals=localStorage.getItem('auditCompass.amountDecimals');
-    const decimals=Math.max(1,window.AuditUnit?.decimals??(storedDecimals===null?2:Number(storedDecimals)||0));
-    return Number(converted).toLocaleString('zh-CN',{minimumFractionDigits:decimals,maximumFractionDigits:decimals});
-  };
-  const syncMetricAmounts=()=>{
-    document.querySelectorAll('.risk-report-metric-amount-value[data-report-amount-k]').forEach(element=>{element.textContent=metricAmountValue(element.dataset.reportAmountK);});
-    document.querySelectorAll('.risk-report-metric-amount-unit').forEach(element=>{element.textContent=metricUnitShort();});
-  };
-  const decorateMetricAmounts=()=>{
-    document.querySelectorAll('.risk-report-metric-row em[data-audit-amount-k]').forEach(element=>{
-      const value=element.dataset.auditAmountK;
-      const primary=element.previousElementSibling?.matches('strong')?element.previousElementSibling:null;
-      if(!primary)return;
-      primary.classList.add('has-inline-amount');
-      primary.insertAdjacentHTML('beforeend',`<span class="risk-report-metric-divider">/</span><b class="risk-report-metric-amount-value" data-report-amount-k="${value}" data-audit-unit-ignore>${metricAmountValue(value)}</b><i class="risk-report-metric-amount-unit">${metricUnitShort()}</i>`);
-      element.remove();
+  const reportForm=document.getElementById('riskReportExportForm');
+  const periodSelect=document.getElementById('riskReportPeriodSelect');
+  const reportError=document.getElementById('riskReportDateError');
+  const periodsAPI=window.ReportPeriods;
+  let reportContext=null,periodOptions=[],periodStorageKey='';
+  function readReportContext(){
+    const wp=window.WP||{};let book={};
+    try{
+      const selected=localStorage.getItem('auditCompass.currentWorkbook');
+      const workbooks=JSON.parse(localStorage.getItem('auditCompass.projectWorkbooks')||'[]');
+      book=(selected?workbooks.find(row=>row.name===selected):workbooks.find(row=>row.name===wp.book))||{};
+    }catch(error){}
+    const entities=[...new Set((wp.accounts||[]).map(account=>account.org).filter(Boolean))];
+    const data=!book.name||book.name===wp.book?wp:{};
+    const records=Array.isArray(book.transactions)?book.transactions:Array.isArray(data.transactions)?data.transactions:null;
+    const dates=records?.map(row=>String(row.date||row.transactionDate||'').slice(0,10)).filter(periodsAPI.validDate).sort();
+    const actualPeriod=book.dataPeriod||data.dataPeriod||{};
+    const start=records!==null?(dates[0]||''):actualPeriod.start||book.dataStart||data.dataStart||book.analysisStart||data.analysisStart||'';
+    const end=records!==null?(dates[dates.length-1]||''):actualPeriod.end||book.dataEnd||data.dataEnd||book.analysisEnd||data.analysisEnd||'';
+    const yearEnd=book.fiscalYearEnd||data.fyEnd;
+    const sourcesProvided=Array.isArray(book.dataSources)||Array.isArray(data.dataSources);
+    const sourceBook=book.name||wp.book||'';
+    const sources=Array.isArray(book.dataSources)?book.dataSources:Array.isArray(data.dataSources)?data.dataSources:window.ReportDataSources?.peek(sourceBook)||[];
+    return {project:{name:book.name||wp.book||'—',code:wp.proj||'—',type:wp.kindText||'—',entities},
+      auditedEntity:wp.auditedEntity||wp.companyName||entities.join('、')||'—',
+      start,end,
+      yearEnd:yearEnd?periodsAPI.fiscalEnd(yearEnd):'',
+      periods:book.financialPeriods||data.financialPeriods,
+      sources,sourcesProvided,sourceBook,
+      version:wp.reportVersion||'V1.0'};
+  }
+  function updateCoverage(){
+    reportError.textContent=periodOptions.length?'':'当前项目暂无可选财务报表期间';
+    periodSelect.setAttribute('aria-invalid','false');
+    const button=document.getElementById('btnExportRiskReport');
+    button.disabled=button.hasAttribute('aria-busy');
+  }
+  function refreshProjectInfo(){
+    if(!reportForm||!periodsAPI)return;
+    const previousKey=periodStorageKey,previous=periodSelect.value;
+    reportContext=readReportContext();
+    const c=reportContext;
+    document.getElementById('riskReportAuditedEntity').textContent=c.auditedEntity;
+    document.getElementById('riskReportDataPeriod').textContent=periodsAPI.validDate(c.start)&&periodsAPI.validDate(c.end)?periodsAPI.format(c.start)+' - '+periodsAPI.format(c.end):'暂无已提供的数据期间';
+    document.getElementById('riskReportVersion').textContent=c.version;
+    periodStorageKey='auditCompass.riskReportFinancialPeriod.v2:'+JSON.stringify([c.project.code,c.project.name,c.start,c.end,c.yearEnd]);
+    periodOptions=c.yearEnd||Array.isArray(c.periods)?periodsAPI.options({start:c.start,end:c.end,yearEnd:c.yearEnd,periods:c.periods}):[];
+    periodSelect.replaceChildren(new Option(periodOptions.length?'请选择财务报表期间':'暂无可选财务报表期间',''),...periodOptions.map(row=>new Option(row.label,row.value)));
+    periodSelect.disabled=false;
+    let saved='';try{saved=localStorage.getItem(periodStorageKey)||'';}catch(error){}
+    const desired=previousKey===periodStorageKey?previous:saved;
+    periodSelect.value=periodOptions.some(row=>row.value===desired)?desired:'';
+    updateCoverage();
+    const names=['被审计单位主档','银行账号主档','资金交易明细','关联方主档','客户主档','供应商主档','员工主档','银行余额主档'];
+    const body=document.getElementById('riskReportDataSources');body.replaceChildren();
+    const colors={'已上传':'uploaded','部分缺失':'partial','未上传':'missing'};
+    names.forEach(name=>{
+      const source=c.sources.find(row=>row.name===name)||{};
+      const tr=document.createElement('tr');
+      const status=source.status||(Number(source.missingCount)>0?'部分缺失':Number(source.recordCount)>0?'已上传':'未提供状态');
+      [name,status,source.updatedAt||'—'].forEach((value,index)=>{
+        const td=document.createElement('td');td.textContent=value;
+        if(index===1)td.className='wp-report-source-status '+(colors[value]||'unknown');
+        tr.append(td);
+      });body.append(tr);
     });
-    syncMetricAmounts();
-  };
-  const syncReportScope=scope=>{
-    reportState.scope=scope;
-    const current=reportData.scopes[scope];
-    document.querySelectorAll('[data-report-scope]').forEach(button=>button.classList.toggle('is-active',button.dataset.reportScope===scope));
-    document.querySelectorAll('[data-report-version]').forEach(button=>button.classList.toggle('is-active',button.dataset.reportVersion===scope));
-    const note=document.getElementById('riskReportScopeNote');
-    if(note)note.querySelector('span').textContent=current.note;
-    const label=document.getElementById('riskReportScopeLabel');
-    if(label)label.textContent=current.label;
-    const exportVersion=document.getElementById('riskReportExportVersion');
-    if(exportVersion)exportVersion.textContent=scope==='all'?'全量交易版':'外部交易版（剔除集团内往来）';
-    renderConcentration();
-    renderCategories();
-    renderAbnormalOverview();
-  };
-  const renderMatrix=()=>{
-    const host=document.getElementById('riskReportYearMatrices');
-    if(!host)return;
-    host.innerHTML=['2023','2024','2025'].map(year=>{
-      const data=reportData.matrix[year];
-      const head=reportData.matrixEntities.map((name,index)=>`<th title="${name}">${String.fromCharCode(65+index)}</th>`).join('');
-      const body=reportData.matrixEntities.map((name,row)=>`<tr><th title="${name}">${String.fromCharCode(65+row)}</th>${data.values[row].map(value=>value?`<td style="background:rgba(67,115,178,${Math.min(.08+value/650,.28).toFixed(2)})" title="金额 ${value} 百万元；${Math.round(value*5.8)}笔"><span>${value}</span><em>${Math.round(value*5.8)}笔</em></td>`:'<td class="is-empty">—</td>').join('')}</tr>`).join('');
-      return `<article class="risk-report-year-matrix-card"><div class="risk-report-year-matrix-head"><strong>${year}年</strong><span>${amountMarkup(data.amount)} · ${data.count.toLocaleString('zh-CN')}笔 · 占比${data.ratio}%</span></div><table class="risk-report-mini-matrix"><thead><tr><th>流出\流入</th>${head}</tr></thead><tbody>${body}</tbody></table><div class="risk-report-matrix-key">${reportData.matrixEntities.map((name,index)=>`<span><i>${String.fromCharCode(65+index)}</i><b>${name}</b></span>`).join('')}</div></article>`;
-    }).join('');
-    refreshAmountUnits(host);
-  };
-  const renderConcentration=()=>{
-    const values=reportData.scopes[reportState.scope].concentration;
-    const chart=document.getElementById('riskReportConcentrationChart');
-    if(!chart)return;
-    chart.innerHTML=`<table class="risk-report-concentration-years"><thead><tr><th rowspan="2">范围</th><th colspan="3">客户</th><th colspan="3">供应商</th></tr><tr><th>2023</th><th>2024</th><th>2025</th><th>2023</th><th>2024</th><th>2025</th></tr></thead><tbody>${[['前5大',values.top5],['前10大',values.top10],['前20大',values.top20]].map(([label,item])=>`<tr><th>${label}</th>${item.customer.map(value=>`<td>${value}%</td>`).join('')}${item.supplier.map(value=>`<td>${value}%</td>`).join('')}</tr>`).join('')}</tbody></table>`;
-  };
-  const metricYearValueMarkup=value=>{
-    const match=String(value).match(/^(.*?\/\s*)([\d,]+(?:\.\d+)?)$/);
-    if(!match)return value;
-    const amount=Number(match[2].replace(/,/g,''));
-    return `${match[1]}<u class="risk-report-metric-amount-value" data-report-amount-k="${amount}" data-audit-unit-ignore>${metricAmountValue(amount)}</u><em class="risk-report-metric-amount-unit">${metricUnitShort()}</em>`;
-  };
-  const decorateMetricYears=()=>{
-    document.querySelectorAll('.risk-report-metric-row small').forEach(element=>{
-      if(element.classList.contains('risk-metric-years'))return;
-      const parts=element.textContent.split('·').map(item=>item.trim()).filter(Boolean);
-      if(parts.length!==3)return;
-      const values=parts.map(part=>{const match=part.match(/^(2023|2024|2025)\s+(.+)$/);return match?{year:match[1],value:match[2]}:null;});
-      if(values.some(value=>!value))return;
-      const hasAmount=Boolean(element.parentElement?.querySelector('strong.has-inline-amount'));
-      element.classList.add('risk-metric-years');
-      if(hasAmount)element.classList.add('risk-metric-years-with-amount');
-      element.innerHTML=values.map(value=>`<span class="${value.year==='2025'?'is-current':''}"><i>${value.year}</i><b>${hasAmount?metricYearValueMarkup(value.value):value.value}</b></span>`).join('');
+    if(!c.sourcesProvided&&!c.sources.length&&window.ReportDataSources){
+      window.ReportDataSources.load(c.sourceBook).then(rows=>{
+        if(rows.length&&reportContext.sourceBook===c.sourceBook)refreshProjectInfo();
+      });
+    }
+  }
+  if(reportForm&&periodsAPI){
+    refreshProjectInfo();
+    periodSelect.addEventListener('change',()=>{
+      updateCoverage();
+      try{localStorage.setItem(periodStorageKey,periodSelect.value);}catch(error){}
     });
-    syncMetricAmounts();
-  };
-  const renderCategories=()=>{
-    const grid=document.getElementById('riskReportCategoryGrid');
-    if(!grid)return;
-    grid.innerHTML=reportData.scopes[reportState.scope].categories.map(([name,count,share])=>`<div class="risk-category-item"><i class="risk-category-ring" style="--value:${share}"></i><div><span>${name}</span><strong>${count}个 · ${share}%</strong></div></div>`).join('');
-  };
-  const renderCounterpartyTable=()=>{
-    const head=document.getElementById('riskReportCounterpartyHead');
-    const rows=document.getElementById('riskReportCounterpartyRows');
-    const wrap=document.querySelector('#riskReportCounterpartyTable')?.closest('.risk-report-table-wrap');
-    const selectedYears=reportYears.filter(year=>reportState.expandedYears.has(year));
-    wrap?.classList.toggle('is-year-expanded',selectedYears.length>0);
-    if(head){
-      const yearHeads=selectedYears.map(year=>`<th class="risk-report-year-head">${year}</th>`).join('');
-      const yearSubs=selectedYears.map(()=>'<th class="num">交易金额</th>').join('');
-      const controls=window.AuditYearExpansion?.controls({years:reportYears,selected:reportState.expandedYears,toggleId:'riskReportYearToggle',pickerId:'riskReportYearPicker'})||'<span>合计</span>';
-      head.innerHTML=`<tr class="risk-report-year-group-head"><th rowspan="2">No.</th><th rowspan="2">对手方名称</th><th rowspan="2">对手方类型</th><th rowspan="2">收支重合关系</th><th class="risk-report-group-toggle-cell">${controls}</th>${yearHeads}<th rowspan="2">主要异常线索</th><th rowspan="2" class="num">异常交易占比</th><th rowspan="2">跨期状态</th><th rowspan="2">操作</th></tr><tr class="risk-report-year-sub-head"><th class="num">交易金额</th>${yearSubs}</tr>`;
-      window.AuditYearExpansion?.bind({years:reportYears,getSelected:()=>reportState.expandedYears,onChange:selected=>{reportState.expandedYears=selected;renderCounterpartyTable();},toggleId:'riskReportYearToggle',pickerId:'riskReportYearPicker'});
-    }
-    if(rows){
-      rows.innerHTML=reportData.counterparties.map((row,index)=>{
-        const total=[row[3],row[4],row[5]].reduce((sum,value)=>sum+(Number(value)||0),0);
-        const yearCells=selectedYears.map(year=>`<td class="is-num risk-report-year-cell">${amountMarkup(row[3+reportYears.indexOf(year)])}</td>`).join('');
-        return `<tr><td>${index+1}</td><td>${row[0]}</td><td class="${row[1]==='客户'?'is-customer':row[1]==='供应商'?'is-supplier':''}">${row[1]}</td><td>${row[2]}</td><td class="is-num risk-report-total-cell">${amountMarkup(total)}</td>${yearCells}<td class="risk-status">${row[6]}</td><td class="is-num">${row[7]}</td><td>${row[8]}</td><td><button class="risk-report-detail-link" type="button">查看明细</button></td></tr>`;
-      }).join('');
-    }
-    refreshAmountUnits(document.getElementById('riskReportCounterpartyTable'));
-  };
-  const renderAbnormalOverview=()=>{
-    const scope=reportData.scopes[reportState.scope];
-    const share=document.querySelector('.risk-report-abnormal-share');
-    if(share){share.querySelector('.risk-report-ring').style.setProperty('--ring-value',scope.abnormalShare);share.querySelector('.risk-report-ring span').textContent=`${scope.abnormalShare}%`;share.querySelector('strong').textContent=`${scope.abnormal}个异常对手方`;share.querySelector('.risk-report-abnormal-share>div:last-child>span').textContent=`占三年累计分析范围${scope.counterparties}个`;}
-    const bars=document.getElementById('riskReportReasonBars');
-    if(bars)bars.innerHTML=reportData.reasons.map(([name,count,width,amount])=>`<div class="risk-reason-item"><strong>${count}个</strong><span>${name}</span><em>${amountMarkup(amount)}</em><div class="risk-reason-track"><i style="width:${width}%"></i></div></div>`).join('');
-    renderCounterpartyTable();
-    refreshAmountUnits(document.getElementById('riskReportCounterpartyBlock'));
-  };
-  document.getElementById('riskReportScopeSwitch')?.addEventListener('click',event=>{const button=event.target.closest('[data-report-scope]');if(button)syncReportScope(button.dataset.reportScope);});
-  document.querySelector('.risk-report-version-grid')?.addEventListener('click',event=>{const button=event.target.closest('[data-report-version]');if(button)syncReportScope(button.dataset.reportVersion);});
-  document.getElementById('riskReportCounterpartyRows')?.addEventListener('click',event=>{if(event.target.closest('.risk-report-detail-link'))showToast('已打开该对手方的三年交易明细');});
-  ['btnPreviewRiskReport','btnPreviewRiskReportBottom'].forEach(id=>document.getElementById(id)?.addEventListener('click',()=>showToast(`正在生成${reportData.scopes[reportState.scope].label}报告预览`)));
-  ['btnExportRiskReport','btnExportRiskReportBottom'].forEach(id=>document.getElementById(id)?.addEventListener('click',()=>showToast(`${reportData.scopes[reportState.scope].label}风险评估报告已进入导出队列`)));
-  decorateMetricAmounts();
-  window.addEventListener('audit-unit-ready',syncMetricAmounts);
-  renderMatrix();
-  decorateMetricYears();
-  syncReportScope('all');
+    reportForm.addEventListener('submit',async event=>{
+      event.preventDefault();
+      const selected=periodOptions.find(row=>row.value===periodSelect.value);
+      if(!selected){
+        const message=periodOptions.length?'请先选择财务报表期间，再生成综合分析报告':'当前项目暂无可选财务报表期间，请先补充项目期间数据';
+        reportError.textContent=message;periodSelect.setAttribute('aria-invalid','true');
+        periodSelect.scrollIntoView({block:'center',behavior:'smooth'});
+        periodSelect.focus({preventScroll:true});showToast(message);
+        return;
+      }
+      if(!reportForm.reportValidity())return;
+      const request={project:reportContext.project,period:{start:selected.start,end:selected.end},fiscalYearEnd:reportContext.yearEnd};
+      const button=document.getElementById('btnExportRiskReport'),label=button.querySelector('span');
+      if(button.disabled)return;
+      button.disabled=true;button.setAttribute('aria-busy','true');label.textContent='正在生成综合分析报告…';
+      try{
+        if(typeof window.RiskReportExporter?.export==='function'){
+          await window.RiskReportExporter.export(request);showToast('报告已生成');
+        }else{
+          window.dispatchEvent(new CustomEvent('risk-report:export',{detail:request}));
+          showToast('演示导出：'+selected.label);
+        }
+      }catch(error){showToast('报告导出失败，请重试');}
+      finally{button.removeAttribute('aria-busy');label.textContent='生成综合分析报告';updateCoverage();}
+    });
+    tabs.forEach(tab=>tab.addEventListener('click',refreshProjectInfo));
+    window.addEventListener('focus',refreshProjectInfo);
+    window.addEventListener('project-data-updated',refreshProjectInfo);
+    window.addEventListener('storage',event=>{if(['auditCompass.currentWorkbook','auditCompass.projectWorkbooks'].includes(event.key)||event.key?.startsWith(window.ReportDataSources?.prefix||'auditCompass.reportDataSources:'))refreshProjectInfo();});
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshProjectInfo();});
+    window.RiskReportExportSettings={get project(){return reportContext.project;},get period(){const row=periodOptions.find(item=>item.value===periodSelect.value);return row?{start:row.start,end:row.end}:null;},refresh:refreshProjectInfo};
+  }
   if(materiality){
     const saved=localStorage.getItem(materialityKey)||'';
     materiality.value=saved?Number(saved).toLocaleString('zh-CN'):'';

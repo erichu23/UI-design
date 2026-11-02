@@ -1,0 +1,13 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const context={window:{}};vm.createContext(context);
+vm.runInContext(fs.readFileSync(require('node:path').join(__dirname,'../assets/js/config/routine-standards.js'),'utf8'),context);
+const api=context.window.RoutineStandards;
+assert.deepEqual(Array.from(api.groups.find(group=>group.key==='qualitative').ids),['2.1.1','2.1.2','2.2.1']);
+const abnormal=['3.1','3.2','2.2.2','2.1.3','2.2.3','2.2.4','3.3','3.4','3.5','3.6','3.7','3.8','3.9'];
+assert.deepEqual(Array.from(api.groups.find(group=>group.key==='abnormal').ids),abnormal);
+for(const id of abnormal)assert.equal(api.getGroup(id).number,'3');
+assert.equal(new Set(api.groups.flatMap(group=>Array.from(group.ids))).size,24);
+assert.equal(api.rows.length,24);
+assert.deepEqual(Array.from(api.rows.filter(row=>row.groupKey==='abnormal'),row=>row.id),abnormal);
+assert(api.compare('3.2','2.2.2')<0);assert(api.compare('2.2.4','3.3')<0);
+console.log('PASS: shared group membership, screenshot order, unique identifiers and catalog alignment.');

@@ -55,6 +55,43 @@ assert.equal(context.window.RoutineStandards.get('2.2.3').procedure, context.win
     }));
     await page.waitForTimeout(250);
     assert.deepEqual(errors, []);
+    assert.equal(await page.evaluate(()=>CHECK_COLUMNS.every(group=>checkGroupExpanded[group.groupKey])),true);
+    assert.equal(await page.locator('#cpTable thead th[data-check]').count(),22);
+    assert.equal(await page.locator('#txTable thead th[data-check]').count(),22);
+    const expectedAbnormal=['3.1','3.2','2.2.2','2.1.3','2.2.3','2.2.4','3.3','3.4','3.5','3.6','3.7','3.8','3.9'];
+    assert.deepEqual(await page.locator('#group-2 .check-item').evaluateAll(items=>items.map(item=>item.dataset.id)),['2.1.1','2.1.2','2.2.1']);
+    assert.deepEqual(await page.locator('#group-3 .check-item').evaluateAll(items=>items.map(item=>item.dataset.id)),expectedAbnormal);
+    assert.deepEqual(await page.evaluate(()=>CHECK_COLUMNS.find(group=>group.groupKey==='abnormal').checks.map(check=>check.id)),expectedAbnormal);
+    assert.equal(await page.locator('[data-view-group]').count(),4);
+    const groupCheckbox=page.locator('[data-view-group="group-1"]');
+    const groupFold=page.locator('#group-1 .rs-group-fold');
+    assert.equal(await groupFold.getAttribute('aria-expanded'),'true');
+    await groupFold.click();
+    assert.equal(await page.locator('#group-1 > .check-group-body').isVisible(),false);
+    await groupFold.click();
+    assert.equal(await page.locator('#group-1 > .check-group-body').isVisible(),true);
+    await groupCheckbox.uncheck();
+    assert.equal(await page.locator('#group-1').evaluate(group=>group.classList.contains('rs-group-pending')),true);
+    assert.equal(await page.locator('#rsHideRoutineTitle').textContent(),'隐藏此分组');
+    await page.locator('#rsHideRoutineDialog [data-confirm]').click();
+    assert.equal(await page.locator('#rsHideRoutineDialog').isVisible(),true);
+    await page.locator('#rsHideRoutineReason').fill('该组已在其他程序中覆盖');
+    await page.locator('#rsHideRoutineDialog [data-cancel]').click();
+    assert.equal(await groupCheckbox.isChecked(),true);
+    assert.equal(await page.locator('#group-1').evaluate(group=>group.classList.contains('rs-group-pending')),false);
+    await groupCheckbox.uncheck();
+    await page.locator('#rsHideRoutineReason').fill('该组已在其他程序中覆盖');
+    await page.locator('#rsHideRoutineDialog [data-confirm]').click();
+    assert.equal(await page.locator('#group-1').isVisible(),false);
+    assert.equal(await page.locator('#checkList [data-view-routine]:checked').count(),20);
+    await page.locator('.rs-visibility-toast button').click();
+    assert.equal(await page.locator('#checkList [data-view-routine]:checked').count(),22);
+    assert.equal(await groupCheckbox.isChecked(),true);
+    if(process.argv.includes('--group-only')){
+      assert.deepEqual(errors,[]);
+      console.log('PASS: four expanded groups, group hide validation, cancel rollback, shared reason, bulk undo and recovery.');
+      return;
+    }
     if(process.argv.includes('--all-hidden-only')){
       await page.evaluate(()=>{
         const scope=Object.fromEntries(Object.keys(checkMeta).map(id=>[id,{decision:'skip',reason:'已记录复核依据'}]));
@@ -79,17 +116,9 @@ assert.equal(context.window.RoutineStandards.get('2.2.3').procedure, context.win
       console.log('PASS: all-hidden session keeps the sidebar, hides results, opens the hidden tab and restores all 22 routines in one action.');
       return;
     }
-    assert.equal(await page.locator('#tc-cp').textContent(),await page.evaluate(()=>getRiskFilteredRows('cp').length.toLocaleString('zh-CN')+'个'));
-    assert.equal(await page.locator('#tc-tx').textContent(),await page.evaluate(()=>getRiskFilteredRows('tx').length.toLocaleString('zh-CN')+'笔'));
-    assert((await page.locator('#tc-cp').getAttribute('title')).includes('不是当前识别项目的命中数量'));
-    assert.equal(await page.locator('.rs-tab-count-help').count(),2);
-    const tabBeforeHelp=await page.evaluate(()=>activeTab);
-    await page.locator('#tab-tx .rs-tab-count-help').click();
-    assert.equal(await page.locator('#rsTabCountExplanation').isVisible(),true);
-    assert((await page.locator('#rsTabCountExplanation').innerText()).includes('不是当前识别项目的命中数量'));
-    assert.equal(await page.evaluate(()=>activeTab),tabBeforeHelp,'help icon does not switch result tabs');
-    await page.keyboard.press('Escape');
-    assert.equal(await page.locator('#rsTabCountExplanation').isVisible(),false);
+    assert.equal(await page.locator('#tc-cp').isVisible(),false);
+    assert.equal(await page.locator('#tc-tx').isVisible(),false);
+    assert.equal(await page.locator('.rs-tab-count-help, #rsTabCountExplanation').count(),0);
     await page.evaluate(()=>toggleSidebar());
     assert.equal(await page.locator('.sidebar').evaluate(element=>getComputedStyle(element,'::after').content), '"特殊交易识别"');
     await page.evaluate(()=>toggleSidebar());
@@ -102,40 +131,25 @@ assert.equal(context.window.RoutineStandards.get('2.2.3').procedure, context.win
       return gap>=0&&gap<=12;
     }),true,'short titles do not reserve blank width before the hit badge');
     assert.equal(await page.locator('#routineDistribution').isVisible(),false);
-    assert.equal(await page.locator('#routineDistributionTrigger').isVisible(),true);
-    assert.equal(await page.locator('#routineDistributionTrigger svg').count(),2);
-    assert.equal(await page.locator('#routineDistributionTrigger').getAttribute('aria-expanded'),'false');
-    const headerHeight=await page.locator('.check-context-header').evaluate(element=>element.getBoundingClientRect().height);
-    await page.locator('#routineDistributionTrigger').click();
-    assert.equal(await page.locator('#routineDistributionTrigger').getAttribute('aria-expanded'),'true');
-    assert.equal(await page.locator('#routineDistribution').isVisible(),true);
-    assert.equal(await page.locator('#routineDistribution').getAttribute('data-routine'),'1.1');
-    assert.equal(await page.locator('#routineDistribution tbody tr').count(),5);
-    assert.equal(await page.locator('#rsDistributionBody button, #rsDistributionBody input').count(),0);
-    assert.equal(await page.locator('.check-context-header').evaluate(element=>element.getBoundingClientRect().height),headerHeight,'opening statistics does not change layout');
-    assert.equal(await page.locator('#routineDistribution').evaluate(element=>element.scrollWidth<=element.clientWidth+1),true);
-    await page.screenshot({path:'/private/tmp/routine-distribution-popover.png'});
+    assert.equal(await page.locator('#routineDistributionTrigger').count(),0);
+    assert.equal(await page.locator('#routineDistributionSummary').isVisible(),true);
+    assert.equal(await page.locator('#routineDistributionSummary .rs-inline-range').count(),5);
+    assert.equal(await page.locator('#routineDistributionSummary button, #routineDistributionSummary table').count(),0);
+    assert((await page.locator('#routineDistributionSummary').boundingBox()).height<=80);
+    assert.equal(await page.locator('#routineDistributionSummary').evaluate(el=>el.scrollWidth<=el.clientWidth+1),true);
+    await page.screenshot({path:'/private/tmp/routine-inline-distribution.png'});
     for(const id of ['3.6','3.7','4.1','4.2']){
       await page.evaluate(id=>selectCheck(id),id);
-      assert.equal(await page.locator('#routineDistribution').isVisible(),false);
-      await page.locator('#routineDistributionTrigger').click();
-      assert.equal(await page.locator('#routineDistribution').getAttribute('data-routine'),id);
-      assert.equal(await page.locator('#routineDistribution tbody tr').count(),4);
+      assert.equal(await page.locator('#routineDistributionSummary').getAttribute('data-routine'),id);
+      assert.equal(await page.locator('#routineDistributionSummary .rs-inline-range').count(),4);
+      assert((await page.locator('#routineDistributionSummary').innerText()).includes('对手方'));
     }
     await page.evaluate(()=>selectCheck('2.1.1'));
-    assert.equal(await page.locator('#routineDistribution').isVisible(),false);
-    assert.equal(await page.locator('#routineDistributionTrigger').isVisible(),false);
+    assert.equal(await page.locator('#routineDistributionSummary').isVisible(),false);
     await page.evaluate(()=>selectCheck('1.1'));
     const beforeRangeInspection=await page.evaluate(()=>getRiskFilteredRows('cp').length);
-    await page.locator('#routineDistributionTrigger').click();
-    await page.locator('#routineDistribution tbody tr').first().click();
-    assert.equal(await page.evaluate(()=>getRiskFilteredRows('cp').length),beforeRangeInspection,'distribution is read-only');
-    await page.keyboard.press('Escape');
-    assert.equal(await page.locator('#routineDistribution').isVisible(),false);
-    assert.equal(await page.locator('#routineDistributionTrigger').evaluate(button=>document.activeElement===button),true);
-    await page.locator('#routineDistributionTrigger').click();
-    await page.locator('#fpTitle').click();
-    assert.equal(await page.locator('#routineDistribution').isVisible(),false);
+    await page.locator('#routineDistributionSummary .rs-inline-range').first().click();
+    assert.equal(await page.evaluate(()=>getRiskFilteredRows('cp').length),beforeRangeInspection,'summary is read-only');
     const first = page.locator('#checkList [data-view-routine="1.1"]');
     assert.equal(await first.getAttribute('type'),'checkbox');
     assert.equal(await first.evaluate(input=>getComputedStyle(input).borderRadius),'50%');
@@ -150,7 +164,9 @@ assert.equal(context.window.RoutineStandards.get('2.2.3').procedure, context.win
     assert.equal(await page.locator('#checkList .check-item.active').evaluate(item=>getComputedStyle(item).borderLeftColor!=='rgba(0, 0, 0, 0)'),true);
     assert.equal(await page.locator('#checkList .check-item:not(.active)').first().evaluate(item=>getComputedStyle(item).borderLeftColor),'rgba(0, 0, 0, 0)');
     assert.deepEqual(await page.locator('#routineScope thead th').evaluateAll(cells=>cells.map(cell=>cell.dataset.column)),
-      ['id','name','criteria','identifiedCounterparties','identifiedAmount','identifiedTransactions']);
+      ['id','name','criteria','executionStatus','identifiedCounterparties','identifiedAmount','identifiedTransactions']);
+    assert.equal(await page.locator('#routineScope .rs-execution-status').count(),22);
+    assert((await page.locator('#routineScope .rs-execution-status').allTextContents()).every(text=>text==='已完成'));
     assert.equal(await page.locator('#routineScope thead button, #routineScope thead [data-sort], #routineScope thead [data-filter]').count(),0);
     assert.equal(await page.locator('[data-overview-distribution]').count(),5);
     const activeBeforeOverview=await page.evaluate(()=>activeCheck);
@@ -163,8 +179,8 @@ assert.equal(context.window.RoutineStandards.get('2.2.3').procedure, context.win
       await page.keyboard.press('Escape');
       assert.equal(await button.evaluate(element=>document.activeElement===element),true);
     }
-    assert.equal(await page.locator('#routineScope tbody tr').first().locator('td').count(),6);
-    assert.equal(await page.locator('#routineScope tbody td').first().evaluate(cell=>getComputedStyle(cell).borderRightWidth),'1px');
+    assert.equal(await page.locator('#routineScope tbody tr[data-routine]').first().locator('td').count(),7);
+    assert.equal(await page.locator('#routineScope tbody tr[data-routine] td').first().evaluate(cell=>getComputedStyle(cell).borderRightWidth),'1px');
     assert.equal(await page.locator('#routineScope thead th').first().evaluate(cell=>getComputedStyle(cell).borderRightWidth),'1px');
     const settingsResultCheck = await page.evaluate(() => {
       const id='3.2';
@@ -287,7 +303,8 @@ assert.equal(context.window.RoutineStandards.get('2.2.3').procedure, context.win
     await page.evaluate(() => selectCheck('1.2'));
     assert.equal(await page.locator('.sidebar-label, .sidebar-count').count(),0);
     assert.equal(await page.locator('.sidebar-header .rs-view-tabs').count(),1);
-    assert.equal(await page.locator('#checkList .check-group-title:visible, #checkList .check-group-outer-title:visible').count(),0);
+    assert.equal(await page.locator('#checkList .check-group-title:visible').count(),4);
+    assert.equal(await page.locator('#checkList .check-group-outer-title:visible').count(),0);
     assert.equal(await page.locator('[data-view-tab="viewing"]').getAttribute('aria-selected'),'true');
     assert.equal(await page.locator('#checkList .check-item:visible').count(),21);
     const headingBoxes = await page.locator('.sidebar-header .rs-view-tabs button').evaluateAll(elements => elements.map(element => {

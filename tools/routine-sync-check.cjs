@@ -36,11 +36,28 @@ const read=file=>fs.readFileSync(path.join(root,file),'utf8');
     await paper.goto('https://routine-sync.test/fragments/workingpaper-export.html?embed=workingpaper',{waitUntil:'domcontentloaded'});
     const setupPaper=async()=>{
       for(const file of ['assets/css/base.css','assets/css/pages/workingpaper.css','assets/css/pages/workingpaper-export.css'])await paper.addStyleTag({content:read(file)});
-      for(const file of ['assets/js/config/routine-standards.js','assets/js/config/routine-demo-data.js','assets/js/core/shared.js','assets/js/pages/workingpaper-export.js'])await paper.addScriptTag({content:read(file)});
+      for(const file of ['assets/js/config/routine-standards.js','assets/js/config/routine-demo-data.js','assets/js/config/routine-distribution.js','assets/js/core/shared.js','assets/js/config/report-periods.js','assets/js/config/report-data-sources.js','assets/js/pages/workingpaper-export.js'])await paper.addScriptTag({content:read(file)});
     };
     await setupPaper();
+    const standardOrder=await paper.locator('#rngTbody tr:not(.wp-routine-group-row)').evaluateAll(rows=>rows.map(row=>row.cells[1].textContent.trim().replace(/^i-/,'')));
+    assert.deepEqual(standardOrder,['1.1','1.2','2.1.1','2.1.2','2.2.1','3.1','3.2','2.2.2','2.1.3','2.2.3','2.2.4','3.3','3.4','3.5','3.6','3.7','3.8','3.9']);
     const wp='[data-wp-routine="1.1"][data-wp-criterion="minAmt"]';
     await paper.waitForSelector(wp,{state:'attached'});
+    await paper.waitForSelector('[data-wp-distribution="1.1"]');
+    assert.equal(await paper.locator('[data-export-tab="risk-report"]').textContent(),'综合分析报告导出');
+    assert.equal(await paper.locator('.wp-execution-badge').count(),22);
+    assert.deepEqual(await paper.locator('[data-wp-distribution]').evaluateAll(buttons=>buttons.map(button=>button.dataset.wpDistribution)),['1.1','3.6','3.7','4.1','4.2']);
+    for(const id of ['1.1','3.6','3.7','4.1','4.2']){
+      await paper.locator(`[data-wp-distribution="${id}"]`).click();
+      assert.equal(await paper.locator('#wpRoutineDistribution').isVisible(),true);
+      const expected=await paper.evaluate(id=>{
+        const data=RoutineDemoData.create({parameters:RoutineDemoData.readParameters()});
+        return RoutineDistribution.build(id,data.counterparties,data.transactions).groups.map(group=>group.transactions.toLocaleString('zh-CN')+'笔');
+      },id);
+      assert.deepEqual(await paper.locator('#wpRoutineDistribution tbody tr').evaluateAll(rows=>rows.map(row=>row.cells[row.cells.length-2].textContent)),expected);
+      await paper.keyboard.press('Escape');
+      assert.equal(await paper.locator('#wpRoutineDistribution').isVisible(),false);
+    }
     assert.equal(await paper.locator(wp).inputValue(),'50000');
     assert.equal(await paper.locator(wp).evaluate(input=>Math.round(input.getBoundingClientRect().width)),96);
     assert.equal(await paper.locator('[data-wp-criterion="daysRange"]').evaluate(input=>Math.round(input.getBoundingClientRect().width)),54);

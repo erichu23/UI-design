@@ -7,6 +7,50 @@ html.wp-embedded-module .wp-export-tab-container{display:none!important;}
 .workingpaper-export-page .wp-export-tab-container .inkbar{left:0;transform:none;}
 .workingpaper-export-page .wp-export-pane{display:none;min-height:0;flex:1 1 auto;overflow:hidden;}
 .workingpaper-export-page .wp-export-pane.is-active{display:block;}
+.workingpaper-export-page .wp-report-export-page{height:100%;box-sizing:border-box;padding:6px var(--bank-page-x,12px) 10px;background:transparent;overflow:auto;color:#334155;}
+.wp-report-cover{box-sizing:border-box;width:100%;max-width:none;margin:0;padding:14px 16px;}
+.wp-report-letterhead{height:20px;background:#163e70;margin-bottom:20px;}
+.wp-report-platform{margin:0 0 12px;color:#2f6fed;font-size:18px;font-weight:600;line-height:1.4;}
+.wp-execution-badge{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;padding:2px 7px;border:1px solid #cce7d5;border-radius:4px;background:#edf8f0;color:#287c49;font-size:11px;font-weight:500;line-height:1.4;white-space:nowrap;}
+.wp-distribution-trigger{display:inline-flex;align-items:center;gap:5px;min-height:25px;margin-top:5px;padding:3px 7px;border:1px solid #aac6ed;border-radius:4px;background:#edf5ff;color:#245ea8;font:inherit;font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;}
+.wp-distribution-trigger:hover,.wp-distribution-trigger[aria-expanded=true]{background:#dcecff;border-color:#6e9edb;}
+.wp-distribution-trigger:focus-visible{outline:2px solid #93b8f5;outline-offset:2px;}
+#wpRoutineDistribution{position:fixed;z-index:10000;box-sizing:border-box;width:540px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);overflow:auto;padding:10px;border:1px solid #d9e3ef;border-radius:6px;background:#fff;box-shadow:0 8px 24px #193c6326;color:#526580;}
+#wpRoutineDistribution[hidden]{display:none!important;}
+.wp-distribution-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-size:11px;}
+.wp-distribution-head button{padding:2px 4px;border:0;background:none;color:#7186a1;font:inherit;cursor:pointer;}
+html body #wpRoutineDistribution table{width:100%;min-width:0;table-layout:fixed;border-collapse:collapse;font-size:11px;}
+html body #wpRoutineDistribution :is(th,td){position:static;padding:6px 5px;border:0;border-bottom:1px solid #edf1f6;background:#fff;text-align:right;white-space:normal;overflow-wrap:anywhere;line-height:1.4;font-variant-numeric:tabular-nums;}
+html body #wpRoutineDistribution th{background:#f5f8fc;color:#7186a1;font-weight:500;}
+html body #wpRoutineDistribution :is(th,td):first-child{text-align:left;width:24%;}
+#wpRoutineDistribution p{margin:8px 0 0;color:#7d8b9e;font-size:11px;line-height:1.5;}
+.wp-report-cover-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px;}
+.wp-report-cover-heading h2{margin:0;color:#172033;font-size:24px;font-weight:700;line-height:1.4;}
+.wp-report-cover-heading #btnExportRiskReport{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;height:30px;padding:0 12px;border-radius:4px;font-size:12px;}
+.wp-report-cover-heading #btnExportRiskReport:disabled{opacity:.55;cursor:default;}
+html body .wp-report-cover-table{width:100%;min-width:0;table-layout:fixed;border-collapse:collapse;font-size:12px;}
+html body .wp-report-cover-table>tbody>tr>th{width:156px;padding:9px 10px;background:#eaf2fd;color:#26384d;font-weight:600;text-align:left;vertical-align:middle;border-bottom:1px solid #ccd8e9;}
+html body .wp-report-cover-table>tbody>tr>td{padding:9px 10px;background:#fff;color:#344b69;border-bottom:1px solid #ccd8e9;line-height:1.6;overflow-wrap:anywhere;}
+#riskReportPeriodSelect{max-width:100%;width:300px;height:30px;padding:3px 7px;border:1px solid #bdcfe6;border-radius:4px;background:#fff;color:#344b69;font:inherit;}
+#riskReportPeriodSelect:focus-visible{outline:2px solid #93b8f5;outline-offset:2px;}
+#riskReportPeriodSelect[aria-invalid=true]{border-color:#c56a6a;background:#fffafa;}
+#riskReportPeriodCoverage,#riskReportDateError{display:block;margin-top:3px;font-size:11px;color:#9a7139;}
+html body .wp-report-cover-table .wp-report-sources-label{vertical-align:top;}
+html body .wp-report-cover-table .wp-report-sources-cell{padding:0;}
+html body .wp-report-sources-table{width:100%;min-width:0;table-layout:fixed;border-collapse:collapse;font-size:11px;}
+html body .wp-report-sources-table :is(th,td){padding:5px 9px;text-align:left;line-height:1.5;border:0;overflow-wrap:anywhere;}
+html body .wp-report-sources-table th{font-weight:600;background:#f3f5f8;color:#526580;}
+html body .wp-report-sources-table :is(th,td):nth-child(2){width:100px;text-align:center;}
+html body .wp-report-sources-table :is(th,td):nth-child(3){width:180px;}
+.wp-report-source-status.uploaded{color:#23834c;background:#eef8f0;}
+.wp-report-source-status.partial{color:#b7741a;background:#fff6e8;}
+.wp-report-source-status.missing{color:#bd4545;background:#fff1f1;}
+.wp-report-source-status.unknown{color:#8190a5;background:#f8fafc;}
+.wp-report-cover-note{margin-top:15px;color:#526580;font-size:12px;line-height:1.7;}
+.wp-report-cover-note h3{margin:8px 0 2px;color:#26384d;font-size:12px;font-weight:600;}
+.wp-report-cover-note p{margin:0;}
+@media(max-width:700px){.workingpaper-export-page .wp-report-export-page{padding:12px;}.wp-report-cover-heading{align-items:flex-start;flex-wrap:wrap;gap:8px;}.wp-report-cover-heading h2{font-size:20px;}html body .wp-report-cover-table>tbody>tr>th{width:94px;padding:7px;}html body .wp-report-cover-table>tbody>tr>td{padding:7px;}html body .wp-report-cover-table .wp-report-sources-cell{padding:0;}html body .wp-report-sources-table :is(th,td){padding:4px;}html body .wp-report-sources-table :is(th,td):nth-child(2){width:50px;}html body .wp-report-sources-table :is(th,td):nth-child(3){width:76px;}}
+@media(max-width:700px){.workingpaper-export-page .wp-report-export-page{padding:6px var(--bank-page-x,12px) 10px;}.wp-report-cover{padding:10px;}}
 .workingpaper-export-page .wp-report-page{height:100%;padding:6px var(--bank-page-x,12px) 10px;overflow:auto;box-sizing:border-box;}
 .workingpaper-export-page #pane-workingpaper .tab-scroll.wp-page{height:100%;padding:6px var(--bank-page-x,12px) 10px;overflow:auto;box-sizing:border-box;}
 .workingpaper-export-page .wp-card-section{margin-bottom:10px;border-color:#e8eef5;}
