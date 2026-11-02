@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="../assets/css/pages/workingpaper.css?v=20261027-routine-compact2"/>
   <link rel="stylesheet" href="../assets/css/pages/bank-analysis-compact.css?v=20261020-counterparty-scope2"/>
   <link rel="stylesheet" href="../assets/css/pages/portrait.css?v=20261026-direction-tabs4"/>
+  <link rel="stylesheet" href="../assets/css/pages/portrait-business-query.css?v=20261102-entry-updated12"/>
   <link rel="stylesheet" href="../assets/css/pages/risk-check.css?v=20260624-riskflow1"/>
   <link rel="stylesheet" href="../assets/css/pages/account-action-details.css?v=20260828-portrait-actions4"/>
 </head>
@@ -224,15 +225,19 @@
         <div class="portrait-table-nav">
           <div class="portrait-table-tabs" id="portraitTableTabs"><button class="is-active" data-view="summary" type="button">交易数据及工商信息</button><button data-view="business" type="button" hidden>工商信息</button></div>
           <div class="portrait-business-sync">
+            <div class="portrait-business-current">
             <button class="portrait-business-refresh" id="portraitBusinessRefresh" type="button" aria-label="重新获取工商信息" title="重新获取工商信息">
-              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.34 5.66M20 5v6h-6"/></svg>
+              <span class="pbq-entry-icon pbq-icon-search" data-query-entry-icon aria-hidden="true"></span>
+              <span data-query-entry-label>获取对手方工商信息</span>
             </button>
-            <span id="portraitBusinessRefreshState">尚未获取工商信息</span>
+            </div>
+            <button class="portrait-custom-business-query" id="portraitCustomBusinessQuery" type="button"><span class="pbq-entry-icon pbq-icon-building" aria-hidden="true"></span><span data-query-entry-label>自定义企业工商信息查询</span></button>
+            <span id="portraitBusinessRefreshState" hidden>尚未查询工商信息</span>
           </div>
         </div>
         <div class="portrait-table-actions"><button class="btn" id="portraitResetFilters" type="button">重置筛选</button><button class="btn" id="portraitColumnsBtn" type="button">自定义表头</button><button class="btn primary" id="portraitGenerateResult" type="button">生成分析结果</button><button class="btn primary" id="portraitExportBtn" type="button">生成流水</button></div>
       </div>
-      <div class="counterparty-blacklist-note portrait-blacklist-row">当前工作簿下总计有3个对手方存在配合造假行为，请关注！（AQPP-Audit提供的全量配合造假清单见<a href="javascript:void(0)">第三方配合造假名单.xlsx</a>）</div>
+      <div class="portrait-table-meta"><div class="counterparty-blacklist-note portrait-blacklist-row">当前工作簿下总计有3个对手方存在配合造假行为，请关注！（AQPP-Audit提供的全量配合造假清单见<a href="javascript:void(0)">第三方配合造假名单.xlsx</a>）</div><span class="portrait-selection-note" id="portraitSelectionNote" data-portrait-selection-note role="status">不勾选即默认基于全部记录导出</span></div>
       <div class="portrait-table-wrap tyc-sync-surface"><table class="table" id="portraitCounterpartyTable"><thead id="portraitCounterpartyHead"></thead><tbody id="portraitCounterpartyBody"></tbody></table></div>
       <div class="pagination portrait-pagination" id="portraitPager"></div>
       </div>
@@ -908,7 +913,8 @@
 <script defer src="../assets/js/pages/account-action-details.js?v=20260828-portrait-actions4"></script>
 <script defer src="../assets/js/core/echarts-stable.js?v=20260508-fast2"></script>
 <script defer src="../assets/js/config/business-counterparty-scope.js?v=20261020-1"></script>
-<script defer src="../assets/js/pages/portrait.js?v=20261026-direction-tabs1"></script>
+<script defer src="../assets/js/pages/portrait-business-query.js?v=20261102-entry-updated12"></script>
+<script defer src="../assets/js/pages/portrait.js?v=20261102-selection10"></script>
 <script defer src="../assets/js/pages/routine.js?v=20260508-fast2"></script>
 </body>
 </html>

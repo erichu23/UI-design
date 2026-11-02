@@ -54,6 +54,9 @@
   addGeneratedRows(sourceSupplierNames,'供应商',45);
   addGeneratedRows(sourceOtherNames,'其他',90);
   const charts={}; let mode='inflow',featureView='customer',monthlyYear='all',monthlyLayout='combined',monthlyZoomStart=0,monthlyZoomEnd=100,sortKey='',sortDir=1,page=1,pageSize=20,tableView='summary',expandedYears=new Set([2023,2024,2025]),counterpartyFilter='all',portraitKpisHidden=false,businessInfoReady=false,businessInfoLoading=false;
+  const businessFetchedFields=new Map();
+  const hasBusinessInfo=(row,field='basic')=>businessFetchedFields.get(row.name)?.has(field)||false;
+  const portraitSelectedNames=new Set();
   let relationMode='total',relationFilter='related',relationPage=1,relationPageSize=20,relationTableView='summary',relationExpandedYears=new Set(),relationSortKey='',relationSortDir=1,relationKpisHidden=false;
   let personalMode='total',personalFilter='all',personalPage=1,personalPageSize=20,personalTableView='summary',personalExpandedYears=new Set(),personalSortKey='',personalSortDir=1,personalKpisHidden=false;
   const fmt=v=>v?Number(v).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';
@@ -210,10 +213,10 @@
       ? `<span class="portrait-business-compact-loading"><span class="portrait-business-compact-progress"><i aria-hidden="true"></i><em>0%</em></span><strong>${businessInfoReady?'正在更新':'正在获取'}</strong></span>`
       : `<span class="portrait-business-loading-state"><strong>${businessInfoReady?'正在重新获取工商信息':'正在获取工商信息'}</strong><span class="portrait-business-gate-progress-row"><span class="portrait-business-gate-progress"><i></i></span><em>0%</em></span></span>`
     : '<button type="button" data-business-gate-fetch title="获取工商信息" aria-label="获取工商信息"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 4.5 4.5"/></svg><span>获取工商信息</span></button>';
-  const dishonestCell=(row,extraClass='',showFetch=false)=>businessInfoReady
-    ? `<td class="portrait-dishonest-cell portrait-business-data-cell ${showFetch&&businessInfoLoading?'has-risk-inline':''} ${extraClass}" data-filter-value="未命中">${showFetch&&businessInfoLoading?`<div class="portrait-risk-inline-state is-refreshing">${businessInlineControl(true)}</div>`:''}</td>`
+  const dishonestCell=(row,extraClass='',showFetch=false)=>hasBusinessInfo(row)
+    ? `<td class="portrait-dishonest-cell portrait-business-data-cell ${extraClass}" data-filter-value="未命中" title="未命中失信被执行人">—</td>`
     : `<td class="portrait-dishonest-cell portrait-business-data-cell portrait-business-pending ${businessInfoLoading?'is-loading':''} ${showFetch?'has-risk-inline':''} ${extraClass}">${showFetch?`<div class="portrait-risk-inline-state">${businessInlineControl(true)}</div>`:''}</td>`;
-  const lawsuitCell=(row,extraClass='')=>businessInfoReady
+  const lawsuitCell=(row,extraClass='')=>hasBusinessInfo(row)
     ? `<td class="portrait-lawsuit-cell portrait-business-data-cell is-num ${extraClass}">${lawsuitCount(row)}</td>`
     : `<td class="portrait-lawsuit-cell portrait-business-data-cell portrait-business-pending ${businessInfoLoading?'is-loading':''} ${extraClass}"></td>`;
   const businessRiskCells=(row,showFetch=false)=>dishonestCell(row,'portrait-fixed-col portrait-fixed-col-3',showFetch)+lawsuitCell(row,'portrait-fixed-col portrait-fixed-col-4');
@@ -296,7 +299,8 @@
     {key:'group',label:'所属集团',source:'master',field:'group',defaultHidden:true,noFilter:true}
   ];
   const portraitTransactionDetailValue=(row,def)=>{
-    if(def.source==='business'&&!businessInfoReady)return '';
+    const field=['directors','supervisors','executives','keyPersonnel'].includes(def.field)?'people':def.field==='shareholders'?'shareholders':'basic';
+    if(def.source==='business'&&!hasBusinessInfo(row,field))return '';
     const source=def.source==='master'?counterpartyMasterInfo(row):businessInfo(row);
     return source[def.field]??'—';
   };
@@ -329,7 +333,7 @@
   const portraitTransactionDetailCells=row=>{
     return portraitTransactionDetailDefs.map(def=>{
     const value=portraitTransactionDetailValue(row,def);
-    const pending=def.source==='business'&&!businessInfoReady;
+    const pending=def.source==='business'&&!hasBusinessInfo(row);
     return `<td class="portrait-detail-cell ${def.source==='business'?'portrait-business-data-cell':''} ${def.numeric?'is-num':''} ${pending?'portrait-business-pending':''} ${pending&&businessInfoLoading?'is-loading':''}" data-detail-key="${def.key}" ${value?`title="${esc(value)}"`:''}>${esc(value)}</td>`;
     }).join('');
   };
@@ -642,6 +646,7 @@
     }else{
       head.innerHTML=`<tr class="portrait-year-group-head"><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-1" data-sort="name">对手方名称</th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-2 portrait-blacklist-head portrait-filter-only no-sort-only"><span class="portrait-blacklist-head-label">黑<br>名单</span></th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-3 portrait-compact-risk-head portrait-dishonest-head portrait-business-data-head portrait-filter-only"><span>失信被<br>执行人</span></th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-4 portrait-compact-risk-head portrait-business-data-head" data-sort="lawsuitCount"><span>诉讼<br>数量</span></th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-5">月度分布</th><th rowspan="3" class="portrait-fixed-col portrait-fixed-col-6 portrait-type-filter-head portrait-filter-only no-sort-only"><span class="portrait-type-head-label">对手方<br>类型</span></th><th colspan="${portraitMetricDefs.length}" class="portrait-group-toggle-cell">${yearControls}</th>${yearHeads}${portraitTransactionDetailHeaders()}<th rowspan="3" class="portrait-remark-head"><span class="portrait-detail-head-label">备注<br>说明</span></th><th rowspan="3" class="no-sort portrait-operation-head portrait-operation-sticky">操作</th></tr><tr class="portrait-metric-direction-head">${metricDirections()}${yearDirections}</tr><tr class="portrait-metric-symbol-head">${metricSymbols(false)}${yearSymbols}</tr>`;
     }
+    head.firstElementChild?.insertAdjacentHTML('afterbegin','<th rowspan="3" class="portrait-selection-cell no-sort no-filter" data-fixed-column="true" data-column-label="勾选对手方"><input type="checkbox" data-portrait-select-all aria-label="全选当前筛选范围内对手方" title="全选当前筛选范围内对手方"></th>');
     window.AuditYearExpansion?.bind({years,getSelected:()=>expandedYears,onChange:selected=>{expandedYears=selected;renderTable();},toggleId:'portraitYearToggle',pickerId:'portraitYearPicker'});
   }
   function rowSortValue(row,key){
@@ -716,7 +721,7 @@
     const trailing=tableView==='business'
       ? '<col class="portrait-flex-col">'.repeat(11)
       : portraitTransactionDetailDefs.map(def=>`<col class="portrait-detail-col" data-detail-key="${def.key}">`).join('')+'<col class="portrait-flex-col portrait-remark-col"><col class="portrait-operation-col">';
-    colgroup.innerHTML=leading+metric+yearMetric+trailing;
+    colgroup.innerHTML='<col class="portrait-selection-col">'+leading+metric+yearMetric+trailing;
   }
   function sortedPortraitRows(list){
     const key=sortKey||portraitFlow,dir=sortKey?sortDir:-1;
@@ -781,6 +786,11 @@
       const master=counterpartyMasterInfo(r);
       return `<tr><td class="portrait-fixed-col portrait-fixed-col-1">${esc(r.name)}</td>${blacklistCell(r,'portrait-fixed-col portrait-fixed-col-2')}${businessRiskCells(r,i===0)}<td class="portrait-fixed-col portrait-fixed-col-5">${mini(r,start+i,portraitFlow)}</td><td class="portrait-type-cell portrait-fixed-col portrait-fixed-col-6 ${shownTypeClass}">${esc(shownType)}</td>${groupCells(r,null,aggregateTotals,metrics)}${yearsCells}${portraitTransactionDetailCells(r)}<td class="portrait-remark-cell">${master.remark?esc(master.remark):'<span>—</span>'}</td><td class="portrait-operation-cell portrait-operation-sticky">${portraitActionButtons(r)}</td></tr>`;
     }).join('');
+    Array.from(body.rows).forEach((tr,index)=>{
+      const name=view[index].name;
+      tr.insertAdjacentHTML('afterbegin',`<td class="portrait-selection-cell"><input type="checkbox" data-portrait-select="${esc(name)}" aria-label="勾选${esc(name)}" ${portraitSelectedNames.has(name)?'checked':''}></td>`);
+    });
+    syncPortraitSelection();
     const table=document.getElementById('portraitCounterpartyTable');
     table?.style.setProperty('--portrait-business-body-height',`${Math.max(body.offsetHeight,34)}px`);
     syncCounterpartyTypeCells(body);
@@ -1171,9 +1181,40 @@
     if(amountNode?.nodeType===3)amountNode.textContent=`${fmtAmount(amount)} / `;
     barEl.style.width=`${ratio}%`;
   }
-  function exportPortraitCurrent(event){
+  function portraitRowsForExport(){
+    const list=sortedPortraitRows(filterRows(rows));
+    const selected=list.filter(row=>portraitSelectedNames.has(row.name));
+    return selected.length?selected:list;
+  }
+  function syncPortraitSelection(){
+    const table=document.getElementById('portraitCounterpartyTable');
+    if(!table)return;
+    const visible=filterRows(rows),count=visible.filter(row=>portraitSelectedNames.has(row.name)).length;
+    const all=table.querySelector('[data-portrait-select-all]');
+    if(all){all.checked=visible.length>0&&count===visible.length;all.indeterminate=count>0&&count<visible.length;all.disabled=!visible.length;}
+    table.querySelectorAll('[data-portrait-select]').forEach(input=>{input.checked=portraitSelectedNames.has(input.dataset.portraitSelect);});
+    const note=document.getElementById('portraitSelectionNote');
+    if(note){
+      note.textContent=count?`当前已选 ${count} 家`:'不勾选即默认基于全部记录导出';
+      note.classList.toggle('has-selection',count>0);
+    }
+  }
+  function bindPortraitSelection(){
+    const table=document.getElementById('portraitCounterpartyTable');
+    table?.addEventListener('change',event=>{
+      const input=event.target;
+      if(input.matches('[data-portrait-select-all]'))filterRows(rows).forEach(row=>{if(input.checked)portraitSelectedNames.add(row.name);else portraitSelectedNames.delete(row.name);});
+      else if(input.matches('[data-portrait-select]')){if(input.checked)portraitSelectedNames.add(input.dataset.portraitSelect);else portraitSelectedNames.delete(input.dataset.portraitSelect);}
+      else return;
+      syncPortraitSelection();
+    });
+  }
+  document.addEventListener('DOMContentLoaded',bindPortraitSelection);
+  function exportPortraitCurrent(event,selectedRows){
     event?.stopImmediatePropagation();
-    const isBiz=tableView==='business',exportRows=sortedPortraitRows(filterRows(rows));
+    if(event?.currentTarget?.id==='portraitExportBtn'){exportPortraitSelectedFlows();return;}
+    const isBiz=tableView==='business',exportRows=selectedRows||portraitRowsForExport();
+    if(!exportRows.length){showPortraitActionToast('当前筛选范围内没有已勾选的对手方');return;}
     const flowHead=portraitFlow==='inflow'?['流入金额','流入笔数']:portraitFlow==='outflow'?['流出金额','流出笔数']:['流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数'];
     const flowValues=row=>{
       if(portraitFlow==='total')return [row.inflow,row.salesVat,row.outflow,row.purchaseVat,row.inflow+row.outflow,row.count];
@@ -1194,6 +1235,15 @@
     link.click();
     URL.revokeObjectURL(link.href);
   }
+  function exportPortraitSelectedFlows(){
+    const selected=portraitRowsForExport();
+    if(!selected.length){showPortraitActionToast('当前筛选范围内没有已勾选的对手方');return;}
+    const flows=selected.flatMap(buildPortraitFlowRows).filter(flow=>portraitFlow==='total'||Number(flow[portraitFlow])>0);
+    const head=portraitFlowHeaders.map((label,index)=>index>=6&&index<=9?label+'（千元）':label);
+    const csv=[head,...flows.map(flow=>portraitFlowKeys.map(key=>flow[key]??''))].map(record=>record.map(value=>`"${String(value).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));
+    link.download='经营分析_对手方流水明细.csv';link.click();URL.revokeObjectURL(link.href);
+  }
   function exportRelation(){const isBiz=relationTableView==='business';const exportRows=relationRowsForCurrent();const head=isBiz?['对手方名称','对手方类型','行业','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','经营状态','成立日期','注册资本','经营范围','注册地址','企业联系方式','董监高']:['对手方名称','对手方类型','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','同进同出比例','行业','经营时长','董监高'];const csv=[head,...exportRows.map(r=>{const bi=businessInfo(r);return isBiz?[r.name,relationDisplayType(r),r.industry,r.inflow,r.salesVat,r.outflow,r.purchaseVat,r.inflow+r.outflow,r.count,bi.status,bi.founded,bi.capital,bi.scope,bi.address,bi.contact,bi.people]:[r.name,relationDisplayType(r),r.inflow,r.salesVat,r.outflow,r.purchaseVat,r.inflow+r.outflow,r.count,r.sameRatio,r.industry,r.duration,r.people];})].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download=`已知关联方交易_${isBiz?'工商信息':'合计数据'}.csv`;a.click();URL.revokeObjectURL(a.href);}
   function exportPersonal(){const isBiz=personalTableView==='business';const exportRows=personalRowsForCurrent();const head=isBiz?['个人名称','人员类型','关系说明','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','状态','首次交易日期','最近交易日期','交易期间','备注说明']:['个人名称','人员类型','流入金额','销项税价合计','流出金额','进项税价合计','交易总额','交易笔数','同进同出比例','关系说明','交易期间','备注说明'];const csv=[head,...exportRows.map((r,i)=>{const bi=businessInfo(r),t=personalType(r),note=t==='员工'?'备用金、报销及薪酬相关往来':'个人往来需补充说明';return isBiz?[r.name,t,t==='员工'?'员工往来':'其他个人往来',r.inflow,r.salesVat,r.outflow,r.purchaseVat,r.inflow+r.outflow,r.count,t==='员工'?'在职':'待确认',bi.founded,`2025-12-${String(10+(i%18)).padStart(2,'0')}`,r.duration,note]:[r.name,t,r.inflow,r.salesVat,r.outflow,r.purchaseVat,r.inflow+r.outflow,r.count,r.sameRatio,t==='员工'?'员工往来':'其他个人往来',r.duration,note];})].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download=`个人交易_${isBiz?'工商信息':'合计数据'}.csv`;a.click();URL.revokeObjectURL(a.href);}
   function bindBusinessRefresh(){
@@ -1206,7 +1256,7 @@
       return `${value.getFullYear()}-${pad(value.getMonth()+1)}-${pad(value.getDate())} ${pad(value.getHours())}:${pad(value.getMinutes())}`;
     };
     const syncUi=()=>{
-      button.title=businessInfoReady?'重新获取工商信息':'获取工商信息';
+      button.title=businessInfoReady?'更新本表对手方工商信息':'获取本表对手方工商信息';
       button.setAttribute('aria-label',button.title);
       const tag=document.getElementById('portraitBusinessMasterTag');
       const master=document.querySelector('.portrait-metric.is-master');
@@ -1230,7 +1280,7 @@
         button.click();
       });
     }
-    button.addEventListener('click',()=>{
+    const runQuery=(selectedRows,fields)=>{
       if(businessInfoLoading)return;
       const wasReady=businessInfoReady;
       if(!wasReady)businessInfoReady=false;
@@ -1243,14 +1293,13 @@
       surface?.classList.add('is-business-syncing');
       surface?.setAttribute('aria-busy','true');
       button.classList.add('is-refreshing');
-      button.disabled=true;
       button.setAttribute('aria-busy','true');
       state.classList.remove('is-success');
       const startedAt=Date.now();
       const duration=12000;
       const updateProgress=()=>{
         const percent=Math.min(96,Math.round((Date.now()-startedAt)/duration*100));
-        state.textContent=`${wasReady?'正在重新获取':'正在获取'}工商信息 ${percent}%`;
+        state.textContent=`本表工商信息：${wasReady?'正在更新':'正在获取'} ${percent}%`;
         surface?.querySelectorAll('.portrait-business-gate-progress i').forEach(bar=>{bar.style.width=`${percent}%`;});
         surface?.querySelectorAll('.portrait-business-gate-progress-row em').forEach(value=>{value.textContent=`${percent}%`;});
         surface?.querySelectorAll('.portrait-business-compact-progress').forEach(progress=>{progress.style.setProperty('--business-progress',`${percent}%`);});
@@ -1258,13 +1307,18 @@
       };
       updateProgress();
       const progressTimer=window.setInterval(updateProgress,300);
-      window.setTimeout(()=>{
+      return new Promise(resolve=>window.setTimeout(()=>{
         window.clearInterval(progressTimer);
+        selectedRows.forEach(row=>{
+          const previous=businessFetchedFields.get(row.name)||new Set();
+          fields.forEach(field=>previous.add(field));businessFetchedFields.set(row.name,previous);
+        });
         businessInfoReady=true;
         businessInfoLoading=false;
         renderTable();
         const updated=format(new Date());
-        state.innerHTML=`工商信息最新更新时间：<time id="portraitBusinessUpdatedAt">${updated}</time>`;
+        state.innerHTML=`本表更新：<time id="portraitBusinessUpdatedAt">${updated}</time>`;
+        state.title=`本表已获取 ${businessFetchedFields.size} 家工商信息，本次更新 ${selectedRows.length} 家；更新时间：${updated}`;
         state.classList.add('is-success');
         button.classList.remove('is-refreshing');
         button.disabled=false;
@@ -1279,7 +1333,16 @@
           },900);
         }
         window.setTimeout(()=>state.classList.remove('is-success'),1600);
-      },12000);
+        resolve();
+      },12000));
+    };
+    window.PortraitBusinessQuery?.init({
+      getRows:()=>filterRows(rows).map(row=>({...row,total:row.inflow+row.outflow})),
+      getAllRows:()=>rows,
+      isCompany:row=>!['个人','员工'].includes(row.type),
+      isAudited:row=>window.BankCounterpartyScope?.isAudited(row)||false,
+      getInfo:row=>({...businessInfo(row),dishonest:'未命中',lawsuit:lawsuitCount(row)}),
+      onQuery:runQuery
     });
   }
   function bindBusinessCounterpartyScope(){
@@ -1352,10 +1415,13 @@
   function generatePortraitResult(){
     const button=document.getElementById('portraitGenerateResult');
     if(!button||button.disabled)return;
+    const selectedRows=portraitRowsForExport();
+    if(!selectedRows.length){showPortraitActionToast('当前筛选范围内没有已勾选的对手方');return;}
     const original=button.textContent;
     button.disabled=true;
     button.textContent='正在生成…';
     window.setTimeout(()=>{
+      exportPortraitCurrent(null,selectedRows);
       renderTable();
       button.textContent='已生成';
       window.setTimeout(()=>{
